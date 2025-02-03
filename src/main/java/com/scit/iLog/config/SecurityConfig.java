@@ -22,6 +22,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/guides",
+                                "/customerCenter",
                                 "/user/join",
                                 "/user/duplicate",
                                 "/user/joinProc",
