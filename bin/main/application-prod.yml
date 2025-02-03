@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/picktalk?useSSL=true&serverTimezone=UTC&characterEncoding=UTF-8
+    username: was_dev_user
+    password: was_dev_user
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20 # Tn * (Cm - 1) + Tn/2 Tn:논리프로세서의 최대 개수 Cm: 하나의 스레드에서 동시에 필요한 커넥션 개수
+      minimum-idle: 10
+      idle-timeout: 300000
+      connection-timeout: 20000
