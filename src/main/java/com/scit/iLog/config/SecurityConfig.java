@@ -21,7 +21,7 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/",
-                                "/user/join",
+                                "/member/join",
                                 "/user/duplicate",
                                 "/user/joinProc",
                                 "/user/idCheck",
