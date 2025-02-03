@@ -1,0 +1,78 @@
+# Java 관련
+*.class
+*.jar
+*.war
+*.ear
+
+# IntelliJ IDEA 관련 파일
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse 관련 파일
+.project
+.classpath
+.settings/
+*.prefs
+
+# VSCode 관련 파일
+.vscode/
+
+# 빌드 관련
+/target/
+/out/
+/build/
+
+# Gradle
+.gradle/
+/build/
+/.gradle-cache/
+/.gradle-wrapper/
+/gradle-wrapper.jar
+
+# Maven
+.mvn/
+!mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# 환경설정 파일
+*.env
+*.properties.local
+*.yml.local
+*.yaml.local
+
+secrets/
+
+# 로그 파일
+*.log
+logs/
+log/
+
+# OS별 파일 무시
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 테스트 관련
+/test-output/
+*.test-result
+
+# Docker 관련
+docker-compose.override.yml
+.env.docker
+.dockerignore
+
+# 기타
+*.bak
+*.tmp
+*.swp
+*.swo
+*.lock
+*.orig
+*.rej
+
