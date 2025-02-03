@@ -10,6 +10,15 @@
     <script src="/js/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-
+	<h2>아이디 및 비밀번호 찾기</h2>
+    <form th:action="" method="POST">
+        <label for="username">사용자 이름:</label>
+        <input type="text" id="username" name="username" required>
+        
+        <label for="email">등록된 이메일:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <input type="submit" value="찾기">
+    </form>
 </body>
 </html>
