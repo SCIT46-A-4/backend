@@ -23,6 +23,7 @@
 /target/
 /out/
 /build/
+/bin
 
 # Gradle
 .gradle/

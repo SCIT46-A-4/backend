@@ -9,4 +9,11 @@ public class MainController {
     public String handleIndex() {
         return "index";
     }
+    
+    @GetMapping("/guides")
+    public String userGuide() {
+    	
+        return "guides";
+    }
+    
 }
