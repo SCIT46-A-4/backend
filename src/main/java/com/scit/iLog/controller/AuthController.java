@@ -8,12 +8,17 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/auth")
 public class AuthController {
-	
+
 	// ID/PW 찾기 페이지로 이동하기
-    @GetMapping("/inPwFind")
-    public String inPwFind() {
-        return "inPwFind";
+    @GetMapping("/auth/idPwFind")
+    public String idPwFind() {
+        return "idPwFind";
     }
+
+	@GetMapping("/user/login")
+	public String getLoginPage()
+	{
+		return "/auth/signin";
+	}
 }
