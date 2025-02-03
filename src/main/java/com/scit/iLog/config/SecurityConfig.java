@@ -21,11 +21,13 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/",
-                                "/user/join",
-                                "/user/duplicate",
-                                "/user/joinProc",
-                                "/user/idCheck",
-                                "/user/login",
+                                "/guides",
+                                "/claims",
+                                "/member/join",
+                                "/member/duplicate",
+                                "/member/joinProc",
+                                "/member/idCheck",
+                                "/member/login",
                                 "/board/boardList",
                                 "/board/boardDetail",
                                 "/board/download",
@@ -35,16 +37,16 @@ public class SecurityConfig {
                                 "/images/**")
                         .permitAll()
                         .requestMatchers(
-                                "/user/logout",
-                                "/user/my/update",
-                                "/user/deleteUser",
+                                "/member/logout",
+                                "/member/my/update",
+                                "/member/deleteUser",
                                 "/board/boardWrite",
                                 "/board/boardUpdate",
                                 "/board/boardDelete",
                                 "/reply/replyWrite",
                                 "/reply/replyDelete",
                                 "/mypage/**",
-                                "/user/mypage"
+                                "/member/mypage"
                         ).hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
@@ -53,18 +55,18 @@ public class SecurityConfig {
         );
         http.formLogin(formAuth ->
                 formAuth
-                        .loginPage("/user/login")
-                        .loginProcessingUrl("/user/loginProc")
+                        .loginPage("/member/login")
+                        .loginProcessingUrl("/member/loginProc")
 //                        .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
 //                        .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
                         .usernameParameter("userId")
                         .passwordParameter("userPwd")
                         .defaultSuccessUrl("/")
-//                        .failureUrl("/user/login?error=true") //핸들러를 등록하면 필요없음
+//                        .failureUrl("/member/login?error=true") //핸들러를 등록하면 필요없음
         );
         http.logout(logout ->
                 logout
-                        .logoutUrl("/user/logout")
+                        .logoutUrl("/member/logout")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)

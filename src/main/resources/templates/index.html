@@ -6,10 +6,25 @@
 >
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>iLog</title>
     <script src="/js/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-<h1>index</h1>
+<div id="landingpage-container">
+
+<div>
+<span>아이로그: 아동 보육 솔루션 서비스</span>
+    <a th:href="@{/auth/login}"><span>서비스 이용하기</span></a>
+</div>
+<section>
+    <div>
+        <h1>서비스 소개</h1>
+    </div>
+</section>
+<footer>
+    <a th:href="@{/guides}"><span>이용안내</span></a>
+    <a th:href="@{/claims}"><span>고객센터</span></a>
+</footer>
+</div>
 </body>
 </html>
