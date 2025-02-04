@@ -23,6 +23,7 @@ public class SecurityConfig {
                                 "/",
                                 "/statisticsDetails",
                                 "/member/join",
+                                "/member/*/info",
                                 "/guides",
                                 "/customerCenter",
                                 "/user/duplicate",
