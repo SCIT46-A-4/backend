@@ -23,6 +23,7 @@ public class SecurityConfig {
                                 "/",
                                 "/member/join",
                                 "/guides",
+                                "/children/diaryDetails", // 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/customerCenter",
                                 "/user/duplicate",
                                 "/user/joinProc",
