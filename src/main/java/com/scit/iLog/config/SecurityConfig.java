@@ -21,7 +21,9 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/",
+                                "/statisticsDetails",
                                 "/member/join",
+                                "/member/*/info",
                                 "/guides",
                                 "/children/diaryDetails", // 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/customerCenter",
@@ -33,6 +35,8 @@ public class SecurityConfig {
                                 "/board/boardDetail",
                                 "/board/download",
                                 "/reply/replyInsert",
+                                "/children/diaryStatistics",
+                                "/children/diaries",
                                 "/js/**",
                                 "/css/**",
                                 "/images/**")
