@@ -29,6 +29,7 @@ public class SecurityConfig {
                                 "/user/idCheck",
                                 "/user/login",
                                 "/board/boardList",
+                                "/children/diaries",
                                 "/board/boardDetail",
                                 "/board/download",
                                 "/reply/replyInsert",
