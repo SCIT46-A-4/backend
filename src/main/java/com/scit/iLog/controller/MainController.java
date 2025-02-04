@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class MainController {
+	
     @GetMapping({"","/"})
     public String handleIndex() {
         return "index";
@@ -12,7 +13,6 @@ public class MainController {
     
     @GetMapping("/guides")
     public String userGuide() {
-    	
         return "guides";
     }
     
