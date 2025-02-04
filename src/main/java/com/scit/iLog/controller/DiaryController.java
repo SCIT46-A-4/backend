@@ -17,12 +17,6 @@ public class DiaryController {
         return "/children/diaryStatistics";
     }
 
-	// 일기 목록 자세히 보기 로 이동하기!
-    @GetMapping("/diaries")
-    public String diaries() {
-        return "/children/diaries";
-    }
-
     //일기장 목록 페이지 요청
     @GetMapping("/diaries")
     public String selectAll(){
