@@ -17,4 +17,11 @@ public class ChildrenController {
 	{
 		return "/children/diaryDetails";
 	}
+
+
+	// 아동 정보 상세 페이지로 이동
+	@GetMapping("/children/infoDetails")
+	public String infoDetails(){
+		return "/children/infoDetails";
+	}
 }
