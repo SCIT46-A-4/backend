@@ -46,6 +46,10 @@ public class SecurityConfig {
                                 "/reply/replyInsert",
                                 "/children/diaryStatistics",
                                 "/children/diaries",
+                                "/children/details",
+                                "/children/surveyInsert",
+                                "/children/surveyBody",
+                                "/children/surveyMind",
                                 "/js/**",
                                 "/css/**",
                                 "/images/**")

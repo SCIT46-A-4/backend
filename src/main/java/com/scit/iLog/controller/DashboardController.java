@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class DashboardController {
     
+
     @GetMapping("/parentDashboard")
     public String parentDashboard() {
     	
@@ -16,6 +17,13 @@ public class DashboardController {
     public String teacherDashboard() {
 
     	return "children/teacherDashboard";
+    }
+    // details.html 바로가기
+    @GetMapping("/details")
+    public String getDetails() {
+    	
+        return "children/details";
+
     }
     
 }
