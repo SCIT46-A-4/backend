@@ -22,4 +22,10 @@ public class DiaryController {
     public String selectAll(){
         return "/children/diaries";
     }
+
+    //일기장 쓰기 페이지
+    @GetMapping("/diaries/new")
+    public String handleInsertDiary() {
+        return "children/diaryInsert";
+    }
 }
