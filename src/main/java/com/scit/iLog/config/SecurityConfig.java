@@ -41,6 +41,7 @@ public class SecurityConfig {
                                 "/board/boardList",
                                 "/children/diaries",
                                 "/children/diaries/new",
+                                "/children/infoDetails",
                                 "/board/boardDetail",
                                 "/board/download",
                                 "/reply/replyInsert",

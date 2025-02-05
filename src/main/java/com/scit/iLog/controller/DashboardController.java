@@ -18,12 +18,10 @@ public class DashboardController {
 
     	return "children/teacherDashboard";
     }
-    // details.html 바로가기
-    @GetMapping("/details")
-    public String getDetails() {
-    	
-        return "children/details";
 
+    // 내 아이 상세 페이지로 이동
+    @GetMapping("/children/details")
+    public String details(){
+        return "/children/details";
     }
-    
 }
