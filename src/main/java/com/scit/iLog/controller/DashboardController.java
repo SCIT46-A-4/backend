@@ -9,7 +9,7 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String dashBoard() {
     	
-        return "children/dashboard";
+        return "children/parentDashboard";
     }
     
 }

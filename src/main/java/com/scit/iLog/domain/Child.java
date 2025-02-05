@@ -38,6 +38,7 @@ public class Child extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Builder.Default
     @OneToMany(mappedBy = "child")
     private List<ChildDiary> diaries = new ArrayList<>();
 }

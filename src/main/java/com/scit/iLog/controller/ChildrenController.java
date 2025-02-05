@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ChildrenController {
 
-	@GetMapping("/statisticsDetails")
+	@GetMapping("/children/statisticsDetails")
     public String statisticsDetails() {
         return "/children/statisticsDetails";
     }
