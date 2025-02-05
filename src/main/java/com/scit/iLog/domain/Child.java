@@ -39,5 +39,6 @@ public class Child extends BaseTimeEntity {
     private Gender gender;
 
     @OneToMany(mappedBy = "child")
+    @Builder.Default
     private List<ChildDiary> diaries = new ArrayList<>();
 }
