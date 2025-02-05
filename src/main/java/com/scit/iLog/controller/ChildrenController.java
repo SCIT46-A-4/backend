@@ -12,9 +12,17 @@ public class ChildrenController {
     }
 
 
+	// 25/2/5 일기 상세페이지
 	@GetMapping("/children/diaryDetails")
 	public String getDiaryDetails()
 	{
 		return "/children/diaryDetails";
+	}
+	
+	// 25/2/5 내 아이 상세페이지 
+	@GetMapping("/children/details")
+	public String getChildrenDetails()
+	{
+		return "/children/details";
 	}
 }

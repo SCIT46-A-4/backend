@@ -26,7 +26,8 @@ public class SecurityConfig {
                                 "/member/*/info",
                                 "/guides",
                                 "/dashboard",
-                                "/children/diaryDetails", // 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
+                                "/children/diaryDetails", // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
+                                "/children/details",	  // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/customerCenter",
                                 "/user/duplicate",
                                 "/user/joinProc",
