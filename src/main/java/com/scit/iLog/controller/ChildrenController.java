@@ -6,16 +6,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ChildrenController {
 
-	@GetMapping("/statisticsDetails")
+	@GetMapping("/children/statisticsDetails")
     public String statisticsDetails() {
         return "/children/statisticsDetails";
     }
 
 
+	// 25/2/5 일기 상세페이지
 	@GetMapping("/children/diaryDetails")
-	public String getDiaryDetails()
-	{
+	public String getDiaryDetails() {
 		return "/children/diaryDetails";
+	}
+
+	// 25/2/5 내 아이 상세페이지
+	@GetMapping("/children/details")
+	public String getChildrenDetails() {
+		return "/children/details";
+	}
+
+	@GetMapping("/surveys")
+	public String surveysPage() {
+		return "children/surveys";
 	}
 
 

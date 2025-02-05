@@ -21,11 +21,17 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/",
-                                "/statisticsDetails",
+                                "/children/analysis",
+                                "/children/statisticsDetails",
                                 "/member/join",
                                 "/member/*/info",
                                 "/guides",
                                 "/dashboard",
+                                "/children/diaryDetails", // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
+                                "/children/details",	  // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
+                                "/parentDashboard",
+                                "/teacherDashboard",
+                                "/surveys",
                                 "/children/diaryDetails", // 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/customerCenter",
                                 "/user/duplicate",
@@ -34,13 +40,17 @@ public class SecurityConfig {
                                 "/user/login",
                                 "/board/boardList",
                                 "/children/diaries",
-                                "/children/details",
+                                "/children/diaries/new",
                                 "/children/infoDetails",
                                 "/board/boardDetail",
                                 "/board/download",
                                 "/reply/replyInsert",
                                 "/children/diaryStatistics",
                                 "/children/diaries",
+                                "/children/details",
+                                "/children/surveyInsert",
+                                "/children/surveyBody",
+                                "/children/surveyMind",
                                 "/js/**",
                                 "/css/**",
                                 "/images/**")
