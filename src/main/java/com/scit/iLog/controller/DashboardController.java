@@ -11,10 +11,10 @@ public class DashboardController {
     	
         return "children/parentDashboard";
     }
-    
+
     @GetMapping("/teacherDashboard")
     public String teacherDashboard() {
-    	
+
     	return "children/teacherDashboard";
     }
     
