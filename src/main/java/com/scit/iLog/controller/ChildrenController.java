@@ -17,4 +17,9 @@ public class ChildrenController {
 	{
 		return "/children/diaryDetails";
 	}
+	
+	@GetMapping("/surveys")
+	public String surveysPage() {
+		return "children/surveys";
+	}
 }
