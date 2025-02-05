@@ -26,5 +26,4 @@ public class RelationShip extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private RelationType relationType;
-
 }
