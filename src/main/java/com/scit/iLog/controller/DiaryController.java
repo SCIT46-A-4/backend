@@ -25,7 +25,7 @@ public class DiaryController
 	// 우리 아이 일기 통계로 보기 로 이동하기! = 우리 아이 일기장 버튼
     @GetMapping("/diaryStatistics")
     public String diaryStatistics() {
-        return "/children/diaryStatistics";
+        return "/children/diaryStatisticsView";
     }
 
     // 일기장 목록 페이지 요청 | 25/2/6 준성: 파라미터 Long id, Pageable 추가 
@@ -37,12 +37,12 @@ public class DiaryController
     	Page<ChildDiaryEntity> _page = childDiaryService.getChildDiaries(id, pageable);
     	
     	model.addAttribute("list", _page);
-        return "/children/diaries";
+        return "/children/diaries/diaryListView";
     }
 
     //일기장 쓰기 페이지
     @GetMapping("/diaries/new")
     public String handleInsertDiary() {
-        return "children/diaryInsert";
+        return "children/diaries/insertView";
     }
 }

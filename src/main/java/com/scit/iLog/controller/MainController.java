@@ -13,8 +13,6 @@ public class MainController {
     
     @GetMapping("/guides")
     public String userGuide() {
-        return "guides";
+        return "guides/guideListView";
     }
-    
-    
 }

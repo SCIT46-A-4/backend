@@ -9,8 +9,7 @@ public class AnalysisController {
     // 그림,사진,음성 분석 페이지 요청
 	@GetMapping("/children/analysis")
     public String analysis() {
-    	
-        return "/children/analysis";
+        return "/children/analysis/insertView";
     }
 
     // 25/2/6 은진 : '분석 결과 페이지' 요청

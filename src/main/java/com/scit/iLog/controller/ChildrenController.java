@@ -13,30 +13,30 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class ChildrenController {
+	/* 2025-02-06 ChildService 선언 */
+	private final InfoDetailsService childService;
 
 	@GetMapping("/children/statisticsDetails")
     public String statisticsDetails() {
-        return "/children/statisticsDetails";
+        return "/children/statistics/detailsView";
     }
-
 
 	// 25/2/5 일기 상세페이지
 	@GetMapping("/children/diaryDetails")
 	public String getDiaryDetails() {
-		return "/children/diaryDetails";
+		return "/children/diaryDetailsView";
 	}
 
 	// 25/2/5 내 아이 상세페이지
 	@GetMapping("/children/details")
 	public String getChildrenDetails() {
-		return "/children/details";
+		return "/children/childOverviewView";
 	}
 
 	@GetMapping("/surveys")
 	public String surveysPage() {
-		return "children/surveys";
+		return "children/survey/surveyListView";
 	}
-
 
 	/* 2026-02-06 이도훈 삭제 예정
 	 * // 아동 정보 상세 페이지로 이동
@@ -44,18 +44,13 @@ public class ChildrenController {
 	 * @GetMapping("/children/infoDetails") public String infoDetails(){ return
 	 * "/children/infoDetails"; }
 	 */
-	
-	/* 2025-02-06 이곳부터 이도훈 작업 부분 */
-	
-	/* 2025-02-06 ChildService 선언 */
-	private final InfoDetailsService childService;
-	
+
 	/* infoDetails에 아동 정보 조회 */
 	@GetMapping("/children/infoDetails")
 	public String infoDetails(@RequestParam(name="id") Long id, Model model) {
 		ChildInfoDetailsDto childInfoDetailsDto = childService.seletInfoDetails(id);
 		
 		model.addAttribute("childInfoDetailsDto", childInfoDetailsDto);
-		return "/children/infoDetails";
+		return "/children/childDetailsView";
 	}
 }
