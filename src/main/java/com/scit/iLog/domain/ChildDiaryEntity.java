@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "child_diary")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChildDiary extends BaseTimeEntity {
+public class ChildDiaryEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "diary_id")
@@ -18,7 +18,7 @@ public class ChildDiary extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_id")
-    private Child child;
+    private ChildEntity child;
 
     @Column(name = "content")
     private String content;

@@ -22,7 +22,7 @@ public class RelationShip extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "relationShip")
-    private Child child;
+    private ChildEntity childEntity;
 
     @Enumerated(EnumType.STRING)
     private RelationType relationType;
