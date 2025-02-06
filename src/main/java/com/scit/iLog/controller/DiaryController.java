@@ -18,8 +18,7 @@ import com.scit.iLog.service.ChildDiaryService;
 @Controller
 @RequestMapping("/children")
 @RequiredArgsConstructor
-public class DiaryController 
-{
+public class DiaryController {
 	private final ChildDiaryService childDiaryService;
 
 	// 우리 아이 일기 통계로 보기 로 이동하기! = 우리 아이 일기장 버튼
@@ -30,10 +29,11 @@ public class DiaryController
 
     // 일기장 목록 페이지 요청 | 25/2/6 준성: 파라미터 Long id, Pageable 추가 
     @GetMapping("/diaries")
-    public String selectAll(@RequestParam Long id,
-    						@PageableDefault(page=0, size=10) Pageable pageable,
-    						Model model)
-    {
+    public String selectAll(
+            @RequestParam Long id,
+            @PageableDefault(page=0, size=10) Pageable pageable,
+            Model model
+    ) {
     	Page<ChildDiaryEntity> _page = childDiaryService.getChildDiaries(id, pageable);
     	
     	model.addAttribute("list", _page);

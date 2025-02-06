@@ -3,6 +3,7 @@ package com.scit.iLog.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.scit.iLog.dto.child.ChildInfoDetailsDto;
@@ -12,30 +13,26 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/children")
 public class ChildrenController {
 	/* 2025-02-06 ChildService 선언 */
 	private final InfoDetailsService childService;
 
-	@GetMapping("/children/statisticsDetails")
+	@GetMapping("/statisticsDetails")
     public String statisticsDetails() {
         return "/children/statistics/detailsView";
     }
 
 	// 25/2/5 일기 상세페이지
-	@GetMapping("/children/diaryDetails")
+	@GetMapping("/diaryDetails")
 	public String getDiaryDetails() {
 		return "/children/diaryDetailsView";
 	}
 
 	// 25/2/5 내 아이 상세페이지
-	@GetMapping("/children/details")
+	@GetMapping("/details")
 	public String getChildrenDetails() {
 		return "/children/childOverviewView";
-	}
-
-	@GetMapping("/surveys")
-	public String surveysPage() {
-		return "children/survey/surveyListView";
 	}
 
 	/* 2026-02-06 이도훈 삭제 예정
@@ -46,7 +43,7 @@ public class ChildrenController {
 	 */
 
 	/* infoDetails에 아동 정보 조회 */
-	@GetMapping("/children/infoDetails")
+	@GetMapping("/infoDetails")
 	public String infoDetails(@RequestParam(name="id") Long id, Model model) {
 		ChildInfoDetailsDto childInfoDetailsDto = childService.seletInfoDetails(id);
 		
