@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "relationship")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RelationShip extends BaseTimeEntity {
+public class RelationShipEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "relationship_id")
@@ -18,11 +18,11 @@ public class RelationShip extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guardian_id")
-    private Member member;
+    private MemberEntity member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "relationShip")
-    private Child child;
+    private ChildEntity child;
 
     @Enumerated(EnumType.STRING)
     private RelationType relationType;
