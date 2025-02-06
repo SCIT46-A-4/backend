@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "child")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Child extends BaseTimeEntity {
+public class ChildEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "child_id")
@@ -40,5 +40,5 @@ public class Child extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "child")
     @Builder.Default
-    private List<ChildDiary> diaries = new ArrayList<>();
+    private List<ChildDiaryEntity> diaries = new ArrayList<>();
 }
