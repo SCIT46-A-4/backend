@@ -18,13 +18,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/analysis")
 public class AnalysisResultController {
-    
 	/*
 	 * 2025.02.06
 	 * anaysisResult 관련 Controller 코드 작성
 	 * 수정자 : 김보경
 	 */
-	
     private final AnalysisResultService analysisResultService;
     
     // 특정 분석 결과 조회
@@ -38,21 +36,18 @@ public class AnalysisResultController {
         }
 
         model.addAttribute("result", result);
-        return "children/analysisResult";
+        return "children/analysis/analysisResultView";
     }
-    
-    
+
     
     // 분석 결과 목록 조회
     @GetMapping("/analysisResults")
     public String getAnalysisResults(Model model) {
         List<AnalysisResult> results = analysisResultService.getAllAnalysisResults();
         model.addAttribute("results", results);
-        return "children/analysisResults";
+        return "children/analysis/analysisResultListView";
     }
-    
-    
-    
+
     
     // 분석 결과 삭제
     @PostMapping("/{analysisId}/delete")

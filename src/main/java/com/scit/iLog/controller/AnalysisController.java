@@ -8,7 +8,6 @@ public class AnalysisController {
 	
 	@GetMapping("/children/analysis")
     public String analysis() {
-    	
-        return "/children/analysis";
+        return "/children/analysis/insertView";
     }
 }

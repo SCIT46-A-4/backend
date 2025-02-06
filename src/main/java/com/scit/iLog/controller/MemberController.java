@@ -23,7 +23,6 @@ public class MemberController {
     public String handleGetMyPage(
             @PathVariable("memberId") Long memberId
     ) {
-        return "/member/myinfo";
+        return "/member/detailsView";
     }
-
 }

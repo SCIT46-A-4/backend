@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ClaimsController {
     @GetMapping("/customerCenter")
     public String customerCenter() {
-        return "/claims";
+        return "/claims/insertView";
     }
 }

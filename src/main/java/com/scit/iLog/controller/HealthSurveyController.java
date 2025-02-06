@@ -7,26 +7,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HealthSurveyController {
 	
 	// 설문쓰기_선택 바로가기
-		@GetMapping("/children/surveyInsert")
-		public String getsurveyInsert()
-		{
-			return "/children/surveyInsert";
-		}
-	
+	@GetMapping("/children/surveyInsert")
+	public String getsurveyInsert()
+	{
+		return "/children/survey/mental/insertView";
+	}
 		
 	// 설문쓰기_신체 바로가기
 	@GetMapping("/children/surveyBody")
 	public String getsurveyBody()
 	{
-		return "/children/surveyBody";
+		return "/children/survey/health/insertView";
 	}
-		
-	
+
 	// 설문쓰기_심리 바로가기
 	@GetMapping("/children/surveyMind")
 	public String getsurveyMind()
 	{
-		return "/children/surveyMind";
+		return "/children/survey/surveyMind";
 	}
-	
 }
