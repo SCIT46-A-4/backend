@@ -21,6 +21,7 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/",
+                                "/user/join",
                                 "/children/analysis",
                                 "/children/analysisResult",
                                 "/children/analysisResults",
@@ -53,6 +54,7 @@ public class SecurityConfig {
                                 "/children/surveyInsert",
                                 "/children/surveyBody",
                                 "/children/surveyMind",
+                                "/analysis/**",				// 2025.02.06_확인하고 싶어 추가해둠!
                                 "/js/**",
                                 "/css/**",
                                 "/images/**")

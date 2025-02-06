@@ -10,16 +10,29 @@
     <script src="/js/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-<h1>그림, 사진, 음성 분석 결과 페이지</h1>
-<br>
+	<!-- 2025.02.06 / 김보경 / 페이지 예시 설정 -->
 
-<div>
-    분석 결과 섹션
-</div>
-<br>
-<!-- 25/2/6 은진 : 분석 결과 목록 페이지로 이동 -->
-<a th:href="@{/children/analysisResults}"> 분석 결과 목록 보기 </a>
-<a href="#"> 삭제하기</a>
+	<div class="">
+        <!-- 분석 결과 섹션 -->
+        <h2>그림, 사진, 음성 분석 결과 페이지</h2>
+        <div>
+            <h2>Emotion Score: <span th:text="${result.emotionScore}"></span></h2>
+            <p>Analysis Result: <span th:text="${result.analysisResult}"></span></p>
+            <p>Suggested Solution: <span th:text="${result.solution}"></span></p>
+        </div>
 
+
+        <!-- 목록 보기 링크 -->
+        <a th:href="@{/analysis/analysisResults}">분석 결과 목록 보기</a>
+
+
+
+        <!-- 삭제하기 버튼 -->
+        <form th:action="@{/analysis/{analysisId}/delete(id=${result.id})}" method="post">
+            <button type="submit">삭제하기</button>
+        </form>
+
+
+    </div>
 </body>
 </html>
