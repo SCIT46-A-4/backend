@@ -19,9 +19,5 @@ public class DashboardController {
     	return "children/teacherDashboard";
     }
 
-    // 내 아이 상세 페이지로 이동
-    @GetMapping("/children/details")
-    public String details(){
-        return "/children/details";
-    }
+
 }
