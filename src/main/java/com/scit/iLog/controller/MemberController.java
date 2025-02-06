@@ -7,17 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
-@RequestMapping("/member")
-@RequiredArgsConstructor
 @Slf4j
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/member")
 public class MemberController {
-
-    // 회원가입 페이지 요청
-    @GetMapping("/join")
-    public String join(){
-        return "/member/join";
-    }
 
     @GetMapping("/{memberId}/info")
     public String handleGetMyPage(
