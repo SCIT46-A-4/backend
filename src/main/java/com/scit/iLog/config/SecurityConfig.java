@@ -1,18 +1,29 @@
 package com.scit.iLog.config;
 
+import com.scit.iLog.domain.MemberEntity;
+import com.scit.iLog.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.Collection;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final MemberRepository memberRepository;
 
     @Bean
     SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
@@ -21,7 +32,7 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/",
-                                "/user/join",
+                                "/member/join",
                                 "/children/analysis",
                                 "/children/analysisResult",
                                 "/children/analysisResults",
@@ -37,10 +48,10 @@ public class SecurityConfig {
                                 "/surveys",
                                 "/children/diaryDetails", // 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/customerCenter",
-                                "/user/duplicate",
-                                "/user/joinProc",
-                                "/user/idCheck",
-                                "/user/login",
+                                "/member/duplicate",
+                                "/member/joinProc",
+                                "/member/idCheck",
+                                "/member/login",
                                 "/board/boardList",
                                 "/children/diaries",
                                 "/children/diaries/new",
@@ -60,16 +71,16 @@ public class SecurityConfig {
                                 "/images/**")
                         .permitAll()
                         .requestMatchers(
-                                "/user/logout",
-                                "/user/my/update",
-                                "/user/deleteUser",
+                                "/member/logout",
+                                "/member/my/update",
+                                "/member/deleteUser",
                                 "/board/boardWrite",
                                 "/board/boardUpdate",
                                 "/board/boardDelete",
                                 "/reply/replyWrite",
                                 "/reply/replyDelete",
                                 "/mypage/**",
-                                "/user/mypage"
+                                "/member/mypage"
                         ).hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
@@ -78,18 +89,18 @@ public class SecurityConfig {
         );
         http.formLogin(formAuth ->
                 formAuth
-                        .loginPage("/user/login")
-                        .loginProcessingUrl("/user/loginProc")
+                        .loginPage("/auth/signIn")
+                        .loginProcessingUrl("/auth/signIn")
 //                        .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
 //                        .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
                         .usernameParameter("userId")
                         .passwordParameter("userPwd")
                         .defaultSuccessUrl("/")
-//                        .failureUrl("/user/login?error=true") //핸들러를 등록하면 필요없음
+//                        .failureUrl("/member/login?error=true") //핸들러를 등록하면 필요없음
         );
         http.logout(logout ->
                 logout
-                        .logoutUrl("/user/logout")
+                        .logoutUrl("/member/logout")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
@@ -101,4 +112,41 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    UserDetailsService userDetailsService() {
+        return (username) -> {
+            MemberEntity member = memberRepository
+                    .findByUserId(username)
+                    .orElseThrow(() -> new EntityNotFoundException("로그인 처리시 회원 조회 실패"));
+            return new MemberDetails(
+                    member.getUserId(),
+                    member.getPassword(),
+                    member.getRole().name()
+            );
+        };
+    }
+
+    @RequiredArgsConstructor
+    static final class MemberDetails implements UserDetails {
+        private final String userId;
+        private final String password;
+        private final String role;
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            return List.of(new SimpleGrantedAuthority(this.role));
+        }
+
+        @Override
+        public String getPassword() {
+            return this.password;
+        }
+
+        @Override
+        public String getUsername() {
+            return this.userId;
+        }
+    }
 }
+

@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.scit.iLog.domain.MemberEntity;
 
-public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
+import java.util.Optional;
 
+public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
+    Optional<MemberEntity> findByUserId(String userId);
 }
