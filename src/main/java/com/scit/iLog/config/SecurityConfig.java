@@ -23,6 +23,8 @@ public class SecurityConfig {
                                 "/",
                                 "/user/join",
                                 "/children/analysis",
+                                "/children/analysisResult",
+                                "/children/analysisResults",
                                 "/children/statisticsDetails",
                                 "/member/join",
                                 "/member/*/info",
