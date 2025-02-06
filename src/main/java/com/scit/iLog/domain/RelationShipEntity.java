@@ -18,11 +18,11 @@ public class RelationShipEntity extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guardian_id")
-    private MemberEntity memberEntity;
+    private MemberEntity member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "relationShip")
-    private ChildEntity childEntity;
+    private ChildEntity child;
 
     @Enumerated(EnumType.STRING)
     private RelationType relationType;

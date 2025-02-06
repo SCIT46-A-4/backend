@@ -31,6 +31,15 @@ public class ChildEntity extends BaseTimeEntity {
 
     @Column(name = "height")
     private double height;
+    
+    /*
+     2025-02-06 이도훈 좌, 우 시력 엔티티 선언(테이블은 수정 안함)
+     */
+    @Column(name = "left_eye")
+    private double leftEye;
+
+    @Column(name = "right_eye")
+    private double rightEye;
 
     @Column(name = "note")
     private String note;

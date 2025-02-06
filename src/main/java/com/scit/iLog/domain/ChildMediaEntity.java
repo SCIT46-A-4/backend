@@ -18,7 +18,7 @@ public class ChildMediaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_id")
-    private ChildEntity childEntity;
+    private ChildEntity child;
 
     @Column(name = "analysis_result")
     private String analysisResult;

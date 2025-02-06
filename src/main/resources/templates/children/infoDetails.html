@@ -11,17 +11,54 @@
 </head>
 <body>
 <!-- 은진 -->
-<h1>아동 상세 정보 페이지</h1>
+<h1>아동 정보 상세 페이지</h1>
 
 <div>
+<!-- 삭제
     <pre>
         이름 : 김승현
         키 : 000cm
         몸무게 : 00kg
         시력 : 좌 00 / 우00
         나이 : 만 00세
-    </pre>
-
+    </pre> 
+    				-->
+<!-- 2025-02-06 이도훈 임시 테이블 -->
+    <table border=1>
+    	<tr>
+    		<th>이름</th>
+    		<th>키</th>
+    		<th>몸무게</th>
+    		<th>시력</th>
+    		<th>나이</th>
+    	</tr>
+    	<tr>
+    		<td>김승현</td>
+    		<td>112.5cm</td>
+    		<td>23kg</td>
+    		<td>좌 :1.1 / 우 : 1.0</td>
+    		<td>만6세</td>
+    	</tr>
+    	<tr>
+    		<td>김승현</td>
+    		<td>112.5cm</td>
+    		<td>23kg</td>
+    		<td>좌 :1.1 / 우 : 1.0</td>
+    		<td>만6세</td>
+    	</tr>
+    	<tr>
+    		<td>[[childInfoDetailsDto.name]]</td>
+    		<td>[[childInfoDetailsDto.height]]</td>
+    		<td>[[childInfoDetailsDto.weight]]</td>
+    		<td>
+    			[[#numbers.formatDecimal(childInfoDetailsDto.leftEye, 1, 'POINT')]]
+    			/
+    			[[#numbers.formatDecimal(childInfoDetailsDto.rightEye, 1, 'POINT')]]
+    		</td>
+    		<td>[[childInfoDetailsDto.age]]</td>
+    	</tr>
+    	
+    </table>
 </div>
 
 <div>
@@ -32,4 +69,5 @@
 <a href="#">삭제하기</a>
 
 </body>
+
 </html>
