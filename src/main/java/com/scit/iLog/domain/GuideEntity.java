@@ -8,27 +8,21 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-@Table(name = "qna")
+@Table(name = "guide")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class QAndA extends BaseTimeEntity {
+public class GuideEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "qna_id")
+    @Column(name = "guide_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member author;
+    private MemberEntity author;
 
     @Column(name = "title")
     private String title;
 
-    @Column(name = "question")
-    private String question;
-
-    @Column(name = "answer")
-    private String answer;
-
-    @Enumerated(EnumType.STRING)
-    private QuestionCategory category;
+    @Column(name = "content")
+    private String content;
 }
