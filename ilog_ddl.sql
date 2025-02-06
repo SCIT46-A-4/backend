@@ -1,3 +1,6 @@
+create database ilog;
+
+
 -- -----------------------------------------------------
 -- Schema ilog
 -- -----------------------------------------------------
@@ -40,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `ilog`.`member` (
   `email` VARCHAR(50) NOT NULL,
   `name` VARCHAR(100) NOT NULL,
   `password` CHAR(65) NOT NULL,
-  `supervisor_role` ENUM('parent', 'teacher', 'expert', 'teacher', 'carer') NOT NULL,
+  `supervisor_role` ENUM('parent', 'teacher', 'expert', 'carer') NOT NULL,
   `role` ENUM('USER', 'ADMIN') NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified_at` TIMESTAMP NULL,
@@ -48,6 +51,9 @@ CREATE TABLE IF NOT EXISTS `ilog`.`member` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
+
+commit;
+select * from `ilog`.`member`;
 
 CREATE UNIQUE INDEX `email` ON `ilog`.`member` (`email` ASC) VISIBLE;
 
