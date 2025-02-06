@@ -20,7 +20,7 @@ public class HealthSurvey extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "child_id")
-    private Child child;
+    private ChildEntity child;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
