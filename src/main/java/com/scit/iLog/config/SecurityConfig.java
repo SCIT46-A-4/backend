@@ -22,6 +22,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/children/analysis",
+                                "/children/analysisResult",
+                                "/children/analysisResults",
                                 "/children/statisticsDetails",
                                 "/member/join",
                                 "/member/*/info",
