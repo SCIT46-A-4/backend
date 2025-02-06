@@ -12,7 +12,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @AllArgsConstructor
 @Table(name = "health_survey")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class HealthSurvey extends BaseTimeEntity {
+public class HealthSurveyEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "survey_id")
@@ -24,7 +24,7 @@ public class HealthSurvey extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
-    private Member author;
+    private MemberEntity author;
 
     @Column(name = "survey_data")
     private String data;

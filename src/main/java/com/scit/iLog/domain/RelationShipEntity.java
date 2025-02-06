@@ -1,0 +1,29 @@
+package com.scit.iLog.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@Table(name = "relationship")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class RelationShipEntity extends BaseTimeEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "relationship_id")
+    private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guardian_id")
+    private MemberEntity member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "relationShip")
+    private ChildEntity child;
+
+    @Enumerated(EnumType.STRING)
+    private RelationType relationType;
+}

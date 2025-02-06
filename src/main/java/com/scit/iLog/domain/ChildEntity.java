@@ -49,5 +49,5 @@ public class ChildEntity extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "child")
     @Builder.Default
-    private List<ChildDiary> diaries = new ArrayList<>();
+    private List<ChildDiaryEntity> diaries = new ArrayList<>();
 }

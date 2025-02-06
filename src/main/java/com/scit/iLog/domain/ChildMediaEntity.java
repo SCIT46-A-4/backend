@@ -8,22 +8,23 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-@Table(name = "relationship")
+@Table(name = "child_media")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RelationShip extends BaseTimeEntity {
+public class ChildMediaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "relationship_id")
+    @Column(name = "child_media_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "guardian_id")
-    private Member member;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "relationShip")
+    @JoinColumn(name = "child_id")
     private ChildEntity child;
 
+    @Column(name = "analysis_result")
+    private String analysisResult;
+
     @Enumerated(EnumType.STRING)
-    private RelationType relationType;
+    @Column(name = "type")
+    private ChildMediaType type;
+
 }

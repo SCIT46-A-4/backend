@@ -22,7 +22,7 @@ public class AnalysisResult extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diary_id")
-    private ChildDiary diary;
+    private ChildDiaryEntity diary;
 
     @Column(name = "emotion_score")
     private double emotionScore;
