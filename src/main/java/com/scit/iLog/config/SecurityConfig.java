@@ -62,9 +62,10 @@ public class SecurityConfig {
                                 "/children/diaryStatistics",
                                 "/children/diaries",
                                 "/children/details",
-                                "/children/surveyInsert",
-                                "/children/surveyBody",
-                                "/children/surveyMind",
+                                "/survey/surveysList",	//2025-02-07 이도훈 추가
+                                "/survey/surveySelect",	//2025-02-07 이도훈 추가
+                                "/survey/surveyHealth",	//2025-02-07 이도훈 추가
+                                "/survey/surveyMental",	//2025-02-07 이도훈 추가
                                 "/analysis/**",				// 2025.02.06_확인하고 싶어 추가해둠!
                                 "/js/**",
                                 "/css/**",
