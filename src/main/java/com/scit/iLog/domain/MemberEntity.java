@@ -30,8 +30,11 @@ public class MemberEntity extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "user_id")
+    private String userId;
+
+    @Column(name = "real_name")
+    private String realName;
 
     @Column(name = "password")
     private String password;
@@ -42,18 +45,13 @@ public class MemberEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
     
-    @Column(name = "supervisor_role")
-    private String supervisorRole;
-    
-    
     public static MemberEntity toEntity(MemberDTO dto) {
         return MemberEntity.builder()
                 .id(dto.getId())
-                .name(dto.getName())
+                .userId(dto.getUserId())
                 .password(dto.getPassword())
                 .email(dto.getEmail())
                 .role(dto.getRole()) // ENUM 타입 유지
-                .supervisorRole(dto.getSupervisorRole())
                 .build();
     }
 }

@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MemberDTO {
     private Long id;
-    private String name;
+    private String userId;
     private String password;
     private String email;
     private MemberRole role; // USER, ADMIN
@@ -25,11 +25,10 @@ public class MemberDTO {
     public static MemberDTO toDTO(MemberEntity entity) {
         return MemberDTO.builder()
                 .id(entity.getId())
-                .name(entity.getName())
+                .userId(entity.getUserId())
                 .password(entity.getPassword())
                 .email(entity.getEmail())
                 .role(entity.getRole()) // ENUM 타입 유지
-                .supervisorRole(entity.getSupervisorRole())
                 .build();
     }
 }

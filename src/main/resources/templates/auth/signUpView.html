@@ -10,7 +10,7 @@
 <body>
     회원가입 페이지
     <div class="content">
-        <form th:action="@{/user/joinProcess}" method="POST" id="joinForm">
+        <form th:action="@{/auth/signUp}" method="POST" id="signUpForm">
             <label name="userName" id="userName">이름</label>
             <input type="text" name="userName"> <br>
             <label name="userId" id="userId">아이디</label>
@@ -24,10 +24,8 @@
             <br>
             <input type="submit" value="회원가입">
             <input type="reset" value="돌아가기">
-
         </form>
     </div>
 
 </body>
-
 </html>

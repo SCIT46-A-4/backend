@@ -9,7 +9,7 @@ import lombok.Builder;
 */
 
 @Builder
-public record ChildInfoDetailsDto(
+public record ChildDetailsDto(
 		Long id,
 	    String name,
 	    double weight,
@@ -17,8 +17,8 @@ public record ChildInfoDetailsDto(
 	    double leftEye,
 	    double rightEye
 		) {
-    public static ChildInfoDetailsDto toDTO(ChildEntity childEntity) {
-        return ChildInfoDetailsDto.builder()
+    public static ChildDetailsDto toDTO(ChildEntity childEntity) {
+        return ChildDetailsDto.builder()
         		.id(childEntity.getId())
                 .name(childEntity.getName())
                 .weight(childEntity.getWeight())

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.scit.iLog.dto.child.ChildInfoDetailsDto;
+import com.scit.iLog.dto.child.ChildDetailsDto;
 import com.scit.iLog.service.InfoDetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -45,9 +45,9 @@ public class ChildrenController {
 	/* infoDetails에 아동 정보 조회 */
 	@GetMapping("/infoDetails")
 	public String infoDetails(@RequestParam(name="id") Long id, Model model) {
-		ChildInfoDetailsDto childInfoDetailsDto = childService.seletInfoDetails(id);
+		ChildDetailsDto childDetailsDto = childService.seletInfoDetails(id);
 		
-		model.addAttribute("childInfoDetailsDto", childInfoDetailsDto);
+		model.addAttribute("childDetailsDto", childDetailsDto);
 		return "/children/childDetailsView";
 	}
 }
