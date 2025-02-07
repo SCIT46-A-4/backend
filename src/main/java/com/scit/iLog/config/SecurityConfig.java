@@ -32,6 +32,9 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/",
+                                "/auth/signIn",
+                                "/auth/signUp",
+                                "/auth/idPwFind",
                                 "/member/join",
                                 "/children/analysis",
                                 "/children/analysisResult",
