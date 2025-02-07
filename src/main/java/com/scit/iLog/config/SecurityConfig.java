@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/member/join",
-                                "/children/analysis",
+                                "/children/analysis/**",
                                 "/children/analysisResult",
                                 "/children/analysisResults",
                                 "/children/statisticsDetails",
