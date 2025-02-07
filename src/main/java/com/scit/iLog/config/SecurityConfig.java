@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 "/auth/signUp",
                                 "/auth/idPwFind",
                                 "/member/join",
-                                "/children/analysis",
+                                "/children/analysis/**",
                                 "/children/analysisResult",
                                 "/children/analysisResults",
                                 "/children/statisticsDetails",
