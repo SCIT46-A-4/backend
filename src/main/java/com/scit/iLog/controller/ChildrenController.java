@@ -85,6 +85,15 @@ public class ChildrenController {
 		
 		return "/children/childDetailsView";
 	}
+
+	/**
+	 * 아동 상세 정보 등록 페이지를 조회
+	 * @return children/childDetailsInsertView 뷰 페이지
+	 */
+	@GetMapping("/detailsInsert")
+	public String handleGetChildDetailsInsertView(){
+		return "/children/childDetailsInsertView";
+	}
 	
 
 	
