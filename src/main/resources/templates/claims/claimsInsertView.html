@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>문의 쓰기 페이지</title>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>문의 쓰기</h2>
+        <form th:action="@{/claims/new}" method="post" th:object="${claimsDTO}">
+            <!-- 제목 입력 -->
+            <label for="title">제목</label>
+            <input type="text" id="title" name="title" th:field="*{title}" required>
+            <br>
+
+            <!-- 작성자 입력 (회원 ID) -->
+            <label for="authorId">작성자 ID</label>
+            <input type="text" id="authorId" name="authorId" th:field="*{authorId}" required>
+            <br>
+
+            <!-- 카테고리 선택 -->
+            <label for="category">문의 유형</label>
+            <select id="category" name="category" th:field="*{category}" required>
+                <option th:each="cat : ${T(com.scit.iLog.domain.QuestionCategory).values()}"
+                        th:value="${cat}" th:text="${cat}"></option>
+            </select>
+            <br>
+
+            <!-- 문의 내용 -->
+            <label for="question">문의 내용</label>
+            <textarea id="question" name="question" th:field="*{question}" rows="5" required></textarea>
+            <br>
+
+            <button type="submit">문의 등록하기</button>
+        </form>
+    </div>
+</body>
+</html>

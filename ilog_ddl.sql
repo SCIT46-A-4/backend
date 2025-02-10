@@ -12,6 +12,36 @@ DROP SCHEMA IF EXISTS `ilog` ;
 CREATE SCHEMA IF NOT EXISTS `ilog` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
 USE `ilog` ;
 
+
+-- -----------------------------------------------------
+-- Table `ilog`.`claims`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ilog`.`claims`;
+
+CREATE TABLE IF NOT EXISTS `ilog`.`claims` (
+  `claims_id` BIGINT NOT NULL AUTO_INCREMENT,
+  `member_id` BIGINT NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `question` TEXT NOT NULL,
+  `answer` TEXT NULL DEFAULT NULL,
+  `category` ENUM('GENERAL', 'TECHNICAL', 'BILLING', 'OTHER') NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified_at` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`claims_id`),
+  CONSTRAINT `fk_claims_member`
+    FOREIGN KEY (`member_id`)
+    REFERENCES `ilog`.`member` (`member_id`)
+    ON DELETE CASCADE
+    ON UPDATE RESTRICT
+) ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE INDEX `fk_claims_member` ON `ilog`.`claims` (`member_id` ASC) VISIBLE;
+
+commit;
+select * from `ilog`.`claims`;
+
 -- -----------------------------------------------------
 -- Table `ilog`.`child`
 -- -----------------------------------------------------
@@ -36,10 +66,12 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `ilog`.`member`
 -- -----------------------------------------------------
+use ilog;
 DROP TABLE IF EXISTS `ilog`.`member` ;
 
 CREATE TABLE IF NOT EXISTS `ilog`.`member` (
   `member_id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_id` VARCHAR(10) NOT NULL,
   `email` VARCHAR(50) NOT NULL,
   `name` VARCHAR(100) NOT NULL,
   `password` CHAR(65) NOT NULL,
