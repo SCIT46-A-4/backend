@@ -30,28 +30,35 @@ public class MemberEntity extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", unique = true, nullable = false, length = 10)
     private String userId;
 
-    @Column(name = "real_name")
-    private String realName;
+    @Column(name = "name", nullable = false, length = 100)
+    private String name; // realName → name으로 변경 (DB와 일치)
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false, length = 65)
     private String password;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, length = 50)
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "supervisor_role", nullable = false)
+    private SupervisorRole supervisorRole; // ENUM으로 선언
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private MemberRole role;
-    
+
     public static MemberEntity toEntity(MemberDTO dto) {
         return MemberEntity.builder()
                 .id(dto.getId())
                 .userId(dto.getUserId())
+                .name(dto.getName())  // realName이 아니라 name 사용
                 .password(dto.getPassword())
                 .email(dto.getEmail())
-                .role(dto.getRole()) // ENUM 타입 유지
+                .supervisorRole(dto.getSupervisorRole()) // 추가
+                .role(dto.getRole())
                 .build();
     }
 }
