@@ -23,12 +23,25 @@
 <hr>
 <div id="result">
     <table>
-        <tr>
-            <th class="w50">번호</th>
-            <th class="w200 update">등록일</th>
-            <th class="w200 title">제목</th>
-            <th class="w50 delBtns">삭제</th>
-        </tr>
+            <th:block th:if="${list.size()} == 0">
+                <p style="text-align:center;">게시글이 없습니다.</p>
+            </th:block>
+    </table>
+    <table>
+            <th:block th:if="${list.size() != 0}">
+    			<tr>
+    				<th>번호</th>
+    				<th>등록일</th>
+    				<th>내용</th>
+    				<th></th>
+    			</tr>
+    			<tr th:each="list, status : ${list}">
+    				<td>[[${status.count}]]</td>
+    				<td>[[${temporals.format(list.createdAt, 'yyyy/MM/dd')}]]</td>
+    				<td>[[${list.content}]]</td>
+    				<td><a>삭제</a></td>
+    			</tr>
+            </th:block>
     </table>
 </div>
 
