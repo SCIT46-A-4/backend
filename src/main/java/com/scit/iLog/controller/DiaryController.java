@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.scit.iLog.domain.ChildDiaryEntity;
+import com.scit.iLog.domain.child.ChildDiaryEntity;
 import com.scit.iLog.service.ChildDiaryService;
 
 @Controller

@@ -1,7 +1,10 @@
 package com.scit.iLog.domain;
 
+import com.scit.iLog.domain.child.ChildEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -16,14 +19,22 @@ public class RelationShipEntity extends BaseTimeEntity {
     @Column(name = "relationship_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "guardian_id")
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "relationShip")
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "child_id", nullable = false)
     private ChildEntity child;
 
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "permission_level", nullable = false)
+    private PermissionLevel permissionLevel;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "relation_type", nullable = false)
     private RelationType relationType;
 }

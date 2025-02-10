@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.scit.iLog.domain.AnalysisResult;
+import com.scit.iLog.domain.child.AnalysisResultEntity;
 import com.scit.iLog.repository.AnalysisResultRepository;
 
 import jakarta.transaction.Transactional;
@@ -18,15 +18,15 @@ public class AnalysisResultService {
 	private final AnalysisResultRepository analysisResultRepository;
 
 	// 특정 분석 결과 조회
-	public AnalysisResult getAnalysisResult(Long analysisId) {
+	public AnalysisResultEntity getAnalysisResult(Long analysisId) {
 		
-		Optional<AnalysisResult> result = analysisResultRepository.findById(analysisId);
+		Optional<AnalysisResultEntity> result = analysisResultRepository.findById(analysisId);
 		
 		return null;
 	}
 
 	// 분석 결과 목록 조회
-	public List<AnalysisResult> getAllAnalysisResults() {
+	public List<AnalysisResultEntity> getAllAnalysisResults() {
 
 		return analysisResultRepository.findAll();
 	}
@@ -36,7 +36,7 @@ public class AnalysisResultService {
 	@Transactional
 	public void deleteAnalysisResult(Long analysisId) {
 		
-		Optional<AnalysisResult> result = analysisResultRepository.findById(analysisId);
+		Optional<AnalysisResultEntity> result = analysisResultRepository.findById(analysisId);
         
 		// 존재하는지 확인
 		if (result.isPresent()) {

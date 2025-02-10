@@ -25,7 +25,7 @@ public class MemberDTO {
     public static MemberDTO toDTO(MemberEntity entity) {
         return MemberDTO.builder()
                 .id(entity.getId())
-                .userId(entity.getUserId())
+                .userId(entity.getMemberId())
                 .password(entity.getPassword())
                 .email(entity.getEmail())
                 .role(entity.getRole()) // ENUM 타입 유지

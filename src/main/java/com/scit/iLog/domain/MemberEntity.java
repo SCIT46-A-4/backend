@@ -2,20 +2,16 @@ package com.scit.iLog.domain;
 
 import com.scit.iLog.dto.MemberDTO;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,28 +26,23 @@ public class MemberEntity extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "user_id")
-    private String userId;
-
-    @Column(name = "real_name")
-    private String realName;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
+
+    @Column(name = "userid", nullable = false, length = 100)
+    private String memberId;
+
+    @Column(name = "password", nullable = false, length = 65)
+    private String password;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "role")
     private MemberRole role;
-    
-    public static MemberEntity toEntity(MemberDTO dto) {
-        return MemberEntity.builder()
-                .id(dto.getId())
-                .userId(dto.getUserId())
-                .password(dto.getPassword())
-                .email(dto.getEmail())
-                .role(dto.getRole()) // ENUM 타입 유지
-                .build();
-    }
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member")
+    private List<RelationShipEntity> relationShips = new ArrayList<>();
 }
