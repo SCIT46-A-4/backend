@@ -43,6 +43,7 @@ public class SecurityConfig {
                                 "/member/join",
                                 "/member/*/info",
                                 "/guides",
+                                "/guides/guideListView",	// 25/02/10 김보경 추가
                                 "/dashboard",
                                 "/children/diaryDetails", // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/children/details",	  // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
