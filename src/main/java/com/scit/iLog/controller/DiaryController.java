@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.scit.iLog.domain.ChildDiaryEntity;
+import com.scit.iLog.domain.child.ChildDiaryEntity;
 import com.scit.iLog.dto.diary.DiaryUpdateDto;
 import com.scit.iLog.service.ChildDiaryService;
 
@@ -89,7 +89,7 @@ public class DiaryController {
     public String handleGetDaiaryDetailView() {
     	return "/children/diaries/diaryDetailView";
     }
-    
+
     /**
      * 2025-02-10 이도훈
      * ChildDiaryEntity의 dairy_id를 값으로 갖고
@@ -102,14 +102,14 @@ public class DiaryController {
     public String handleGetDaiaryUpdateView(
     		@RequestParam(name="Id") Long diaryId,
     		Model model) {
-    	
+
     	DiaryUpdateDto id = childDiaryService.getSelectId(diaryId);
-    	
+
     	model.addAttribute("diaryId", id);
-    	
+
     	return "children/diaries/updateView";
     }
-    
+
     /**
      * 2025-02-10 이도훈
      * 수정 페이지에서 작업한 수정 내용 처리를 요청하는 메서드
@@ -119,10 +119,10 @@ public class DiaryController {
     @PostMapping("/diary/edit")
     public String handleUpdateDaiaryUpdateView(
     		@ModelAttribute DiaryUpdateDto updateDto) {
-    	
+
     	childDiaryService.updateDiary(updateDto);
-    	
+
     	return "children/diaries/updateView";
     }
-    
+
 }

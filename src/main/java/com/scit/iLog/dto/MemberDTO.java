@@ -27,12 +27,11 @@ public class MemberDTO {
     public static MemberDTO toDTO(MemberEntity entity) {
         return MemberDTO.builder()
                 .id(entity.getId())
-                .userId(entity.getUserId())
                 .name(entity.getName()) // 추가
+                .userId(entity.getUserId())
                 .password(entity.getPassword())
                 .email(entity.getEmail())
                 .role(entity.getRole())
-                .supervisorRole(entity.getSupervisorRole()) // ENUM 유지
                 .build();
     }
 }

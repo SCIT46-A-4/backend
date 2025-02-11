@@ -5,7 +5,7 @@ import java.util.Optional;
 import com.scit.iLog.dto.child.ChildDetailsDto;
 import org.springframework.stereotype.Service;
 
-import com.scit.iLog.domain.ChildEntity;
+import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.repository.ChildRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class InfoDetailsService {
 		Optional<ChildEntity> temp = childRepository.findById(id);
 		
 		if(temp.isPresent()) {
-			return ChildDetailsDto.toDTO(temp.get());
+//			return ChildDetailsDto.toDTO(temp.get());
 		}
 		return null;
 	}

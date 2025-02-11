@@ -1,6 +1,6 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.domain.AnalysisResult;
+import com.scit.iLog.domain.child.AnalysisResultEntity;
 import com.scit.iLog.service.AnalysisResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -51,7 +51,7 @@ public class AnalysisController {
             @PathVariable Long analysisId,
             Model model
     ) {
-        AnalysisResult result = analysisResultService.getAnalysisResult(analysisId);
+        AnalysisResultEntity result = analysisResultService.getAnalysisResult(analysisId);
 
         // 분석 결과가 없을 경우!
         if (result == null) 
@@ -71,7 +71,7 @@ public class AnalysisController {
     public String getAnalysisResultListView2(Model model)
     {
     	// 모든 결과를 조회하고 데이터를 담는다 분석 결과 리스트 페이지 반환
-        List<AnalysisResult> results = analysisResultService.getAllAnalysisResults();
+        List<AnalysisResultEntity> results = analysisResultService.getAllAnalysisResults();
         model.addAttribute("results", results);
         return "children/analysis/analysisResultListView";
     }

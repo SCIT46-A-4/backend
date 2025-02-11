@@ -127,7 +127,7 @@ public class SecurityConfig {
     UserDetailsService userDetailsService() {
         return (username) -> {
             MemberEntity member = memberRepository
-                    .findByUserId(username)
+                    .findByMemberId(username)
                     .orElseThrow(() -> new EntityNotFoundException("로그인 처리시 회원 조회 실패"));
             return new MemberDetails(
                     member.getUserId(),

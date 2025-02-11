@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.scit.iLog.domain.ChildDiaryEntity;
-import com.scit.iLog.domain.ChildEntity;
+import com.scit.iLog.domain.child.ChildDiaryEntity;
+import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.dto.diary.DiaryUpdateDto;
 import com.scit.iLog.repository.ChildDiaryRepository;
 import com.scit.iLog.repository.ChildRepository;
@@ -60,14 +60,14 @@ public class ChildDiaryService
 			//옵셔널로 감싼 후 Diary테이블의 diary_id조회.
 			//옵셔널로 감싼 이유는 NullPointerExeption null값이 조회되더라도 에러가 발생하지 않음.
 			Optional<ChildDiaryEntity> diary = childDiaryRepository.findById(updateDto.id());
-			
+
 			if(!diary.isPresent()) return;
 			//ChildDiaryEntity로 조회한 엔티티를 childDiaryEntity로 저장.
 			ChildDiaryEntity childDiaryEntity = diary.get();
-			
+
 			//조회한 엔티티의 set값을 updateDto의 값으로 변경.
 			childDiaryEntity.setId(updateDto.id());
 			childDiaryEntity.setContent(updateDto.content());
 		}
-		
+
 	}
