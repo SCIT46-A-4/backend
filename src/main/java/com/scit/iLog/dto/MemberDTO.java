@@ -28,7 +28,7 @@ public class MemberDTO {
         return MemberDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName()) // 추가
-                .userId(entity.getUserId())
+                .userId(entity.getSignInId())
                 .password(entity.getPassword())
                 .email(entity.getEmail())
                 .role(entity.getRole())

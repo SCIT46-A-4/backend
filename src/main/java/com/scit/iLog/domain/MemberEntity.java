@@ -32,8 +32,8 @@ public class MemberEntity extends BaseTimeEntity {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "userid", nullable = false, length = 100)
-    private String userId;
+    @Column(name = "sign_in_id", nullable = false, length = 100, unique = true)
+    private String signInId;
 
     @Column(name = "password", nullable = false, length = 65)
     private String password;
@@ -49,7 +49,7 @@ public class MemberEntity extends BaseTimeEntity {
     public static MemberEntity toEntity(MemberDTO dto) {
         return MemberEntity.builder()
                 .id(dto.getId())
-                .userId(dto.getUserId())
+                .signInId(dto.getUserId())
                 .name(dto.getName())  // realName이 아니라 name 사용
                 .password(dto.getPassword())
                 .email(dto.getEmail())

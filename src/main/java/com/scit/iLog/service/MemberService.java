@@ -28,7 +28,7 @@ public class MemberService {
 	public void join(MemberDTO memberDTO) {
 		memberRepository.save(
 				MemberEntity.builder()
-						.memberId(memberDTO.getUserId())
+						.signInId(memberDTO.getUserId())
 						.password(passwordEncoder.encode(memberDTO.getPassword()))
 						.email(memberDTO.getEmail())
 						.build()

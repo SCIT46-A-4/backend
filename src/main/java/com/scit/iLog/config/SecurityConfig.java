@@ -130,7 +130,7 @@ public class SecurityConfig {
                     .findByMemberId(username)
                     .orElseThrow(() -> new EntityNotFoundException("로그인 처리시 회원 조회 실패"));
             return new MemberDetails(
-                    member.getUserId(),
+                    member.getSignInId(),
                     member.getPassword(),
                     member.getRole().name()
             );
