@@ -1,8 +1,7 @@
 package com.scit.iLog.dto;
 
-import com.scit.iLog.domain.ClaimsEntity;
-import com.scit.iLog.domain.QuestionCategory;
-
+import com.scit.iLog.domain.claim.ClaimEntity;
+import com.scit.iLog.domain.claim.ClaimType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,18 +17,16 @@ public class ClaimsDTO {
     private Long id;
     private Long authorId;
     private String title;
-    private String question;
-    private String answer;
-    private QuestionCategory category;
+    private String content;
+    private ClaimType type;
     
-    public static ClaimsDTO toDTO(ClaimsEntity entity) {
+    public static ClaimsDTO toDTO(ClaimEntity entity) {
         return ClaimsDTO.builder()
                 .id(entity.getId())
                 .authorId(entity.getAuthor().getId())  // MemberEntity에서 ID만 가져옴
                 .title(entity.getTitle())
-                .question(entity.getQuestion())
-                .answer(entity.getAnswer())
-                .category(entity.getCategory())
+                .content(entity.getContent())
+                .type(entity.getType())
                 .build();
     }
 }

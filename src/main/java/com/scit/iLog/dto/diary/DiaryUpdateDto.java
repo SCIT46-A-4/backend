@@ -1,8 +1,6 @@
 package com.scit.iLog.dto.diary;
 
-import com.scit.iLog.domain.ChildDiaryEntity;
-import com.scit.iLog.dto.child.ChildDetailsDto;
-
+import com.scit.iLog.domain.child.ChildDiaryEntity;
 import lombok.Builder;
 
 /*

@@ -2,6 +2,7 @@ package com.scit.iLog.domain.claim;
 
 import com.scit.iLog.domain.BaseTimeEntity;
 import com.scit.iLog.domain.MemberEntity;
+import com.scit.iLog.dto.ClaimsDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

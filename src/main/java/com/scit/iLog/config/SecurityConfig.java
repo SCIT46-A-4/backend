@@ -125,9 +125,9 @@ public class SecurityConfig {
 
     @Bean
     UserDetailsService userDetailsService() {
-        return (username) -> {
+        return (signInId) -> {
             MemberEntity member = memberRepository
-                    .findByMemberId(username)
+                    .findBySignInId(signInId)
                     .orElseThrow(() -> new EntityNotFoundException("로그인 처리시 회원 조회 실패"));
             return new MemberDetails(
                     member.getSignInId(),

@@ -3,10 +3,10 @@ package com.scit.iLog.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.scit.iLog.domain.claim.ClaimEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.scit.iLog.domain.ClaimsEntity;
 import com.scit.iLog.domain.MemberEntity;
 import com.scit.iLog.dto.ClaimsDTO;
 import com.scit.iLog.repository.ClaimsRepository;
@@ -52,8 +52,12 @@ public class ClaimsService {
                 });
 
         // 3.️ DTO → Entity 변환 후 저장
-        ClaimsEntity claimsEntity = ClaimsEntity.toEntity(claimsDTO, member);
-        ClaimsEntity savedEntity = claimsRepository.save(claimsEntity);
+        ClaimEntity claimEntity = ClaimEntity.builder()
+                .author(member)
+                .title(claimsDTO.getTitle())
+                .content(claimsDTO.getContent())
+                .build();
+        ClaimEntity savedEntity = claimsRepository.save(claimEntity);
         claimsRepository.flush(); // 트랜잭션 내 즉시 반영
 
         log.info(" 클레임 저장 성공 - ID: {}, 제목: {}", savedEntity.getId(), savedEntity.getTitle());
