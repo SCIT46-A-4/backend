@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
->
+<html lang="en"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>고객 센터 페이지</title>
@@ -12,8 +10,14 @@
 <body>
     <div class="container">
         <h1>고객센터</h1>
-        <div class="box"></div>
-        <a href="#" class="button">문의 하기</a>
+        <div class="inquiry-list">
+            <div th:each="inquiry : ${inquiries}" class="inquiry-item">
+                <div class="inquiry-title" th:text="${inquiry.title}">문의 제목</div>
+                <div class="inquiry-content" th:text="${inquiry.question}">문의 내용</div>
+                <div class="inquiry-author" th:text="${inquiry.authorId}">작성자 ID</div>
+            </div>
+        </div>
+        <a th:href="@{/claims/new}" class="button">문의 하기</a>
     </div>
 </body>
 </html>

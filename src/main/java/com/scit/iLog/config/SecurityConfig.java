@@ -36,6 +36,8 @@ public class SecurityConfig {
                                 "/auth/signUp",
                                 "/auth/idPwFind",
                                 "/member/join",
+                                "/children/**",
+                                "/children/diary/detail",
                                 "/children/analysis/**",
                                 "/children/analysisResult",
                                 "/children/analysisResults",
@@ -43,6 +45,7 @@ public class SecurityConfig {
                                 "/member/join",
                                 "/member/*/info",
                                 "/guides",
+                                "/guides/guideListView",	// 25/02/10 김보경 추가
                                 "/dashboard",
                                 "/children/diaryDetails", // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/children/details",	  // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
@@ -50,7 +53,9 @@ public class SecurityConfig {
                                 "/teacherDashboard",
                                 "/surveys",
                                 "/children/diaryDetails", // 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
-                                "/customerCenter",
+                                "/claims",
+                                "/claims/new",
+                                "/claims/insertClaim",
                                 "/member/duplicate",
                                 "/member/joinProc",
                                 "/member/idCheck",
@@ -59,6 +64,7 @@ public class SecurityConfig {
                                 "/children/diaries",
                                 "/children/diaries/new",
                                 "/children/infoDetails",
+                                "/children/detailsInsert",
                                 "/board/boardDetail",
                                 "/board/download",
                                 "/reply/replyInsert",
@@ -124,7 +130,7 @@ public class SecurityConfig {
                     .findByMemberId(username)
                     .orElseThrow(() -> new EntityNotFoundException("로그인 처리시 회원 조회 실패"));
             return new MemberDetails(
-                    member.getMemberId(),
+                    member.getUserId(),
                     member.getPassword(),
                     member.getRole().name()
             );

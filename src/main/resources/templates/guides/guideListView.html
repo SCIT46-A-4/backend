@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+gu<!DOCTYPE html>
 <html
         lang="en"
         xmlns:th="http://thymeleaf.org"
@@ -11,5 +11,26 @@
 </head>
 <body>
 	<h2>이용안내</h2>
+	
+	<!-- 이용안내 목록 표시 -->
+     <table border="1">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>내용</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        	<!-- Thymeleaf를 사용해 guides 리스트를 반복하여 출력 -->
+            <tr th:each="guide, stat : ${guides}">
+                <!-- thymeleaf는 리스트의 인덱스를 0부터 시작함으로 +1! -->
+                <td th:text="${stat.index + 1}"></td>
+                <td th:text="${guide.title}"></td>
+                <td th:text="${guide.content}"></td>
+            </tr>
+        </tbody>
+     </table>
 </body>
 </html>

@@ -6,14 +6,17 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.scit.iLog.domain.child.ChildDiaryEntity;
+import com.scit.iLog.dto.diary.DiaryUpdateDto;
 import com.scit.iLog.service.ChildDiaryService;
+
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/children")
@@ -64,7 +67,7 @@ public class DiaryController {
     	model.addAttribute("list", _page);
         return "/children/diaries/diaryListView";
     }
-
+//일기장 수정 페이지 html작성과 로직
     //일기장 쓰기 페이지
     //25/2/7 은진 : 주석 추가
     /**
@@ -78,4 +81,48 @@ public class DiaryController {
     public String handleGetDiaryInsertView() {
         return "children/diaries/insertView";
     }
+	/*
+		2025-02-10 이도훈
+		/children/diaries/diaryDetailView를 출력 요청을 처리하는 메서드.
+	*/
+    @GetMapping("/diary/detail")
+    public String handleGetDaiaryDetailView() {
+    	return "/children/diaries/diaryDetailView";
+    }
+
+    /**
+     * 2025-02-10 이도훈
+     * ChildDiaryEntity의 dairy_id를 값으로 갖고
+     * 수정을 할 페이지를 조회 요청을 하는 메서드.
+     * @param diaryId
+     * @param model
+     * @return
+     */
+    @GetMapping("/diary/edit")
+    public String handleGetDaiaryUpdateView(
+    		@RequestParam(name="Id") Long diaryId,
+    		Model model) {
+
+    	DiaryUpdateDto id = childDiaryService.getSelectId(diaryId);
+
+    	model.addAttribute("diaryId", id);
+
+    	return "children/diaries/updateView";
+    }
+
+    /**
+     * 2025-02-10 이도훈
+     * 수정 페이지에서 작업한 수정 내용 처리를 요청하는 메서드
+     * @param updateDto
+     * @return
+     */
+    @PostMapping("/diary/edit")
+    public String handleUpdateDaiaryUpdateView(
+    		@ModelAttribute DiaryUpdateDto updateDto) {
+
+    	childDiaryService.updateDiary(updateDto);
+
+    	return "children/diaries/updateView";
+    }
+
 }

@@ -33,16 +33,27 @@ public class MemberEntity extends BaseTimeEntity {
     private String name;
 
     @Column(name = "userid", nullable = false, length = 100)
-    private String memberId;
+    private String userId;
 
     @Column(name = "password", nullable = false, length = 65)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     private MemberRole role;
 
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<RelationShipEntity> relationShips = new ArrayList<>();
+
+    public static MemberEntity toEntity(MemberDTO dto) {
+        return MemberEntity.builder()
+                .id(dto.getId())
+                .userId(dto.getUserId())
+                .name(dto.getName())  // realName이 아니라 name 사용
+                .password(dto.getPassword())
+                .email(dto.getEmail())
+                .role(dto.getRole())
+                .build();
+    }
 }
