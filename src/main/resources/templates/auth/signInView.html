@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<html
+        lang="en"
+        xmlns:th="http://thymeleaf.org"
+        xmlns:sec="http://thymeleaf.org/extras/spring-security"
+>
 
 <head>
     <meta charset="UTF-8">
@@ -9,18 +13,17 @@
 
 <body>
     <h2>로그인</h2>
-    <form action="#" method="post">
-        <label for="id">아이디:</label>
-        <input type="text" id="id" name="id" required>
+    <form th:action="@{/auth/signIn}" method="post">
+        <label for="signInId">아이디:</label>
+        <input type="text" id="signInId" name="signInId" required />
         <br>
-        <label for="password">비밀번호:</label>
-        <input type="password" id="password" name="password" required>
+        <label for="userPwd">비밀번호:</label>
+        <input type="password" id="userPwd" name="userPwd" required />
         <br>
-        <button type="submit">로그인</button>
+        <input type="submit" value="로그인">
     </form>
 	<a th:href="@{/auth/signUp}">회원가입</a>
     <a th:href="@{/auth/idPwFind}">ID/PW 찾기</a>
-
 </body>
 
 </html>
