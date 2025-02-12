@@ -2,9 +2,10 @@ package com.scit.iLog.domain.claim;
 
 import com.scit.iLog.domain.BaseTimeEntity;
 import com.scit.iLog.domain.MemberEntity;
-import com.scit.iLog.dto.ClaimsDTO;
 import jakarta.persistence.*;
 import lombok.*;
+
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -19,7 +20,7 @@ public class ClaimEntity extends BaseTimeEntity {
     @Column(name = "claim_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity author;
 
@@ -32,4 +33,7 @@ public class ClaimEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private ClaimType type;
+
+    @OneToMany(mappedBy = "claim", fetch = LAZY)
+    private ClaimAnswerEntity answer;
 }
