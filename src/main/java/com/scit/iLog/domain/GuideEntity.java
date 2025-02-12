@@ -10,12 +10,12 @@ import static jakarta.persistence.FetchType.LAZY;
 @Setter
 @Builder
 @AllArgsConstructor
-@Table(name = "help")
+@Table(name = "guide")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class HelpEntity extends BaseTimeEntity {
+public class GuideEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "help_id")
+    @Column(name = "guide_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
