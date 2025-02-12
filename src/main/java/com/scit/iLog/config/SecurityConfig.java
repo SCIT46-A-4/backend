@@ -4,6 +4,7 @@ import com.scit.iLog.domain.MemberEntity;
 import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -103,14 +105,14 @@ public class SecurityConfig {
                         .loginProcessingUrl("/auth/signIn")
 //                        .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
 //                        .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
-                        .usernameParameter("userId")
+                        .usernameParameter("signInId")
                         .passwordParameter("userPwd")
                         .defaultSuccessUrl("/")
 //                        .failureUrl("/member/login?error=true") //핸들러를 등록하면 필요없음
         );
         http.logout(logout ->
                 logout
-                        .logoutUrl("/member/logout")
+                        .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
@@ -139,7 +141,7 @@ public class SecurityConfig {
 
     @RequiredArgsConstructor
     static final class MemberDetails implements UserDetails {
-        private final String userId;
+        private final String signInId;
         private final String password;
         private final String role;
 
@@ -155,7 +157,7 @@ public class SecurityConfig {
 
         @Override
         public String getUsername() {
-            return this.userId;
+            return this.signInId;
         }
     }
 }
