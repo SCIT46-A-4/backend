@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,29 +33,21 @@ public class SecurityConfig {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         http.authorizeHttpRequests(auth ->
                 auth
+                		.requestMatchers(HttpMethod.DELETE, "/children/**").permitAll()
                         .requestMatchers(
                                 "/",
                                 "/auth/signIn",
                                 "/auth/signUp",
                                 "/auth/idPwFind",
                                 "/member/join",
-                                "/children/**",
-                                "/children/diary/detail",
-                                "/children/analysis/**",
-                                "/children/analysisResult",
-                                "/children/analysisResults",
-                                "/children/statisticsDetails",
-                                "/member/join",
                                 "/member/*/info",
+                                "/children/**",
                                 "/guides",
                                 "/guides/guideListView",	// 25/02/10 김보경 추가
                                 "/dashboard",
-                                "/children/diaryDetails", // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
-                                "/children/details",	  // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/parentDashboard",
                                 "/teacherDashboard",
                                 "/surveys",
-                                "/children/diaryDetails", // 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/claims",
                                 "/claims/new",
                                 "/claims/insertClaim",
@@ -63,16 +56,9 @@ public class SecurityConfig {
                                 "/member/idCheck",
                                 "/member/login",
                                 "/board/boardList",
-                                "/children/diaries",
-                                "/children/diaries/new",
-                                "/children/infoDetails",
-                                "/children/detailsInsert",
                                 "/board/boardDetail",
                                 "/board/download",
                                 "/reply/replyInsert",
-                                "/children/diaryStatistics",
-                                "/children/diaries",
-                                "/children/details",
                                 "/survey/surveysList",	//2025-02-07 이도훈 추가
                                 "/survey/surveySelect",	//2025-02-07 이도훈 추가
                                 "/survey/surveyHealth",	//2025-02-07 이도훈 추가
@@ -80,7 +66,8 @@ public class SecurityConfig {
                                 "/analysis/**",				// 2025.02.06_확인하고 싶어 추가해둠!
                                 "/js/**",
                                 "/css/**",
-                                "/images/**")
+                                "/images/**"
+                                )
                         .permitAll()
                         .requestMatchers(
                                 "/member/logout",

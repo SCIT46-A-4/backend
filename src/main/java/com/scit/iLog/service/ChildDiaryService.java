@@ -18,32 +18,36 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ChildDiaryService {
-	private final ChildDiaryRepository childDiaryRepository;
-	private final ChildRepository childRepository;
-
-	// 25/2/6 준성 아이의 id값 주면 그거 기반으로 최근 데이터들 DESC로 paging 해서 메소드
-	public Page<ChildDiaryEntity> getChildDiaries(Long id, Pageable page) {
-		Optional<ChildEntity> child = childRepository.findById(id);
-
-		if (child.isPresent()) {
-			return childDiaryRepository.findByChildOrderByCreatedAtDesc(child.get(), page);
+public class ChildDiaryService
+	{
+		private final ChildDiaryRepository childDiaryRepository;
+		private final ChildRepository childRepository;
+		
+		// 25/2/6 준성 아이의 id값 주면 그거 기반으로 최근 데이터들 DESC로 paging 해서 메소드
+		public Page<ChildDiaryEntity> getChildDiaries(Long id, Pageable page)
+		{
+			Optional<ChildEntity> child = childRepository.findById(id);
+			
+			if(child.isPresent())
+				{
+					return childDiaryRepository.findByChildOrderByCreatedAtDesc(child.get(), page);
+				}
+			
+			return null;
 		}
 
-		return null;
-	}
-
-	/*
-	 * 2025-02-10 이도훈 DiaryController의 handleGetDiaryUpdateView메서드에서 diaryId를 찾기 위한
-	 * 메서드
-	 */
-	public DiaryUpdateDto getSelectId(Long diaryId) {
-		Optional<ChildDiaryEntity> diary = childDiaryRepository.findById(diaryId);
-		if (diary.isPresent()) {
-			return DiaryUpdateDto.toDTO(diary.get());
+		/*
+		2025-02-10 이도훈
+		DiaryController의 handleGetDiaryUpdateView메서드에서 diaryId를 찾기 위한 메서드
+		*/
+		public DiaryUpdateDto getSelectId(Long diaryId) {
+			Optional<ChildDiaryEntity> diary = childDiaryRepository.findById(diaryId);
+			if(diary.isPresent())
+			{
+				return DiaryUpdateDto.toDTO(diary.get());
+			}
+			return null;
 		}
-		return null;
-	}
 
 	/**
 	 * 2025-02-10 이도훈 DiaryController의 handleUpdateDaiaryUpdateView메서드에서 diaryId를 찾은

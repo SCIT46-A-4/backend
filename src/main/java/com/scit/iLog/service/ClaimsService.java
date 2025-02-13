@@ -16,7 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 클레임(문의) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다. 클레임 등록 및 조회 기능을 제공합니다.
+ * 클레임(문의) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
+ * 클레임 등록 및 조회 기능을 제공합니다.
  */
 @Service
 @RequiredArgsConstructor

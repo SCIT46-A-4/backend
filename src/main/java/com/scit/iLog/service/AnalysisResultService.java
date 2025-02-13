@@ -44,5 +44,4 @@ public class AnalysisResultService {
 			throw new RuntimeException("분석 결과가 존재하지 않습니다.");
 		}
 	}
-
 }

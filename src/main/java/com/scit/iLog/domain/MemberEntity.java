@@ -1,7 +1,5 @@
 package com.scit.iLog.domain;
 
-import com.scit.iLog.dto.MemberDTO;
-
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

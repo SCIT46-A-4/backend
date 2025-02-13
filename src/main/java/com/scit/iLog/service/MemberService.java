@@ -2,12 +2,10 @@ package com.scit.iLog.service;
 
 import com.scit.iLog.domain.MemberRole;
 import com.scit.iLog.dto.auth.SignUpDTO;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scit.iLog.domain.MemberEntity;
-import com.scit.iLog.dto.MemberDTO;
 import com.scit.iLog.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
