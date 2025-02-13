@@ -2,12 +2,10 @@ package com.scit.iLog.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.scit.iLog.dto.ClaimsDTO;
@@ -71,6 +69,19 @@ public class ClaimsController {
             redirectAttributes.addFlashAttribute("errorMessage", "멤버 ID가 유효하지 않습니다.");
             return "redirect:/claims/new"; // 에러 발생 시 입력 폼으로 리디렉트
         }
+        return "redirect:/claims";
+    }
+
+    /**
+     * 문의 삭제
+     * 25/2/11 은진
+     * 사용자가 입력한 특정 문의를 삭제하고 싶을 때, 삭제 후 문의 목록으로 이동
+     * @param claimId - 삭제할 문의 id
+     * @return - 삭제 후 클레임 화면으로 리디렉트
+     */
+    @DeleteMapping("/{claimId}")
+    public String handleDeleteClaim(@PathVariable("claimId") Long claimId) {
+        claimsService.deleteClaim(claimId);
         return "redirect:/claims";
     }
 }

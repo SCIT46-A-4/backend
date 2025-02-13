@@ -45,15 +45,4 @@ public class MemberEntity extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<RelationShipEntity> relationShips = new ArrayList<>();
-
-    public static MemberEntity toEntity(MemberDTO dto) {
-        return MemberEntity.builder()
-                .id(dto.getId())
-                .signInId(dto.getUserId())
-                .name(dto.getName())  // realName이 아니라 name 사용
-                .password(dto.getPassword())
-                .email(dto.getEmail())
-                .role(dto.getRole())
-                .build();
-    }
 }
