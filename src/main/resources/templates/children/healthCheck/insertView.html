@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문진 결과 등록</title>
+    <link rel="stylesheet" href="/static/css/style.css"> <!-- 스타일 시트 경로 (선택) -->
+</head>
+<body>
+
+    <h2>문진 결과 등록</h2>
+
+    <!-- 성공 메시지 표시 -->
+    <div id="successMessage" th:if="${successMessage}">
+        <p th:text="${successMessage}"></p>
+    </div>
+
+    <!-- 오류 메시지 표시 -->
+    <div id="errorMessage" th:if="${errorMessage}">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- 문진 결과 입력 폼 -->
+    <form th:action="@{/children/healthCheck}" method="post" enctype="multipart/form-data">
+        
+        <!-- 아이 ID 입력 -->
+        <label for="childId">아이 ID:</label>
+        <input type="text" id="childId" name="childId" required>
+        <br>
+
+        <!-- 멤버 ID 입력 -->
+        <label for="memberId">멤버 ID:</label>
+        <input type="text" id="memberId" name="memberId" required>
+        <br>
+
+        <!-- 문진 파일 업로드 -->
+        <label for="surveyFile">문진 결과 파일:</label>
+        <input type="file" id="surveyFile" name="surveyFile" accept=".pdf, .doc, .docx, .jpg, .png" required>
+        <br>
+
+        <!-- 제출 버튼 -->
+        <button type="submit">등록</button>
+
+    </form>
+
+    <!-- 뒤로 가기 버튼 -->
+    <button onclick="history.back()">뒤로 가기</button>
+
+</body>
+</html>

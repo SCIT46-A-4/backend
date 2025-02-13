@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import com.scit.iLog.domain.claim.ClaimEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import com.scit.iLog.domain.MemberEntity;
 import com.scit.iLog.dto.ClaimsDTO;
@@ -17,8 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 클레임(문의) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
- * 클레임 등록 및 조회 기능을 제공합니다.
+ * 클레임(문의) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다. 클레임 등록 및 조회 기능을 제공합니다.
  */
 @Service
 @RequiredArgsConstructor
@@ -39,17 +37,12 @@ public class ClaimsService {
      */
     @Transactional
     public ClaimsDTO saveClaim(ClaimsDTO claimsDTO) {
-        // 1️. 멤버 ID 검증
-    	ObjectUtils.isEmpty(claimsDTO);
-        if (claimsDTO.getAuthorId() == null || claimsDTO.getAuthorId() <= 0) {
-            log.error(" 잘못된 멤버 ID: {}", claimsDTO.getAuthorId());
-            throw new IllegalArgumentException("잘못된 멤버 ID입니다.");
-        }
-
         // 2️. 멤버 조회
         MemberEntity member = memberRepository.findById(claimsDTO.getAuthorId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid member ID")
-                );
+                .orElseThrow(() -> {
+                    log.error(" 멤버를 찾을 수 없음: ID {}", claimsDTO.getAuthorId());
+                    return new IllegalArgumentException("Invalid member ID");
+                });
 
         // 3.️ DTO → Entity 변환 후 저장
         ClaimEntity claimEntity = ClaimEntity.builder()
@@ -58,7 +51,6 @@ public class ClaimsService {
                 .content(claimsDTO.getContent())
                 .build();
         ClaimEntity savedEntity = claimsRepository.save(claimEntity);
-        claimsRepository.flush(); // 트랜잭션 내 즉시 반영
 
         log.info(" 클레임 저장 성공 - ID: {}, 제목: {}", savedEntity.getId(), savedEntity.getTitle());
         
