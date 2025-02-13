@@ -1,8 +1,6 @@
 package com.scit.iLog.dto;
 
-import com.scit.iLog.domain.MemberEntity;
 import com.scit.iLog.domain.MemberRole;
-import com.scit.iLog.domain.SupervisorRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,16 +20,4 @@ public class MemberDTO {
     private String password;
     private String email;
     private MemberRole role;
-    private SupervisorRole supervisorRole; // ENUM 타입 변경
-
-    public static MemberDTO toDTO(MemberEntity entity) {
-        return MemberDTO.builder()
-                .id(entity.getId())
-                .name(entity.getName()) // 추가
-                .userId(entity.getSignInId())
-                .password(entity.getPassword())
-                .email(entity.getEmail())
-                .role(entity.getRole())
-                .build();
-    }
 }

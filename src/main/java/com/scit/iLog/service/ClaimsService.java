@@ -47,8 +47,7 @@ public class ClaimsService {
          */
         // 2️. 멤버 조회
         MemberEntity member = memberRepository.findById(Long.valueOf(signInId))
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Invalid member ID:" + signInId));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid member ID:" + signInId));
 
         // 3.️ DTO → Entity 변환 후 저장
         ClaimEntity claimEntity = ClaimEntity.builder()

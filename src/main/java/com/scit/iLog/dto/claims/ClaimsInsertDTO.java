@@ -13,7 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class ClaimsInsertDTO {
-    private Long id;
     private String title;
     private String content;
     private ClaimType type;

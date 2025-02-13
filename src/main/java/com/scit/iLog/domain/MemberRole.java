@@ -1,5 +1,8 @@
 package com.scit.iLog.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum MemberRole {
     ADMIN("관리지"),
     USER("회원");
@@ -10,7 +13,4 @@ public enum MemberRole {
         this.roleNameKr = roleNameKr;
     }
 
-    public String getKrName() {
-        return this.roleNameKr;
-    }
 }

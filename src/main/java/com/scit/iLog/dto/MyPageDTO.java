@@ -1,9 +1,9 @@
-package com.scit.iLog.dto.auth;
+package com.scit.iLog.dto;
 
 import lombok.Builder;
 
 @Builder
-public record SignUpDTO(
+public record MyPageDTO(
         String userName,
         String signInId,
         String userPwd,

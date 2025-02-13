@@ -38,7 +38,8 @@ public class MemberEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private MemberRole role;
+    @Builder.Default
+    private MemberRole role = MemberRole.USER;
 
     @Builder.Default
     @OneToMany(mappedBy = "member")
