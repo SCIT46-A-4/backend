@@ -1,6 +1,5 @@
 package com.scit.iLog.dto;
 
-import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.Gender;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -17,7 +16,8 @@ public class ChildDTO extends BaseTimeDTO
     private Long id;
     private String name;
     private LocalDateTime birthDate;
-    private String note;
+    private String birthLocation;
+    private String note; // 25/2/13 아직 안 쓰는 DTO
     private Gender gender;
     
 	// 업로드되는 파일을 받기 위한 변수

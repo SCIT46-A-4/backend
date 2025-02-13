@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.scit.iLog.domain.child.ChildEntity;
@@ -130,41 +131,53 @@ public class ChildrenController
 	// 25/2/12 ㅈ: api-26 아이 정보 상세페이지 요청
 	@GetMapping("/{childId}/details")
 	public String handleGetChildrenDetailView(@PathVariable(name="childId") Long id,
-											  Model model)
+											  Model model) throws Exception
 	{
-		InfoDetailsService.findById(id);
+		// DB에 저장된 아이 정보 꺼내오기
+		ChildDTO _dto = childService.findById(id);
+		// child 데이터 찾아서 반환, 삼항연산자 null 체크 있음 
+		model.addAttribute("child", (_dto != null)? _dto : "데이터를 찾을 수 없습니다.");
 		
 		return "/children/childDetailsView";
 	}
 	
 	// 25/2/11 api-28: 아동 삭제요청, return: 대쉬보드 Page
 	@DeleteMapping("/{childId}")
+	@ResponseBody
 	public String deleteChildInsertView(@PathVariable(name = "childId") Long childId)
 	{
-		
-		return "redirect:/dashboard";
+		try
+			{
+				childService.deleteById(childId);
+				return "ok";
+			} 
+		catch (Exception e)
+			{
+				return "no";
+			}	
 	}
 	
-	// 25/2/11 준 api-29 수정: 아동 정보수정
+	// 25/2/11 준 api-29 수정: 아동 정보수정페이지 요청
 	@GetMapping("/{childId}/details/edit")
-	public String temp1(@PathVariable(name="childId") Long childId)
+	public String getchildDetailsUpdateView(@PathVariable(name="childId") Long childId,
+											Model model) throws Exception
 	{
+		model.addAttribute("child", childService.findById(childId));
 		return "/children/childDetailsUpdateView";
 	}
 	
 	// 25/2/11 준 api-30 아이 정보 수정
 	@PostMapping("/{childId}/details/edit")
 	public String tempupdateName(@PathVariable(name="childId") Long childId,
+								 @ModelAttribute ChildDTO childDto,
 								 RedirectAttributes rtrt)
 	{
-	    // 여기에서 insertDate 값 생성 (예시: 현재 날짜)
-	    String insertDate = LocalDate.now().toString();  // 날짜 형식에 맞게 변환 가능
-
+		// 아이 정보 수정
+		childService.updateChildData(childId, childDto);
+		
 	    // RedirectAttributes에 파라미터 추가
 	    rtrt.addAttribute("childId", childId);
-	    rtrt.addAttribute("insertDate", insertDate);
 		
-		
-		return "redirect:/children/{childId}/details?date={insertDate}";
+		return "redirect:/children/{childId}/details";
 	}
 }

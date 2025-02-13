@@ -23,7 +23,7 @@ public class FileService {
     }
 
     //1) 서버에 폴더가 없으면 폴더 생성
-    public String saveFile(MultipartFile uploadFile, String uploadPath) {
+    public static String saveFile(MultipartFile uploadFile, String uploadPath) {
         if (uploadFile.isEmpty()) return "";
         File path = new File(uploadPath); //파일(폴더)객체 생성
         if (!path.isDirectory()) {

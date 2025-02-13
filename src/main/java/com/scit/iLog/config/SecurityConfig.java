@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,15 +31,15 @@ public class SecurityConfig {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         http.authorizeHttpRequests(auth ->
                 auth
+                		.requestMatchers(HttpMethod.DELETE, "/children/**").permitAll()
                         .requestMatchers(
                                 "/",
                                 "/auth/signIn",
                                 "/auth/signUp",
                                 "/auth/idPwFind",
                                 "/member/join",
-                                "/children/**",
-                                "/member/join",
                                 "/member/*/info",
+                                "/children/**",
                                 "/guides",
                                 "/guides/guideListView",	// 25/02/10 김보경 추가
                                 "/dashboard",
@@ -63,7 +64,8 @@ public class SecurityConfig {
                                 "/analysis/**",				// 2025.02.06_확인하고 싶어 추가해둠!
                                 "/js/**",
                                 "/css/**",
-                                "/images/**")
+                                "/images/**"
+                                )
                         .permitAll()
                         .requestMatchers(
                                 "/member/logout",

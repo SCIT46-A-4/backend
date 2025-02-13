@@ -9,7 +9,6 @@ import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.ChildRecordEntity;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.InfoDetailRepository;
-import com.scit.iLog.repository.infoDetailRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +25,8 @@ public class InfoDetailsService {
 	public ChildDetailsDto seletInfoDetails(Long id) {
 		Optional<ChildEntity> temp = childRepository.findById(id);
 		
-		if(temp.isPresent()) {
+		if(temp.isPresent()) 
+		{
 //			return ChildDetailsDto.toDTO(temp.get());
 		}
 		return null;
@@ -34,7 +34,8 @@ public class InfoDetailsService {
 
 	public void findById(Long id)
 		{
-			Optional<ChildRecordEntity> _entity = infoDetailRepository.findById(id);			
+			Optional<ChildRecordEntity> _entity = infoDetailRepository.findById(id);
+			
 		}
 
 }
