@@ -38,12 +38,6 @@ public class ClaimsService {
      */
     @Transactional
     public ClaimsDTO saveClaim(ClaimsDTO claimsDTO) {
-        // 1️. 멤버 ID 검증
-        if (claimsDTO.getAuthorId() == null || claimsDTO.getAuthorId() <= 0) {
-            log.error(" 잘못된 멤버 ID: {}", claimsDTO.getAuthorId());
-            throw new IllegalArgumentException("잘못된 멤버 ID입니다.");
-        }
-
         // 2️. 멤버 조회
         MemberEntity member = memberRepository.findById(claimsDTO.getAuthorId())
                 .orElseThrow(() -> {
@@ -58,11 +52,26 @@ public class ClaimsService {
                 .content(claimsDTO.getContent())
                 .build();
         ClaimEntity savedEntity = claimsRepository.save(claimEntity);
-        claimsRepository.flush(); // 트랜잭션 내 즉시 반영
 
         log.info(" 클레임 저장 성공 - ID: {}, 제목: {}", savedEntity.getId(), savedEntity.getTitle());
         
         return ClaimsDTO.toDTO(savedEntity);
+    }
+
+    /**
+     * 25/2/11 은진
+     * 특정 문의를 삭제하는 메서드
+     * @param id - 삭제할 문의 id
+     */
+    @Transactional
+    public void deleteClaim(Long id) {
+        // 1. 삭제할 문의 조회 (클레임 테이블에서 조회)
+        boolean doesClaimExist = claimsRepository.existsById(id);
+        // 2. 삭제 실행
+        if(doesClaimExist) {
+            claimsRepository.deleteById(id);
+            log.info("문의 삭제 성공 - ID: {}", id);
+        }
     }
 
     /**
@@ -80,4 +89,5 @@ public class ClaimsService {
         log.info(" 전체 클레임 조회: {}건", claimsList.size());
         return claimsList;
     }
+
 }

@@ -1,11 +1,11 @@
 package com.scit.iLog.service;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.scit.iLog.domain.MemberRole;
+import com.scit.iLog.dto.auth.SignUpDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scit.iLog.domain.MemberEntity;
-import com.scit.iLog.dto.MemberDTO;
 import com.scit.iLog.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,15 +22,18 @@ public class MemberService {
 
 	/**
 	 * 전달받은 memberDTO를 Entity로 변경한 후 save
-	 * @param memberDTO
+	 * @param signUpDTO
 	 * @return
 	 */
-	public void join(MemberDTO memberDTO) {
+	public void join(SignUpDTO signUpDTO) {
+		// @TODO 부족한 필드 추가. 휴대폰 번호 등
 		memberRepository.save(
 				MemberEntity.builder()
-						.signInId(memberDTO.getUserId())
-						.password(passwordEncoder.encode(memberDTO.getPassword()))
-						.email(memberDTO.getEmail())
+						.signInId(signUpDTO.signInId())
+						.password(passwordEncoder.encode(signUpDTO.userPwd()))
+						.email(signUpDTO.userEmail())
+						.name(signUpDTO.userName())
+						.role(MemberRole.USER)
 						.build()
 		);
 	}

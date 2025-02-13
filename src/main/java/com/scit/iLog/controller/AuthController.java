@@ -1,5 +1,6 @@
 package com.scit.iLog.controller;
 
+import com.scit.iLog.dto.auth.SignUpDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -41,13 +42,12 @@ public class AuthController {
 	 * 사용자가 회원가입 폼(/auth/signUpView.html)에 정보를 입력하고 제출하면 
      * PostMapping으로 해당 데이터(MemberDTO)를 받아 회원가입을 처리하는 메서드
      * 회원가입이 완료되면 로그인 페이지(/auth/signInView.html)로 리다이렉트
-	 * @param memberDTO
+	 * @param signUpDTO
 	 * @return /auth/signInView (로그인 페이지 경로)
 	 */
 	@PostMapping("/signUp")
-	public String handleSignUp(@ModelAttribute MemberDTO memberDTO) {
-		memberService.join(memberDTO);
-
+	public String handleSignUp(@ModelAttribute SignUpDTO signUpDTO) {
+		memberService.join(signUpDTO);
 		return "redirect:/auth/signInView";
 	}
 
