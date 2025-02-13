@@ -19,9 +19,9 @@ public class AnalysisResultService {
 
 	// 특정 분석 결과 조회
 	public AnalysisResultEntity getAnalysisResult(Long analysisId) {
-		
+
 		Optional<AnalysisResultEntity> result = analysisResultRepository.findById(analysisId);
-		
+
 		return null;
 	}
 
@@ -31,22 +31,18 @@ public class AnalysisResultService {
 		return analysisResultRepository.findAll();
 	}
 
-	
 	// 분석 결과 삭제
 	@Transactional
 	public void deleteAnalysisResult(Long analysisId) {
-		
+
 		Optional<AnalysisResultEntity> result = analysisResultRepository.findById(analysisId);
-        
+
 		// 존재하는지 확인
 		if (result.isPresent()) {
-            analysisResultRepository.delete(result.get());
-        } else {
-            throw new RuntimeException("분석 결과가 존재하지 않습니다.");
-        }
-    }
-		
-	
-	
-	
+			analysisResultRepository.delete(result.get());
+		} else {
+			throw new RuntimeException("분석 결과가 존재하지 않습니다.");
+		}
 	}
+
+}
