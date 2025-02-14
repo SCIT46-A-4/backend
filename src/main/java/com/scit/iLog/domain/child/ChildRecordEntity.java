@@ -6,6 +6,7 @@ import lombok.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
+// child에 대한 자세한 정보들
 @Entity
 @Getter
 @Setter

@@ -31,24 +31,7 @@ public class ChildDiaryService
 		private final ChildDiaryRepository childDiaryRepository;
 		private final ChildRepository childRepository;
 		private final MemberRepository memberRepository;
-		
-//		 25/2/6 준성 아이의 id값 주면 그거 기반으로 최근 데이터들 DESC로 paging 해서 메소드
-		
-//		@Transactional(readOnly = true)
-//		public Page<ChildEntity> getChildDiaries(Long id, Pageable page)
-//		{
-//			log.info("일기 목록 조회 서비스 시작");
-//			Optional<ChildEntity> child = childRepository.findById(id);
-//			
-//			if(child.isPresent())
-//				{	
-//					log.info("일기 목록 조회 서비스 종료");
-//
-//					return childDiaryRepository.findByChildOrderByCreatedAtDesc(child.get(), page);
-//				}
-//			
-//			return null;
-//		}
+
 		/**
 		 * API-43
 		 * 2025-02-11~13 이도훈
@@ -64,7 +47,7 @@ public class ChildDiaryService
 			Optional<ChildEntity> child = childRepository.findById(id);
 			
 			if(child.isPresent())
-			{	
+			{
 				return childDiaryRepository.findByChildOrderByCreatedAtDesc(child.get(), page);
 			}
 			
@@ -111,7 +94,7 @@ public class ChildDiaryService
 //					.authId(childEntity.get) .authId는 memberEntity에서 갖고 와야 함.
 					.build();
 		}
-		
+
 		/**
 		 * API-46
 		 * 2025-02-11~13 이도훈
@@ -121,15 +104,15 @@ public class ChildDiaryService
 		 */
 		@Transactional
 		public void insertDiary(Long childId, Long authorId, DiaryCreateDto diaryCreateDto) {
-			
+
 			ChildEntity childEntity = childRepository
 					.findById(childId)
 					.orElseThrow(() -> new EntityNotFoundException("조회 실패"));
-			
+
 			// 해당 authorId로 MemberEntity 조회
 			MemberEntity memberEntity = memberRepository.findById(authorId)
 					.orElseThrow(() -> new IllegalArgumentException("사용자 조회 실패"));
-			
+
 			// ✅ Builder 패턴을 이용한 객체 생성
 			ChildDiaryEntity childDiaryEntity = ChildDiaryEntity.builder()
 					.child(childEntity)
@@ -137,7 +120,7 @@ public class ChildDiaryService
 					.content(diaryCreateDto.content())
 					.createdAt(LocalDateTime.now())
 					.build();
-			
+
 			childDiaryRepository.save(childDiaryEntity);
 		}
 		/**
@@ -148,11 +131,11 @@ public class ChildDiaryService
 		 */
 		@Transactional(readOnly = true)
 		public DiaryIdSelectDto selectChildDiaryId(Long id) {
-			
+
 			ChildDiaryEntity diaryEntity = childDiaryRepository
 					.findById(id)
 					.orElseThrow(() -> new EntityNotFoundException("해당 일기 조회 실패"));
-			
+
 			return DiaryIdSelectDto
 					.builder()
 					.id(diaryEntity.getId())
@@ -166,20 +149,20 @@ public class ChildDiaryService
 		 */
 		@Transactional(readOnly = true)
 		public DiaryUpdateDto selectUpdateChildDiary(Long id) {
-			
+
 			System.out.println("================= selectUpdateChildDiary");
 			System.out.println(id);
 			ChildDiaryEntity diaryEntity = childDiaryRepository
 					.findById(id)
 					.orElseThrow(() -> new EntityNotFoundException("해당 일기 조회 실패"));
-			
+
 			return DiaryUpdateDto
 			.builder()
 			.id(diaryEntity.getId())
 			.content(diaryEntity.getContent())
 			.build();
 		}
-		
+
 		/**
 		 * API-49
 		 * 2025-02-11 이도훈
@@ -192,7 +175,7 @@ public class ChildDiaryService
 			ChildDiaryEntity diaryEntity = childDiaryRepository
 					.findById(diaryId)
 					.orElseThrow(() -> new EntityNotFoundException("해당 일기 조회 실패"));
-			
+
 			diaryEntity.setContent(updateDto.content());
 		}
 		/**

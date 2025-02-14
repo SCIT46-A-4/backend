@@ -4,8 +4,10 @@ import com.scit.iLog.domain.MemberEntity;
 import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -30,29 +33,21 @@ public class SecurityConfig {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         http.authorizeHttpRequests(auth ->
                 auth
+                		.requestMatchers(HttpMethod.DELETE, "/children/**").permitAll()
                         .requestMatchers(
                                 "/",
                                 "/auth/signIn",
                                 "/auth/signUp",
                                 "/auth/idPwFind",
                                 "/member/join",
-                                "/children/**",
-                                "/children/diary/detail",
-                                "/children/analysis/**",
-                                "/children/analysisResult",
-                                "/children/analysisResults",
-                                "/children/statisticsDetails",
-                                "/member/join",
                                 "/member/*/info",
+                                "/children/**",
                                 "/guides",
                                 "/guides/guideListView",	// 25/02/10 김보경 추가
                                 "/dashboard",
-                                "/children/diaryDetails", // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
-                                "/children/details",	  // 25/2/5 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/parentDashboard",
                                 "/teacherDashboard",
                                 "/surveys",
-                                "/children/diaryDetails", // 로그인 기능 구현시, hasAnyRole 쪽으로 옮겨야 함
                                 "/claims",
                                 "/claims/new",
                                 "/claims/insertClaim",
@@ -61,16 +56,9 @@ public class SecurityConfig {
                                 "/member/idCheck",
                                 "/member/login",
                                 "/board/boardList",
-                                "/children/diaries",
-                                "/children/diaries/new",
-                                "/children/infoDetails",
-                                "/children/detailsInsert",
                                 "/board/boardDetail",
                                 "/board/download",
                                 "/reply/replyInsert",
-                                "/children/diaryStatistics",
-                                "/children/diaries",
-                                "/children/details",
                                 "/survey/surveysList",	//2025-02-07 이도훈 추가
                                 "/survey/surveySelect",	//2025-02-07 이도훈 추가
                                 "/survey/surveyHealth",	//2025-02-07 이도훈 추가
@@ -78,7 +66,8 @@ public class SecurityConfig {
                                 "/analysis/**",				// 2025.02.06_확인하고 싶어 추가해둠!
                                 "/js/**",
                                 "/css/**",
-                                "/images/**")
+                                "/images/**"
+                                )
                         .permitAll()
                         .requestMatchers(
                                 "/member/logout",
@@ -103,14 +92,14 @@ public class SecurityConfig {
                         .loginProcessingUrl("/auth/signIn")
 //                        .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
 //                        .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
-                        .usernameParameter("userId")
+                        .usernameParameter("signInId")
                         .passwordParameter("userPwd")
                         .defaultSuccessUrl("/")
 //                        .failureUrl("/member/login?error=true") //핸들러를 등록하면 필요없음
         );
         http.logout(logout ->
                 logout
-                        .logoutUrl("/member/logout")
+                        .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
@@ -139,7 +128,7 @@ public class SecurityConfig {
 
     @RequiredArgsConstructor
     static final class MemberDetails implements UserDetails {
-        private final String userId;
+        private final String signInId;
         private final String password;
         private final String role;
 
@@ -155,7 +144,7 @@ public class SecurityConfig {
 
         @Override
         public String getUsername() {
-            return this.userId;
+            return this.signInId;
         }
     }
 }

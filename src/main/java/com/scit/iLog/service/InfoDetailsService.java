@@ -6,7 +6,9 @@ import com.scit.iLog.dto.child.ChildDetailsDto;
 import org.springframework.stereotype.Service;
 
 import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.child.ChildRecordEntity;
 import com.scit.iLog.repository.ChildRepository;
+import com.scit.iLog.repository.InfoDetailRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,14 +19,23 @@ import lombok.RequiredArgsConstructor;
 public class InfoDetailsService {
 	/*2025-02-06 이도훈 ChildRepository선언 */
 	private final ChildRepository childRepository;
+	private final InfoDetailRepository infoDetailRepository;
 
 	/*2025-02-06 이도훈 infoDetails에 출력할 아이 한명의 데이터 조회 */
 	public ChildDetailsDto seletInfoDetails(Long id) {
 		Optional<ChildEntity> temp = childRepository.findById(id);
 		
-		if(temp.isPresent()) {
+		if(temp.isPresent()) 
+		{
 //			return ChildDetailsDto.toDTO(temp.get());
 		}
 		return null;
 	}
+
+	public void findById(Long id)
+		{
+			Optional<ChildRecordEntity> _entity = infoDetailRepository.findById(id);
+			
+		}
+
 }

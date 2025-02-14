@@ -1,73 +1,83 @@
 <!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
->
+<html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
-    <title>아동 정보 상세 페이지</title>
-    <script src="/js/jquery-3.7.1.min.js"></script>
+<meta charset="UTF-8">
+<title>아동 정보 상세 페이지</title>
+<script src="/js/jquery-3.7.1.min.js"></script>
 </head>
+
+<script>
+        $(function() {
+            $('#deleteBtn').click(function() {
+                let childId = $(this).attr('data-childId');  // data-movieId에서 영화 ID 가져오기                
+
+                // 삭제할 건지 체크
+                if (confirm("정말로 이 정보를 삭제하시겠습니까?")) 
+                	{
+                    $.ajax({
+                        url: '/children/' + childId, 
+                        type: 'DELETE',
+                        success: function(response) 
+						{
+							if(response === "ok")
+                            {
+                            	window.location.href = '/';
+                            	alert("정상적으로 삭제되었습니다.");
+                            }
+                        },
+                        error: function() 
+						{
+                            alert("서버 오류가 발생했습니다.");
+                        }
+                    });
+                }
+            });
+        });
+</script>
 <body>
-<!-- 은진 -->
-<h1>아동 정보 상세 페이지</h1>
 
-<div>
-<!-- 삭제
-    <pre>
-        이름 : 김승현
-        키 : 000cm
-        몸무게 : 00kg
-        시력 : 좌 00 / 우00
-        나이 : 만 00세
-    </pre> 
-    				-->
-<!-- 2025-02-06 이도훈 임시 테이블 -->
-    <table border=1>
-    	<tr>
-    		<th>이름</th>
-    		<th>키</th>
-    		<th>몸무게</th>
-    		<th>시력</th>
-    		<th>나이</th>
-    	</tr>
-    	<tr>
-    		<td>김승현</td>
-    		<td>112.5cm</td>
-    		<td>23kg</td>
-    		<td>좌 :1.1 / 우 : 1.0</td>
-    		<td>만6세</td>
-    	</tr>
-    	<tr>
-    		<td>김승현</td>
-    		<td>112.5cm</td>
-    		<td>23kg</td>
-    		<td>좌 :1.1 / 우 : 1.0</td>
-    		<td>만6세</td>
-    	</tr>
-    	<tr>
-    		<td>[[childDetailsDto.name]]</td>
-    		<td>[[childDetailsDto.height]]</td>
-    		<td>[[childDetailsDto.weight]]</td>
-    		<td>
-    			[[#numbers.formatDecimal(childDetailsDto.leftEye, 1, 'POINT')]]
-    			/
-    			[[#numbers.formatDecimal(childDetailsDto.rightEye, 1, 'POINT')]]
-    		</td>
-    		<td>[[childDetailsDto.age]]</td>
-    	</tr>
-    	
-    </table>
-</div>
+	<h1>아동 기본정보 조회</h1>
 
-<div>
-    최근 감정 지표
-</div>
+	<div>
+		<table>
+			<tr>
+				<td colspan="4">
+					아이 사진 임시자리
+				</td>
+			</tr>
+			<tr>
+				<th>가입일시</th>
+				<td><span th:text="${#temporals.format(child.createdAt, 'yyyy-MM-dd HH:mm')}"></span></td>
+			</tr>
+			
+			<tr>
+				<th>이름</th>
+				<td><span th:text="${child.name}"></span></td>
+			</tr>
+			<tr>
+				<th>생일</th>
+				<td><span th:text="${#temporals.format(child.birthDate, 'yyyy-MM-dd')}"></span></td>
+			</tr>
 
-<a href="#">수정하기</a>
-<a href="#">삭제하기</a>
+			<tr>
+				<th> 성별 </th>
+				<td><span th:text="${child.gender}"></span></td>
+			</tr>
+			
+			<!--
+			<tr>
+				<th>첨부파일</th>
+				<td><span th:if="${child.originalFileName != null}"> <a th:href="@{/child/download(childSeq=${child.childSeq})}" th:text="${child.originalFileName}"></a>
+			</tr>
+			-->
+		</table>
+	</div>
 
+	<form th:action="@{/children/{childid}/details/edit(childid=${child.id})}" method="get">
+		<button type="submit" id="updateBtn"> 수정하기 버튼</button>
+	</form>
+	
+	<button id="deleteBtn" th:data-childId="${child.id}"> 삭제하기 버튼</button>
 </body>
 
 </html>
