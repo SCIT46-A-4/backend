@@ -27,9 +27,6 @@ public class RelationShipEntity extends BaseTimeEntity {
     @JoinColumn(name = "child_id", nullable = false)
     private ChildEntity child;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "permission_level", nullable = false)
     private PermissionLevel permissionLevel;

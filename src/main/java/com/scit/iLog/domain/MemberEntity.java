@@ -41,6 +41,9 @@ public class MemberEntity extends BaseTimeEntity {
     @Builder.Default
     private MemberRole role = MemberRole.USER;
 
+    @Column(name = "relation_type")
+    private RelationType relationType;
+
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<RelationShipEntity> relationShips = new ArrayList<>();
