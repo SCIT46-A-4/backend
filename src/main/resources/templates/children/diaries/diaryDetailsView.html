@@ -12,6 +12,10 @@
 <body>
 	Diary Details Pages
 	일기 상세 페이지
-	<a th:href="@{/children/diary/update}">일기 수정 버튼</a>
+	<div>
+        <a th:href="@{/children/diaries/{diaryId}/edit(diaryId=${diaryId})}">
+          <button>수정하기</button>
+        </a>
+	</div>
 </body>
 </html>

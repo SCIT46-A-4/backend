@@ -12,6 +12,16 @@
 <body>
 
 <h1>우리 아이 일기장 쓰기 페이지</h1>
-
+	<div class="diary-insert">
+        <h1>새 일기 작성</h1>
+        <form th:action="@{/children/{childId}/diaries/new(childId=${childId})}" method="post">
+         	<input type="hidden" name="childId" th:value="${childId}" />
+            <div>
+                <label for="content">일기 내용:</label>
+                <textarea id="content" name="content" rows="4" cols="50" placeholder="일기 내용을 작성해주세요." required></textarea>
+            </div>
+            <button type="submit">작성하기</button>
+        </form>
+    </div>
 </body>
 </html>

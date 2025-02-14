@@ -5,22 +5,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scit.iLog.domain.child.ChildDiaryEntity;
+import com.scit.iLog.dto.child.ChildSelectIdDto;
+import com.scit.iLog.dto.diary.DiaryCreateDto;
+import com.scit.iLog.dto.diary.DiaryIdSelectDto;
 import com.scit.iLog.dto.diary.DiaryUpdateDto;
 import com.scit.iLog.service.ChildDiaryService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/children")
 @RequiredArgsConstructor
+@Slf4j
 public class DiaryController {
 	private final ChildDiaryService childDiaryService;
 
@@ -57,16 +64,47 @@ public class DiaryController {
      * @param model 뷰에 데이터를 전달하기 위한 Model 객체
      * @return "/children/diaries/diaryListView" 뷰 이름(일기 목록 화면 표시)
      */
+    /**	API-43
+     * 2025-02-11~13 이도훈
+     * 준성씨가 작성하신 코드 수정 X
+     * 접속 주소 : http://localhost:9900/children/diaries?id=3&page=0&size=10
+     * @param childId
+     * @param pageable
+     * @param model
+     * @return
+     */
     @GetMapping("/diaries")
     public String handleGetSelectAllDiaryList(
-            @RequestParam Long id,
+            @RequestParam(name="id") Long childId,
             @PageableDefault(page=0, size=10) Pageable pageable,
             Model model
     ) {
-    	Page<ChildDiaryEntity> _page = childDiaryService.getChildDiaries(id, pageable);
+    	Page<ChildDiaryEntity> _page = childDiaryService.selectChildDiaries(childId, pageable);
     	model.addAttribute("list", _page);
+    	model.addAttribute("childId", childId);
         return "/children/diaries/diaryListView";
     }
+    /**
+     * API-44
+     * 2025-02-11~13 이도훈
+     * 삭제만 확인이 됨. 삭제는 기능 하지만 에러 발생. 테이블에 데이터 삭제 된 것 확인 완료
+     * @param diaryId
+     * @return
+     */
+    @ResponseBody
+    @DeleteMapping("/diaries/{diaryId}")
+    //@PathVariable("diaryId") Long diaryId는 URL경로에 포함된 diaryId라는 변수를 파라미터로 받는다.
+    public String handleDeleteDiaryView(@PathVariable("diaryId") Long diaryId) {
+        if (!childDiaryService.existsDiary(diaryId)) {
+            return "fail"; // 존재하지 않는 경우
+        }
+        
+        childDiaryService.deleteDiary(diaryId);
+        Long childId = childDiaryService.updateDiarySelectChild(diaryId);
+    	return "redirect:/children/diaries?id=" + childId  + "&offset=0&limit=10";
+    }
+    
+//  /children/diaries?id=1&page=0&size=10
 //일기장 수정 페이지 html작성과 로직
     //일기장 쓰기 페이지
     //25/2/7 은진 : 주석 추가
@@ -77,52 +115,105 @@ public class DiaryController {
      *
      * @return 해당 뷰를 통해 일기 작성 화면이 표시됨
      */
-    @GetMapping("/diaries/new")
-    public String handleGetDiaryInsertView() {
+    
+    /**
+     * API-45
+     * 2025-02-11~13 이도훈
+     * @param childId
+     * @param model
+     * @return
+     */
+    //일기 작성 페이지 호출
+    @GetMapping("/{childId}/diaries/new")
+    public String handleGetDiaryInsertView(
+    		@PathVariable(name="childId") Long childId,
+    		Model model) {
+    	    
+    	ChildSelectIdDto childSelectIdDto = childDiaryService.selectChildId(childId);
+    	model.addAttribute("childId", childId);
+    	
         return "children/diaries/insertView";
     }
+    
+    /**
+     * API-46
+     * 2025-02-11~13 이도훈
+     * @param childId
+     * @param diaryCreateDto
+     * @return
+     */
+  //일기 작성 페이지의 데이터를 테이블에 저장
+    @PostMapping("/{childId}/diaries/new")
+    public String handleCreateDiaryInsertView(
+    		@PathVariable(name="childId") Long childId,
+    		@ModelAttribute DiaryCreateDto diaryCreateDto) {
+
+    	Long authorId = childId;
+    	childDiaryService.insertDiary(childId, authorId, diaryCreateDto);
+
+    	return "redirect:/children/diaries?id=" + childId  + "&offset=0&limit=10";
+    }
+    
 	/*
 		2025-02-10 이도훈
 		/children/diaries/diaryDetailView를 출력 요청을 처리하는 메서드.
 	*/
-    @GetMapping("/diary/detail")
-    public String handleGetDaiaryDetailView() {
-    	return "/children/diaries/diaryDetailView";
-    }
-
     /**
-     * 2025-02-10 이도훈
+     * API-47
+     * 2025-02-11~13 이도훈
+     * 일기 상세 보기 페이지 diaryDetailsView.html으로 이동
+     * 일기장 목록에서 diaryId가 포함된 일기를 클릭하면 작동. 
+     * selectChildDiaryId메서드를 통해 포함된 diaryId와 Entity의Id값이 동일하면 해당 데이터를 출력
+     * @param diaryId
+     * @param model
+     * @return
+     */
+    @GetMapping("/diaries/{diaryId}")
+    public String handleGetDaiaryDetailView(
+    		@PathVariable(name="diaryId") Long diaryId,
+    		Model model) {
+    	
+    	DiaryIdSelectDto diary = childDiaryService.selectChildDiaryId(diaryId);
+    	
+    	model.addAttribute("diary", diary);
+    	
+    	return "/children/diaries/diaryDetailsView";
+    }
+    
+    /**
+     * API-48
+     * 2025-02-11~13 이도훈
      * ChildDiaryEntity의 dairy_id를 값으로 갖고
      * 수정을 할 페이지를 조회 요청을 하는 메서드.
      * @param diaryId
      * @param model
      * @return
      */
-    @GetMapping("/diary/edit")
+    @GetMapping("/diaries/{diaryId}/edit")
     public String handleGetDaiaryUpdateView(
-    		@RequestParam(name="Id") Long diaryId,
+    		@PathVariable(name="diaryId") Long diaryId,
     		Model model) {
-
-    	DiaryUpdateDto id = childDiaryService.getSelectId(diaryId);
-
-    	model.addAttribute("diaryId", id);
-
+    	
+    	DiaryUpdateDto diaryUpdate = childDiaryService.selectUpdateChildDiary(diaryId);
+    	model.addAttribute("diaryUpdate", diaryUpdate);
     	return "children/diaries/updateView";
     }
 
     /**
-     * 2025-02-10 이도훈
+     * API-49
+     * 2025-02-11~13 이도훈
      * 수정 페이지에서 작업한 수정 내용 처리를 요청하는 메서드
      * @param updateDto
      * @return
      */
-    @PostMapping("/diary/edit")
+    @PostMapping("/diaries/{diaryId}/edit")
     public String handleUpdateDaiaryUpdateView(
-    		@ModelAttribute DiaryUpdateDto updateDto) {
-
-    	childDiaryService.updateDiary(updateDto);
-
-    	return "children/diaries/updateView";
+    		@ModelAttribute DiaryUpdateDto diaryUpdateDto,
+    		@PathVariable(name="diaryId") Long diaryId) {
+    	childDiaryService.updateDiaryDetail(diaryId, diaryUpdateDto);
+    	
+    	Long childId = childDiaryService.updateDiarySelectChild(diaryId);
+    	
+    	return "redirect:/children/diaries?id=" + childId  + "&offset=0&limit=10";
     }
-
 }

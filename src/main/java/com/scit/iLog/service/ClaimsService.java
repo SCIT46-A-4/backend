@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.scit.iLog.domain.claim.ClaimEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import com.scit.iLog.domain.MemberEntity;
 import com.scit.iLog.dto.ClaimsDTO;
@@ -36,6 +37,7 @@ public class ClaimsService {
      * @return 저장된 클레임 정보를 담은 DTO 객체
      * @throws IllegalArgumentException 멤버 ID가 유효하지 않거나 존재하지 않을 경우 예외 발생
      */
+    
     @Transactional
     public ClaimsDTO saveClaim(ClaimsDTO claimsDTO) {
         // 2️. 멤버 조회
@@ -44,7 +46,7 @@ public class ClaimsService {
                     log.error(" 멤버를 찾을 수 없음: ID {}", claimsDTO.getAuthorId());
                     return new IllegalArgumentException("Invalid member ID");
                 });
-
+        
         // 3.️ DTO → Entity 변환 후 저장
         ClaimEntity claimEntity = ClaimEntity.builder()
                 .author(member)
