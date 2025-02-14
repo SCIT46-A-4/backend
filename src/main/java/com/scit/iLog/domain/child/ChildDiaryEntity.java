@@ -1,11 +1,28 @@
 package com.scit.iLog.domain.child;
 
+import static jakarta.persistence.FetchType.LAZY;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.scit.iLog.domain.BaseTimeEntity;
 import com.scit.iLog.domain.MemberEntity;
-import jakarta.persistence.*;
-import lombok.*;
 
-import static jakarta.persistence.FetchType.LAZY;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -30,4 +47,8 @@ public class ChildDiaryEntity extends BaseTimeEntity {
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
+    
+    @Column(name="created_at")
+    @CreationTimestamp
+    private LocalDateTime createdAt;  // createdAt 필드
 }

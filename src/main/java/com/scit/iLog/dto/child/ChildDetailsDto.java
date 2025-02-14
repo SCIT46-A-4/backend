@@ -1,7 +1,5 @@
 package com.scit.iLog.dto.child;
 
-import com.scit.iLog.domain.child.ChildEntity;
-
 import lombok.Builder;
 
 /*

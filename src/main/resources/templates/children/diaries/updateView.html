@@ -13,5 +13,22 @@
 
 <h1>우리 아이 일기장 수정 페이지</h1>
 
+  <form th:action="@{|/children/diaries/${diaryUpdate.id}/edit|}" method="post">
+        <div>
+            <label for="content">내용:</label>
+            <textarea 
+            id="content" 
+            name="content" 
+            rows="10" 
+            cols="50" 
+            th:text="${diaryUpdate.content}"
+            >
+            </textarea>
+        </div>
+        
+        <div>
+            <button type="submit">수정 완료</button>
+        </div>
+    </form>
 </body>
 </html>
