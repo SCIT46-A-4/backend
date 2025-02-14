@@ -2,9 +2,9 @@ package com.scit.iLog.service;
 
 import com.scit.iLog.domain.*;
 import com.scit.iLog.dto.MemberDashboardProfileDTO;
+import com.scit.iLog.dto.MemberSelectDTO;
 import com.scit.iLog.dto.MyPageDTO;
 import com.scit.iLog.dto.auth.SignUpDTO;
-import com.scit.iLog.repository.RelationShipRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public MyPageDTO findById(Long memberId) {
+	public MyPageDTO getMyPageDataById(Long memberId) {
 		MemberEntity member = memberRepository
 				.findById(memberId)
 				.orElseThrow(() -> new EntityNotFoundException(String.format("멤버 조회 실패: %d", memberId)));
@@ -58,6 +58,7 @@ public class MemberService {
 				.signInId(member.getSignInId())
 				.userEmail(member.getEmail())
 				.userName(member.getName())
+				.relationType(member.getRelationType())
 				.build();
 	}
 
@@ -66,5 +67,23 @@ public class MemberService {
 		MemberEntity member = memberRepository.findBySignInId(signUpId)
 				.orElseThrow(() -> new EntityNotFoundException(String.format("대시보드 프로필 데이터 조회 실패: %d", signUpId)));
 		return new MemberDashboardProfileDTO(member.getName(), member.getRelationType());
+	}
+
+	@Transactional
+	public void deleteMember(Long memberId) {
+		memberRepository.deleteById(memberId);
+	}
+
+	@Transactional(readOnly = true)
+	public MemberSelectDTO findById(Long memberId) {
+		MemberEntity member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));
+		return MemberSelectDTO.builder()
+				.id(member.getId())
+				.signInId(member.getSignInId())
+				.email(member.getEmail())
+				.name(member.getName())
+				.relationType(member.getRelationType())
+				.build();
 	}
 }
