@@ -1,6 +1,7 @@
 package com.scit.iLog.domain.child;
 
 import com.scit.iLog.domain.BaseTimeEntity;
+import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,9 +45,6 @@ public class ChildRecordEntity extends BaseTimeEntity {
     @Column(name = "register_date")
     private LocalDateTime registerDate;
 
-    @Column(name = "original_photo_name", length = 100)
-    private String originalPhotoName;
-
-    @Column(name = "saved_photo_name", length = 100)
-    private String savedPhotoName;
+    @OneToOne(mappedBy = "childRecord", fetch = LAZY)
+    private HealthCheckEntity healthCheck;
 }

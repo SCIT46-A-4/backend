@@ -1,14 +1,14 @@
-package com.scit.iLog.dto;
+package com.scit.iLog.dto.member;
 
 import com.scit.iLog.domain.RelationType;
 import lombok.Builder;
 
 @Builder
-public record MemberSelectDTO(
-        Long id,
+public record MyPageDTO(
+        String userName,
         String signInId,
-        String name,
-        String email,
+        String userPwd,
+        String userEmail,
         RelationType relationType
 ) {
 }

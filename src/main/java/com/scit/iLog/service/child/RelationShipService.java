@@ -1,4 +1,4 @@
-package com.scit.iLog.service;
+package com.scit.iLog.service.child;
 
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.repository.MemberRepository;

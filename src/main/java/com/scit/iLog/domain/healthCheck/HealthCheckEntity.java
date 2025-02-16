@@ -1,6 +1,7 @@
 package com.scit.iLog.domain.healthCheck;
 
 import com.scit.iLog.domain.BaseTimeEntity;
+import com.scit.iLog.domain.child.ChildRecordEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.child.ChildEntity;
 import jakarta.persistence.*;
@@ -29,9 +30,13 @@ public class HealthCheckEntity extends BaseTimeEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity member;
 
-    @Column(name = "original_survey_file_name", length = 200)
-    private String originalSurveyFileName;
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "child_record_id")
+    private ChildRecordEntity childRecord;
 
-    @Column(name = "saved_survey_file_name", length = 200)
-    private String savedSurveyFileName;
+    @Column(name = "original_file_name", length = 200)
+    private String originalFileName;
+
+    @Column(name = "saved_file_name", length = 200)
+    private String savedFileName;
 }

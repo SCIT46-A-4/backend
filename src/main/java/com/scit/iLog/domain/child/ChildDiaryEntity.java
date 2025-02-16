@@ -28,6 +28,10 @@ public class ChildDiaryEntity extends BaseTimeEntity {
     @JoinColumn(name = "author_id", nullable = false)
     private MemberEntity author;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
+
 }

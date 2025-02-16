@@ -30,6 +30,12 @@ public class ChildEntity extends BaseTimeEntity {
     @Column(name = "birth_date")
     private LocalDateTime birthDate;
 
+    /*
+        @TODO embedded 엔티티로 바꿔야함
+     */
+    @Column(name = "birth_location")
+    private String birthLocation;
+
     @Column(name = "note")
     private String note;
 

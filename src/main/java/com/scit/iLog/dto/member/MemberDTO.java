@@ -1,4 +1,4 @@
-package com.scit.iLog.dto;
+package com.scit.iLog.dto.member;
 
 import com.scit.iLog.domain.member.MemberRole;
 
@@ -16,7 +16,7 @@ import lombok.Setter;
 public class MemberDTO {
     private Long id;
     private String userId;
-    private String name; // 추가
+    private String name;
     private String password;
     private String email;
     private MemberRole role;

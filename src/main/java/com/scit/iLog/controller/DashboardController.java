@@ -2,7 +2,7 @@ package com.scit.iLog.controller;
 
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.dto.ParentDashboardChildListDTO;
-import com.scit.iLog.service.ChildService;
+import com.scit.iLog.service.child.ChildService;
 import com.scit.iLog.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +29,7 @@ public class DashboardController {
     private final ChildService childService;
 
     /**
+     * D-1,D-2
      * @return 부모 권한을 가진 사용자만 볼 수 있는 대시보드 페이지 템플릿의 경로를 반환합니다.
      */
     @GetMapping("/dashboard")
@@ -39,7 +40,9 @@ public class DashboardController {
                 "redirect:/parentDashboard" : "redirect:/teacherDashboard";
     }
 
-
+    /*
+        D-1
+     */
     @GetMapping("/parentDashboard")
     public String handleGetParentDashboardView(
             @AuthenticationPrincipal MemberDetails memberDetails,
@@ -54,7 +57,10 @@ public class DashboardController {
     }
 
     /**
+     * D-2
      * @return 선생님 권한을 가진 사용자만 볼 수 있는 대시보드 페이지의 템플릿의 경로를 반환합니다.
+     * 이 페이지에서는 하나의 페이지에서 여러 정보를 필요로 하므로
+     * 관련된 API의 구현이 필요합니다.
      */
     @GetMapping("/teacherDashboard")
     public String handleGetTeacherDashboardView() {

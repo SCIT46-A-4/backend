@@ -1,5 +1,7 @@
 package com.scit.iLog.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.scit.iLog.domain.child.ChildRecordEntity;
@@ -19,4 +21,6 @@ public interface ChildRecordRepository extends JpaRepository<ChildRecordEntity, 
 
 	@Query("select cr from ChildRecordEntity cr where cr.child.id = :childId and cr.id = :recordId")
 	Optional<ChildRecordEntity> findByChildIdAndRecordId(@Param("childId") Long childId, @Param("recordId") Long recordId);
+
+	Page<ChildRecordEntity> findByChildId(Long childId, Pageable pageable);
 }

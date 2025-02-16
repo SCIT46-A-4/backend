@@ -35,5 +35,9 @@ public class GuideController {
         model.addAttribute("guides", guides);
         return "guides/guideListView";
     }
-    //@TODO 서치 기능 추가해야함.
+    /*
+        @TODO 서치 기능 추가해야함.
+        ajax로 구현합니다.
+     */
+
 }

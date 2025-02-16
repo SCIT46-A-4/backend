@@ -23,6 +23,18 @@ import static com.scit.iLog.config.SecurityConfig.*;
 public class StatisticsController {
     private final StatisticsService statisticsService;
 
+    /**
+     * "우리 아이 일기 감정 분석 그래프" 페이지를 보여주는 뷰를 반환하는 핸들러
+     *
+     * @return children/statistics/detailsView.html 뷰 페이지
+     *
+     * ST-1
+     */
+    @GetMapping("/statisticsDetails")
+    public String handleGetStatisticsDetailsView() {
+        return "/children/statistics/detailsView";
+    }
+
     @GetMapping("/{childId}/physicalStats")
     public ChildPhysicalStatsDTO handleGetChildPhysicalStats(
             @PathVariable("childId") Long childId,

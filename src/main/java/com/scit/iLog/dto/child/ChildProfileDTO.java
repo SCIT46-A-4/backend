@@ -1,4 +1,4 @@
-package com.scit.iLog.dto;
+package com.scit.iLog.dto.child;
 
 import lombok.Builder;
 

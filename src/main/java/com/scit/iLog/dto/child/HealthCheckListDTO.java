@@ -1,4 +1,4 @@
-package com.scit.iLog.dto;
+package com.scit.iLog.dto.child;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,6 @@ import lombok.Setter;
 public class HealthCheckListDTO {
 	private Long id;
 	private String childName;
-	private String originalSurveyFileName;
+	private String originalHealthCheckImgName;
 	private String createdAt;
-
 }

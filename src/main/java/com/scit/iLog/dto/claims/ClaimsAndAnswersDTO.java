@@ -7,6 +7,6 @@ import java.util.List;
 @Builder
 public record ClaimsAndAnswersDTO(
         int numberOfClaims,
-        List<ClaimDTO> claims
+        List<ClaimListViewDTO> claims
 ) {
 }

@@ -3,10 +3,12 @@ package com.scit.iLog.service;
 import java.util.List;
 
 import com.scit.iLog.domain.claim.ClaimEntity;
-import com.scit.iLog.dto.claims.ClaimDTO;
+import com.scit.iLog.dto.ClaimDetailsDTO;
+import com.scit.iLog.dto.claims.ClaimListViewDTO;
 import com.scit.iLog.dto.claims.ClaimAnswerDTO;
 import com.scit.iLog.dto.claims.ClaimsAndAnswersDTO;
 import com.scit.iLog.dto.claims.ClaimsInsertDTO;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +23,15 @@ import lombok.extern.slf4j.Slf4j;
  * 클레임(문의) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
  * 클레임 등록 및 조회 기능을 제공합니다.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j // 로깅 추가
-public class ClaimsService {
+public class ClaimService {
     private final ClaimsRepository claimsRepository;
     private final MemberRepository memberRepository;
 
     /**
      * 새로운 클레임(문의)을 저장하는 메서드
-     * <p>
      * 클라이언트에서 전달받은 클레임 정보를 검증하고, 해당 멤버가 존재하는지 확인한 후
      * 데이터베이스에 저장합니다.
      *
@@ -87,10 +88,10 @@ public class ClaimsService {
         /*
             고객 문의 조회할 때 답변도 같이 조회하도록 수정합니다. - 호준
          */
-        List<ClaimDTO> claimsList = claimsRepository
+        List<ClaimListViewDTO> claimsList = claimsRepository
                 .findAll().stream()
                 .map(claim ->
-                        ClaimDTO.builder()
+                        ClaimListViewDTO.builder()
                                 .claimId(claim.getId())
                                 .authorName(claim.getAuthor().getName())
                                 .title(claim.getTitle())
@@ -103,9 +104,22 @@ public class ClaimsService {
         return new ClaimsAndAnswersDTO(claimsList.size(), claimsList);
     }
 
+    public ClaimDetailsDTO getClaimDetailsById(Long claimId) {
+        ClaimEntity claim = claimsRepository.findById(claimId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Claim 조회 실패: %d", claimId)));
+        return ClaimDetailsDTO.builder()
+                .claimId(claim.getId())
+                .authorName(claim.getAuthor().getName())
+                .type(claim.getType())
+                .title(claim.getTitle())
+                .content(claim.getContent())
+                .claimAnswerDTO(convertClaimAnswerEntityToDTO(claim))
+                .build();
+    }
+
     /*
         서비스 레벨에서 엔티티를 dto로 변환하는 편의 메서드 작성
-        이렇게 불가피하게 엔티티를 dto로 변환하는 메서드가 필요할 때는
+        이렇게 null 처리 등으로 인해 불가피하게 엔티티를 dto로 변환하는 메서드가 필요할 때는
         차라리 서비스의 private 메서드로 작성하는 것이 좋습니다. - 호준
      */
     private ClaimAnswerDTO convertClaimAnswerEntityToDTO(ClaimEntity claim) {

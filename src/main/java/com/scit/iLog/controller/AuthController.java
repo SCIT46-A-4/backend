@@ -4,7 +4,6 @@ import com.scit.iLog.dto.auth.SignUpDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.scit.iLog.dto.MemberDTO;
 import com.scit.iLog.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,9 @@ public class AuthController {
 		return "auth/signUpView";
 	}
 
+	/*
+		A-2
+	 */
 	/**
 	 * 회원가입 처리
 	 * 사용자가 회원가입 폼(/auth/signUpView.html)에 정보를 입력하고 제출하면
@@ -48,6 +50,9 @@ public class AuthController {
 		return "redirect:/auth/signInView";
 	}
 
+	/*
+		A-1
+	 */
 	/**
 	 * 로그인 화면 요청
 	 * 시작 화면(index.html)에서 GetMapping을 통해
@@ -60,6 +65,9 @@ public class AuthController {
 		return "auth/signInView";
 	}
 
+	/*
+		A-3
+	 */
 	/**
 	 * ID, PW 찾기 페이지 화면 요청
 	 * 로그인 화면(/auth/signInView.html)에서 GetMapping을 통해
@@ -72,6 +80,9 @@ public class AuthController {
 		return "auth/idPwFindView";
 	}
 
+	/*
+		A-2
+	 */
 	@GetMapping("/checkSignInIdExists")
 	public boolean handleCheckSignInIdExists(
 			@RequestParam("signInId") String signInId

@@ -16,6 +16,8 @@ public class MainController {
 	/**
 	 * "기본/메인 페이지"를 보여주는 뷰를 반환하는 핸들러
 	 * @return index.html 뷰 페이지
+	 *
+	 * L-1
 	 */
     @GetMapping({"","/"})
     public String handleIndex() {

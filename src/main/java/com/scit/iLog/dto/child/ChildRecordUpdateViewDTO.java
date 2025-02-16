@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record ChildRecordDTO(
+public record ChildRecordUpdateViewDTO(
         Long id,
         double weight,
         double height,
