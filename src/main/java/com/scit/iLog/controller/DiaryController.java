@@ -70,7 +70,7 @@ public class DiaryController {
      */
     @GetMapping("/diaries/new")
     public String handleGetDiaryInsertView() {
-        return "children/diaries/insertView";
+        return "children/diaries/diaryInsertView";
     }
 
     /*
@@ -110,7 +110,7 @@ public class DiaryController {
 
     	model.addAttribute("diary", diary);
 
-    	return "children/diaries/updateView";
+    	return "children/diaries/diaryUpdateView";
     }
 
     /**
@@ -129,19 +129,6 @@ public class DiaryController {
     		@ModelAttribute DiaryUpdateDto diaryUpdateDTO
     ) {
     	childDiaryService.updateDiary(diaryId, diaryUpdateDTO);
-    	return "children/diaries/updateView";
-    }
-
-    // 우리 아이 일기 통계로 보기 로 이동하기! = 우리 아이 일기장 버튼
-    // 25/2/7 은진 : 주석 추가
-    /**
-     * 일기 통계 페이지 요청을 처리하는 컨트롤러 메서드.
-     * 클라이언트(사용자)가 "/diaryStatistice" URL(버튼누를때)로 GET요청을 보낼 경우
-     * @return '우리아이일기 통계로보기'페이지(diaryStatisticesView.html)로 이동
-     * CD-X(미정)
-     */
-    @GetMapping("/diaryStatistics")
-    public String handleGetDiaryStatisticsView() {
-        return "children/diaries/diaryStatisticsView";
+    	return "children/diaries/diaryUpdateView";
     }
 }

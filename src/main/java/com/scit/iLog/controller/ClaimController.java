@@ -27,7 +27,7 @@ public class ClaimController {
     /**
      * 문의 목록 페이지 요청
      * 
-     * 사용자가 등록한 모든 문의(클레임)를 조회하여 목록 페이지(/claims/claimsListView.html)로 이동합니다.
+     * 사용자가 등록한 모든 문의(클레임)를 조회하여 목록 페이지(/claims/claimListView.html)로 이동합니다.
      * @param model - 조회된 문의 목록을 뷰로 전달하기 위한 모델 객체
      * @return "/claims/claimsListView" (문의 목록 페이지 경로)
      *
@@ -37,13 +37,13 @@ public class ClaimController {
     public String handleGetClaimsListView(Model model) {
         ClaimsAndAnswersDTO claimsAndAnswersDTO = claimService.getAllClaimsAndAnswers();
         model.addAttribute("claims", claimsAndAnswersDTO);
-        return "/claims/claimsListView";
+        return "claims/claimListView";
     }
     
     /**
      * 문의 등록 페이지 요청
      * 
-     * 사용자가 새로운 문의를 작성할 수 있도록 문의 입력 폼 페이지(/claims/claimsInsertView.html)로 이동합니다.
+     * 사용자가 새로운 문의를 작성할 수 있도록 문의 입력 폼 페이지(claims/claimInsertView.html)로 이동합니다.
      * @param - 빈 `ClaimsDTO` 객체를 추가하여 폼에 바인딩
      * @return "/claims/claimsInsertView" (문의 작성 페이지 경로)
      *
@@ -51,7 +51,7 @@ public class ClaimController {
      */
     @GetMapping("/new")
     public String handleGetClaimsInsertView() {
-        return "/claims/claimsInsertView";
+        return "claims/claimInsertView";
     }
 
     /**
@@ -94,7 +94,7 @@ public class ClaimController {
     ) {
         ClaimDetailsDTO claimDetailsDTO = claimService.getClaimDetailsById(claimId);
         model.addAttribute("claimDetails", claimDetailsDTO);
-        return "claims/detailsView";
+        return "claims/claimDetailsView";
     }
 
     /**

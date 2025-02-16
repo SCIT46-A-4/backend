@@ -40,7 +40,7 @@ public class AnalysisController {
     public String handleGetAnalysisInsertView()
 	{	
     	// 25/2/7 준성 : 우리 아이 그림, 사진, 음성 분석 페이지 반환
-        return "/children/analysis/insertView";
+        return "/children/analysis/analysisInsertView";
     }
 
     /*

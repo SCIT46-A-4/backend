@@ -26,7 +26,7 @@ public class MemberController {
             Model model
     ) {
         model.addAttribute("member",memberService.findById(memberId));
-        return "/member/detailsView";
+        return "/member/memberDetailsView";
     }
 
     /*
@@ -55,7 +55,7 @@ public class MemberController {
     ) {
         MyPageDTO myPageDTO = memberService.getMyPageDataById(memberId);
         model.addAttribute("myPage", myPageDTO);
-        return "/member/updateView";
+        return "/member/memberUpdateView";
     }
 
     /*

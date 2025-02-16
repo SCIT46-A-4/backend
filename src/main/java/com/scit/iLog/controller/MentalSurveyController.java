@@ -18,7 +18,7 @@ public class MentalSurveyController {
 	 * childOverView.html에서 설문목록 버튼 클릭 시 GET 요청을 처리한다.
 	 * 우리 아이 설문 목록 페이지를 출력한다.
 	 * URL, 메서드명, 리턴 값 수정.
-	 * @return surveyListView.html
+	 * @return mentalSurveyListView.html
 	 *
 	 * S-1
 	 * 이 페이지에서는 ajax를 이용하여 통계로 보여줍니다.
@@ -26,7 +26,7 @@ public class MentalSurveyController {
 	 */
     @GetMapping("/surveyList")
     public String handleGetSurveysListPage() {
-		return "children/mentalSurveys/surveyListView";
+		return "children/mentalSurveys/mentalSurveyListView";
     }
 
 	// 설문쓰기_심리 바로가기
@@ -35,13 +35,13 @@ public class MentalSurveyController {
 	 * 심리 설문 작성 페이지를 출력한다.
 	 * 이 페이지에서 심리 설문 정보를 입력한다.
 	 * URL, 메서드명, 리턴 값 수정.
-	 * @return /mental/insertView.html
+	 * @return /mental/claimInsertView.html
 	 *
 	 * S-2
 	 */
 	@GetMapping("/new")
 	public String handleGetInsertMentalSurveyView() {
-		return "/children/mentalSurveys/insertView";
+		return "children/mentalSurveys/insertView";
 	}
 
 	/*
@@ -56,12 +56,12 @@ public class MentalSurveyController {
 	 * 우리 아이 설문 종류 선택 페이지를 출력한다.
 	 * 이 페이지에서 '심리 설문'과 '건강 문진'을 선택한다.
 	 * URL, 메서드명, 리턴 값 수정.
-	 * @return surveySelect.html
+	 * @return mentalSurveyDetailsView.html
 	 *
 	 * S-3
 	 */
     @GetMapping("/{mentalSurveyId}/details")
     public String handleGetMentalSurveyDetailsView() {
-		return "/children/mentalSurveys/surveySelectView";
+		return "children/mentalSurveys/mentalSurveyDetailsView";
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 
@@ -24,6 +25,7 @@ import static com.scit.iLog.config.SecurityConfig.MemberDetails;
  */
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/dashboard")
 public class DashboardController {
     private final MemberService memberService;
     private final ChildService childService;
@@ -32,18 +34,18 @@ public class DashboardController {
      * D-1,D-2
      * @return 부모 권한을 가진 사용자만 볼 수 있는 대시보드 페이지 템플릿의 경로를 반환합니다.
      */
-    @GetMapping("/dashboard")
+    @GetMapping({"","/"})
     public String handleGetDashboardView(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return userDetails.getUsername().equals(RelationType.PARENT.toString()) ?
-                "redirect:/parentDashboard" : "redirect:/teacherDashboard";
+        return userDetails.getUsername().equals(RelationType.GUARDIAN.toString()) ?
+                "redirect:/dashboard/guardian" : "redirect:/dashboard/teacher";
     }
 
     /*
         D-1
      */
-    @GetMapping("/parentDashboard")
+    @GetMapping("/guardian")
     public String handleGetParentDashboardView(
             @AuthenticationPrincipal MemberDetails memberDetails,
             Model model
@@ -53,7 +55,7 @@ public class DashboardController {
         model.addAttribute("memberName", memberDetails.getName());
         model.addAttribute("relationType", memberDetails.getRelationType().toString());
         model.addAttribute("childList", childList);
-        return "dashboard/parentView";
+        return "dashboard/dashboardGuardianView";
     }
 
     /**
@@ -62,8 +64,8 @@ public class DashboardController {
      * 이 페이지에서는 하나의 페이지에서 여러 정보를 필요로 하므로
      * 관련된 API의 구현이 필요합니다.
      */
-    @GetMapping("/teacherDashboard")
+    @GetMapping("/teacher")
     public String handleGetTeacherDashboardView() {
-    	return "dashboard/teacherView";
+    	return "dashboard/dashboardTeacherView";
     }
 }

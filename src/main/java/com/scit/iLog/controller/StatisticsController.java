@@ -28,7 +28,7 @@ public class StatisticsController {
     /**
      * "우리 아이 일기 감정 분석 그래프" 페이지를 보여주는 뷰를 반환하는 핸들러
      *
-     * @return children/statistics/detailsView.html 뷰 페이지
+     * @return children/statistics/statisticsListView.html 뷰 페이지
      *
      * ST-1
      */

@@ -48,7 +48,7 @@ public class ChildrenController {
 	 */
 	@GetMapping("/new")
 	public String handleGetChildInsertView() {
-		return "children/insertView";
+		return "children/basicInfoInsertView";
 	}
 
 	// 25/2/11 준: api-23 입력된 아동 정보를 저장 
@@ -64,7 +64,7 @@ public class ChildrenController {
 		Long childId = childService.saveBasicInfo(childBasicInfoDto);
 		redirectAttributes.addAttribute("childId", childId);
 
-		return "redirect:/children/{childId}/details";
+		return String.format("redirect:/children/%d/basicInfo",childId);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class ChildrenController {
 	 *
 	 * @param childId
 	 * @param model
-	 * @return children/childDetailsView.html 뷰 페이지
+	 * @return children/basicInfoDetailsView.html 뷰 페이지
 	 * 서비스 레이어에서 ChildDetailsDto를 가져와 뷰에 전달
 	 * @TODO RequestParam이 아닌 PathVariable로 받아야합니다.
 	 * C-2
@@ -85,7 +85,7 @@ public class ChildrenController {
 		// 조회한 데이터를 뷰(Model)에 추가
 		model.addAttribute("childBasicInfo", childBasicInfo);
 
-		return "/children/childDetailsView";
+		return "children/basicInfoDetailsView";
 	}
 
 	// 25/2/12 ㅈ: api-26 아이 정보 상세페이지 요청
@@ -106,7 +106,7 @@ public class ChildrenController {
 		 */
 		model.addAttribute("child", (_dto != null) ? _dto : "데이터를 찾을 수 없습니다.");
 
-		return "/children/childDetailsView";
+		return "children/basicInfoDetailsView";
 	}
 
 	// 25/2/11 api-28: 아동 삭제요청, return: 대쉬보드 Page
@@ -137,7 +137,7 @@ public class ChildrenController {
 			Model model
 	) throws Exception {
 		model.addAttribute("child", childService.findById(childId));
-		return "/children/childDetailsUpdateView";
+		return "children/basicInfoUpdateView";
 	}
 
 	// 25/2/11 준 api-30 아이 정보 수정
@@ -170,12 +170,12 @@ public class ChildrenController {
 	/*
 	 * 아동 상세 정보 등록 페이지를 조회
 	 * 25/2/11 준 : api-24 아이 상제정보 등록페이지 반환
-	 * @return children/childDetailsInsertView 뷰 페이지
+	 * @return children/records/childRecordInsertView 뷰 페이지
 	 * C-4
 	 */
 	@GetMapping("/{childId}/records/new")
 	public String handleGetChildRecordInsertView() {
-		return "/children/childDetailsInsertView";
+		return "children/records/childRecordInsertView";
 	}
 
 	/*
@@ -215,7 +215,7 @@ public class ChildrenController {
 	) {
 		ChildRecordDTO childRecordDTO = childRecordService.findOneById(recordId);
 		model.addAttribute("childRecord", childRecordDTO);
-		return "children/childRecordView";
+		return "children/records/childRecordDetailsView";
 	}
 
 	/*
