@@ -1,11 +1,7 @@
 package com.scit.iLog.dto.claims;
 
 import com.scit.iLog.domain.claim.ClaimType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

@@ -1,12 +1,12 @@
 package com.scit.iLog.domain.mentalsurvey;
 
 import com.scit.iLog.domain.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Setter

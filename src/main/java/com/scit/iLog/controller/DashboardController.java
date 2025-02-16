@@ -2,8 +2,8 @@ package com.scit.iLog.controller;
 
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.dto.ParentDashboardChildListDTO;
-import com.scit.iLog.service.child.ChildService;
 import com.scit.iLog.service.MemberService;
+import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import static com.scit.iLog.config.SecurityConfig.*;
+import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 
 /**
  * 사용자의 대시보드 페이지 조회에 필요한 요청을 처리하는 컨트롤러.

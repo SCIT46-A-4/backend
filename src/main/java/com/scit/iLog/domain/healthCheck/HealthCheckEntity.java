@@ -1,9 +1,9 @@
 package com.scit.iLog.domain.healthCheck;
 
 import com.scit.iLog.domain.BaseTimeEntity;
+import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.ChildRecordEntity;
 import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.child.ChildEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

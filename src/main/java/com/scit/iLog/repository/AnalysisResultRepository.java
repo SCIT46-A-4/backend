@@ -1,13 +1,11 @@
 package com.scit.iLog.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 public interface AnalysisResultRepository extends JpaRepository<AnalysisResultEntity, Long> {

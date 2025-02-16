@@ -1,20 +1,18 @@
 package com.scit.iLog.service;
 
-import com.scit.iLog.domain.*;
+import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
+import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.dto.member.MemberDashboardProfileDTO;
 import com.scit.iLog.dto.member.MemberSelectDTO;
 import com.scit.iLog.dto.member.MyPageDTO;
-import com.scit.iLog.dto.auth.SignUpDTO;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.scit.iLog.repository.MemberRepository;
-
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 

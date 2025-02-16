@@ -1,12 +1,10 @@
 package com.scit.iLog.repository;
 
+import com.scit.iLog.domain.child.ChildDiaryEntity;
+import com.scit.iLog.domain.child.ChildEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-
-import com.scit.iLog.domain.child.ChildDiaryEntity;
-import com.scit.iLog.domain.child.ChildEntity;
 
 public interface ChildDiaryRepository extends JpaRepository<ChildDiaryEntity, Long>
 	{

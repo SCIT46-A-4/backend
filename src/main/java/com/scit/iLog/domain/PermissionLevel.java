@@ -1,6 +1,5 @@
 package com.scit.iLog.domain;
 
-import com.scit.iLog.domain.RelationType;
 import lombok.Getter;
 
 @Getter

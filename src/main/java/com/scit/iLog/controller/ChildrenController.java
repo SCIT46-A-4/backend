@@ -1,10 +1,13 @@
 package com.scit.iLog.controller;
 
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
-import com.scit.iLog.dto.child.*;
 import com.scit.iLog.dto.PageResponse;
+import com.scit.iLog.dto.child.*;
 import com.scit.iLog.service.analysis.AiAnalysisService;
 import com.scit.iLog.service.child.ChildRecordService;
+import com.scit.iLog.service.child.ChildService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,11 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.scit.iLog.service.child.ChildService;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller

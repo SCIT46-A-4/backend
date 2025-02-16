@@ -1,13 +1,11 @@
 package com.scit.iLog.controller;
 
 import com.scit.iLog.dto.auth.SignUpDTO;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
 import com.scit.iLog.service.MemberService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 
 /**

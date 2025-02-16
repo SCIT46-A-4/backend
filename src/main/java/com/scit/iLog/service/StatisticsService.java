@@ -4,7 +4,6 @@ import com.scit.iLog.domain.PeriodType;
 import com.scit.iLog.dto.stats.*;
 import com.scit.iLog.repository.AnalysisResultRepository;
 import com.scit.iLog.repository.ChildRecordRepository;
-import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.MentalSurveyResponseRepository;
 import com.scit.iLog.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;

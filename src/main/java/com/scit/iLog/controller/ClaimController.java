@@ -3,16 +3,14 @@ package com.scit.iLog.controller;
 import com.scit.iLog.dto.ClaimDetailsDTO;
 import com.scit.iLog.dto.claims.ClaimsAndAnswersDTO;
 import com.scit.iLog.dto.claims.ClaimsInsertDTO;
+import com.scit.iLog.service.ClaimService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.scit.iLog.service.ClaimService;
-
-import lombok.RequiredArgsConstructor;
 
 /*
  * 클레임(문의) 관련 요청을 처리하는 Spring MVC 컨트롤러입니다.  

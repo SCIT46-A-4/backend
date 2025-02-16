@@ -1,8 +1,8 @@
 package com.scit.iLog.config;
 
+import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Builder;

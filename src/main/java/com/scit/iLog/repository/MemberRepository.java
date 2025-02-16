@@ -1,8 +1,7 @@
 package com.scit.iLog.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.scit.iLog.domain.member.MemberEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 

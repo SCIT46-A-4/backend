@@ -1,23 +1,21 @@
 package com.scit.iLog.service;
 
-import java.util.List;
-
 import com.scit.iLog.domain.claim.ClaimEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.dto.ClaimDetailsDTO;
-import com.scit.iLog.dto.claims.ClaimListViewDTO;
 import com.scit.iLog.dto.claims.ClaimAnswerDTO;
+import com.scit.iLog.dto.claims.ClaimListViewDTO;
 import com.scit.iLog.dto.claims.ClaimsAndAnswersDTO;
 import com.scit.iLog.dto.claims.ClaimsInsertDTO;
+import com.scit.iLog.repository.ClaimsRepository;
+import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.repository.ClaimsRepository;
-import com.scit.iLog.repository.MemberRepository;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 /**
  * 클레임(문의) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.

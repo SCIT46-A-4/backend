@@ -1,7 +1,7 @@
 package com.scit.iLog.repository;
 
-import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.RelationShipEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,12 +1,7 @@
 package com.scit.iLog.dto.member;
 
 import com.scit.iLog.domain.member.MemberRole;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

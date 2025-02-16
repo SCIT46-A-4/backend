@@ -1,6 +1,5 @@
 package com.scit.iLog.dto.diary;
 
-import com.scit.iLog.domain.child.ChildDiaryEntity;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
