@@ -1,6 +1,7 @@
 package com.scit.iLog.domain;
 
 import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

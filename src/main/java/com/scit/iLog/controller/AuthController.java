@@ -23,7 +23,6 @@ public class AuthController {
 
 	/**
 	 * 회원가입 화면 요청
-	 * <p>
 	 * 로그인 화면(/auth/signInView.html)에서 GetMapping을 통해
 	 * 회원가입 페이지(/auth/signUpView.html)로 이동하도록 처리하는 메서드
 	 *
@@ -36,7 +35,6 @@ public class AuthController {
 
 	/**
 	 * 회원가입 처리
-	 * <p>
 	 * 사용자가 회원가입 폼(/auth/signUpView.html)에 정보를 입력하고 제출하면
 	 * PostMapping으로 해당 데이터(MemberDTO)를 받아 회원가입을 처리하는 메서드
 	 * 회원가입이 완료되면 로그인 페이지(/auth/signInView.html)로 리다이렉트
@@ -52,7 +50,6 @@ public class AuthController {
 
 	/**
 	 * 로그인 화면 요청
-	 * <p>
 	 * 시작 화면(index.html)에서 GetMapping을 통해
 	 * 로그인 페이지(/auth/signInView.html)에 이동하도록 처리하는 메서드
 	 *
@@ -65,7 +62,6 @@ public class AuthController {
 
 	/**
 	 * ID, PW 찾기 페이지 화면 요청
-	 * <p>
 	 * 로그인 화면(/auth/signInView.html)에서 GetMapping을 통해
 	 * 아이디/비밀번호 찾기 화면(/auth/idPwFindView.html)로 이동하도록 처리하는 메서드
 	 *

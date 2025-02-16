@@ -1,8 +1,12 @@
 package com.scit.iLog.config;
 
-import com.scit.iLog.domain.MemberEntity;
+import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.domain.member.MemberRole;
+import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -118,23 +122,33 @@ public class SecurityConfig {
             MemberEntity member = memberRepository
                     .findBySignInId(signInId)
                     .orElseThrow(() -> new EntityNotFoundException("로그인 처리시 회원 조회 실패"));
-            return new MemberDetails(
-                    member.getSignInId(),
-                    member.getPassword(),
-                    member.getRole().name()
-            );
+            return MemberDetails.builder()
+                            .id(member.getId())
+                            .name(member.getName())
+                            .signInId(member.getSignInId())
+                            .password(member.getPassword())
+                            .email(member.getEmail())
+                            .relationType(member.getRelationType())
+                            .role(member.getRole())
+                            .build();
         };
     }
 
+    @Getter
+    @Builder
     @RequiredArgsConstructor
-    static final class MemberDetails implements UserDetails {
+    public static final class MemberDetails implements UserDetails {
+        private final Long id;
+        private final String name;
         private final String signInId;
         private final String password;
-        private final String role;
+        private final String email;
+        private final RelationType relationType;
+        private final MemberRole role;
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return List.of(new SimpleGrantedAuthority(this.role));
+            return List.of(new SimpleGrantedAuthority(this.role.toString()));
         }
 
         @Override
@@ -145,6 +159,26 @@ public class SecurityConfig {
         @Override
         public String getUsername() {
             return this.signInId;
+        }
+
+        @Override
+        public boolean isAccountNonExpired() {
+            return UserDetails.super.isAccountNonExpired();
+        }
+
+        @Override
+        public boolean isAccountNonLocked() {
+            return UserDetails.super.isAccountNonLocked();
+        }
+
+        @Override
+        public boolean isCredentialsNonExpired() {
+            return UserDetails.super.isCredentialsNonExpired();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return UserDetails.super.isEnabled();
         }
     }
 }

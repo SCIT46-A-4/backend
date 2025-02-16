@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.scit.iLog.domain.child.AnalysisResultEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
 import com.scit.iLog.repository.AnalysisResultRepository;
 
 import jakarta.transaction.Transactional;

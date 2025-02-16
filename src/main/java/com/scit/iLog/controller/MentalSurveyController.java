@@ -3,6 +3,7 @@ package com.scit.iLog.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /* 
  * 2025-02-07 이도훈
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 @RequiredArgsConstructor
-public class SurveyController {
+public class MentalSurveyController {
 	/* 2025-02-07 이도훈 주석 작성 및 메서드 명 수정.
 	 * childOverView.html에서 설문목록 버튼 클릭 시 GET 요청을 처리한다.
 	 * 우리 아이 설문 목록 페이지를 출력한다.

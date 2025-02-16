@@ -10,7 +10,7 @@ import com.scit.iLog.dto.claims.ClaimsInsertDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.scit.iLog.domain.MemberEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.repository.ClaimsRepository;
 import com.scit.iLog.repository.MemberRepository;
 

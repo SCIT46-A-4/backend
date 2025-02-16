@@ -1,7 +1,17 @@
 package com.scit.iLog.controller;
 
+import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.dto.ParentDashboardChildListDTO;
+import com.scit.iLog.service.ChildService;
+import com.scit.iLog.service.MemberService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import static com.scit.iLog.config.SecurityConfig.*;
 
 /**
  * 사용자의 대시보드 페이지 조회에 필요한 요청을 처리하는 컨트롤러.
@@ -13,12 +23,33 @@ import org.springframework.web.bind.annotation.GetMapping;
  * 권한에 따라 조회할 수 있는 정보의 종류가 다릅니다.
  */
 @Controller
+@RequiredArgsConstructor
 public class DashboardController {
+    private final MemberService memberService;
+    private final ChildService childService;
+
     /**
      * @return 부모 권한을 가진 사용자만 볼 수 있는 대시보드 페이지 템플릿의 경로를 반환합니다.
      */
+    @GetMapping("/dashboard")
+    public String handleGetDashboardView(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return userDetails.getUsername().equals(RelationType.PARENT.toString()) ?
+                "redirect:/parentDashboard" : "redirect:/teacherDashboard";
+    }
+
+
     @GetMapping("/parentDashboard")
-    public String handleGetParentDashboardView() {
+    public String handleGetParentDashboardView(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            Model model
+            ) {
+        ParentDashboardChildListDTO childList = childService.getChildrenProfilesOf(memberDetails.getId());
+
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().toString());
+        model.addAttribute("childList", childList);
         return "dashboard/parentView";
     }
 

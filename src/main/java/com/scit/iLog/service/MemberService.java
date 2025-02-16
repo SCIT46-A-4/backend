@@ -1,6 +1,8 @@
 package com.scit.iLog.service;
 
 import com.scit.iLog.domain.*;
+import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.domain.member.MemberRole;
 import com.scit.iLog.dto.MemberDashboardProfileDTO;
 import com.scit.iLog.dto.MemberSelectDTO;
 import com.scit.iLog.dto.MyPageDTO;

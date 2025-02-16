@@ -1,4 +1,4 @@
-package com.scit.iLog.domain.child;
+package com.scit.iLog.domain.sentimentalAnalysis;
 
 import com.scit.iLog.domain.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -19,7 +19,7 @@ public class AnalysisResultEntity extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_asset_id", nullable = false)
-    private ChildAssetEntity childAsset;
+    private AnalysisTargetEntity analysisTarget;
 
     @Column(name = "analysis_result", length = 1000)
     private String analysisResult;
@@ -29,4 +29,8 @@ public class AnalysisResultEntity extends BaseTimeEntity {
 
     @Column(name = "emotion_score")
     private double emotionScore;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "emotion_type")
+    private EmotionType emotionType;
 }

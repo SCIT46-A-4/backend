@@ -1,4 +1,4 @@
-package com.scit.iLog.domain;
+package com.scit.iLog.domain.member;
 
 import lombok.Getter;
 
@@ -12,5 +12,4 @@ public enum MemberRole {
     MemberRole(String roleNameKr) {
         this.roleNameKr = roleNameKr;
     }
-
 }

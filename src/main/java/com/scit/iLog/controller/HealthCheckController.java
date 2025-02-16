@@ -71,9 +71,12 @@ public class HealthCheckController {
      * @param limit - 조회할 데이터 개수
      * @return "/children/healthCheck/healthCheckListView" (문진 목록 페이지 경로)
      */
-	@GetMapping("/healthCheckList?offset=0&limit=10")
-	public String handleGetHealthCheckListsView(@RequestParam(name = "offset") Long offset,
-			@RequestParam(name = "limit") int limit, Model model) {
+	@GetMapping("/healthCheckList")
+	public String handleGetHealthCheckListsView(
+			@RequestParam(name = "offset", defaultValue = "0") Long offset,
+			@RequestParam(name = "limit", defaultValue = "10") int limit,
+			Model model
+	) {
 
 	    // 서비스에서 문진 결과 목록 조회
 	    List<HealthCheckListDTO> healthCheckList = healthCheckService.getAllHealthCheckList();

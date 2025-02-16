@@ -1,5 +1,8 @@
-package com.scit.iLog.domain;
+package com.scit.iLog.domain.member;
 
+import com.scit.iLog.domain.BaseTimeEntity;
+import com.scit.iLog.domain.RelationShipEntity;
+import com.scit.iLog.domain.RelationType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

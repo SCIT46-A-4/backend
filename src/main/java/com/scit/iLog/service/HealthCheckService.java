@@ -2,19 +2,20 @@ package com.scit.iLog.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import com.scit.iLog.repository.ChildHealthCheckRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.scit.iLog.domain.HealthSurveyEntity;
-import com.scit.iLog.domain.MemberEntity;
+import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.dto.HealthCheckListDTO;
 import com.scit.iLog.dto.HealthCheckSaveDTO;
 import com.scit.iLog.repository.ChildRepository;
-import com.scit.iLog.repository.HealthSurveyRepository;
 import com.scit.iLog.repository.MemberRepository;
-import com.scit.iLog.util.FileService;
+import com.scit.iLog.util.FileManager;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HealthCheckService {
 
-	private final HealthSurveyRepository healthSurveyRepository;
-	private final FileService fileService;
+	private final ChildHealthCheckRepository childHealthCheckRepository;
+	private final FileManager fileManager;
 	private final ChildRepository childRepository;
 	private final MemberRepository memberRepository;
 
@@ -56,14 +57,14 @@ public class HealthCheckService {
 					() -> new IllegalArgumentException("해당 멤버 ID가 존재하지 않습니다: " + healthCheckSaveDTO.getMemberId()));
 
 			// 2. 파일 업로드 및 파일명 저장
-			String savedFileName = fileService.saveFile(healthCheckSaveDTO.getSurveyFile(), UPLOAD_DIR);
+			String savedFileName = fileManager.saveFile(healthCheckSaveDTO.getSurveyFile(), UPLOAD_DIR);
 			String originalFileName = healthCheckSaveDTO.getSurveyFile().getOriginalFilename();
 
 			// 3. 엔티티 저장
-			HealthSurveyEntity survey = HealthSurveyEntity.builder().child(child).member(member)
+			HealthCheckEntity survey = HealthCheckEntity.builder().child(child).member(member)
 					.originalSurveyFileName(originalFileName).savedSurveyFileName(savedFileName).build();
 
-			healthSurveyRepository.save(survey);
+			childHealthCheckRepository.save(survey);
 			return survey.getId();
 
 		} catch (Exception e) {
@@ -82,13 +83,13 @@ public class HealthCheckService {
 	public List<HealthCheckListDTO> getAllHealthCheckList() {
 		
 		// 데이터베이스에서 모든 문진 결과 조회
-		List<HealthSurveyEntity> healthSurveyList = healthSurveyRepository.findAll();
+		List<HealthCheckEntity> healthSurveyList = childHealthCheckRepository.findAll();
 		
 		// 변환된 DTO 리스트를 저장할 리스트 생성
 		List<HealthCheckListDTO> healthCheckList = new ArrayList<>();
 		
 		// Entity → DTO 변환
-	    for (HealthSurveyEntity entity : healthSurveyList) {
+	    for (HealthCheckEntity entity : healthSurveyList) {
 	        HealthCheckListDTO dto = HealthCheckListDTO.builder()
 	                .id(entity.getId())
 	                .childName(entity.getChild().getName())
@@ -113,10 +114,34 @@ public class HealthCheckService {
 	@Transactional
 	public void deleteHealthSurvey(Long healthCheckId) {
 		// 1. 문진 결과 조회
-		HealthSurveyEntity healthSurvey = healthSurveyRepository.findById(healthCheckId)
+		HealthCheckEntity healthSurvey = childHealthCheckRepository.findById(healthCheckId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 문진 결과가 존재하지 않습니다: " + healthCheckId));
 
 		// 2. 문진 결과 삭제
-		healthSurveyRepository.delete(healthSurvey);
+		childHealthCheckRepository.delete(healthSurvey);
 	}
+
+	// 24/2/10 준성 api-43 영유아 건강문진 결과 삭제요청
+	public boolean deleteCheckList(Long id)
+	{
+		try
+		{
+			// 25/2/10 준 : 데이터 찾아서 삭제하는 로직
+			Optional<HealthCheckEntity> entity = childHealthCheckRepository.findById(id);
+
+			if(entity.isPresent())
+			{
+				childHealthCheckRepository.delete(entity.get());
+				return true;
+			}
+
+			return false;
+		}
+
+		catch (Exception e)
+		{
+			log.error("childHealthDelete 삭제 중 에러 발생:" + e.getMessage() + "\n" + e.getCause());
+			return false;
+		}
+}
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.ChildRecordEntity;
 import com.scit.iLog.repository.ChildRepository;
-import com.scit.iLog.repository.InfoDetailRepository;
+import com.scit.iLog.repository.ChildRecordRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class InfoDetailsService {
 	/*2025-02-06 이도훈 ChildRepository선언 */
 	private final ChildRepository childRepository;
-	private final InfoDetailRepository infoDetailRepository;
+	private final ChildRecordRepository childRecordRepository;
 
 	/*2025-02-06 이도훈 infoDetails에 출력할 아이 한명의 데이터 조회 */
 	public ChildDetailsDto seletInfoDetails(Long id) {
@@ -34,7 +34,7 @@ public class InfoDetailsService {
 
 	public void findById(Long id)
 		{
-			Optional<ChildRecordEntity> _entity = infoDetailRepository.findById(id);
+			Optional<ChildRecordEntity> _entity = childRecordRepository.findById(id);
 			
 		}
 

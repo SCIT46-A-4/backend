@@ -1,4 +1,4 @@
-package com.scit.iLog.domain.child;
+package com.scit.iLog.domain.sentimentalAnalysis;
 
 import lombok.Getter;
 

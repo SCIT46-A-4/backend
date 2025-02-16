@@ -3,7 +3,9 @@ package com.scit.iLog.domain.mentalsurvey;
 import com.scit.iLog.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,17 +14,12 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-@Table(name = "mental_survey")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Document(collection = "mentalSurveys")
 public class MentalSurveyEntity extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mental_survey_id")
-    private Long id;
-
-    @Column(name = "title", length = 100)
+    private String id;
     private String title;
-
-    @Column(name = "description", length = 500)
-    private String description;
+    private List<MentalSurveySection> sections;
+    private LocalDateTime createdAt;
 }

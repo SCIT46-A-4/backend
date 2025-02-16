@@ -1,5 +1,7 @@
-package com.scit.iLog.domain;
+package com.scit.iLog.domain.healthCheck;
 
+import com.scit.iLog.domain.BaseTimeEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.child.ChildEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,9 +13,9 @@ import static jakarta.persistence.FetchType.LAZY;
 @Setter
 @Builder
 @AllArgsConstructor
-@Table(name = "health_survey")
+@Table(name = "health_check")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class HealthSurveyEntity extends BaseTimeEntity {
+public class HealthCheckEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "health_survey_id")

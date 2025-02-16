@@ -1,6 +1,6 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.domain.child.AnalysisResultEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
 import com.scit.iLog.service.AnalysisResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

@@ -1,15 +1,13 @@
-package com.scit.iLog.domain.child;
+package com.scit.iLog.domain.sentimentalAnalysis;
 
 import com.scit.iLog.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "analysis_result_note")
 @Getter
 @Setter
+@Entity
+@Table(name = "analysis_result_note")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class AnalysisResultNoteEntity extends BaseTimeEntity {
@@ -20,8 +18,11 @@ public class AnalysisResultNoteEntity extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analysis_result_id", nullable = false)
-    private AnalysisResultEntity mediaAnalysisResultEntity;
+    private AnalysisResultEntity analysisResult;
 
     @Column(name = "content", nullable = false, length = 1000)
     private String content;
+
+    @Column(name = "satisfaction_level")
+    private int satisfactionLevel;
 }

@@ -1,29 +1,33 @@
 package com.scit.iLog.service;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Repository;
+import com.scit.iLog.domain.RelationShipEntity;
+import com.scit.iLog.dto.ChildProfileDTO;
+import com.scit.iLog.dto.ParentDashboardChildListDTO;
+import com.scit.iLog.repository.RelationShipRepository;
+import com.scit.iLog.util.FilePathUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scit.iLog.domain.child.ChildEntity;
-import com.scit.iLog.domain.child.Gender;
 import com.scit.iLog.dto.ChildDTO;
 import com.scit.iLog.repository.ChildRepository;
-import com.scit.iLog.util.FileService;
+import com.scit.iLog.util.FileManager;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ChildService
 	{
 		private final ChildRepository childRepository;
+		private final RelationShipRepository relationShipRepository;
+		private final FileManager fileManager;
+		private final FilePathUtil filePathUtil;
 
-		private final String uploadPath = "c:/uploadPath";
-		
 		// 25/2/12 준: api-23 아이 새로운 아이 등록(저장)
 		public Long save(ChildDTO childDto)
 			{
@@ -46,7 +50,7 @@ public class ChildService
 			
 			if(!uploadFile.isEmpty()) {   // 첨부된 파일이 있는 경우
 				originalFileName = uploadFile.getOriginalFilename();
-				savedFileName    = FileService.saveFile(uploadFile, uploadPath);
+				savedFileName    = fileManager.saveFile(uploadFile, filePathUtil.childProfileImgUploadPath());
 				
 				// 추출한 데이터를 다시 DTO에 넣는다!
 				childDTO.setOriginalFileName(originalFileName);
@@ -101,8 +105,28 @@ public class ChildService
 			}
 
 		// 아이 정보 삭제하는 메소드
-		public void deleteById(Long childId)
-			{
-				childRepository.deleteById(childId);
-			}
-	}
+		public void deleteById(Long childId) { childRepository.deleteById(childId); }
+
+
+		public ParentDashboardChildListDTO getChildrenProfilesOf(Long memberId) {
+			List<RelationShipEntity> relationShips = relationShipRepository.findAllByMemberId(memberId);
+			List<ChildProfileDTO> childProfiles = relationShips.stream()
+					.map(relationShip ->
+							ChildProfileDTO.builder()
+									.id(relationShip.getChild().getId())
+									.birthDate(relationShip.getChild().getBirthDate())
+									.name(relationShip.getChild().getName())
+									.profileImgSrc(
+											filePathUtil.childProfileImgUploadPath() +
+													"/" +
+													relationShip.getChild().getSavedProfileImgName()
+									)
+									.build()
+					)
+					.toList();
+			return new ParentDashboardChildListDTO(
+					childProfiles.size(),
+					childProfiles
+			);
+		}
+    }

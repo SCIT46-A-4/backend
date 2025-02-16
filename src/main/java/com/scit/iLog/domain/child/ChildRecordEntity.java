@@ -4,6 +4,8 @@ import com.scit.iLog.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.FetchType.LAZY;
 
 // child에 대한 자세한 정보들
@@ -24,16 +26,6 @@ public class ChildRecordEntity extends BaseTimeEntity {
     @JoinColumn(name = "child_id", nullable = false)
     private ChildEntity child;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
-
-    @Column(name = "note", length = 1000)
-    private String note;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = false)
-    private Gender gender;
-
     @Column(name = "weight")
     private Double weight;
 
@@ -45,6 +37,12 @@ public class ChildRecordEntity extends BaseTimeEntity {
 
     @Column(name = "right_eye")
     private Double rightEye;
+
+    @Column(name = "note", length = 1000)
+    private String note;
+
+    @Column(name = "register_date")
+    private LocalDateTime registerDate;
 
     @Column(name = "original_photo_name", length = 100)
     private String originalPhotoName;

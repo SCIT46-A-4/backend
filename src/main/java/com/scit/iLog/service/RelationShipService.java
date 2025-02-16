@@ -1,13 +1,11 @@
 package com.scit.iLog.service;
 
-import com.scit.iLog.domain.MemberEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.RelationShipRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

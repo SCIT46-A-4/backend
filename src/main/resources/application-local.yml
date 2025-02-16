@@ -11,6 +11,13 @@ spring:
       minimum-idle: 5
       idle-timeout: 300000
       connection-timeout: 20000
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: ilog
+      username:
+      password:
   jpa:
     properties:
       hibernate:

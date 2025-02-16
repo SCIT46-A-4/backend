@@ -1,7 +1,7 @@
 package com.scit.iLog.domain.child;
 
 import com.scit.iLog.domain.BaseTimeEntity;
-import com.scit.iLog.domain.MemberEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
