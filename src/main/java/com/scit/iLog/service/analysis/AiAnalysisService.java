@@ -11,10 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class AiAnalysisService {
     private static final String childDataExtractionPrompt =
             "please extract height, weight, leftEye, rightEye, diagnosis of this child from this img";
-    private final AnalysisService openAIAPIService;
+    private final AnalysisService fakeAnalysisService;
 
     public ChildRecordInsertDTO extractChildRecordDataFromImg(MultipartFile healthCheckImg) {
-        ChildRecordExtraction openAIChildRecordExtraction = openAIAPIService.extractData(
+        ChildRecordExtraction openAIChildRecordExtraction = fakeAnalysisService.extractData(
                 childDataExtractionPrompt,
                 healthCheckImg
         );
