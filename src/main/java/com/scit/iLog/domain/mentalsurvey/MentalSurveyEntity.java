@@ -1,34 +1,23 @@
 package com.scit.iLog.domain.mentalsurvey;
 
-import com.scit.iLog.domain.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Transient;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
+@Setter
 @Getter
 @Builder
 @AllArgsConstructor
-@Table(name = "mental_survey")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MentalSurveyEntity extends BaseTimeEntity {
-    @Setter
+//@Document(collection = "mentalSurveys")
+public class MentalSurveyEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mental_survey_id")
-    private Long id;
-
-    @Setter
-    @Column(name = "title", length = 100)
+    private String id;
     private String title;
-
-    @Setter
-    @Column(name = "description", length = 500)
-    private String description;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "mentalSurvey")
-    private List<MentalQuestionEntity> questions = new ArrayList<>();
+    @Transient
+    private List<MentalSurveySection> sections;
+    private LocalDateTime createdAt;
 }

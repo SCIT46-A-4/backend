@@ -1,6 +1,7 @@
 package com.scit.iLog.domain;
 
 import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,9 +27,6 @@ public class RelationShipEntity extends BaseTimeEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "child_id", nullable = false)
     private ChildEntity child;
-
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "permission_level", nullable = false)

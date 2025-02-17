@@ -36,6 +36,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+//	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+//	implementation 'com.github.fakemongo:fongo:2.1.0'
+//	implementation 'de.bwaldvogel:mongo-java-server:1.39.0'
 }
 
 tasks.named('test') {

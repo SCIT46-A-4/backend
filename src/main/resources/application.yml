@@ -1,6 +1,8 @@
+server:
+  port: 9900
 spring:
   profiles:
-    active: local
+    active: dev
   application:
     name: iLog
   jpa:
@@ -10,8 +12,11 @@ spring:
         format_sql: true
         use_sql_comments: true
 
-
-
 servlet:
   multipart:
     location: C:/uploadPath
+
+childProfileImgWindowsPath: C:/ilog/childProfileImgs
+childProfileImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childProfileImgs
+childHealthCheckImgWindowsPath: C:/ilog/childHealthCheckImgs
+childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childHealthCheckImgs

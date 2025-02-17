@@ -7,6 +7,7 @@ public record SignUpDTO(
         String userName,
         String signInId,
         String userPwd,
-        String userEmail
+        String userEmail,
+        String relationType
 ) {
 }

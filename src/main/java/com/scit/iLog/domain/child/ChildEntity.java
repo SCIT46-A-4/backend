@@ -1,9 +1,8 @@
 package com.scit.iLog.domain.child;
 
 import com.scit.iLog.domain.BaseTimeEntity;
-import com.scit.iLog.domain.HealthSurveyEntity;
 import com.scit.iLog.domain.RelationShipEntity;
-import com.scit.iLog.domain.mentalsurvey.MentalSurveyEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
@@ -25,15 +24,17 @@ public class ChildEntity extends BaseTimeEntity {
     @Column(name = "child_id")
     private Long id;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "child")
-    private List<RelationShipEntity> relationShips = new ArrayList<>();
-
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     @Column(name = "birth_date")
     private LocalDateTime birthDate;
+
+    /*
+        @TODO embedded 엔티티로 바꿔야함
+     */
+    @Column(name = "birth_location")
+    private String birthLocation;
 
     @Column(name = "note")
     private String note;
@@ -41,6 +42,12 @@ public class ChildEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private Gender gender;
+
+    @Column(name = "original_profile_img_name")
+    private String originalProfileImgName;
+
+    @Column(name = "saved_profile_img_name")
+    private String savedProfileImgName;
 
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "child")
@@ -50,15 +57,14 @@ public class ChildEntity extends BaseTimeEntity {
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "child")
     @Builder.Default
-    private List<ChildAssetEntity> assets = new ArrayList<>();
-
-    @BatchSize(size = 100)
-    @OneToMany(mappedBy = "child")
-    @Builder.Default
-    private List<HealthSurveyEntity> healthSurveys = new ArrayList<>();
+    private List<AnalysisTargetEntity> assets = new ArrayList<>();
 
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "child")
     @Builder.Default
     private List<ChildRecordEntity> childRecords = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "child")
+    private List<RelationShipEntity> relationShips = new ArrayList<>();
 }
