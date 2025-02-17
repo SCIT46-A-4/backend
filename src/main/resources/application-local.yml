@@ -1,5 +1,3 @@
-server:
-  port: 9900
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/ilog?useSSL=true&serverTimezone=UTC&characterEncoding=UTF-8

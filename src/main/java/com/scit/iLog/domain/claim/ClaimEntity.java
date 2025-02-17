@@ -5,6 +5,8 @@ import com.scit.iLog.domain.member.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -35,5 +37,5 @@ public class ClaimEntity extends BaseTimeEntity {
     private ClaimType type;
 
     @OneToMany(mappedBy = "claim", fetch = LAZY)
-    private ClaimAnswerEntity answer;
+    private List<ClaimAnswerEntity> answers;
 }

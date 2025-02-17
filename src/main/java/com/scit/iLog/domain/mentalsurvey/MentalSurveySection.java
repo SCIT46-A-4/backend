@@ -1,5 +1,6 @@
 package com.scit.iLog.domain.mentalsurvey;
 
+import jakarta.persistence.Transient;
 import lombok.*;
 
 import java.util.List;
@@ -10,5 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class MentalSurveySection {
     private String title;
+    @Transient
     private List<MentalSurveyQuestion> questions;
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatisticsService {
     private final ChildRecordRepository childRecordRepository;
-    private final MentalSurveyResponseRepository mentalSurveyResponseRepository;
+//    private final MentalSurveyResponseRepository mentalSurveyResponseRepository;
     private final AnalysisResultRepository analysisResultRepository;
 
     @Transactional(readOnly = true)
@@ -48,38 +48,38 @@ public class StatisticsService {
         return new ChildPhysicalStatsDTO(physicalStatPointData);
     }
 
-    /*
-        특정 회원이 실시한 특정 아동의 심리 설문검사의
-        총 합산 점수를 대표값으로 가지는 심리 설문 검사 통계용 DTO를 반환합니다.
-     */
-    @Transactional(readOnly = true)
-    public ChildMentalStatsDTO getMentalStatsBy(
-            Long childId,
-            Long memberId,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            PeriodType periodType
-    ) {
-        List<ChildMentalSurveyStatPointDataDTO> mentalSurveyStatPointData = mentalSurveyResponseRepository.findByChildIdAndRespondentIdAndCreatedAtBetween(
-                        childId, memberId, startDate, endDate
-                )
-                .stream()
-                .map(mentalSurveyResponse ->
-                        ChildMentalSurveyStatPointDataDTO.builder()
-                                .date(mentalSurveyResponse.getCreatedAt())
-                                .resultScore(mentalSurveyResponse.getTotalLikertScore())
-                                .label(Double.toString(mentalSurveyResponse.getTotalLikertScore()))
-                                .detailUrl(
-                                        String.format(
-                                                "/children/%d/mentalSurveys/results/%s",
-                                                childId,
-                                                mentalSurveyResponse.getId()
-                                        )
-                                )
-                                .build()
-                ).toList();
-        return new ChildMentalStatsDTO(mentalSurveyStatPointData);
-    }
+//    /*
+//        특정 회원이 실시한 특정 아동의 심리 설문검사의
+//        총 합산 점수를 대표값으로 가지는 심리 설문 검사 통계용 DTO를 반환합니다.
+//     */
+//    @Transactional(readOnly = true)
+//    public ChildMentalStatsDTO getMentalStatsBy(
+//            Long childId,
+//            Long memberId,
+//            LocalDateTime startDate,
+//            LocalDateTime endDate,
+//            PeriodType periodType
+//    ) {
+//        List<ChildMentalSurveyStatPointDataDTO> mentalSurveyStatPointData = mentalSurveyResponseRepository.findByChildIdAndRespondentIdAndCreatedAtBetween(
+//                        childId, memberId, startDate, endDate
+//                )
+//                .stream()
+//                .map(mentalSurveyResponse ->
+//                        ChildMentalSurveyStatPointDataDTO.builder()
+//                                .date(mentalSurveyResponse.getCreatedAt())
+//                                .resultScore(mentalSurveyResponse.getTotalLikertScore())
+//                                .label(Double.toString(mentalSurveyResponse.getTotalLikertScore()))
+//                                .detailUrl(
+//                                        String.format(
+//                                                "/children/%d/mentalSurveys/results/%s",
+//                                                childId,
+//                                                mentalSurveyResponse.getId()
+//                                        )
+//                                )
+//                                .build()
+//                ).toList();
+//        return new ChildMentalStatsDTO(mentalSurveyStatPointData);
+//    }
 
     @Transactional(readOnly = true)
     public ChildEmotionStatsDTO getEmotionStatsBy(

@@ -13,7 +13,7 @@ import java.util.List;
 	이 컨트롤러는 다음의 페이지에서 필요한 요청을 처리합니다.
 	- 이용안내 관련 페이지 모음
  */
-@Controller("/guides")
+@Controller
 @RequiredArgsConstructor
 public class GuideController {
     /**
@@ -27,7 +27,7 @@ public class GuideController {
      * "이용안내 목록 페이지"를 보여주는 뷰를 반환하는 핸들러
      * @return "guides/guideListView" 뷰 페이지
      */
-    @GetMapping
+    @GetMapping("/guides")
     public String handleGetGuideListView(Model model) {
         // 서비스에서 이용안내 데이터(ALL) 을 가져옴
         List<GuideEntity> guides = guidesService.getAllGuides();

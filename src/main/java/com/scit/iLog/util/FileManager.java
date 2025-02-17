@@ -108,20 +108,6 @@ public final class FileManager {
 	}
 
 	/**
-	 * 여러 파일을 한 번에 삭제하고 결과를 반환합니다.
-	 *
-	 * @param filePaths 삭제할 파일 경로들
-	 * @return 삭제된 파일 수
-	 */
-	public static long deleteFiles(String... filePaths) {
-		return Optional.ofNullable(filePaths)
-				.map(paths -> Stream.of(paths)
-						.filter(path -> deleteFile(path))
-						.count())
-				.orElse(0L);
-	}
-
-	/**
 	 * 파일이나 디렉토리를 재귀적으로 삭제합니다.
 	 * 디렉토리인 경우 하위 항목들을 모두 삭제합니다.
 	 *

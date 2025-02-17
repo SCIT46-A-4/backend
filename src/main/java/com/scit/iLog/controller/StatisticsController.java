@@ -51,20 +51,20 @@ public class StatisticsController {
         return statisticsService.getPhysicalInfoBy(childId,startDate,endDate,periodType);
     }
 
-    @GetMapping("/{childId}/mentalStats")
-    public ChildMentalStatsDTO handleGetChildMentalStats(
-            @PathVariable("childId") Long childId,
-            @RequestParam("startDate")
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
-            LocalDateTime startDate,
-            @RequestParam(value = "endDate")
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
-            LocalDateTime endDate,
-            @RequestParam("periodType") PeriodType periodType,
-            @AuthenticationPrincipal MemberDetails memberDetails
-            ) {
-        return statisticsService.getMentalStatsBy(childId, memberDetails.getId(), startDate,endDate,periodType);
-    }
+//    @GetMapping("/{childId}/mentalStats")
+//    public ChildMentalStatsDTO handleGetChildMentalStats(
+//            @PathVariable("childId") Long childId,
+//            @RequestParam("startDate")
+//            @DateTimeFormat(pattern = "yyyy-MM-dd")
+//            LocalDateTime startDate,
+//            @RequestParam(value = "endDate")
+//            @DateTimeFormat(pattern = "yyyy-MM-dd")
+//            LocalDateTime endDate,
+//            @RequestParam("periodType") PeriodType periodType,
+//            @AuthenticationPrincipal MemberDetails memberDetails
+//            ) {
+//        return statisticsService.getMentalStatsBy(childId, memberDetails.getId(), startDate,endDate,periodType);
+//    }
 
     @GetMapping("/{childId}/emotionStats")
     public ChildEmotionStatsDTO handleGetChildEmotionStats(

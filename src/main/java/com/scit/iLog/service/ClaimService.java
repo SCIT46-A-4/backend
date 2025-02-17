@@ -95,7 +95,18 @@ public class ClaimService {
                                 .title(claim.getTitle())
                                 .content(claim.getContent())
                                 .type(claim.getType().toString())
-                                .claimAnswerDTO(convertClaimAnswerEntityToDTO(claim))
+                                .claimAnswers(
+                                        claim.getAnswers().stream()
+                                                .map(claimAnswer ->
+                                                        ClaimAnswerDTO.builder()
+                                                                .answerId(claimAnswer.getId())
+                                                                .title(claimAnswer.getTitle())
+                                                                .authorName(claimAnswer.getAuthor().getName())
+                                                                .content(claimAnswer.getContent())
+                                                                .build()
+                                                )
+                                                .toList()
+                                )
                                 .build())
                 .toList();
         log.info(" 전체 클레임 조회: {}건", claimsList.size());
@@ -111,22 +122,18 @@ public class ClaimService {
                 .type(claim.getType())
                 .title(claim.getTitle())
                 .content(claim.getContent())
-                .claimAnswerDTO(convertClaimAnswerEntityToDTO(claim))
+                .claimAnswers(
+                        claim.getAnswers().stream()
+                                .map(claimAnswer ->
+                                        ClaimAnswerDTO.builder()
+                                                .answerId(claimAnswer.getId())
+                                                .title(claimAnswer.getTitle())
+                                                .authorName(claimAnswer.getAuthor().getName())
+                                                .content(claimAnswer.getContent())
+                                                .build()
+                                )
+                                .toList()
+                )
                 .build();
-    }
-
-    /*
-        서비스 레벨에서 엔티티를 dto로 변환하는 편의 메서드 작성
-        이렇게 null 처리 등으로 인해 불가피하게 엔티티를 dto로 변환하는 메서드가 필요할 때는
-        차라리 서비스의 private 메서드로 작성하는 것이 좋습니다. - 호준
-     */
-    private ClaimAnswerDTO convertClaimAnswerEntityToDTO(ClaimEntity claim) {
-        return claim.getAnswer() == null ? null :
-                ClaimAnswerDTO.builder()
-                        .answerId(claim.getAnswer().getId())
-                        .authorName(claim.getAnswer().getAuthor().getName())
-                        .title(claim.getAnswer().getTitle())
-                        .content(claim.getContent())
-                        .build();
     }
 }

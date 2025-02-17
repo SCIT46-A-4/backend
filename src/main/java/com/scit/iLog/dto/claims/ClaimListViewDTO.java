@@ -1,6 +1,9 @@
 package com.scit.iLog.dto.claims;
 
 import lombok.Builder;
+
+import java.util.List;
+
 /*
    이렇게 dto에는 반드시 dto만 포함해야합니다. - 호준
 */
@@ -11,6 +14,6 @@ public record ClaimListViewDTO(
         String title,
         String content,
         String type,
-        ClaimAnswerDTO claimAnswerDTO
+        List<ClaimAnswerDTO> claimAnswers
 ) {
 }
