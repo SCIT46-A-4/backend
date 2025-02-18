@@ -1,177 +1,110 @@
-create database ilog;
-use ilog;
-
--- Drop tables (역순으로 삭제하여 외래키 제약 조건 문제 회피)
-DROP TABLE IF EXISTS analysis_result_note;
-DROP TABLE IF EXISTS analysis_result;
-DROP TABLE IF EXISTS child_diary;
-DROP TABLE IF EXISTS child_record;
-DROP TABLE IF EXISTS health_survey;
+-- Drop existing tables (순서에 주의)
+DROP TABLE IF EXISTS weather;
 DROP TABLE IF EXISTS relationship;
-DROP TABLE IF EXISTS child_asset;
-DROP TABLE IF EXISTS child;
+DROP TABLE IF EXISTS member;
+DROP TABLE IF EXISTS health_check;
+DROP TABLE IF EXISTS guide;
 DROP TABLE IF EXISTS claim_answer;
 DROP TABLE IF EXISTS claim;
-DROP TABLE IF EXISTS help;
-DROP TABLE IF EXISTS mental_answer;
-DROP TABLE IF EXISTS mental_option;
-DROP TABLE IF EXISTS mental_question;
-DROP TABLE IF EXISTS mental_response;
-DROP TABLE IF EXISTS mental_survey;
-DROP TABLE IF EXISTS member;
-
--- =====================================================
--- Table: member
--- =====================================================
-CREATE TABLE member (
-		member_id BIGINT AUTO_INCREMENT,
-		userid VARCHAR(100) NOT NULL,
-    password VARCHAR(65) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    role ENUM('ADMIN','USER'),
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (member_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =====================================================
--- Table: child
--- =====================================================
-CREATE TABLE child (
-    child_id BIGINT AUTO_INCREMENT,
-    birth_date TIMESTAMP,
-    name VARCHAR(100) NOT NULL,
-    note VARCHAR(255),
-    gender ENUM('MAN','NONE','WOMAN') NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (child_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =====================================================
--- Table: child_asset
--- =====================================================
-CREATE TABLE child_asset (
-    child_id BIGINT NOT NULL,
-    child_asset_id BIGINT AUTO_INCREMENT,
-    uploaded_by BIGINT,
-    type ENUM('DRAWING','PHOTO','VOICE','WRITING') NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-
-    PRIMARY KEY (child_asset_id),
-    CONSTRAINT fk_child_asset_child FOREIGN KEY (child_id)
-        REFERENCES child(child_id) ON DELETE CASCADE,
-    CONSTRAINT fk_child_asset_uploaded_by FOREIGN KEY (uploaded_by)
-        REFERENCES member(member_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+DROP TABLE IF EXISTS child_record;
+DROP TABLE IF EXISTS child_diary;
+DROP TABLE IF EXISTS child;
+DROP TABLE IF EXISTS analysis_target;
+DROP TABLE IF EXISTS analysis_result_note;
+DROP TABLE IF EXISTS analysis_result;
 
 -- =====================================================
 -- Table: analysis_result
 -- =====================================================
 CREATE TABLE analysis_result (
-    child_asset_id BIGINT NOT NULL,
+    emotion_score FLOAT(53),
     analysis_id BIGINT AUTO_INCREMENT,
-    emotion_score FLOAT,
+    child_asset_id BIGINT NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
     analysis_result VARCHAR(1000),
     suggested_solution VARCHAR(1000),
-    created_at TIMESTAMP  NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-
-    PRIMARY KEY (analysis_id),
-    CONSTRAINT fk_analysis_result_child_asset FOREIGN KEY (child_asset_id)
-        REFERENCES child_asset(child_asset_id) ON DELETE CASCADE
+    emotion_type ENUM('ANGRY','ANXIOUS','BORED','CONFUSED','EXCITED','FEAR','HAPPY','NEUTRAL','SAD','SHY','SURPRISED'),
+    PRIMARY KEY (analysis_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
 -- Table: analysis_result_note
 -- =====================================================
 CREATE TABLE analysis_result_note (
+    satisfaction_level INTEGER,
     analysis_result_id BIGINT NOT NULL,
     analysis_result_note_id BIGINT AUTO_INCREMENT,
+    created_at TIMESTAMP(6) NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
     content VARCHAR(1000) NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (analysis_result_note_id),
-    CONSTRAINT fk_analysis_result_note FOREIGN KEY (analysis_result_id)
-        REFERENCES analysis_result(analysis_id) ON DELETE CASCADE
+    PRIMARY KEY (analysis_result_note_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =====================================================
+-- Table: analysis_target
+-- =====================================================
+CREATE TABLE analysis_target (
+    child_asset_id BIGINT AUTO_INCREMENT,
+    child_id BIGINT NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
+    register_date TIMESTAMP(6) NULL,
+    uploaded_by BIGINT,
+    original_survey_file_name VARCHAR(200),
+    saved_survey_file_name VARCHAR(200),
+    supplement VARCHAR(1000),
+    companion VARCHAR(255),
+    type ENUM('DRAWING','PHOTO','VOICE','WRITING') NOT NULL,
+    PRIMARY KEY (child_asset_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =====================================================
+-- Table: child
+-- =====================================================
+CREATE TABLE child (
+    birth_date TIMESTAMP(6) NULL,
+    child_id BIGINT AUTO_INCREMENT,
+    created_at TIMESTAMP(6) NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
+    name VARCHAR(100) NOT NULL,
+    birth_location VARCHAR(255),
+    note VARCHAR(255),
+    original_profile_img_name VARCHAR(255),
+    saved_profile_img_name VARCHAR(255),
+    gender ENUM('MAN','NONE','WOMAN') NOT NULL,
+    PRIMARY KEY (child_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
 -- Table: child_diary
 -- =====================================================
 CREATE TABLE child_diary (
-    diary_id BIGINT AUTO_INCREMENT,
     author_id BIGINT NOT NULL,
     child_id BIGINT NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL,
+    diary_id BIGINT AUTO_INCREMENT,
+    modified_at TIMESTAMP(6) NULL,
     content TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (diary_id),
-    CONSTRAINT fk_child_diary_author FOREIGN KEY (author_id)
-        REFERENCES member(member_id),
-    CONSTRAINT fk_child_diary_child FOREIGN KEY (child_id)
-        REFERENCES child(child_id) ON DELETE CASCADE
+    title VARCHAR(255),
+    PRIMARY KEY (diary_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
 -- Table: child_record
 -- =====================================================
 CREATE TABLE child_record (
+    height FLOAT(53),
+    left_eye FLOAT(53),
+    right_eye FLOAT(53),
+    weight FLOAT(53),
+    child_id BIGINT NOT NULL,
     child_record_id BIGINT AUTO_INCREMENT,
-    height FLOAT,
-    left_eye FLOAT,
-    right_eye FLOAT,
-    weight FLOAT,
-    child_id BIGINT NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    name VARCHAR(100) NOT NULL,
-    original_photo_name VARCHAR(100),
-    saved_photo_name VARCHAR(100),
+    created_at TIMESTAMP(6) NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
+    register_date TIMESTAMP(6) NULL,
     note VARCHAR(1000),
-    gender ENUM('MAN','NONE','WOMAN') NOT NULL,
-    PRIMARY KEY (child_record_id),
-    CONSTRAINT fk_child_record_child FOREIGN KEY (child_id)
-        REFERENCES child(child_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =====================================================
--- Table: health_survey
--- =====================================================
-CREATE TABLE health_survey (
-    health_survey_id BIGINT AUTO_INCREMENT,
-    child_id BIGINT NOT NULL,
-    member_id BIGINT NOT NULL,
-    original_survey_file_name VARCHAR(200),
-    saved_survey_file_name VARCHAR(200),
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (health_survey_id),
-    CONSTRAINT fk_health_survey_child FOREIGN KEY (child_id)
-        REFERENCES child(child_id) ON DELETE CASCADE,
-    CONSTRAINT fk_health_survey_member FOREIGN KEY (member_id)
-        REFERENCES member(member_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =====================================================
--- Table: relationship
--- =====================================================
-CREATE TABLE relationship (
-    relationship_id BIGINT AUTO_INCREMENT,
-    child_id BIGINT NOT NULL,
-    member_id BIGINT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    permission_level ENUM('EDITOR','OWNER','VIEWER') NOT NULL,
-    relation_type ENUM('CARER','EXPERT','PARENT','TEACHER') NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (relationship_id),
-    CONSTRAINT fk_relationship_child FOREIGN KEY (child_id)
-        REFERENCES child(child_id) ON DELETE CASCADE,
-    CONSTRAINT fk_relationship_member FOREIGN KEY (member_id)
-        REFERENCES member(member_id)
+    PRIMARY KEY (child_record_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
@@ -179,16 +112,13 @@ CREATE TABLE relationship (
 -- =====================================================
 CREATE TABLE claim (
     claim_id BIGINT AUTO_INCREMENT,
+    created_at TIMESTAMP(6) NOT NULL,
     member_id BIGINT NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
     title VARCHAR(100) NOT NULL,
     content VARCHAR(1000) NOT NULL,
     type ENUM('GENERAL','PRIVACY','USAGE') NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP(6),
-
-    PRIMARY KEY (claim_id),
-    CONSTRAINT fk_claim_member FOREIGN KEY (member_id)
-        REFERENCES member(member_id)
+    PRIMARY KEY (claim_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
@@ -197,110 +127,157 @@ CREATE TABLE claim (
 CREATE TABLE claim_answer (
     claim_answer_id BIGINT AUTO_INCREMENT,
     claim_id BIGINT NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL,
     member_id BIGINT NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
     title VARCHAR(100) NOT NULL,
     content VARCHAR(1000) NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (claim_answer_id),
-    CONSTRAINT fk_claim_answer_member FOREIGN KEY (member_id)
-        REFERENCES member(member_id),
-    CONSTRAINT fk_claim_answer_claim FOREIGN KEY (claim_id)
-        REFERENCES claim(claim_id)
+    PRIMARY KEY (claim_answer_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
--- Table: help
+-- Table: guide
 -- =====================================================
-CREATE TABLE help (
-    help_id BIGINT AUTO_INCREMENT,
+CREATE TABLE guide (
+    created_at TIMESTAMP(6) NOT NULL,
+    guide_id BIGINT AUTO_INCREMENT,
     member_id BIGINT NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
     title VARCHAR(100) NOT NULL,
     content VARCHAR(1000) NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (help_id),
-    CONSTRAINT fk_help_member FOREIGN KEY (member_id)
-        REFERENCES member(member_id)
+    PRIMARY KEY (guide_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
--- Table: mental_survey
+-- Table: health_check
 -- =====================================================
-CREATE TABLE mental_survey (
-    mental_survey_id BIGINT AUTO_INCREMENT,
-    title VARCHAR(100),
-    description VARCHAR(500),
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (mental_survey_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =====================================================
--- Table: mental_question
--- =====================================================
-CREATE TABLE mental_question (
-    mental_question_id BIGINT AUTO_INCREMENT,
-    is_required BOOLEAN NOT NULL,
-    sort_order INTEGER NOT NULL,
-    mental_survey_id BIGINT NOT NULL,
-    question_text VARCHAR(200) NOT NULL,
-    question_type ENUM('BOOLEAN','MULTIPLE_CHOICE','RATING','TEXT') NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (mental_question_id),
-    CONSTRAINT fk_mental_question_survey FOREIGN KEY (mental_survey_id)
-        REFERENCES mental_survey(mental_survey_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =====================================================
--- Table: mental_option
--- =====================================================
-CREATE TABLE mental_option (
-    mental_option_id BIGINT AUTO_INCREMENT,
-    sort_order INTEGER,
-    mental_question_id BIGINT NOT NULL,
-    option_text VARCHAR(200) NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-
-    PRIMARY KEY (mental_option_id),
-    CONSTRAINT fk_mental_option_question FOREIGN KEY (mental_question_id)
-        REFERENCES mental_question(mental_question_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =====================================================
--- Table: mental_response
--- =====================================================
-CREATE TABLE mental_response (
-    mental_response_id BIGINT AUTO_INCREMENT,
+CREATE TABLE health_check (
+    child_id BIGINT NOT NULL,
+    child_record_id BIGINT UNIQUE,
+    created_at TIMESTAMP(6) NOT NULL,
+    health_survey_id BIGINT AUTO_INCREMENT,
     member_id BIGINT NOT NULL,
-    survey_id BIGINT NOT NULL,
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (mental_response_id),
-    CONSTRAINT fk_mental_response_member FOREIGN KEY (member_id)
-        REFERENCES member(member_id),
-    CONSTRAINT fk_mental_response_survey FOREIGN KEY (survey_id)
-        REFERENCES mental_survey(mental_survey_id)
+    modified_at TIMESTAMP(6) NULL,
+    original_file_name VARCHAR(200),
+    saved_file_name VARCHAR(200),
+    PRIMARY KEY (health_survey_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
--- Table: mental_answer
+-- Table: member
 -- =====================================================
-CREATE TABLE mental_answer (
-    mental_answer_id BIGINT AUTO_INCREMENT,
-    mental_option_id BIGINT,
-    mental_question_id BIGINT NOT NULL,
-    mental_response_id BIGINT NOT NULL,
-    answer VARCHAR(1000),
-    created_at TIMESTAMP NOT NULL default current_timestamp,
-    modified_at TIMESTAMP,
-    PRIMARY KEY (mental_answer_id),
-    CONSTRAINT fk_mental_answer_question FOREIGN KEY (mental_question_id)
-        REFERENCES mental_question(mental_question_id),
-    CONSTRAINT fk_mental_answer_option FOREIGN KEY (mental_option_id)
-        REFERENCES mental_option(mental_option_id),
-    CONSTRAINT fk_mental_answer_response FOREIGN KEY (mental_response_id)
-        REFERENCES mental_response(mental_response_id)
+CREATE TABLE member (
+    relation_type TINYINT,
+    CHECK (relation_type BETWEEN 0 AND 4),
+    created_at TIMESTAMP(6) NOT NULL,
+    member_id BIGINT AUTO_INCREMENT,
+    modified_at TIMESTAMP(6) NULL,
+    password VARCHAR(65) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    sign_in_id VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    role ENUM('ADMIN','USER') NOT NULL,
+    PRIMARY KEY (member_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =====================================================
+-- Table: relationship
+-- =====================================================
+CREATE TABLE relationship (
+    child_id BIGINT NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL,
+    member_id BIGINT NOT NULL,
+    modified_at TIMESTAMP(6) NULL,
+    relationship_id BIGINT AUTO_INCREMENT,
+    permission_level ENUM('EDITOR','OWNER','VIEWER') NOT NULL,
+    relation_type ENUM('CARER','EXPERT','GUARDIAN','PARENT','TEACHER') NOT NULL,
+    PRIMARY KEY (relationship_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =====================================================
+-- Table: weather
+-- =====================================================
+CREATE TABLE weather (
+    humidity INTEGER,
+    temperature FLOAT(24),
+    wind_speed FLOAT(24),
+    analysis_target_id BIGINT NOT NULL UNIQUE,
+    created_at TIMESTAMP(6) NOT NULL,
+    id BIGINT AUTO_INCREMENT,
+    modified_at TIMESTAMP(6) NULL,
+    recorded_at TIMESTAMP(6) NULL,
+    weather_desc VARCHAR(255),
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =====================================================
+-- Foreign Key Constraints
+-- =====================================================
+
+ALTER TABLE analysis_result
+    ADD CONSTRAINT FKxux3i8j6q0vkcbdxn6i4siq
+    FOREIGN KEY (child_asset_id) REFERENCES analysis_target(child_asset_id);
+
+ALTER TABLE analysis_result_note
+    ADD CONSTRAINT FK3q8mvsrhm6p0whqkju6p2p28y
+    FOREIGN KEY (analysis_result_id) REFERENCES analysis_result(analysis_id);
+
+ALTER TABLE analysis_target
+    ADD CONSTRAINT FKk01143xtkclu77ykl11orsy51
+    FOREIGN KEY (child_id) REFERENCES child(child_id);
+
+ALTER TABLE analysis_target
+    ADD CONSTRAINT FKqp3jjvj7yfnnts0x8ehd5tjdx
+    FOREIGN KEY (uploaded_by) REFERENCES member(member_id);
+
+ALTER TABLE child_diary
+    ADD CONSTRAINT FKaamyj8p0iblu1cvv11labdhov
+    FOREIGN KEY (author_id) REFERENCES member(member_id);
+
+ALTER TABLE child_diary
+    ADD CONSTRAINT FKlx3ifvsd0i205vw95m8nhd24d
+    FOREIGN KEY (child_id) REFERENCES child(child_id);
+
+ALTER TABLE child_record
+    ADD CONSTRAINT FKnls6q1ddvvmb8qnb340ep3ojs
+    FOREIGN KEY (child_id) REFERENCES child(child_id);
+
+ALTER TABLE claim
+    ADD CONSTRAINT FKb1f4qnsth2py6jn2ufqp2wqb6
+    FOREIGN KEY (member_id) REFERENCES member(member_id);
+
+ALTER TABLE claim_answer
+    ADD CONSTRAINT FK13r8x5c40wk3nt6yow3rae7a8
+    FOREIGN KEY (member_id) REFERENCES member(member_id);
+
+ALTER TABLE claim_answer
+    ADD CONSTRAINT FKp7o80t72w63ep039d2esmi8dx
+    FOREIGN KEY (claim_id) REFERENCES claim(claim_id);
+
+ALTER TABLE guide
+    ADD CONSTRAINT FKr77ccissr4xmfoga75dx0dna3
+    FOREIGN KEY (member_id) REFERENCES member(member_id);
+
+ALTER TABLE health_check
+    ADD CONSTRAINT FK5m10eckmd7ly2yrf27umbbf76
+    FOREIGN KEY (child_id) REFERENCES child(child_id);
+
+ALTER TABLE health_check
+    ADD CONSTRAINT FK9xbdt5yeg0ukjbyffmxka8p41
+    FOREIGN KEY (child_record_id) REFERENCES child_record(child_record_id);
+
+ALTER TABLE health_check
+    ADD CONSTRAINT FKceca8q54cor1q1qbkbcg6rwj9
+    FOREIGN KEY (member_id) REFERENCES member(member_id);
+
+ALTER TABLE relationship
+    ADD CONSTRAINT FKgbi5415as44qw0a0h8hre11c4
+    FOREIGN KEY (child_id) REFERENCES child(child_id);
+
+ALTER TABLE relationship
+    ADD CONSTRAINT FKa5kgr9ciiwc2ubu1vt640nqij
+    FOREIGN KEY (member_id) REFERENCES member(member_id);
+
+ALTER TABLE weather
+    ADD CONSTRAINT FKicmak91mjnfh8t3ksm1ohem7i
+    FOREIGN KEY (analysis_target_id) REFERENCES analysis_target(child_asset_id);
