@@ -7,6 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "analysis_result_note")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
