@@ -47,6 +47,7 @@ public class SecurityConfig {
                 		.requestMatchers(HttpMethod.DELETE, "/children/**").permitAll()
                         .requestMatchers(
                                 "/",
+                                "/**",
                                 "/auth/signIn",
                                 "/auth/signUp",
                                 "/auth/checkSignInIdExists",	// 2025-02-17~20 이도훈 추가

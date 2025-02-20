@@ -1,4 +1,13 @@
 :root {
-  --primary: #FDF5BF;
-  --secondary: #BEE6D9;
+  —bulma-primary-h: 161deg;
+  —bulma-primary-s: 44%;
+  —bulma-primary-l: 82%;
+}
+
+.is-secondary {
+  background-color: #BEE6D9;
+}
+
+.is-third {
+  background-color: #FFB6B9;
 }

@@ -25,7 +25,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ClaimService {
-    private final ClaimRepository claimsRepository;
+    private final ClaimRepository claimRepository;
     private final MemberRepository memberRepository;
 
     /**
@@ -54,7 +54,7 @@ public class ClaimService {
                 .title(claimInsertDTO.getTitle())
                 .content(claimInsertDTO.getContent())
                 .build();
-        ClaimEntity savedEntity = claimsRepository.save(claimEntity);
+        ClaimEntity savedEntity = claimRepository.save(claimEntity);
 
         log.info("클레임 저장 성공 - ID: {}, 제목: {}", savedEntity.getId(), savedEntity.getTitle());
     }
@@ -67,10 +67,10 @@ public class ClaimService {
     @Transactional
     public void deleteClaim(Long id) {
         // 1. 삭제할 문의 조회 (클레임 테이블에서 조회)
-        boolean doesClaimExist = claimsRepository.existsById(id);
+        boolean doesClaimExist = claimRepository.existsById(id);
         // 2. 삭제 실행
         if(doesClaimExist) {
-            claimsRepository.deleteById(id);
+            claimRepository.deleteById(id);
             log.info("문의 삭제 성공 - ID: {}", id);
         }
     }
@@ -86,7 +86,7 @@ public class ClaimService {
         /*
             고객 문의 조회할 때 답변도 같이 조회하도록 수정합니다. - 호준
          */
-        List<ClaimListViewDTO> claimsList = claimsRepository
+        List<ClaimListViewDTO> claimsList = claimRepository
                 .findAll().stream()
                 .map(claim ->
                         ClaimListViewDTO.builder()
@@ -114,7 +114,7 @@ public class ClaimService {
     }
 
     public ClaimDetailsDTO getClaimDetailsById(Long claimId) {
-        ClaimEntity claim = claimsRepository.findById(claimId)
+        ClaimEntity claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Claim 조회 실패: %d", claimId)));
         return ClaimDetailsDTO.builder()
                 .claimId(claim.getId())
