@@ -24,13 +24,20 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 
 	/**
+	 * 2025-02-17~20 이도훈
 	 * 전달받은 memberDTO를 Entity로 변경한 후 save
 	 * @param signUpDTO
 	 * @return
 	 */
 	@Transactional
 	public void join(SignUpDTO signUpDTO) {
-		// @TODO 부족한 필드 추가. 휴대폰 번호 등
+		
+		// @TODO 부족한 필드 추가. 휴대폰 번호 등 Entity로 변환
+		
+		/**
+		 * 2025-02-17~20 이도훈
+		 * 개인정보 수집 이용 동의 필드 추가
+		 */
 		MemberEntity member = memberRepository.save(
 				MemberEntity.builder()
 						.signInId(signUpDTO.signInId())
@@ -39,11 +46,18 @@ public class MemberService {
 						.name(signUpDTO.userName())
 						.relationType(RelationType.valueOf(signUpDTO.relationType()))
 						.role(MemberRole.USER)
+						.personalInformationCollectionAndUsageAgreement(
+								signUpDTO.personalInformationCollectionAndUsageAgreement()
+								)
 						.build()
 		);
-		memberRepository.save(member);
 	}
 
+	/**
+	 * 아이디 중복 검사 메서드
+	 * @param signInId
+	 * @return
+	 */
 	@Transactional(readOnly = true)
 	public boolean checkSignInIdExists(String signInId) {
 		return memberRepository.existsBySignInId(signInId);
@@ -61,7 +75,7 @@ public class MemberService {
 				.relationType(member.getRelationType())
 				.build();
 	}
-
+	
 	@Transactional(readOnly = true)
 	public MemberDashboardProfileDTO findMemberProfileDataById(String signUpId) {
 		MemberEntity member = memberRepository.findBySignInId(signUpId)

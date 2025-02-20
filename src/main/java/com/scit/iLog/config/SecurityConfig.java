@@ -1,14 +1,8 @@
 package com.scit.iLog.config;
 
-import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.repository.MemberRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,8 +16,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.Collection;
-import java.util.List;
+import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.domain.member.MemberRole;
+import com.scit.iLog.exception.WrongSignInIdException;
+import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.util.LoginFailureHandler;
+import com.scit.iLog.util.LoginSuccessHandler;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
@@ -32,6 +36,9 @@ import java.util.List;
 public class SecurityConfig {
     private final MemberRepository memberRepository;
 
+    private final LoginSuccessHandler loginSuccessHandler;
+	private final LoginFailureHandler loginFailureHandler;
+    
     @Bean
     SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
@@ -43,6 +50,7 @@ public class SecurityConfig {
                                 "/**",
                                 "/auth/signIn",
                                 "/auth/signUp",
+                                "/auth/checkSignInIdExists",	// 2025-02-17~20 이도훈 추가
                                 "/auth/idPwFind",
                                 "/member/join",
                                 "/member/*/info",
@@ -91,15 +99,18 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
         );
+        
         http.formLogin(formAuth ->
                 formAuth
                         .loginPage("/auth/signIn")
                         .loginProcessingUrl("/auth/signIn")
-//                        .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
-//                        .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
+                        // 2025-02-17~20 이도훈 추가
+                        .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
+                        // 2025-02-17~20 이도훈 추가
+                        .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
                         .usernameParameter("signInId")
                         .passwordParameter("userPwd")
-                        .defaultSuccessUrl("/")
+//                        .defaultSuccessUrl("/")
 //                        .failureUrl("/member/login?error=true") //핸들러를 등록하면 필요없음
         );
         http.logout(logout ->
@@ -117,12 +128,27 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    
+    //로그인 시 검증
+    /**
+     * 2025-02-17~20 이도훈
+     * 커스텀 예외처리 추가.
+     * @param passwordEncoder
+     * @return
+     */
     @Bean
-    UserDetailsService userDetailsService() {
+    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         return (signInId) -> {
-            MemberEntity member = memberRepository
+        	//signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
+        	MemberEntity member = memberRepository
                     .findBySignInId(signInId)
-                    .orElseThrow(() -> new EntityNotFoundException("로그인 처리시 회원 조회 실패"));
+                    //사용자가 존재하지 않으면 커스텀 예외(WrongSignInIdException)를 발생시킴.
+                    .orElseThrow(() -> new WrongSignInIdException(
+                    		String.format(
+                    				"회원 조회 실패 아이디 : %s", signInId
+                    				)
+                    		));
+            //사용자가 존재할 경우, MemberDetails 객체 생성 및 반환
             return MemberDetails.builder()
                             .id(member.getId())
                             .name(member.getName())
@@ -131,6 +157,7 @@ public class SecurityConfig {
                             .email(member.getEmail())
                             .relationType(member.getRelationType())
                             .role(member.getRole())
+                            .personalInformationCollectionAndUsageAgreement(member.isPersonalInformationCollectionAndUsageAgreement())
                             .build();
         };
     }
@@ -146,17 +173,20 @@ public class SecurityConfig {
         private final String email;
         private final RelationType relationType;
         private final MemberRole role;
+        private final Boolean personalInformationCollectionAndUsageAgreement;
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
             return List.of(new SimpleGrantedAuthority(this.role.toString()));
         }
-
+        
+        //실제 패스워드로 사용하는 변수
         @Override
         public String getPassword() {
             return this.password;
         }
 
+        //실제 아이디를 사용하는 변수
         @Override
         public String getUsername() {
             return this.signInId;

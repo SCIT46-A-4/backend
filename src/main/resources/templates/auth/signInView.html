@@ -1,29 +1,232 @@
 <!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
->
+<html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
     <title>로그인 페이지</title>
     <script src="/js/jquery-3.7.1.min.js"></script>
+    <!-- bulma -->
+    <link rel="stylesheet" href="/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
+
+    <!-- customColors -->
+    <link rel="stylesheet" href="../../static/css/customColors.css" th:href="@{/css/customColors.css}">
+
+    <script th:src="@{/js/just-validate.production.min.js}"></script>
+
+    <script src="/js/just-validate.production.min.js"></script>
+    <style>
+        /* 전체+왼쪽 컬럼 배경 */
+        body {
+            margin: 0;
+            background-color: #FDF5BF;
+        }
+
+        section.section {
+            padding: 0;
+        }
+
+        .login-container {
+            height: 100vh;
+        }
+
+        .columns.is-fullheight {
+            min-height: 100%;
+            margin: 0;
+        }
+
+        /* 좌우 절반 */
+        .left-half,
+        .right-half {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .left-half {
+            background-color: #FDF5BF;
+        }
+
+        /* .login-box 스타일: 테두리/그림자 제거 */
+        .login-box {
+            box-shadow: none !important;
+            border: none !important;
+            background-color: #FDF5BF !important;
+            width: 500px;
+        }
+
+        /* 로고 이미지를 중앙 정렬하기 */
+        .login-box img {
+            width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* 오른쪽 이미지 영역 */
+        .right-half figure {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .right-half figure img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+
+    <script defer>
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("문서 로드 완료! JustValidate 초기화 시작");
+
+            // 🔹 `loginForm`이 존재하는지 확인
+            const loginForm = document.getElementById("loginForm");
+            if (!loginForm) {
+                console.error("❌ loginForm이 존재하지 않습니다! HTML에서 id를 확인하세요.");
+                return;
+            }
+
+            // JustValidate 라이브러리를 사용하여 폼 검증 설정
+            const validator = new JustValidate("#loginForm", {
+                validateBeforeSubmitting: true, // 입력 중에도 검증 수행
+            });
+
+            // 비밀번호 유효성 검사를 위한 정규식 (영문 + 숫자 + 특수문자 포함, 5~16자)
+            let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).*$/;
+
+            validator
+                .addField("#signInId", [
+                    {
+                        rule: "required",
+                        errorMessage: "아이디를 입력해주세요",
+                    },
+                    {
+                        rule: "minLength",
+                        value: 5,
+                        errorMessage: "아이디는 5~12자 입력해주세요",
+                    },
+                    {
+                        rule: "maxLength",
+                        value: 12,
+                        errorMessage: "아이디는 5~12자 입력해주세요",
+                    }
+                ])
+                .addField("#userPwd", [
+                    {
+                        rule: "required",
+                        errorMessage: "비밀번호를 입력해주세요",
+                    },
+                    {
+                        rule: "minLength",
+                        value: 5,
+                        errorMessage: "비밀번호는 5~12자 입력해주세요",
+                    },
+                    {
+                        rule: "maxLength",
+                        value: 12,
+                        errorMessage: "비밀번호는 5~12자 입력해주세요",
+                    },
+                    {
+                        rule: "customRegexp",
+                        value: passwordRegex,
+                        errorMessage: "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.",
+                    }
+                ])
+
+                // 폼 검증에 성공했을 때 콘솔에 출력
+                .onSuccess((event) => {
+                    event.preventDefault(); // 기본 폼 제출 방지
+                    console.log("폼 검증 성공!");
+                    document.getElementById("loginForm").submit(); // 폼 제출 실행
+                });
+
+            console.log("JustValidate 초기화 완료");
+        });
+    </script>
+
+
 </head>
 
 <body>
-    <h2>로그인</h2>
-    <form th:action="@{/auth/signIn}" method="post">
-        <label for="signInId">아이디:</label>
-        <input type="text" id="signInId" name="signInId" required />
-        <br>
-        <label for="userPwd">비밀번호:</label>
-        <input type="password" id="userPwd" name="userPwd" required />
-        <br>
-        <input type="submit" value="로그인">
-    </form>
-	<a th:href="@{/auth/signUp}">회원가입</a>
-    <a th:href="@{/auth/idPwFind}">ID/PW 찾기</a>
+    <section class="section">
+        <div class="container login-container">
+            <div class="columns is-gapless is-fullheight">
+
+                <!-- 왼쪽 login 폼 -->
+                <div class="column is-half left-half">
+                    <form th:action="@{/auth/signIn}" method="POST" class="box login-box" name="loginForm"
+                        id="loginForm">
+
+                        <!-- 로고 + index 바로가기 -->
+                        <div>
+                            <a th:href="@{/}">
+                                <img src="../../static/images/ilog.png" th:src="@{/images/ilog.png}" alt="로고"
+                                    class="image mb-4">
+                            </a>
+                        </div>
+
+                        <!-- 로그인 타이틀 -->
+                        <h2 class="title has-text-centered mb-5">로그인</h2>
+
+                        <!-- 아이디 입력창 -->
+                        <div class="field mb-2">
+                            <label class="label">아이디</label>
+                            <div class="control">
+                                <input class="input" type="text" name="signInId" id="signInId" placeholder="아이디를 입력해주세요"
+                                    required autocomplete="username">
+                            </div>
+                        </div>
+
+                        <!-- 비밀번호 입력창 -->
+                        <div class="field mb-2">
+                            <label class="label">비밀번호</label>
+                            <div class="control">
+                                <input class="input" type="password" name="userPwd" id="userPwd"
+                                    placeholder="비밀번호를 입력해주세요" required autocomplete="current-password">
+                            </div>
+                        </div>
+
+                        <!-- ID/PWD 찾기 바로가기 -->
+                        <div class="has-text-right">
+                            <p>
+                                <a th:href="@{/auth/idPwFind}" class="has-text-link">아이디/비밀번호 찾기</a>
+                            </p>
+                        </div>
+
+                        <!-- 로그인 실패 메시지 표시 -->
+                        <div th:if="${param.error}" class="error-message has-text-centered mt-2">
+                            <p th:text="${param.errMessage}" style="color: red; font-weight: bold;" class="is-size-5"></p>
+                        </div>
+
+                        <!-- 로그인 버튼 -->
+                        <div class="field mt-4">
+                            <button class="button is-primary is-fullwidth is-medium" type="submit" name="loginBtn"
+                                id="loginBtn" value="로그인">
+                                로그인
+                            </button>
+                        </div>
+
+                        <!-- 회원가입 바로가기 -->
+                        <p class="has-text-centered mt-4">
+                            아직 회원이 아니신가요?
+                            <a th:href="@{/auth/signUp}" class="has-text-link">회원가입</a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- 오른쪽 이미지 영역 -->
+                <div class="column is-half right-half">
+                    <figure>
+                        <img src="../../static/images/A1.jpg" th:src="@{/images/A1.jpg}" alt="옆면이미지">
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </body>
+
 
 </html>
