@@ -39,18 +39,15 @@ public class GuideController {
         model.addAttribute("guides", guides);
         return "guides/guideListView";
     }
-    /*
-        @TODO 서치 기능 추가해야함.
-        ajax로 구현합니다.
-     */
     
     // v1.x.x-1 이용안내 가이드 정보 조회
     // 25/2/17 준
-    @PostMapping("/guideList")
+    @PostMapping("/guides")
     @ResponseBody
-    public List<GuideDTO> handleGetGuideList(@RequestParam(name="searchItem") String searchItem,
-    						  		   @RequestParam(name="searchWord") String searchWord
-    						  		   ) throws Exception
+    public List<GuideDTO> handleGetGuideList(
+            @RequestParam(name="searchItem") String searchItem,
+            @RequestParam(name="searchWord") String searchWord
+    )
     {
     	// searchItem: 찾을 옵션 ex)title, content
     	// searchWord: 찾을 내용 ex)"아이스" "아메리카노" "카라멜" "마끼아또"
