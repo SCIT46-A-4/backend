@@ -1,13 +1,27 @@
 package com.scit.iLog.domain.member;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.scit.iLog.domain.BaseTimeEntity;
 import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.RelationType;
-import jakarta.persistence.*;
-import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -39,10 +53,16 @@ public class MemberEntity extends BaseTimeEntity {
     @Builder.Default
     private MemberRole role = MemberRole.USER;
 
+  //2025-02-17~20 이도훈 @Enumerated(EnumType.STRING)추가
+    @Enumerated(EnumType.STRING)
     @Column(name = "relation_type")
     private RelationType relationType;
-
+    
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<RelationShipEntity> relationShips = new ArrayList<>();
+    
+    //2025-02-17~20 이도훈 개인정보 수집 이용 동의
+    @Column(name="personal_information_collection_and_usage_agreement", nullable = false)
+    private boolean personalInformationCollectionAndUsageAgreement;
 }

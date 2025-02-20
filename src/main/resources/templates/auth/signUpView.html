@@ -5,27 +5,384 @@
     <meta charset="UTF-8">
     <title>회원가입 페이지</title>
     <script src="/js/jquery-3.7.1.min.js"></script>
+    <!-- bulma -->
+    <link rel="stylesheet" href="/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
+
+    <!-- customColors -->
+    <link rel="stylesheet" href="../../static/css/customColors.css" th:href="@{/css/customColors.css}">
+
+
+    <script th:src="@{/js/just-validate.production.min.js}"></script>
+
+    <style>
+        /* 전체 배경색 */
+        body {
+            margin: 0;
+            background-color: #FDF5BF;
+        }
+
+        /* section 기본 패딩 제거 */
+        section.section {
+            padding: 0;
+            margin: 0;
+        }
+
+        /* .regist-container: 전체 높이+가로 중앙정렬 */
+        .regist-container {
+            height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* columns가 부모 높이를 꽉 채우도록 */
+        .columns.is-fullheight {
+            min-height: 100%;
+            margin: 0;
+        }
+
+        /* 왼쪽/오른쪽 컬럼 */
+        .left-half,
+        .right-half {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 오른쪽 컬럼 배경색 */
+        .right-half {
+            background-color: #FDF5BF;
+        }
+
+        /* 회원가입 박스 */
+        .regist-box {
+            box-shadow: none !important;
+            border: none !important;
+            background-color: #FDF5BF !important;
+            width: 500px;
+            max-height: 100%;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 에러 메시지가 추가될 경우에만 스크롤 활성화 */
+        .regist-box:has(.just-validate-error-label) {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        /* 왼쪽 이미지 영역 */
+        .left-half figure {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .left-half figure img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+
+    <script>
+        /* 2025-02-17~20 이도훈
+         * JustValidate 라이브러리를 사용한 폼 검증 
+         *"DOMContentLoaded" html 문서가 로드된 후 실행되는 이벤트
+        */
+        document.addEventListener("DOMContentLoaded", function () {
+            //DOM 요소(id) 변수로 저장 (최적화)
+            const signUpForm = document.querySelector("#signUpForm");
+            const userName = document.querySelector("#userName");
+            const signInIdInput = document.querySelector("#signInId");
+            const userPwdInput = document.querySelector("#userPwd");
+            const userPwdCheckInput = document.querySelector("#userPwdCheck");
+            const userEmailInput = document.querySelector("#userEmail");
+            const relationTypeRadioGroup = document.querySelector("#relationTypeRadio");
+            const agreementCheckbox = document.querySelector("#personalInformationCollectionAndUsageAgreement");
+            const idCheckBtn = document.querySelector("#idCheckBtn");
+
+            // 아이디 중복 체크 여부
+            let isIdChecked = false;
+
+            // JustValidate 인스턴스 생성 후 옵션 추가
+            const validator = new JustValidate(signUpForm, {
+                //입력시 실시간 검증
+                validateOnInput: true,
+                //변경시 실시간 검증
+                validateOnChange: true,
+                //포커스 아웃시 검증
+                validateOnBlur: true,
+                //포커스 자동 이동 방지
+                focusInvalidField: false,
+                //입력 중 검증 
+                validateBeforeSubmitting: true
+            });
+
+            // 비밀번호 정규식
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).*$/;
+
+            // Just-Validate를 이용한 form 검증
+            validator
+                // 이름 검증
+                .addField(userName, [
+                    { rule: "required", errorMessage: "이름을 입력해주세요" }
+                ])
+                // 아이디 검증
+                .addField(signInIdInput, [
+                    {
+                        rule: "required",
+                        errorMessage: "아이디를 입력해주세요"
+                    },
+                    {
+                        rule: "minLength",
+                        value: 5,
+                        errorMessage: "아이디는 5~12자"
+                    },
+                    {
+                        rule: "maxLength",
+                        value: 12,
+                        errorMessage: "아이디는 5~12자"
+                    },
+                    // 아이디 중복 체크 여부
+                    {
+                        validator: function () {
+                            return isIdChecked;
+                        },
+                        errorMessage: "아이디 중복 체크를 진행해주세요.",
+                    }
+                ])
+                // 비밀번호 검증
+                .addField(userPwdInput, [
+                    {
+                        rule: "required",
+                        errorMessage: "비밀번호를 입력해주세요"
+                    },
+                    {
+                        rule: "minLength",
+                        value: 5,
+                        errorMessage: "비밀번호는 5~12자"
+                    },
+                    {
+                        rule: "maxLength",
+                        value: 12,
+                        errorMessage: "비밀번호는 5~12자"
+                    },
+                    // 비밀번호 정규식 검증
+                    {
+                        rule: "customRegexp",
+                        value: passwordRegex,
+                        errorMessage: "비밀번호는 5~12자의 영문, 숫자, 특수문자를 포함해야 합니다."
+                    }
+                ])
+                // 비밀번호 확인 검증
+                .addField(userPwdCheckInput, [
+                    {
+                        rule: "required",
+                        errorMessage: "비밀번호 확인을 입력해주세요"
+                    },
+                    // 비밀번호 일치 검증
+                    {
+                        validator: function (value) {
+                            return value === userPwdInput.value;
+                        },
+                        errorMessage: "비밀번호가 일치하지 않습니다."
+                    }
+                ])
+                // 이메일 검증
+                .addField(userEmailInput, [
+                    {
+                        rule: "required",
+                        errorMessage: "이메일을 입력하세요."
+                    },
+                    {
+                        rule: "email",
+                        errorMessage: "이메일 형식이 아닙니다."
+                    }
+                ])
+                // 관계 선택 검증
+                .addRequiredGroup(relationTypeRadioGroup, "관계를 선택해주세요.")
+                // 약관 동의 검증
+                .addField(agreementCheckbox, [
+                    {
+                        rule: "required",
+                        errorMessage: "약관 동의 필수."
+                    }
+                ])
+                // 폼 검증 성공 시
+                .onSuccess(function (event) {
+                    // 기본 폼 제출 방지
+                    event.preventDefault();
+                    // JustValidate 검증 후 폼 제출
+                    event.target.submit();
+                });
+
+            // 실시간 검증 이벤트 추가
+            signInIdInput.addEventListener("input", function () {
+                isIdChecked = false;
+                validator.revalidateField(signInIdInput);
+            });
+
+            userPwdInput.addEventListener("input", function () {
+                validator.revalidateField(userPwdInput);
+            });
+
+            userPwdCheckInput.addEventListener("input", function () {
+                validator.revalidateField(userPwdCheckInput);
+            });
+
+            userEmailInput.addEventListener("input", function () {
+                validator.revalidateField(userEmailInput);
+            });
+
+            agreementCheckbox.addEventListener("change", function () {
+                validator.revalidateField(agreementCheckbox);
+            });
+
+            //중복 확인 버튼 클릭 이벤트 추가
+            idCheckBtn.addEventListener("click", function () {
+                //form에서 입력 받은 Id값을 가져옴
+                let signInId = signInIdInput.value;
+                // ajax를 통해 서버에 중복 확인 요청
+                // checkSignInIdExists URL이 매핑된 컨트롤러에 GET 방식으로 요청
+                $.ajax({
+                    url: "/auth/checkSignInIdExists",
+                    method: "GET",
+                    data: { signInId: signInId },
+                    success: function (isExists) {
+                        // 아이디가 중복이 아니면 true
+                        isIdChecked = !isExists;
+                        // JustValidate를 통해 아이디 중복 체크
+                        validator.revalidateField(signInIdInput);
+                    },
+                    error: function () {
+                        alert("서버 오류 발생. 다시 시도해주세요.");
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 
 <body>
-    회원가입 페이지
-    <div class="content">
-        <form th:action="@{/auth/signUp}" method="POST" id="signUpForm">
-            <label for="userName">이름(실명)</label>
-            <input type="text" name="userName" id="userName"> <br>
-            <label for="signInId">아이디</label>
-            <input type="text" name="signInId" id="signInId"> <br>
-            <label for="userPwd">비밀번호</label>
-            <input type="password" name="userPwd" id="userPwd"> <br>
-            <label for="userPwdCheck">비밀번호 체크</label>
-            <input type="password" id="userPwdCheck"> <br>
-            <label for="userEmail">이메일</label>
-            <input type="email" name="userEmail" id="userEmail"> <br>
-            <br>
-            <input type="submit" value="회원가입">
-            <input type="reset" value="돌아가기">
-        </form>
-    </div>
+    <section class="section">
+        <div class="container regist-container">
+            <div class="columns is-gapless is-fullheight">
+
+                <!-- 왼쪽 이미지 폼 -->
+                <div class="column is-half left-half">
+                    <figure>
+                        <img src="../../static/images/A2.jpg" th:src="@{/images/A2.jpg}" alt="옆면이미지">
+                    </figure>
+                </div>
+
+                <!-- 오른쪽 regist 폼 -->
+                <div class="column is-half right-half">
+                    <form th:action="@{/auth/signUp}" method="POST" id="signUpForm" class="box regist-box">
+
+                        <!-- 회원가입 타이틀 -->
+                        <h2 class="title has-text-centered mb-5">회원 가입</h2>
+
+                        <!-- 이름(실명) 입력창 -->
+                        <div class="field mb-2">
+                            <label class="label">이름</label>
+                            <div class="control">
+                                <input class="input" type="text" name="userName" id="userName"
+                                    placeholder="이름(실명)을 입력해주세요">
+                            </div>
+                        </div>
+
+                        <!-- 아이디 입력창 + 중복확인 버튼 -->
+                        <div class="field mb-2">
+                            <label class="label">아이디</label>
+                            <div class="field has-addons">
+                                <div class="control is-expanded">
+                                    <input class="input" type="text" name="signInId" id="signInId"
+                                        placeholder="아이디를 입력해주세요">
+                                </div>
+                                <div class="control">
+                                    <button class="button is-info" type="button" name="idCheckBtn" id="idCheckBtn">
+                                        중복확인
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 비밀번호 입력창 -->
+                        <div class="field mb-2">
+                            <label class="label">비밀번호</label>
+                            <div class="control">
+                                <input class="input" type="password" name="userPwd" id="userPwd"
+                                    placeholder="비밀번호를 입력해주세요">
+                            </div>
+                        </div>
+
+                        <!-- 비밀번호 확인 입력창 -->
+                        <div class="field mb-2">
+                            <label class="label">비밀번호 확인</label>
+                            <div class="control">
+                                <input class="input" type="password" name="userPwdCheck" id="userPwdCheck"
+                                    placeholder="비밀번호를 다시 한 번 입력해주세요">
+                            </div>
+                        </div>
+
+                        <!-- 이메일 입력창 -->
+                        <div class="field mb-1">
+                            <label class="label">이메일</label>
+                            <div class="control">
+                                <input class="input" type="email" name="userEmail" id="userEmail"
+                                    placeholder="이메일 주소를 입력해주세요">
+                            </div>
+                        </div>
+
+                        <!-- 역할(라디오) 선택창 -->
+                        <div class="field mb-3 has-text-centered">
+                            <div class="control" id="relationTypeRadio">
+                                <label class="radio mr-6">
+                                    <input type="radio" name="relationType" id="relationTypeGuadian" value="GUARDIAN">
+                                    보호자
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="relationType" id="relationTypeTeacher" value="TEACHER">
+                                    교사
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- 개인정보 동의 체크창 -->
+                        <div class="field mb-2 has-text-centered">
+                            <div class="control">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="personalInformationCollectionAndUsageAgreement"
+                                        id="personalInformationCollectionAndUsageAgreement" value="true">
+                                    개인정보 수집 및 이용 동의에 동의하십니까? (필수)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 회원가입 버튼 -->
+                        <div class="field mb-4">
+                            <button class="button is-primary is-fullwidth is-medium" type="submit"
+                                name="signUpSubmitBtn" id="signUpSubmitBtn">
+                                회원 가입
+                            </button>
+                        </div>
+
+                        <!-- 로그인 바로가기 -->
+                        <p class="has-text-centered">
+                            이미 계정이 있으신가요?
+                            <a th:href="@{/auth/signIn}" class="has-text-link">로그인</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
 </body>
+
+
 </html>

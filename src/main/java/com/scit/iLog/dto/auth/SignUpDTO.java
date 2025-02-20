@@ -8,6 +8,8 @@ public record SignUpDTO(
         String signInId,
         String userPwd,
         String userEmail,
-        String relationType
+        String relationType,
+        //2025-02-17~20 이도훈 개인정보 수집 이용 동의
+        boolean personalInformationCollectionAndUsageAgreement
 ) {
 }

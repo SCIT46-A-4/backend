@@ -23,13 +23,13 @@ public class WeatherEntity extends BaseTimeEntity {
     private AnalysisTargetEntity analysisTarget;
 
     @Column(name = "temperature")
-    private float temperature;
+    private double temperature;
 
     @Column(name = "humidity")
     private int humidity;
 
     @Column(name = "wind_speed")
-    private float windSpeed;
+    private double windSpeed;
 
     @Column(name = "weather_desc")
     private String weatherDesc;

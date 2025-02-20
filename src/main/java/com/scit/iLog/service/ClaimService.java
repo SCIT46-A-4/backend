@@ -7,7 +7,7 @@ import com.scit.iLog.dto.claims.ClaimAnswerDTO;
 import com.scit.iLog.dto.claims.ClaimListViewDTO;
 import com.scit.iLog.dto.claims.ClaimsAndAnswersDTO;
 import com.scit.iLog.dto.claims.ClaimsInsertDTO;
-import com.scit.iLog.repository.ClaimsRepository;
+import com.scit.iLog.repository.ClaimRepository;
 import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ClaimService {
-    private final ClaimsRepository claimsRepository;
+    private final ClaimRepository claimsRepository;
     private final MemberRepository memberRepository;
 
     /**

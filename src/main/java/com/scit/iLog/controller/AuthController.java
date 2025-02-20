@@ -1,11 +1,18 @@
 package com.scit.iLog.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.service.MemberService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -27,6 +34,7 @@ public class AuthController {
 	 */
 	@GetMapping("/signUp")
 	public String handleGetSignUpView() {
+		log.info("handleGetSignUpView");
 		return "auth/signUpView";
 	}
 
@@ -60,6 +68,7 @@ public class AuthController {
 	 */
 	@GetMapping("/signIn")
 	public String handleGetSignInView() {
+		
 		return "auth/signInView";
 	}
 
@@ -78,13 +87,19 @@ public class AuthController {
 		return "auth/idPwFindView";
 	}
 
-	/*
-		A-2
+	/**
+	 * A-2 2025-02-17~20 이도훈
+	 * 아이디 중복 확인 요청 처리
+	 * memberService.checkSignInIdExists(signInId) 를 호출하여 DB에 동일한 ID가 존재하는지 확인
+	 * 존재하면 true, 없으면 false 를 ResponseEntity<Boolean> 으로 반환
+	 * @param signInId
+	 * @return
 	 */
 	@GetMapping("/checkSignInIdExists")
-	public boolean handleCheckSignInIdExists(
+	public ResponseEntity<Boolean> handleCheckSignInIdExists(
 			@RequestParam("signInId") String signInId
 	) {
-		return memberService.checkSignInIdExists(signInId);
+		boolean isExists = memberService.checkSignInIdExists(signInId);
+        return ResponseEntity.ok(isExists);  // ✅ 중복이면 true, 사용 가능하면 false 반환
 	}
 }
