@@ -40,6 +40,7 @@ public class SecurityConfig {
                 		.requestMatchers(HttpMethod.DELETE, "/children/**").permitAll()
                         .requestMatchers(
                                 "/",
+                                "/**",
                                 "/auth/signIn",
                                 "/auth/signUp",
                                 "/auth/idPwFind",

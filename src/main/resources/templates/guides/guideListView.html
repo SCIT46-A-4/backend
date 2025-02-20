@@ -1,36 +1,148 @@
-gu<!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>이용 안내 페이지</title>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-	<h2>이용안내</h2>
-	
-	<!-- 이용안내 목록 표시 -->
-     <table border="1">
-        <thead>
-            <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>내용</th>
-            </tr>
-        </thead>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 목록</title>
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/customColors.css">
 
-        <tbody>
-        	<!-- Thymeleaf를 사용해 guides 리스트를 반복하여 출력 -->
-            <tr th:each="guide, stat : ${guides}">
-                <!-- thymeleaf는 리스트의 인덱스를 0부터 시작함으로 +1! -->
-                <td th:text="${stat.index + 1}"></td>
-                <td th:text="${guide.title}"></td>
-                <td th:text="${guide.content}"></td>
-            </tr>
-        </tbody>
-     </table>
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script defer th:src="@{/js/paging.js}"></script>
+
+    <!-- 폰트어썸 -->
+    <script src="https://kit.fontawesome.com/def97ee41b.js" crossorigin="anonymous"></script>
+
+    <script>
+        $(function () {
+            init(); // 초기화 함수 실행
+        });
+
+        function init() {
+            $("#searchBtn").on("click", performSearch);
+            $("#searchWord").on("keypress", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    performSearch();
+                }
+            });
+        }
+
+        // data ajax로 찾는 로직
+        function performSearch() {
+            let searchItem = $("#searchItem").val();
+            let searchWord = $("#searchWord").val().trim();
+
+            if (searchWord === "") {
+                alert("검색어를 입력하세요.");
+                return;
+            }
+
+            $.ajax({
+                url: "/guideList",
+                method: "POST",
+                data: { "searchItem": searchItem, "searchWord": searchWord },
+                success: function (response) {
+                    updateSearchResults(response);
+                },
+                error: function () {
+                    alert("검색 중 오류가 발생했습니다.");
+                }
+            });
+        }
+
+        function updateSearchResults(results) {
+            let outputHtml = "";
+            if (results.length === 0) {
+                outputHtml = `<p class="has-text-centered">검색 결과가 없습니다.</p>`;
+            } else {
+                $.each(results, function (index, item) {
+                    outputHtml += `
+                    <div class="box" style="margin-bottom: 10px;">
+                        <div class="level" style="display: flex; justify-content: space-between; align-items: center;">
+                            <p class="title is-5">${item.title}</p>
+                            <button type="button" class="button is-white contentBtn">
+                                <span class="icon"><i class="fas fa-caret-down"></i></span>
+                            </button>
+                        </div>
+                        <!-- content-section가 평소에는 안보이게 -->
+                        <div class="content-section" style="display: none; padding: 10px; border-top: 1px solid #ddd;">
+                            <p>${item.content}</p>
+                        </div>
+                    </div>
+                    `;
+                });
+            }
+            $("#searchResults").html(outputHtml);
+            bindContentToggle(); // 새로 추가된 요소에도 이벤트 바인딩
+        }
+
+        function bindContentToggle() {
+            $(".contentBtn").off("click").on("click", function () {
+                let contentDiv = $(this).closest(".box").find(".content-section");
+                contentDiv.toggle(); // 보였다가 숨기기
+
+                // 아이콘 방향 변경
+                let icon = $(this).find("i");
+                if (icon.hasClass("fa-caret-down")) {
+                    icon.removeClass("fa-caret-down").addClass("fa-caret-up");
+                } else {
+                    icon.removeClass("fa-caret-up").addClass("fa-caret-down");
+                }
+            });
+        }
+    </script>
+
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="has-text-centered">
+                <h1 class="title is-3">이용안내</h1>
+                <h2 class="title is-3">무엇을 도와드릴까요?</h2>
+            </div>
+
+            <!-- 검색 창 -->
+            <div class="box">
+                <form th:action="@{/guideList}" method="POST" id="searchForm">
+                    <input type="hidden" name="page" id="requestPage" value="">
+
+                    <div class="field is-grouped">
+                        <!-- 검색 기준 선택 -->
+                        <div class="control">
+                            <div class="select">
+                                <select name="searchItem" id="searchItem">
+                                    <option value="title" th:selected="${searchItem == 'title'}">제목</option>
+                                    <option value="content" th:selected="${searchItem == 'content'}">본문
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 검색어 입력 -->
+                        <div class="control is-expanded">
+                            <input class="input" type="text" name="searchWord" id="searchWord" th:value="${searchWord}"
+                                placeholder="검색어를 입력하세요">
+                        </div>
+
+                        <!-- 검색 버튼 -->
+                        <div class="control">
+                            <button type="button" class="button is-primary" id="searchBtn">
+                                <span class="icon"><i class="fas fa-search"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 검색 결과 리스트 -->
+            <div id="searchResults">
+                <!-- AJAX로 결과가 추가될 공간 -->
+            </div>
+        </div>
+    </section>
 </body>
+
 </html>
