@@ -1,4 +1,4 @@
-package com.scit.iLog.dto.analysis;
+package com.scit.iLog.dto.analysis.ai;
 
 import com.scit.iLog.dto.child.ChildRecordExtraction;
 

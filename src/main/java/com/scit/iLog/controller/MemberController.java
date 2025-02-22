@@ -31,7 +31,6 @@ public class MemberController {
 
     /*
         M-1
-        @TODO 등록된 아동 모두 삭제 옵션에 대한 기능 구현 필요.
      */
     @DeleteMapping("/{memberId}")
     public boolean handleDeleteMember(
@@ -39,7 +38,7 @@ public class MemberController {
             @RequestParam("deleteAllChildren") boolean deleteAllChildren
     ) {
         if (deleteAllChildren) {
-            relationShipService.deleteAllChildrenOf(memberId);
+            relationShipService.deleteAllRelationShipOf(memberId);
         }
         memberService.deleteMember(memberId);
         return true;

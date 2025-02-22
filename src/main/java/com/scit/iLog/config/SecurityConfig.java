@@ -1,8 +1,16 @@
 package com.scit.iLog.config;
 
-import java.util.Collection;
-import java.util.List;
-
+import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.domain.member.MemberRole;
+import com.scit.iLog.exception.WrongSignInIdException;
+import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.util.LoginFailureHandler;
+import com.scit.iLog.util.LoginSuccessHandler;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,18 +24,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.exception.WrongSignInIdException;
-import com.scit.iLog.repository.MemberRepository;
-import com.scit.iLog.util.LoginFailureHandler;
-import com.scit.iLog.util.LoginSuccessHandler;
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -38,7 +36,7 @@ public class SecurityConfig {
 
     private final LoginSuccessHandler loginSuccessHandler;
 	private final LoginFailureHandler loginFailureHandler;
-    
+
     @Bean
     SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
@@ -99,7 +97,7 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
         );
-        
+
         http.formLogin(formAuth ->
                 formAuth
                         .loginPage("/auth/signIn")
@@ -128,16 +126,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    
+
     //로그인 시 검증
     /**
      * 2025-02-17~20 이도훈
      * 커스텀 예외처리 추가.
-     * @param passwordEncoder
      * @return
      */
     @Bean
-    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+    UserDetailsService userDetailsService() {
         return (signInId) -> {
         	//signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
         	MemberEntity member = memberRepository
@@ -179,7 +176,7 @@ public class SecurityConfig {
         public Collection<? extends GrantedAuthority> getAuthorities() {
             return List.of(new SimpleGrantedAuthority(this.role.toString()));
         }
-        
+
         //실제 패스워드로 사용하는 변수
         @Override
         public String getPassword() {

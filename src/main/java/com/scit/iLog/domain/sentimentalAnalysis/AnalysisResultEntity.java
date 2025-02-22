@@ -4,6 +4,8 @@ import com.scit.iLog.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
 @Getter
 @Setter
@@ -14,11 +16,11 @@ import lombok.*;
 public class AnalysisResultEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "analysis_id")
+    @Column(name = "analysis_result_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "child_asset_id", nullable = false)
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "analysis_target_id", nullable = false)
     private AnalysisTargetEntity analysisTarget;
 
     @Column(name = "analysis_result", length = 1000)
@@ -33,4 +35,13 @@ public class AnalysisResultEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "emotion_type")
     private EmotionType emotionType;
+
+    @Column(name = "title")
+    private String title;
+
+    @OneToOne(mappedBy = "analysisResult", fetch = LAZY, cascade = CascadeType.REMOVE)
+    public AnalysisSatisfactionEntity satisfaction;
+
+    @OneToOne(mappedBy = "analysisResult", fetch = LAZY, cascade = CascadeType.REMOVE)
+    private AnalysisResultNoteEntity analysisResultNote;
 }

@@ -13,6 +13,10 @@ public final class FilePathUtil {
     private String childHealthCheckImgWindowsPath;
     @Value("${childHealthCheckImgMacPath}")
     private String childHealthCheckImgMacPath;
+    @Value("${childAnalysisFileImgWindowsPath}")
+    private String childAnalysisFileImgWindowsPath;
+    @Value("${childAnalysisFileMacPath}")
+    private String childAnalysisFileMacPath;
 
     public String childProfileImgUploadPath() {
         String os = System.getProperty("os.name").toLowerCase();
@@ -22,5 +26,10 @@ public final class FilePathUtil {
     public String childHealthCheckImgUploadPath() {
         String os = System.getProperty("os.name").toLowerCase();
         return os.contains("win") ? childHealthCheckImgWindowsPath : childHealthCheckImgMacPath;
+    }
+
+    public String analysisFileUploadPath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return os.contains("win") ? childAnalysisFileImgWindowsPath : childAnalysisFileMacPath;
     }
 }

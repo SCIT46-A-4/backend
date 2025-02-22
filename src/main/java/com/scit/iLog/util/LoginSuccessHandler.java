@@ -1,17 +1,15 @@
 package com.scit.iLog.util;
 
-import java.io.IOException;
-
+import com.scit.iLog.config.SecurityConfig.MemberDetails;
+import com.scit.iLog.domain.RelationType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.scit.iLog.config.SecurityConfig.MemberDetails;
-import com.scit.iLog.domain.RelationType;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 /**
  * 2025-02-17~20 이도훈 LoginSuccessHandler클래스 생성

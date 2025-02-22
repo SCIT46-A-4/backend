@@ -20,7 +20,7 @@ import static jakarta.persistence.FetchType.LAZY;
 public class AnalysisTargetEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "child_asset_id")
+    @Column(name = "analysis_target_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -33,18 +33,18 @@ public class AnalysisTargetEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private ChildAssetType type;
+    private AnalysisType type;
 
-    @Column(name = "original_survey_file_name", length = 200)
-    private String originalSurveyFileName;
+    @Column(name = "original_target_file_name", length = 200)
+    private String originalTargetFileName;
 
-    @Column(name = "saved_survey_file_name", length = 200)
-    private String savedSurveyFileName;
+    @Column(name = "saved_target_file_name", length = 200)
+    private String savedTargetFileName;
 
     @Column(name = "register_date")
     private LocalDateTime registerDate;
 
-    @OneToOne(mappedBy = "analysisTarget", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "analysisTarget", cascade = CascadeType.ALL)
     private WeatherEntity weather;
 
     @Column(name = "companion")
@@ -52,4 +52,10 @@ public class AnalysisTargetEntity extends BaseTimeEntity {
 
     @Column(name = "supplement", length = 1000)
     private String supplement;
+
+    @Column(name = "analyzed_text")
+    private String analyzedText;
+
+    @OneToOne(mappedBy = "analysisTarget", fetch = LAZY)
+    private AnalysisResultEntity analysisResult;
 }

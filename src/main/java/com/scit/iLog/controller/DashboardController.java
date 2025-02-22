@@ -1,7 +1,7 @@
 package com.scit.iLog.controller;
 
 import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.dto.ParentDashboardChildListDTO;
+import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.service.MemberService;
 import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;

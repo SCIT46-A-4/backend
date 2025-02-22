@@ -20,3 +20,5 @@ childProfileImgWindowsPath: C:/ilog/childProfileImgs
 childProfileImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childProfileImgs
 childHealthCheckImgWindowsPath: C:/ilog/childHealthCheckImgs
 childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childHealthCheckImgs
+childAnalysisFileImgWindowsPath: C:/ilog/childAnalysisFiles
+childAnalysisFileMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childAnalysisFiles

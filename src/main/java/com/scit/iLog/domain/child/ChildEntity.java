@@ -43,6 +43,9 @@ public class ChildEntity extends BaseTimeEntity {
     @Column(name = "gender", nullable = false)
     private Gender gender;
 
+    @Column(name = "callname")
+    private String callName;
+
     @Column(name = "original_profile_img_name")
     private String originalProfileImgName;
 
@@ -50,21 +53,25 @@ public class ChildEntity extends BaseTimeEntity {
     private String savedProfileImgName;
 
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "child")
+    @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
     @Builder.Default
     private List<ChildDiaryEntity> diaries = new ArrayList<>();
 
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "child")
+    @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
     @Builder.Default
-    private List<AnalysisTargetEntity> assets = new ArrayList<>();
+    private List<AnalysisTargetEntity> analysisTargets = new ArrayList<>();
 
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "child")
+    @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
     @Builder.Default
     private List<ChildRecordEntity> childRecords = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "child")
+    @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
     private List<RelationShipEntity> relationShips = new ArrayList<>();
+
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
+    private List<ChildBackGroundEntity> childBackGrounds;
 }

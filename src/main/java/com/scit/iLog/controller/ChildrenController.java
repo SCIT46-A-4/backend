@@ -3,7 +3,7 @@ package com.scit.iLog.controller;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.child.*;
-import com.scit.iLog.service.analysis.AiAnalysisService;
+import com.scit.iLog.service.analysis.AnalysisService;
 import com.scit.iLog.service.child.ChildRecordService;
 import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class ChildrenController {
 	 */
 	private final ChildService childService;
 	private final ChildRecordService childRecordService;
-	private final AiAnalysisService aiAnalysisService;
+	private final AnalysisService analysisService;
 
 	// 흐름도: (아이 등록페이지 버튼)    -> 등록페이지 반환
 	//	     등록페이지(등록하기)      -> 등록완료(아이 상세정보 페이지 반환)
@@ -57,11 +57,11 @@ public class ChildrenController {
 		C-1
 	 */
 	@PostMapping("/new")
-	public String handlePostChildInsert(
-			@ModelAttribute ChildBasicInfoDTO childBasicInfoDto,
+	public String handlePostChildBasicInfoInsert(
+			@ModelAttribute ChildBasicInfoInsertDTO childBasicInfoInsertDTO,
 			RedirectAttributes redirectAttributes
 	) {
-		Long childId = childService.saveBasicInfo(childBasicInfoDto);
+		Long childId = childService.saveBasicInfo(childBasicInfoInsertDTO);
 		redirectAttributes.addAttribute("childId", childId);
 
 		return String.format("redirect:/children/%d/basicInfo",childId);
@@ -74,7 +74,6 @@ public class ChildrenController {
 	 * @param model
 	 * @return children/basicInfoDetailsView.html 뷰 페이지
 	 * 서비스 레이어에서 ChildDetailsDto를 가져와 뷰에 전달
-	 * @TODO RequestParam이 아닌 PathVariable로 받아야합니다.
 	 * C-2
 	 */
 	@GetMapping("{childId}/basicInfo")
@@ -88,54 +87,27 @@ public class ChildrenController {
 		return "children/basicInfoDetailsView";
 	}
 
-	// 25/2/12 ㅈ: api-26 아이 정보 상세페이지 요청
-	/*
-		C-2
-		@TODO 이 메서드는 위의 것과 중복되므로 삭제 예정
-	 */
-	@GetMapping("/{childId}/details")
-	public String handleGetChildrenDetailView(
-			@PathVariable(name = "childId") Long id,
-			Model model
-	) throws Exception {
-		// DB에 저장된 아이 정보 꺼내오기
-		ChildBasicInfoDTO _dto = childService.findById(id);
-		// child 데이터 찾아서 반환, 삼항연산자 null 체크 있음
-		/*
-			@TODO ??? 이렇게 아예 다른 타입을 넣어버리면 안됩니다!!!!
-		 */
-		model.addAttribute("child", (_dto != null) ? _dto : "데이터를 찾을 수 없습니다.");
-
-		return "children/basicInfoDetailsView";
-	}
-
 	// 25/2/11 api-28: 아동 삭제요청, return: 대쉬보드 Page
 	/*
 		C-2
-		@TODO 이렇게 boolean값인데 문자열로 응답을 주는 것은 옳지 않습니다!!!
 	 */
 	@DeleteMapping("/{childId}")
 	@ResponseBody
-	public String deleteChildInsertView(@PathVariable("childId") Long childId) {
-		try {
-			childService.deleteById(childId);
-			return "ok";
-		} catch (Exception e) {
-			return "no";
-		}
+	public boolean deleteChildInsertView(@PathVariable("childId") Long childId) {
+		childService.deleteChildById(childId);
+		return true;
 	}
 
 	// 25/2/11 준 api-29 수정: 아동 정보수정페이지 요청
 	/*
 		C-3
-		@TODO 이렇게 Exception 막 던지면 안됩니다!!
 		Exception은 checked Exception이기 때문에 어디선가 try catch로 반드시 잡아줘야합니다.
 	 */
 	@GetMapping("/{childId}/basicInfo/edit")
 	public String handleGetChildDetailsUpdateView(
 			@PathVariable("childId") Long childId,
 			Model model
-	) throws Exception {
+	) {
 		model.addAttribute("child", childService.findById(childId));
 		return "children/basicInfoUpdateView";
 	}
@@ -143,27 +115,14 @@ public class ChildrenController {
 	// 25/2/11 준 api-30 아이 정보 수정
 	/*
 		C-3
-		이렇게 파라미터가 3개 이상이 되면 한줄씩 개행해서 보기좋게!!!!
-		컨트롤러 메서드 이름 잘 지읍시다. ^^
-		이러면 진짜 회사 짤립니다.^^
-		@TODO 컨트롤러 메서드 이름 수정해야합니다!!
 	 */
 	@PostMapping("/{childId}/basicInfo/edit")
-	public String tempupdateName(
+	public String handlePostChildBasicInfoUpdate(
 			@PathVariable(name = "childId") Long childId,
-			@ModelAttribute ChildBasicInfoDTO childBasicInfoDto,
-			RedirectAttributes redirectAttributes
+			@ModelAttribute ChildBasicInfoUpdateDTO childBasicInfoUpdateDTO
 	) {
 		// 아이 정보 수정
-		childService.updateChildData(childId, childBasicInfoDto);
-
-		/*
-			@TODO 이거는 필요없는 코드입니다...
-			리다이렉트할 때 아이디값이 필요하다면 url에 바로 넣어주면됩니다.
-		 */
-		// RedirectAttributes에 파라미터 추가
-		// redirectAttributes.addAttribute("childId", childId);
-
+		childService.updateChildBasicInfo(childId, childBasicInfoUpdateDTO);
 		return String.format("redirect:/children/%d/basicInfo", childId);
 	}
 
@@ -198,10 +157,10 @@ public class ChildrenController {
 	 */
 	@ResponseBody
 	@PostMapping("/healthCheck/recordData")
-	public ChildRecordInsertDTO handlePostHealthCheckImg(
+	public ChildRecordExtraction handlePostHealthCheckImg(
 			@RequestParam("healthCheckImg") MultipartFile healthCheckImg
 	) {
-		return aiAnalysisService.extractChildRecordDataFromImg(healthCheckImg);
+		return analysisService.getExtractChildRecordData(healthCheckImg);
 	}
 
 	/*

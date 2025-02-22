@@ -1,11 +1,12 @@
 package com.scit.iLog.dto.child;
 
+import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.child.Gender;
 import com.scit.iLog.dto.BaseTimeDTO;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
@@ -18,9 +19,9 @@ public class ChildBasicInfoDTO extends BaseTimeDTO
     private String name;
     private LocalDateTime birthDate;
     private String birthLocation;
-    private String note; // 25/2/13 아직 안 쓰는 DTO
+    private String note;
     private Gender gender;
-    
-	// 업로드되는 파일을 받기 위한 변수
-	private MultipartFile profileImg;
+	private String profileImgSrcUri;
+    private String callName;
+    private List<FamilyBackGround> familyBackGrounds;
 }

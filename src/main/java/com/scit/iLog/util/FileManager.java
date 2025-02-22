@@ -15,9 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 //Multipart 파일 저장을 돕는 컴포넌트
 @Slf4j
@@ -29,9 +27,11 @@ public final class FileManager {
 		파일을 저장하고 저장된 파일 이름을 반환하는 메서드
 	 */
 	public void saveFile(MultipartFile uploadFile, String uploadPath) {
-		if (ObjectUtils.isEmpty(uploadFile) || uploadFile.isEmpty()) {
-			throw new IllegalArgumentException("저장할 파일이 존재하지 않음.");
-		}
+        if (ObjectUtils.isEmpty(uploadFile)) {
+            throw new IllegalArgumentException("저장할 파일이 존재하지 않음.");
+        } else if (uploadFile.isEmpty()) {
+            throw new IllegalArgumentException("저장할 파일이 존재하지 않음.");
+        }
 
 		// 디렉토리 객체 생성 및 존재하지 않으면 생성
 		File directory = new File(uploadPath);

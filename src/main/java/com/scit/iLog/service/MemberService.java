@@ -31,9 +31,9 @@ public class MemberService {
 	 */
 	@Transactional
 	public void join(SignUpDTO signUpDTO) {
-		
+
 		// @TODO 부족한 필드 추가. 휴대폰 번호 등 Entity로 변환
-		
+
 		/**
 		 * 2025-02-17~20 이도훈
 		 * 개인정보 수집 이용 동의 필드 추가
@@ -51,6 +51,7 @@ public class MemberService {
 								)
 						.build()
 		);
+		memberRepository.save(member);
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class MemberService {
 				.relationType(member.getRelationType())
 				.build();
 	}
-	
+
 	@Transactional(readOnly = true)
 	public MemberDashboardProfileDTO findMemberProfileDataById(String signUpId) {
 		MemberEntity member = memberRepository.findBySignInId(signUpId)

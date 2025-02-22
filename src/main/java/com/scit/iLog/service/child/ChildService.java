@@ -1,107 +1,147 @@
 package com.scit.iLog.service.child;
 
 import com.scit.iLog.domain.RelationShipEntity;
+import com.scit.iLog.domain.child.ChildBackGroundEntity;
 import com.scit.iLog.domain.child.ChildEntity;
-import com.scit.iLog.dto.ParentDashboardChildListDTO;
+import com.scit.iLog.domain.child.FamilyBackGround;
+import com.scit.iLog.domain.child.FamilyBackGroundEntity;
+import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoDTO;
+import com.scit.iLog.dto.child.ChildBasicInfoInsertDTO;
+import com.scit.iLog.dto.child.ChildBasicInfoUpdateDTO;
 import com.scit.iLog.dto.child.ChildProfileDTO;
 import com.scit.iLog.repository.ChildRepository;
+import com.scit.iLog.repository.FamilyBackgroundRepository;
 import com.scit.iLog.repository.RelationShipRepository;
+import com.scit.iLog.util.FileManager;
 import com.scit.iLog.util.FilePathUtil;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.scit.iLog.config.WebConfig.CHILD_PROFILE_REQUEST_ROOT_PATH;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ChildService
-	{
+public class ChildService {
 		private final ChildRepository childRepository;
 		private final RelationShipRepository relationShipRepository;
 		private final FilePathUtil filePathUtil;
+		private final FileManager fileManager;
+		private final FamilyBackgroundRepository familyBackgroundRepository;
 
 		// 25/2/12 준: api-23 아이 새로운 아이 등록(저장)
 		@Transactional
-		public Long saveBasicInfo(ChildBasicInfoDTO childBasicInfoDto)
-			{
-				// 25/2/12 ㅈ: child 저장 후 저장된 id값 반환
-				/*
-					@TODO
-					안좋은 변수명!!!
-				 */
-				ChildEntity entity = ChildEntity.builder()
-									.gender(childBasicInfoDto.getGender())
-									.name(childBasicInfoDto.getName())
-									.birthDate(childBasicInfoDto.getBirthDate())
-									.build();
+		public Long saveBasicInfo(ChildBasicInfoInsertDTO childBasicInfoInsertDTO) {
 
-				ChildEntity _child = childRepository.save(entity);
-
-				return _child.getId();
+			ChildEntity child = ChildEntity.builder()
+					.name(childBasicInfoInsertDTO.name())
+					.gender(childBasicInfoInsertDTO.gender())
+					.birthDate(childBasicInfoInsertDTO.birthDate())
+					.callName(childBasicInfoInsertDTO.callName())
+					.note(childBasicInfoInsertDTO.note())
+					.build();
+			if (!childBasicInfoInsertDTO.profileImg().isEmpty()) {
+				fileManager.saveFile(childBasicInfoInsertDTO.profileImg(), filePathUtil.childProfileImgUploadPath());
+				child.setOriginalProfileImgName(childBasicInfoInsertDTO.profileImg().getOriginalFilename());
+				child.setSavedProfileImgName(FileManager.getSavedFileName(
+						ObjectUtils.isEmpty(childBasicInfoInsertDTO.profileImg().getOriginalFilename()) ?
+								Instant.now().toString().concat(".jpeg") :
+								childBasicInfoInsertDTO.profileImg().getOriginalFilename()
+				));
 			}
 
-		//25/2/13 준: api-??: 아이 정보 찾아서 반환
-		/*
-			@TODO 안좋은 파라미터명!!!
-			이렇게 하면 무슨 아이디가 넘어오는지 명확하지 않습니다.
-			그리고 Exception이라는 최상위 부모 클래스 에러를 던지는건 안하느니만 못합니다...
-		 */
-		public ChildBasicInfoDTO findById(Long childId) throws Exception
-			{
-				// _entity 받아오는 함수
-				/*
-					@TODO
-					너무 안좋은 변수명!!!
-					그리고 이렇게 할바에는 조회 실패시 orElseThrow로 에러 던지는게 좋습니다.
-					그리고 _이거는 보통 private field에 사용하는 네이밍 컨벤션인데 여기는
-					그냥 지역변수를 선언하는 것이기에 상황에 맞지 않습니다...
-				 */
-				Optional<ChildEntity> _entity = childRepository.findById(childId);
-				if(!_entity.isPresent())
-					{
-						throw new Exception("파일을 찾을 수 없습니다");
-					}
+			// 25/2/12 준성: child 저장 후 저장된 id값 반환
 
-				// 아이 정보 체크 받아오기(함수에 넣으면 entity -> childDTO로 변경)
+			Map<FamilyBackGround, FamilyBackGroundEntity> familyBackgroundMap = familyBackgroundRepository
+					.findAll()
+					.stream()
+					.collect(
+							Collectors
+									.toMap(
+											FamilyBackGroundEntity::getFamilyBackGround,
+											familyBackGround -> familyBackGround));
+
+			List<ChildBackGroundEntity> childBackGrounds = childBasicInfoInsertDTO.familyBackGrounds()
+						.stream()
+						.map(familyBackGround ->
+								ChildBackGroundEntity.builder()
+										.child(child)
+										.familyBackGround(familyBackgroundMap.get(familyBackGround))
+										.build()
+						)
+						.toList();
+
+			ChildEntity _child = childRepository.save(
+					ChildEntity.builder()
+							.name(childBasicInfoInsertDTO.name())
+							.birthDate(childBasicInfoInsertDTO.birthDate())
+							.gender(childBasicInfoInsertDTO.gender())
+							.note(childBasicInfoInsertDTO.note())
+							.birthLocation(childBasicInfoInsertDTO.birthLocation())
+							.callName(childBasicInfoInsertDTO.callName())
+							.build()
+			);
+			return _child.getId();
+		}
+
+		//25/2/13 준: api-??: 아이 정보 찾아서 반환
+		public ChildBasicInfoDTO findById(Long childId)
+			{
+				ChildEntity child = childRepository.findById(childId)
+						.orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
+
 				return ChildBasicInfoDTO.builder()
-						.id(_entity.get().getId())
-						.name(_entity.get().getName())
-						.birthDate(_entity.get().getBirthDate())
-						.gender(_entity.get().getGender())
+						.id(child.getId())
+						.name(child.getName())
+						.birthDate(child.getBirthDate())
+						.gender(child.getGender())
+						.birthLocation(child.getBirthLocation())
+						.profileImgSrcUri(CHILD_PROFILE_REQUEST_ROOT_PATH + child.getSavedProfileImgName())
+						.callName(child.getCallName())
+						.note(child.getNote())
 						.build();
 			}
 
 
 		// child의 정보를 수정하는 함수
 		@Transactional
-		public void updateChildData(Long childId, ChildBasicInfoDTO childBasicInfoDto)
+		public void updateChildBasicInfo(Long childId, ChildBasicInfoUpdateDTO childBasicInfoUpdateDTO)
 			{
-				/*
-				 	@TODO
-				 	이렇게하면 안됩니다!!!
-				 	이렇게하면 기존의 엔티티가 갖고있는 값을 싹 다 덮어씌워버립니다;;
-				 	무조건 세터로 값을 수정해야합니다.
-				 */
-				ChildEntity _entity = ChildEntity.builder()
-									.id(childId)
-									.name(childBasicInfoDto.getName())
-									.birthDate(childBasicInfoDto.getBirthDate())
-									.note(childBasicInfoDto.getNote())
-									.gender(childBasicInfoDto.getGender())
-									.build();
+				ChildEntity child = childRepository.findById(childId)
+						.orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
+				child.setName(childBasicInfoUpdateDTO.name());
+				child.setGender(childBasicInfoUpdateDTO.gender());
+				child.setBirthDate(childBasicInfoUpdateDTO.birthDate());
+				child.setBirthLocation(childBasicInfoUpdateDTO.birthLocation());
+				child.setNote(childBasicInfoUpdateDTO.note());
 
-				childRepository.save(_entity);
+				if (childBasicInfoUpdateDTO.profileImg().isEmpty()) return;
+
+				String existingFilePath = filePathUtil
+						.childProfileImgUploadPath()
+						.concat(child.getSavedProfileImgName());
+				FileManager.deleteFile(existingFilePath);
+				fileManager.saveFile(
+						childBasicInfoUpdateDTO.profileImg(),
+						filePathUtil.childProfileImgUploadPath());
+				//@TODO 파일명 바꿔줘야지
 			}
 
 		// 아이 정보 삭제하는 메소드
 		@Transactional
-		public void deleteById(Long childId) { childRepository.deleteById(childId); }
-
+		public void deleteChildById(Long childId) {
+			childRepository.deleteById(childId);
+		}
 
 		@Transactional(readOnly = true)
 		public ParentDashboardChildListDTO getChildrenProfilesOf(Long memberId) {
@@ -113,12 +153,9 @@ public class ChildService
 									.birthDate(relationShip.getChild().getBirthDate())
 									.name(relationShip.getChild().getName())
 									.profileImgSrc(
-											String.format(
-													"%s/%s",
-													filePathUtil.childProfileImgUploadPath(),
-													//여기서는 파일이름이 확장자를 포함하고 있다는 가정을합니다.
-													relationShip.getChild().getSavedProfileImgName()
-											)
+													//파일 이름은 확장자를 포함하고있습니다.
+													CHILD_PROFILE_REQUEST_ROOT_PATH.concat(
+													relationShip.getChild().getSavedProfileImgName())
 									)
 									.build()
 					)
@@ -130,26 +167,18 @@ public class ChildService
 		}
 
 		@Transactional(readOnly = true)
-		public ChildBasicInfoDTO selectBasicInfoById(Long id) {
-			/*
-				@TODO
-				temp <- 이런 별 의미 없는 변수명의 사용은 최대한 지양해야합니다!!!
-				조회 안되면 예외 던져야합니다!!!
-			 */
-			Optional<ChildEntity> temp = childRepository.findById(id);
-			/*
-				@TODO
-				이렇게 null을 반환하는 코드는 절대로 안됩니다!!!
-			 */
-			if(temp.isPresent())
-			{
-				return ChildBasicInfoDTO.builder()
-						.id(temp.get().getId())
-						.name(temp.get().getName())
-						.birthDate(temp.get().getBirthDate())
-						.note(temp.get().getNote())
+		public ChildBasicInfoDTO selectBasicInfoById(Long childId) {
+			ChildEntity child = childRepository.findById(childId)
+					.orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
+			return ChildBasicInfoDTO.builder()
+						.id(child.getId())
+						.name(child.getName())
+						.birthDate(child.getBirthDate())
+						.note(child.getNote())
+						.profileImgSrcUri(CHILD_PROFILE_REQUEST_ROOT_PATH.concat(child.getSavedProfileImgName()))
+						.gender(child.getGender())
+						.callName(child.getCallName())
+						.birthLocation(child.getBirthLocation())
 						.build();
-			}
-			return null;
 		}
 	}

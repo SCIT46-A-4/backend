@@ -3,11 +3,7 @@ package com.scit.iLog.service;
 import com.scit.iLog.domain.GuideEntity;
 import com.scit.iLog.dto.guide.GuideDTO;
 import com.scit.iLog.repository.GuideRepository;
-
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

@@ -1,13 +1,5 @@
 package com.scit.iLog;
 
-import java.time.LocalDateTime;
-import java.util.concurrent.ThreadLocalRandom;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-
 import com.scit.iLog.domain.GuideEntity;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
@@ -22,26 +14,16 @@ import com.scit.iLog.domain.claim.ClaimType;
 import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
-import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultNoteEntity;
-import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetEntity;
-import com.scit.iLog.domain.sentimentalAnalysis.ChildAssetType;
-import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
-import com.scit.iLog.domain.sentimentalAnalysis.WeatherEntity;
-import com.scit.iLog.repository.AnalysisResultNoteRepository;
-import com.scit.iLog.repository.AnalysisResultRepository;
-import com.scit.iLog.repository.AnalysisTargetRepository;
-import com.scit.iLog.repository.ChildDiaryRepository;
-import com.scit.iLog.repository.ChildHealthCheckRepository;
-import com.scit.iLog.repository.ChildRecordRepository;
-import com.scit.iLog.repository.ChildRepository;
-import com.scit.iLog.repository.ClaimAnswerRepository;
-import com.scit.iLog.repository.ClaimRepository;
-import com.scit.iLog.repository.GuideRepository;
-import com.scit.iLog.repository.MemberRepository;
-import com.scit.iLog.repository.RelationShipRepository;
-
+import com.scit.iLog.domain.sentimentalAnalysis.*;
+import com.scit.iLog.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Profile("dev")
 @Component
@@ -60,6 +42,7 @@ public class DataInitializer implements CommandLineRunner {
     private final ChildHealthCheckRepository childHealthCheckRepository;
     private final RelationShipRepository relationShipRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -133,11 +116,11 @@ public class DataInitializer implements CommandLineRunner {
                             .child(girl)
                             .registerDate(now.minusDays(random.nextInt(30)))
                             .uploadedBy(mom)
-                            .originalSurveyFileName("survey_orig_" + random.nextInt(1000) + ".jpg")
-                            .savedSurveyFileName("survey_saved_" + random.nextInt(1000) + ".jpg")
+                            .originalTargetFileName("survey_orig_" + random.nextInt(1000) + ".jpg")
+                            .savedTargetFileName("survey_saved_" + random.nextInt(1000) + ".jpg")
                             .supplement("Supplement info " + random.nextInt(100))
                             .companion("Companion info " + random.nextInt(100))
-                            .type(ChildAssetType.PHOTO)
+                            .type(AnalysisType.PHOTO)
                             .build();
                     analysisTargetRepository.save(analysisTarget);
 
@@ -165,11 +148,15 @@ public class DataInitializer implements CommandLineRunner {
 
                     // 5. AnalysisResultNote 엔티티 생성
                     AnalysisResultNoteEntity analysisResultNote = AnalysisResultNoteEntity.builder()
-                            .satisfactionLevel(1 + random.nextInt(10))
                             .analysisResult(analysisResult)
                             .content("This is a note on the analysis result " + random.nextInt(1000))
                             .build();
+                    AnalysisSatisfactionEntity analysisSatisfaction = AnalysisSatisfactionEntity.builder()
+                            .satisfactionScore(1 + random.nextInt(10))
+                            .analysisResult(analysisResult)
+                            .build();
                     analysisResultNoteRepository.save(analysisResultNote);
+                    analysisSatisfactionRepository.save(analysisSatisfaction);
                 }
                 // 6. ChildDiary 엔티티 생성 (40개)
                 for (int k = 0; k < 40; k++) {

@@ -1,10 +1,12 @@
 package com.scit.iLog.service;
 
 import com.scit.iLog.domain.PeriodType;
-import com.scit.iLog.dto.stats.*;
+import com.scit.iLog.dto.stats.ChildEmotionStatPointDataDTO;
+import com.scit.iLog.dto.stats.ChildEmotionStatsDTO;
+import com.scit.iLog.dto.stats.ChildPhysicalStatPointDataDTO;
+import com.scit.iLog.dto.stats.ChildPhysicalStatsDTO;
 import com.scit.iLog.repository.AnalysisResultRepository;
 import com.scit.iLog.repository.ChildRecordRepository;
-import com.scit.iLog.repository.MentalSurveyResponseRepository;
 import com.scit.iLog.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
