@@ -4,16 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>로그인 페이지</title>
-    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <!-- bulma -->
     <link rel="stylesheet" href="/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
-
     <!-- customColors -->
     <link rel="stylesheet" href="../../static/css/customColors.css" th:href="@{/css/customColors.css}">
-
-    <script th:src="@{/js/just-validate.production.min.js}"></script>
-
-    <script src="/js/just-validate.production.min.js"></script>
+    <script src="../../static/js/just-validate.production.min.js" th:src="@{/js/just-validate.production.min.js}"></script>
     <style>
         /* 전체+왼쪽 컬럼 배경 */
         body {
@@ -134,8 +130,6 @@
                         errorMessage: "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.",
                     }
                 ])
-
-                // 폼 검증에 성공했을 때 콘솔에 출력
                 .onSuccess((event) => {
                     event.preventDefault(); // 기본 폼 제출 방지
                     console.log("폼 검증 성공!");
@@ -156,7 +150,7 @@
 
                 <!-- 왼쪽 login 폼 -->
                 <div class="column is-half left-half">
-                    <form th:action="@{/auth/signIn}" method="POST" class="box login-box" name="loginForm"
+                    <form th:action="@{/auth/signIn/proc}" method="POST" class="box login-box" name="loginForm"
                         id="loginForm">
 
                         <!-- 로고 + index 바로가기 -->

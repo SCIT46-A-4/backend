@@ -5,6 +5,7 @@ import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.service.MemberService;
 import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -23,25 +24,12 @@ import static com.scit.iLog.config.SecurityConfig.MemberDetails;
  * 각 대시보드는 서로 다른 목적을 가지며,
  * 권한에 따라 조회할 수 있는 정보의 종류가 다릅니다.
  */
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/dashboard")
 public class DashboardController {
-    private final MemberService memberService;
     private final ChildService childService;
-
-    /**
-     * D-1,D-2
-     * @return 부모 권한을 가진 사용자만 볼 수 있는 대시보드 페이지 템플릿의 경로를 반환합니다.
-     */
-    @GetMapping({"","/"})
-    public String handleGetDashboardView(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        return userDetails.getUsername().equals(RelationType.GUARDIAN.toString()) ?
-                "redirect:/dashboard/guardian" : "redirect:/dashboard/teacher";
-    }
-
     /*
         D-1
      */

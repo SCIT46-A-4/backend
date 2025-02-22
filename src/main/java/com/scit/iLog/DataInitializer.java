@@ -57,11 +57,12 @@ public class DataInitializer implements CommandLineRunner {
 
         // admin은 테스트용 관리자 계정 (한 번만 생성)
         MemberEntity admin = MemberEntity.builder()
-                .name("관리자")
-                .password(passwordEncoder.encode("Password1234!"))
-                .signInId("jane_doe")
-                .email("jane@example.com")
+                .name("ADMIN")
+                .password(passwordEncoder.encode("ADMIN123!"))
+                .signInId("ADMIN")
+                .email("admin@example.com")
                 .role(MemberRole.ADMIN)
+                .personalInformationCollectionAndUsageAgreement(false)
                 .build();
         memberRepository.save(admin);
 
@@ -80,6 +81,7 @@ public class DataInitializer implements CommandLineRunner {
                     .email(email)
                     .role(MemberRole.USER)
                     .relationType(RelationType.GUARDIAN)
+                    .personalInformationCollectionAndUsageAgreement(true)
                     .build();
             memberRepository.save(mom);
 

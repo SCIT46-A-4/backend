@@ -27,6 +27,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.Collection;
 import java.util.List;
 
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
+import static org.springframework.security.authorization.AuthorizationManagers.allOf;
+import static org.springframework.security.authorization.AuthorizationManagers.anyOf;
+
 @Slf4j
 @Configuration
 @EnableWebSecurity
@@ -42,66 +46,37 @@ public class SecurityConfig {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         http.authorizeHttpRequests(auth ->
                 auth
-                		.requestMatchers(HttpMethod.DELETE, "/children/**").permitAll()
                         .requestMatchers(
                                 "/",
-                                "/**",
                                 "/auth/signIn",
                                 "/auth/signUp",
-                                "/auth/checkSignInIdExists",	// 2025-02-17~20 이도훈 추가
+                                // 2025-02-17~20 이도훈 추가
+                                "/auth/checkSignInIdExists",
                                 "/auth/idPwFind",
-                                "/member/join",
-                                "/member/*/info",
-                                "/children/**",
                                 "/guides",
-                                "/guides/guideListView",	// 25/02/10 김보경 추가
-                                "/dashboard",
-                                "/parentDashboard",
-                                "/teacherDashboard",
-                                "/surveys",
                                 "/claims",
-                                "/claims/new",
-                                "/claims/insertClaim",
-                                "/member/duplicate",
-                                "/member/joinProc",
-                                "/member/idCheck",
-                                "/member/login",
-                                "/board/boardList",
-                                "/board/boardDetail",
-                                "/board/download",
-                                "/reply/replyInsert",
-                                "/survey/surveysList",	//2025-02-07 이도훈 추가
-                                "/survey/surveySelect",	//2025-02-07 이도훈 추가
-                                "/survey/surveyHealth",	//2025-02-07 이도훈 추가
-                                "/survey/surveyMental",	//2025-02-07 이도훈 추가
-                                "/analysis/**",				// 2025.02.06_확인하고 싶어 추가해둠!
                                 "/js/**",
                                 "/css/**",
                                 "/images/**"
                                 )
                         .permitAll()
+                        .requestMatchers("/dashboard/guardian").access(
+                                anyOf(allOf(hasRole("USER"), hasRole("GUARDIAN")), hasRole("ADMIN"))
+                        )
+                        .requestMatchers("/dashboard/teacher").access(
+                                anyOf(allOf(hasRole("USER"), hasRole("TEACHER")), hasRole("ADMIN"))
+                        )
                         .requestMatchers(
-                                "/member/logout",
-                                "/member/my/update",
-                                "/member/deleteUser",
-                                "/board/boardWrite",
-                                "/board/boardUpdate",
-                                "/board/boardDelete",
-                                "/reply/replyWrite",
-                                "/reply/replyDelete",
-                                "/mypage/**",
-                                "/member/mypage"
+                                "/member/myPage"
                         ).hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/admin/**")
-                        .hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
         );
 
         http.formLogin(formAuth ->
                 formAuth
                         .loginPage("/auth/signIn")
-                        .loginProcessingUrl("/auth/signIn")
+                        .loginProcessingUrl("/auth/signIn/proc")
                         // 2025-02-17~20 이도훈 추가
                         .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
                         // 2025-02-17~20 이도훈 추가
@@ -154,7 +129,6 @@ public class SecurityConfig {
                             .email(member.getEmail())
                             .relationType(member.getRelationType())
                             .role(member.getRole())
-                            .personalInformationCollectionAndUsageAgreement(member.isPersonalInformationCollectionAndUsageAgreement())
                             .build();
         };
     }
@@ -170,11 +144,14 @@ public class SecurityConfig {
         private final String email;
         private final RelationType relationType;
         private final MemberRole role;
-        private final Boolean personalInformationCollectionAndUsageAgreement;
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return List.of(new SimpleGrantedAuthority(this.role.toString()));
+            return this.role == MemberRole.USER ?
+                    List.of(
+                        new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())),
+                        new SimpleGrantedAuthority("ROLE_".concat(this.relationType.toString()))) :
+                    List.of(new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())));
         }
 
         //실제 패스워드로 사용하는 변수
