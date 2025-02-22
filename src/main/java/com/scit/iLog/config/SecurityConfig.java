@@ -1,8 +1,16 @@
 package com.scit.iLog.config;
 
-import java.util.Collection;
-import java.util.List;
-
+import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.domain.member.MemberRole;
+import com.scit.iLog.exception.WrongSignInIdException;
+import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.util.LoginFailureHandler;
+import com.scit.iLog.util.LoginSuccessHandler;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,18 +24,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.exception.WrongSignInIdException;
-import com.scit.iLog.repository.MemberRepository;
-import com.scit.iLog.util.LoginFailureHandler;
-import com.scit.iLog.util.LoginSuccessHandler;
+import java.util.Collection;
+import java.util.List;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
+import static org.springframework.security.authorization.AuthorizationManagers.allOf;
+import static org.springframework.security.authorization.AuthorizationManagers.anyOf;
 
 @Slf4j
 @Configuration
@@ -38,72 +40,43 @@ public class SecurityConfig {
 
     private final LoginSuccessHandler loginSuccessHandler;
 	private final LoginFailureHandler loginFailureHandler;
-    
+
     @Bean
     SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         http.authorizeHttpRequests(auth ->
                 auth
-                		.requestMatchers(HttpMethod.DELETE, "/children/**").permitAll()
                         .requestMatchers(
                                 "/",
-                                "/**",
                                 "/auth/signIn",
                                 "/auth/signUp",
-                                "/auth/checkSignInIdExists",	// 2025-02-17~20 이도훈 추가
+                                // 2025-02-17~20 이도훈 추가
+                                "/auth/checkSignInIdExists",
                                 "/auth/idPwFind",
-                                "/member/join",
-                                "/member/*/info",
-                                "/children/**",
                                 "/guides",
-                                "/guides/guideListView",	// 25/02/10 김보경 추가
-                                "/dashboard",
-                                "/parentDashboard",
-                                "/teacherDashboard",
-                                "/surveys",
                                 "/claims",
-                                "/claims/new",
-                                "/claims/insertClaim",
-                                "/member/duplicate",
-                                "/member/joinProc",
-                                "/member/idCheck",
-                                "/member/login",
-                                "/board/boardList",
-                                "/board/boardDetail",
-                                "/board/download",
-                                "/reply/replyInsert",
-                                "/survey/surveysList",	//2025-02-07 이도훈 추가
-                                "/survey/surveySelect",	//2025-02-07 이도훈 추가
-                                "/survey/surveyHealth",	//2025-02-07 이도훈 추가
-                                "/survey/surveyMental",	//2025-02-07 이도훈 추가
-                                "/analysis/**",				// 2025.02.06_확인하고 싶어 추가해둠!
                                 "/js/**",
                                 "/css/**",
                                 "/images/**"
                                 )
                         .permitAll()
+                        .requestMatchers("/dashboard/guardian").access(
+                                anyOf(allOf(hasRole("USER"), hasRole("GUARDIAN")), hasRole("ADMIN"))
+                        )
+                        .requestMatchers("/dashboard/teacher").access(
+                                anyOf(allOf(hasRole("USER"), hasRole("TEACHER")), hasRole("ADMIN"))
+                        )
                         .requestMatchers(
-                                "/member/logout",
-                                "/member/my/update",
-                                "/member/deleteUser",
-                                "/board/boardWrite",
-                                "/board/boardUpdate",
-                                "/board/boardDelete",
-                                "/reply/replyWrite",
-                                "/reply/replyDelete",
-                                "/mypage/**",
-                                "/member/mypage"
+                                "/member/myPage"
                         ).hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/admin/**")
-                        .hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
         );
-        
+
         http.formLogin(formAuth ->
                 formAuth
                         .loginPage("/auth/signIn")
-                        .loginProcessingUrl("/auth/signIn")
+                        .loginProcessingUrl("/auth/signIn/proc")
                         // 2025-02-17~20 이도훈 추가
                         .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
                         // 2025-02-17~20 이도훈 추가
@@ -128,16 +101,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    
+
     //로그인 시 검증
     /**
      * 2025-02-17~20 이도훈
      * 커스텀 예외처리 추가.
-     * @param passwordEncoder
      * @return
      */
     @Bean
-    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+    UserDetailsService userDetailsService() {
         return (signInId) -> {
         	//signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
         	MemberEntity member = memberRepository
@@ -157,7 +129,6 @@ public class SecurityConfig {
                             .email(member.getEmail())
                             .relationType(member.getRelationType())
                             .role(member.getRole())
-                            .personalInformationCollectionAndUsageAgreement(member.isPersonalInformationCollectionAndUsageAgreement())
                             .build();
         };
     }
@@ -173,13 +144,16 @@ public class SecurityConfig {
         private final String email;
         private final RelationType relationType;
         private final MemberRole role;
-        private final Boolean personalInformationCollectionAndUsageAgreement;
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return List.of(new SimpleGrantedAuthority(this.role.toString()));
+            return this.role == MemberRole.USER ?
+                    List.of(
+                        new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())),
+                        new SimpleGrantedAuthority("ROLE_".concat(this.relationType.toString()))) :
+                    List.of(new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())));
         }
-        
+
         //실제 패스워드로 사용하는 변수
         @Override
         public String getPassword() {

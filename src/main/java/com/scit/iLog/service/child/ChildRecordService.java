@@ -99,9 +99,10 @@ public class ChildRecordService {
         MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Member 조회 실패: %d", memberId)));
         ChildRecordEntity savedChildRecord = childRecordRepository.save(childRecord);
+
         if (childRecordInsertDTO.healthCheckImg().isEmpty()) return savedChildRecord.getId();
 
-        fileManager.saveFile(childRecordInsertDTO.healthCheckImg(),filePathUtil.childHealthCheckImgUploadPath());
+        fileManager.saveFile(childRecordInsertDTO.healthCheckImg(), filePathUtil.childHealthCheckImgUploadPath());
 
         HealthCheckEntity healthCheck = HealthCheckEntity.builder()
                 .child(child)
@@ -110,7 +111,7 @@ public class ChildRecordService {
                         FileManager
                                 .getSavedFileName(
                                         ObjectUtils.isEmpty(childRecordInsertDTO.healthCheckImg().getOriginalFilename()) ?
-                                                Instant.now().toString() :
+                                                Instant.now().toString().concat(".jpeg") :
                                                 childRecordInsertDTO.healthCheckImg().getOriginalFilename()
                                 ))
                 .originalFileName(

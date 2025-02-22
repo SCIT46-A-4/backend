@@ -45,6 +45,6 @@ public class ChildRecordEntity extends BaseTimeEntity {
     @Column(name = "register_date")
     private LocalDateTime registerDate;
 
-    @OneToOne(mappedBy = "childRecord", fetch = LAZY)
+    @OneToOne(mappedBy = "childRecord", fetch = LAZY, cascade = CascadeType.REMOVE)
     private HealthCheckEntity healthCheck;
 }

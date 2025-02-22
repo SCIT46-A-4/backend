@@ -5,7 +5,7 @@ import lombok.Getter;
 
 import java.util.List;
 
-// 페이징 응답을 위한 DTO
+// 공통 페이징 처리를 위한 DTO 입니다.
 @Getter
 @Builder
 public class PageResponse<T> {

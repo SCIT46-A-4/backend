@@ -33,5 +33,4 @@ public class ChildDiaryEntity extends BaseTimeEntity {
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
-
 }

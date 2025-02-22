@@ -46,14 +46,8 @@ public class DiaryController {
             @PageableDefault(page=0, size=10) Pageable pageable,
             Model model
     ) {
-        /*
-            @TODO
-            변수명 이렇게 적지 않도록 합시다!
-            gpt가 해준건지 뭔지 모르겠지만...
-            상황에도 맞지 않고 무엇보다 변수의 의도가 뭔지 모릅니다...
-         */
-    	Page<ChildDiaryEntity> _page = childDiaryService.getChildDiaries(id, pageable);
-    	model.addAttribute("list", _page);
+    	Page<ChildDiaryEntity> childDiaryPage = childDiaryService.getChildDiaries(id, pageable);
+    	model.addAttribute("list", childDiaryPage);
         return "children/diaries/diaryListView";
     }
 
@@ -84,10 +78,7 @@ public class DiaryController {
             @PathVariable("diaryId") Long diaryId,
             Model model
     ) {
-        /*
-            @TODO
-            childId, diaryId로 일기를 조회해서 모델에 넣어줘야합니다.
-         */
+        childDiaryService.findDiaryDetailsById(diaryId);
         return "children/diaries/diaryDetailsView";
     }
 
@@ -106,10 +97,8 @@ public class DiaryController {
     		@RequestParam("diaryId") Long diaryId,
     		Model model
     ) {
-    	DiaryUpdateDto diary = childDiaryService.findDiaryById(diaryId);
-
+    	DiaryUpdateDto diary = childDiaryService.findDiaryUpdateInfoById(diaryId);
     	model.addAttribute("diary", diary);
-
     	return "children/diaries/diaryUpdateView";
     }
 
