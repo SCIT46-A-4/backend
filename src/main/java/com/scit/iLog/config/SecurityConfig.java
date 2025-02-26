@@ -55,6 +55,8 @@ public class SecurityConfig {
                                 "/auth/idPwFind",
                                 "/guides",
                                 "/claims",
+                                "/send-verification-code",
+                                "/verify-code",
                                 "/js/**",
                                 "/css/**",
                                 "/images/**"

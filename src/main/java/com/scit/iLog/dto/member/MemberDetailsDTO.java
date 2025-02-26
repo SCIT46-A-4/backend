@@ -4,11 +4,11 @@ import com.scit.iLog.domain.RelationType;
 import lombok.Builder;
 
 @Builder
-public record MemberSelectDTO(
-        Long id,
+public record MemberDetailsDTO(
         String signInId,
         String name,
         String email,
-        RelationType relationType
+        String relationType,
+        boolean personalInformationCollectionAndUsageAgreement
 ) {
 }

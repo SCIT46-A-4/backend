@@ -58,13 +58,24 @@ public class DataInitializer implements CommandLineRunner {
         // admin은 테스트용 관리자 계정 (한 번만 생성)
         MemberEntity admin = MemberEntity.builder()
                 .name("ADMIN")
-                .password(passwordEncoder.encode("ADMIN123!"))
                 .signInId("ADMIN")
+                .password(passwordEncoder.encode("ADMIN123!"))
                 .email("admin@example.com")
                 .role(MemberRole.ADMIN)
                 .personalInformationCollectionAndUsageAgreement(false)
                 .build();
         memberRepository.save(admin);
+
+        MemberEntity dad = MemberEntity.builder()
+                .name("김철수")
+                .signInId("kcs11")
+                .password(passwordEncoder.encode("kcs123!"))
+                .email("dad@example.com")
+                .role(MemberRole.USER)
+                .relationType(RelationType.GUARDIAN)
+                .personalInformationCollectionAndUsageAgreement(true)
+                .build();
+        memberRepository.save(dad);
 
         for (int i = 1; i <= 10; i++) {
             // 1. Member 엔티티 생성 (랜덤 이름, 이메일 등)
