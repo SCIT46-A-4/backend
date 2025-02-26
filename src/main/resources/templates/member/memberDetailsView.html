@@ -1,15 +1,144 @@
 <!DOCTYPE html>
 <html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
+  lang="ko"
+  xmlns:th="http://thymeleaf.org"
+  xmlns:sec="http://thymeleaf.org/extras/spring-security"
 >
-<head>
-    <meta charset="UTF-8">
-    <title>마이페이지</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>회원 상세 정보 - iLog</title>
     <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-<h1>마이페이지</h1>
-</body>
+    <script src="/js/sweetalert2.js"></script>
+    <script>
+      $(document).ready(function () {
+        $('#btn-quit').click(function () {
+          Swal.fire({
+            title: '정말 탈퇴하시겠습니까?',
+            text: '탈퇴하시면 복구할 수 없습니다.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '네, 탈퇴하겠습니다.',
+            cancelButtonText: '아니요',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $.ajax({
+                url: '/members/quit',
+                type: 'DELETE',
+                success: function () {
+                  Swal.fire({
+                    title: '탈퇴되었습니다.',
+                    text: '이용해 주셔서 감사합니다.',
+                    icon: 'success',
+                  });
+                  location.href = '/';
+                },
+                error: function () {
+                  Swal.fire({
+                    title: '회원 탈퇴에 실패했습니다.',
+                    text: '운영팀에 문의해주세요',
+                    icon: 'info',
+                    footer: '<a href="/claims">문의하기</a>',
+                  });
+                },
+              });
+            }
+          });
+        });
+      });
+    </script>
+    <link
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
+      href="../../static/css/bulma.min.css"
+    />
+    <style>
+      .hero.is-primary {
+        background-color: #fdf5bf;
+      }
+      .hero.is-primary .title {
+        color: white;
+      }
+      body {
+        display: grid;
+        height: 100vh;
+        grid-template-rows: auto 1fr;
+      }
+      #section-main {
+        display: grid;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero is-primary">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">회원 상세 정보</h1>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-main" class="section">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="box">
+              <table class="table is-fullwidth">
+                <tbody>
+                  <tr>
+                    <th>아이디</th>
+                    <td th:text="${memberDetails.signInId}">user123</td>
+                  </tr>
+                  <tr>
+                    <th>이름</th>
+                    <td th:text="${memberDetails.name}">홍길동</td>
+                  </tr>
+                  <tr>
+                    <th>이메일</th>
+                    <td th:text="${memberDetails.email}">hong@example.com</td>
+                  </tr>
+                  <tr>
+                    <th>관계 유형</th>
+                    <td th:text="${memberDetails.relationType}">보호자</td>
+                  </tr>
+                  <tr>
+                    <th>개인정보 수집 및 이용 동의</th>
+                    <td>
+                      <span
+                        th:if="${memberDetails.personalInformationCollectionAndUsageAgreement}"
+                        class="tag is-success"
+                        >동의함</span
+                      >
+                      <span
+                        th:unless="${memberDetails.personalInformationCollectionAndUsageAgreement}"
+                        class="tag is-danger"
+                        >동의하지 않음</span
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="field is-grouped is-grouped-centered">
+              <p class="control">
+                <a class="button is-primary" th:href="@{/members/edit}">
+                  정보 수정
+                </a>
+              </p>
+              <p class="control">
+                <a class="button is-light" th:href="@{/dashboard}">
+                  대시보드로 돌아가기
+                </a>
+              </p>
+              <p class="control">
+                <a class="button is-light" id="btn-quit"> 탈퇴하기 </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
 </html>
