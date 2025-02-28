@@ -26,7 +26,7 @@ public final class FileManager {
 	/*
 		파일을 저장하고 저장된 파일 이름을 반환하는 메서드
 	 */
-	public void saveFile(MultipartFile uploadFile, String uploadPath) {
+	public void saveFile(MultipartFile uploadFile, String uploadPath, String savedFileName) {
         if (ObjectUtils.isEmpty(uploadFile)) {
             throw new IllegalArgumentException("저장할 파일이 존재하지 않음.");
         } else if (uploadFile.isEmpty()) {
@@ -43,8 +43,6 @@ public final class FileManager {
 		if (!StringUtils.hasText(originalFilename)) {
 			throw new IllegalArgumentException("업로드 파일에 원본 파일명이 존재하지 않습니다.");
 		}
-
-		String savedFileName = getSavedFileName(originalFilename);
 
 		// 시스템에 맞는 파일 경로 조합
 		File savedFile = new File(directory, savedFileName);

@@ -1,71 +1,467 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+
 <head>
-<meta charset="UTF-8">
-<title>아동 정보 수정 페이지</title>
-<script src="/js/jquery-3.7.1.min.js"></script>
-<style>
-    /* 미리보기 컨테이너 */
-    #previewContainer {
-        display: flex;
-        gap: 10px; /* 두 이미지 간격 */
+  <meta charset="UTF-8">
+  <title>아동 상세 정보 등록 페이지</title>
+  <script src="/js/jquery-3.7.1.min.js"></script>
+
+  <!-- bulma -->
+  <link rel="stylesheet" href="../../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
+
+  <!-- customColors -->
+  <link rel="stylesheet" href="../../static/css/customColors.css" th:href="@{/css/customColors.css}">
+
+  <!-- just-validate -->
+  <script th:src="@{/js/just-validate.production.min.js}"></script>
+  <script src="/js/just-validate.production.min.js"></script>
+
+  <!-- FilePond CSS -->
+  <link rel="stylesheet" href="../../static/css/filepond.css" th:href="@{/css/filepond.css}">
+  <link rel="stylesheet" href="../../static/css/filepond-plugin-image-preview.css"
+    th:href="@{/css/filepond-plugin-image-preview.css}">
+
+  <!-- FilePond JS -->
+  <script src="/js/filepond.min.js"></script>
+  <script src="/js/filepond-plugin-file-encode.min.js"></script>
+  <script src="/js/filepond-plugin-file-validate-type.min.js"></script>
+  <script src="/js/filepond-plugin-image-preview.min.js"></script>
+  <script src="/js/filepond-plugin-image-exif-orientation.min.js"></script>
+  <script src="/js/filepond-plugin-image-resize.min.js"></script>
+  <script src="/js/filepond-plugin-image-transform.min.js"></script>
+
+  <style>
+    /* 전체 배경색 */
+    body {
+      margin: 0;
+      background-color: #FDF5BF;
     }
-    .imagePreview {
-        width: 100%;
-        height: 100%;
-        border: 1px solid #ddd;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        background-color: #f8f8f8;
+
+    /* 왼쪽과 오른쪽 컬럼 크기 동일하게 조정 */
+    .left-half,
+    .right-half {
+      flex-basis: 50%;
+      max-width: 650px;
+      max-height: 650px;
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
-    .imagePreview img {
-        max-width: 100px;
-        max-height: 200px;
+
+    /* 오른쪽 컬럼 배경색 적용 및 스크롤 추가 */
+    .right-half {
+      background-color: #FDF5BF;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      align-items: flex-start;
+      padding-top: 2rem;
     }
-</style>
+
+    /* 부모 컨테이너 높이 유지 */
+    .columns {
+      min-height: 100vh;
+    }
+
+    /* 반응형 조정 (태블릿 및 모바일) */
+    @media (max-width: 1024px) {
+
+      .left-half,
+      .right-half {
+        max-width: 100%;
+        padding: 1.5rem;
+        height: auto;
+      }
+
+      .regist-box {
+        width: 90%;
+        max-width: 400px;
+        padding: 1.5rem;
+      }
+
+      /* 모바일에서는 높이 자동 조정 */
+      .right-half {
+        max-height: 80vh;
+      }
+    }
+
+    /* 등록하기 버튼을 중앙 정렬 */
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .logo a {
+      display: inline-block;
+    }
+
+    .logo img {
+      cursor: pointer;
+    }
+
+    /* FilePond Custom Styles */
+    .filepond--drop-label {
+      color: #4c4e53;
+    }
+
+    .filepond--label-action {
+      text-decoration-color: #babdc0;
+    }
+
+    .filepond--panel-root {
+      background-color: #edf0f4;
+    }
+
+    /* Page Styles */
+    .filepond--root {
+      width: 170px;
+      margin: 0 auto;
+    }
+
+    /* Additional FilePond Styles */
+    .filepond--image-preview-wrapper {
+      border-radius: 50%;
+    }
+
+    .filepond--image-preview {
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .filepond--item {
+      border-radius: 50%;
+    }
+
+    .filepond--panel-root {
+      border-radius: 50%;
+      background-color: #f1f1f1;
+    }
+  </style>
+
+  <script>
+    $(document).ready(function () {
+      // FilePond 플러그인 등록
+      FilePond.registerPlugin(
+        FilePondPluginFileEncode,
+        FilePondPluginImagePreview,
+        FilePondPluginFileValidateType,
+        FilePondPluginImageExifOrientation,
+        FilePondPluginImageResize,
+        FilePondPluginImageTransform
+      );
+
+      // FilePond 초기화
+      const inputElement = document.querySelector('input[type="file"].filepond');
+      const pond = FilePond.create(inputElement, {
+        labelIdle: '파일을 끌어다 놓거나 찾아보기',
+        imagePreviewHeight: 170,
+        imageCropAspectRatio: '1:1',
+        imageResizeTargetWidth: 800,
+        imageResizeTargetHeight: 800,
+        imageResizeMode: 'contain',
+        imageResizeUpscale: false,
+        maxFileSize: '5MB',
+        imageTransformOutputQuality: 70,
+        imageTransformOutputMimeType: 'image/jpeg',
+        stylePanelLayout: 'compact circle',
+        styleLoadIndicatorPosition: 'center bottom',
+        styleProgressIndicatorPosition: 'right bottom',
+        styleButtonRemoveItemPosition: 'left bottom',
+        styleButtonProcessItemPosition: 'right bottom',
+        acceptedFileTypes: ['image/*'],
+        allowRevert: true,
+        instantUpload: false,
+        allowMultiple: false,
+        allowImagePreview: true,
+        imagePreviewMinHeight: 170,
+        imagePreviewMaxHeight: 170,
+        server: {
+          load: async (source, load, error, progress, abort, headers) => {
+            try {
+              const response = await fetch(source, {
+                credentials: 'same-origin'
+              });
+              if (!response.ok) throw new Error('이미지 로드 실패');
+              const blob = await response.blob();
+              load(blob);
+            } catch (e) {
+              error('이미지 로드 실패');
+              console.error('이미지 로드 에러:', e);
+            }
+          },
+          process: (fieldName, file, metadata, load, error, progress, abort) => {
+            // 파일 처리 시뮬레이션
+            const reader = new FileReader();
+            reader.onload = () => {
+              load(reader.result);
+            };
+            reader.onerror = () => {
+              error('파일 처리 실패');
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+
+      // 기존 이미지 로드
+      const profileImgUrl = "[[${childBasicInfo.profileImgSrcUri}]]";
+      let hasInitialImage = false;
+      let originalFileName = '';
+
+      if (profileImgUrl && !profileImgUrl.endsWith('default-profile.png')) {
+        hasInitialImage = true;
+        const absoluteUrl = profileImgUrl.startsWith('http') ?
+          profileImgUrl :
+          window.location.origin + profileImgUrl;
+
+        // 원본 파일 이름 추출
+        originalFileName = profileImgUrl.split('/').pop();
+
+        // 이미지를 Blob으로 변환하여 FilePond에 추가
+        fetch(absoluteUrl)
+          .then(response => response.blob())
+          .then(blob => {
+            const file = new File([blob], originalFileName, { type: 'image/jpeg' });
+            pond.addFile(file);
+          })
+          .catch(error => {
+            console.error('기존 이미지 로드 실패:', error);
+          });
+      }
+
+      // 이미지 로드 상태 모니터링
+      pond.on('addfile', (error, file) => {
+        if (error) {
+          console.error('파일 추가 에러:', error);
+          return;
+        }
+      });
+
+      pond.on('removefile', (error, file) => {
+      });
+
+      // 폼 제출 처리
+      const validation = new JustValidate('#registration-form', {
+        errorLabelStyle: {
+          color: '#f14668',
+        }
+      });
+
+      validation
+        .addField('#full-name', [{
+          rule: 'required',
+          errorMessage: '이름을 입력해주세요.'
+        }])
+        .addField('#birth-date', [{
+          rule: 'required',
+          errorMessage: '생년월일을 입력해주세요.'
+        }])
+        .addRequiredGroup(
+          '#gender',
+          '성별을 선택해주세요.'
+        )
+        .addRequiredGroup(
+          '#family-environment',
+          '가정환경을 최소 한 개 이상 선택해주세요.'
+        )
+        .addField('#relationship', [{
+          rule: 'required',
+          errorMessage: '아동과의 관계를 입력해주세요.'
+        }])
+        .onSuccess(async (event) => {
+          event.preventDefault();
+          const form = document.getElementById('registration-form');
+          const formData = new FormData();
+
+          try {
+            // 기본 정보 추가
+            formData.append('name', document.getElementById('full-name').value);
+            formData.append('gender', document.querySelector('input[name="gender"]:checked').value);
+            formData.append('callName', document.getElementById('relationship').value);
+            formData.append('birthLocation', document.getElementById('location').value || '');
+            formData.append('note', document.getElementById('special-notes').value || '');
+
+            // 가정환경 정보 추가
+            const selectedFamilyBackgrounds = Array.from(document.querySelectorAll('input[name="familyBackGrounds"]:checked'))
+              .map(checkbox => checkbox.value);
+            selectedFamilyBackgrounds.forEach(value => {
+              formData.append('familyBackGrounds', value);
+            });
+
+            // 날짜 처리
+            const birthDateInput = document.getElementById('birth-date').value;
+            if (birthDateInput) {
+              formData.append('birthDate', birthDateInput + 'T00:00:00');
+            }
+
+            // FilePond 파일 처리
+            const pondFiles = pond.getFiles();
+            if (pondFiles.length > 0) {
+              const file = pondFiles[0].file;
+              if (file instanceof File) {
+                formData.append('profileImg', file);
+              }
+            } else if (hasInitialImage && pond.status === FilePond.Status.EMPTY) {
+              // 이미지가 삭제된 경우에만 빈 파일 추가
+              const emptyFile = new File([], 'empty.txt', { type: 'text/plain' });
+              formData.append('profileImg', emptyFile);
+            }
+
+            // AJAX로 폼 제출
+            const response = await $.ajax({
+              url: form.action,
+              type: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false
+            });
+
+            window.location.href = form.action.replace('/edit', '');
+          } catch (error) {
+            console.error('에러 상세 정보:', error);
+            let errorMessage = '수정 중 오류가 발생했습니다.';
+
+            try {
+              const errorResponse = JSON.parse(error.responseText);
+              errorMessage = errorResponse.message || errorMessage;
+            } catch (e) {
+              console.error('에러 메시지 파싱 실패:', e);
+            }
+
+            alert(errorMessage);
+          }
+        });
+    });
+  </script>
 </head>
 
+<!-- 2025-02-28 / 김은진 / 아동 정보 수정 페이지 수정 -->
+
 <body>
-    <h1> 아이 상세 수정 페이지</h1>
+  <section class="section">
 
-    
-        <div class="imagePreview">
-            <!-- <div>
-                <input type="file" id="imageUpload1" name="uploadFile" accept="image/*">
-                <div id="previewContainer">
-                    <div id="imagePreview1" class="imagePreview">이미지를 선택하세요</div>
-                </div>
-            </div> -->
-            
-            <div>
-                <form id="childForm" th:action="@{|/children/${child.id}/details/edit|}" method="post" enctype="multipart/form-data"></form>
-                <label> 이름 <input type="text" id="name" name="name" th:value="${child.name}"> </label>
-                <br>
+    <!-- 로고 + dashboard 바로가기 -->
+    <div class="logo">
+      <a th:href="@{/dashboard}">
+        <img src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="로고" class="image"
+          style="width: 100px; height: auto;">
+      </a>
+    </div>
+    <!-- 페이지 이름 / 아동 정보 수정 페이지 -->
+    <h2 class="title has-text-centered mb-4">아동 정보 수정 페이지</h2>
 
-                <label> 성별 
-                    <input type="radio" name="gender" value="MAN" th:checked="${child.gender == 'MAN'}"> 남
-                    <input type="radio" name="gender" value="WOMAN" th:checked="${child.gender == 'WOMAN'}"> 여
-                </label>
-                <br>
-
-                <label> 생년월일 <input type="datetime-local" id="birthDate" name="birthDate"  th:value="${child.birthDate}"> </label> 
-                <br>    
-
-                <label> 출생지 <input type="text" id="birthPlace" name="birthPlace" th:value="${child.birthLocation}"> </label>
-                <br>
-
-                <label> 특이사항 <input type="text" id="note" name="note" th:value="${child.note}"> </label>
-                <br>
-                <button type="submit" id="submitBtn"> 수정하기</button>
-                <button type="button" th:onclick="|window.location.href='/children/${child.id}/details'|"> 취소하기</button>
-                </form>
-            </div>
-            
-            
+    <!-- 수정폼 -->
+    <div class="container regist-container">
+      <div class="columns is-variable is-5 is-fullheight mt-4">
+        <!-- 왼쪽 이미지 폼 -->
+        <div class="column is-half left-half">
+          <figure>
+            <img id="randomImage" th:src="@{/images/basicInfo1.png}" src="../../static/images/basicInfo1.png"
+              alt="랜덤 이미지">
+          </figure>
         </div>
-    
+
+        <!-- 오른쪽 수정 폼 -->
+        <div class="column is-half right-half">
+          <form id="registration-form" th:action="@{|/children/${childBasicInfo.id}/details/edit|}" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" id="child-id" th:value="${childBasicInfo.id}">
+
+            <!-- 아이 사진 수정창 -->
+            <div class="field">
+              <label class="label">아이 사진 수정</label>
+              <div class="file is-large has-name is-boxed">
+                <label class="file-label" id="file-label">
+                  <input type="file" class="filepond" id="filepond" name="profileImg" accept="image/*">
+                </label>
+              </div>
+            </div>
+
+            <!-- 이름(실명) 입력창 -->
+            <div class="field">
+              <label class="label">이름</label>
+              <input class="input" type="text" id="full-name" name="name" th:value="${childBasicInfo.name}">
+            </div>
+
+            <!-- 성별 입력창 -->
+            <div class="field">
+              <label class="label">성별</label>
+              <div class="control" id="gender">
+                <label class="checkbox">
+                  <input type="radio" name="gender" value="WOMAN"
+                    th:checked="${childBasicInfo.gender == T(com.scit.iLog.domain.child.Gender).WOMAN}"> 여자
+                </label>
+                <label class="checkbox">
+                  <input type="radio" name="gender" value="MAN"
+                    th:checked="${childBasicInfo.gender == T(com.scit.iLog.domain.child.Gender).MAN}"> 남자
+                </label>
+              </div>
+              <p class="help is-danger" id="gender-error" style="display: none;">성별을 선택해주세요.</p>
+            </div>
+
+            <!-- 생년월일 입력창 -->
+            <div class="field">
+              <label class="label">생년월일</label>
+              <input class="input" type="date" id="birth-date" name="birthDate"
+                th:value="${childBasicInfo.birthDate != null ? #temporals.format(childBasicInfo.birthDate.toLocalDate(), 'yyyy-MM-dd') : ''}">
+            </div>
+
+            <!-- 출생지 입력창 -->
+            <div class="field mb-4">
+              <label class="label">출생지</label>
+              <input class="input" type="text" id="location" name="birthLocation"
+                th:value="${childBasicInfo.birthLocation}">
+            </div>
+
+            <!-- 가정환경 선택창 -->
+            <label class="label">가정환경(다중 선택)</label>
+            <span style="color:gray; font-size:12px;">
+              자녀의 심리 상태를 더 면밀하게 살펴볼 수 있어요.
+            </span>
+            <p class="help is-danger" id="family-error" style="display: none;">가정환경을 최소 한 개 이상 선택해주세요.</p>
+            <div class="buttons are-small" id="family-environment" name="familyBackGrounds">
+              <th:block th:each="familyType : ${T(com.scit.iLog.domain.child.FamilyBackGround).values()}">
+                <label class="checkbox">
+                  <input type="checkbox" name="familyBackGrounds" th:value="${familyType.name()}" th:checked="${childBasicInfo.familyBackGrounds != null && 
+                                #lists.contains(childBasicInfo.familyBackGrounds, familyType)}">
+                  <span th:text="${familyType.description}"></span>
+                </label>
+              </th:block>
+            </div>
+
+            <br>
+            <!-- 특이사항 입력창 -->
+            <div class="field">
+              <label class="label">특이사항
+                <span style="color:gray; font-size:12px;">
+                  자녀의 유전 및 환경 정보를 미리 입력해주시면 분석 결과에 도움이 됩니다.
+                </span>
+              </label>
+              <input class="input" type="text" id="special-notes" name="note" th:value="${childBasicInfo.note}">
+            </div>
+
+            <!-- 아동과의 관계 입력창 -->
+            <div class="field">
+              <label class="label">아동과의 관계(호칭입력)</label>
+              <input class="input" type="text" id="relationship" name="callName" th:value="${childBasicInfo.callName}">
+            </div>
+
+            <!-- 수정하기/취소하기 버튼 -->
+            <div class="field button-container buttons is-centered">
+              <button class="button is-primary" type="submit" id="submitBtn">수정하기</button>
+              <button class="button is-light" type="button"
+                th:onclick="|window.location.href='/children/${childBasicInfo.id}/details'|">취소하기</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </body>
 
 </html>

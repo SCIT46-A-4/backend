@@ -6,17 +6,29 @@ spring:
   application:
     name: iLog
   jpa:
-    open-in-view: true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
         use_sql_comments: true
+  servlet:
+    multipart:
+      max-file-size: 50MB        # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
+      max-request-size: 50MB     # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
+      enabled: true             # 2025-02-28 / 김은진 / 파일 업로드 기능 활성화
+
+  thymeleaf:
+    cache: false  # 캐시 비활성화
+    mode: LEGACYHTML5  # (선택) HTML5 호환 모드
+    prefix: classpath:/templates/
+    suffix: .html
+
 
 servlet:
   multipart:
     location: C:/uploadPath
 
-childProfileImgWindowsPath: C:/ilog/childProfileImgs
+childProfileImgWindowsPath: C:/ilog/childProfileImgs/
 childProfileImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childProfileImgs
 childHealthCheckImgWindowsPath: C:/ilog/childHealthCheckImgs
 childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childHealthCheckImgs
