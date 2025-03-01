@@ -67,6 +67,6 @@ public class DashboardController {
      */
     @GetMapping("/teacher")
     public String handleGetTeacherDashboardView() {
-    	return "dashboard/dashboardTeacherView";
+        return "dashboard/dashboardTeacherView";
     }
 }

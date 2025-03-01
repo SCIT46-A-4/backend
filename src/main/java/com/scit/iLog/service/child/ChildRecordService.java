@@ -101,19 +101,17 @@ public class ChildRecordService {
         ChildRecordEntity savedChildRecord = childRecordRepository.save(childRecord);
 
         if (childRecordInsertDTO.healthCheckImg().isEmpty()) return savedChildRecord.getId();
-
-        fileManager.saveFile(childRecordInsertDTO.healthCheckImg(), filePathUtil.childHealthCheckImgUploadPath());
-
+        String savedFileName = FileManager
+                .getSavedFileName(
+                        ObjectUtils.isEmpty(childRecordInsertDTO.healthCheckImg().getOriginalFilename()) ?
+                                Instant.now().toString().concat(".jpeg") :
+                                childRecordInsertDTO.healthCheckImg().getOriginalFilename()
+                );
+        fileManager.saveFile(childRecordInsertDTO.healthCheckImg(), filePathUtil.childHealthCheckImgUploadPath(), savedFileName);
         HealthCheckEntity healthCheck = HealthCheckEntity.builder()
                 .child(child)
                 .member(member)
-                .savedFileName(
-                        FileManager
-                                .getSavedFileName(
-                                        ObjectUtils.isEmpty(childRecordInsertDTO.healthCheckImg().getOriginalFilename()) ?
-                                                Instant.now().toString().concat(".jpeg") :
-                                                childRecordInsertDTO.healthCheckImg().getOriginalFilename()
-                                ))
+                .savedFileName(savedFileName)
                 .originalFileName(
                         childRecordInsertDTO
                                 .healthCheckImg().getOriginalFilename()
@@ -136,14 +134,19 @@ public class ChildRecordService {
         childRecord.setRegisterDate(childRecordUpdateRequestDTO.registerDate());
 
         if (childRecordUpdateRequestDTO.healthCheckImg().isEmpty()) return;
-
+        String savedFileName = FileManager
+                .getSavedFileName(
+                        ObjectUtils.isEmpty(childRecordUpdateRequestDTO.healthCheckImg().getOriginalFilename()) ?
+                                Instant.now().toString() :
+                                childRecordUpdateRequestDTO.healthCheckImg().getOriginalFilename()
+                );
         String existingFilePath = filePathUtil
                 .childHealthCheckImgUploadPath()
                 .concat(childRecord.getHealthCheck().getSavedFileName());
         FileManager.deleteFile(existingFilePath);
         fileManager.saveFile(
                 childRecordUpdateRequestDTO.healthCheckImg(),
-                filePathUtil.childHealthCheckImgUploadPath());
+                filePathUtil.childHealthCheckImgUploadPath(), savedFileName);
 
 
         HealthCheckEntity healthCheck = healthCheckRepository.findById(childRecord.getHealthCheck().getId())
@@ -151,13 +154,6 @@ public class ChildRecordService {
                         new EntityNotFoundException(
                                 String.format("HealthCheck 조회 실패: %d", childRecord.getHealthCheck().getId())));
         healthCheck.setOriginalFileName(childRecordUpdateRequestDTO.healthCheckImg().getOriginalFilename());
-        healthCheck.setSavedFileName(
-                FileManager
-                        .getSavedFileName(
-                                ObjectUtils.isEmpty(childRecordUpdateRequestDTO.healthCheckImg().getOriginalFilename()) ?
-                                        Instant.now().toString() :
-                                        childRecordUpdateRequestDTO.healthCheckImg().getOriginalFilename()
-                        )
-        );
+        healthCheck.setSavedFileName(savedFileName);
     }
 }

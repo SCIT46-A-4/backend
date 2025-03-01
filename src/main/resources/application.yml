@@ -22,12 +22,25 @@ spring:
           auth: true
           starttls:
             enable: true
+  servlet:
+    multipart:
+      max-file-size: 50MB        # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
+      max-request-size: 50MB     # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
+      enabled: true             # 2025-02-28 / 김은진 / 파일 업로드 기능 활성화
 
-childProfileImgWindowsPath: file://C:/ilog/childProfileImgs
+  thymeleaf:
+    cache: false  # 캐시 비활성화
+    mode: LEGACYHTML5  # (선택) HTML5 호환 모드
+    prefix: classpath:/templates/
+    suffix: .html
+
+
+
+childProfileImgWindowsPath: C:/ilog/childProfileImgs/
 childProfileImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childProfileImgs
-childHealthCheckImgWindowsPath: file://C:/ilog/childHealthCheckImgs
+childHealthCheckImgWindowsPath: C:/ilog/childHealthCheckImgs
 childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childHealthCheckImgs
-childAnalysisFileImgWindowsPath: file://C:/ilog/childAnalysisFiles
+childAnalysisFileImgWindowsPath: C:/ilog/childAnalysisFiles
 childAnalysisFileMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childAnalysisFiles
 
 #  Windows 경로를 사용할 때는 "file:///" (슬래시 3개)를 사용

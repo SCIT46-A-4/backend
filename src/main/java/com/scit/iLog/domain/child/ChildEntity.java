@@ -31,7 +31,7 @@ public class ChildEntity extends BaseTimeEntity {
     private LocalDateTime birthDate;
 
     /*
-        @TODO embedded 엔티티로 바꿔야함
+     * @TODO embedded 엔티티로 바꿔야함
      */
     @Column(name = "birth_location")
     private String birthLocation;
@@ -71,7 +71,19 @@ public class ChildEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
     private List<RelationShipEntity> relationShips = new ArrayList<>();
 
-    @BatchSize(size = 100)
-    @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
-    private List<ChildBackGroundEntity> childBackGrounds;
+    // @BatchSize(size = 100)
+    // @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
+    // private List<ChildBackGroundEntity> childBackGrounds;
+
+    // 2025-02-28 / 김은진 / 가정환경 데이터 저장
+    @OneToMany(mappedBy = "child", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChildBackGroundEntity> childBackGrounds = new ArrayList<>();
+
+    public void updateChildBackGrounds(List<ChildBackGroundEntity> newBackGrounds) {
+        this.childBackGrounds.clear();
+        if (newBackGrounds != null) {
+            newBackGrounds.forEach(bg -> bg.setChild(this));
+            this.childBackGrounds.addAll(newBackGrounds);
+        }
+    }
 }

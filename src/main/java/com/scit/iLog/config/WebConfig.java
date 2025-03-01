@@ -22,11 +22,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler(HEALTHCHECK_IMAGES_REQUEST_PATH)
-                .addResourceLocations(filePathUtil.childHealthCheckImgUploadPath());
+                .addResourceLocations("file:///".concat(filePathUtil.childHealthCheckImgUploadPath()));
         registry.addResourceHandler(ANALYSIS_FILES_REQUEST_PATH)
-                .addResourceLocations(filePathUtil.analysisFileUploadPath());
+                .addResourceLocations("file:///".concat(filePathUtil.analysisFileUploadPath()));
         registry.addResourceHandler(CHILD_PROFILE_REQUEST_PATH)
-                .addResourceLocations(filePathUtil.childProfileImgUploadPath());
+                .addResourceLocations("file:///".concat(filePathUtil.childProfileImgUploadPath()));
     }
 }
 

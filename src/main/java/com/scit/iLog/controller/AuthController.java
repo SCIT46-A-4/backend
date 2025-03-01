@@ -47,7 +47,7 @@ public class AuthController {
 	@PostMapping("/signUp")
 	public String handleSignUp(@ModelAttribute SignUpDTO signUpDTO) {
 		memberService.join(signUpDTO);
-		return "redirect:/auth/signInView";
+		return "redirect:/auth/signIn";
 	}
 
 	/*
