@@ -37,11 +37,11 @@ spring:
 
 
 childProfileImgWindowsPath: C:/ilog/childProfileImgs/
-childProfileImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childProfileImgs
+childProfileImgMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childProfileImgs
 childHealthCheckImgWindowsPath: C:/ilog/childHealthCheckImgs
-childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childHealthCheckImgs
+childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childHealthCheckImgs
 childAnalysisFileImgWindowsPath: C:/ilog/childAnalysisFiles
-childAnalysisFileMacPath: /Users/hojooneum/Downloads/scit/team-project/backend/childAnalysisFiles
+childAnalysisFileMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childAnalysisFiles
 
 #  Windows 경로를 사용할 때는 "file:///" (슬래시 3개)를 사용
 #  Unix/Linux 시스템에서는 "file://" (슬래시 2개)를 사용

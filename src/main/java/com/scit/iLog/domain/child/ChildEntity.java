@@ -19,6 +19,7 @@ import java.util.List;
 @Table(name = "child")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChildEntity extends BaseTimeEntity {
+    public static final String DEFAULT_PROFILE_IMG = "default-profile.png";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "child_id")
@@ -71,19 +72,26 @@ public class ChildEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
     private List<RelationShipEntity> relationShips = new ArrayList<>();
 
-    // @BatchSize(size = 100)
-    // @OneToMany(mappedBy = "child", cascade = CascadeType.REMOVE)
-    // private List<ChildBackGroundEntity> childBackGrounds;
-
     // 2025-02-28 / 김은진 / 가정환경 데이터 저장
+    @BatchSize(size = 100)
+    @Builder.Default
     @OneToMany(mappedBy = "child", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChildBackGroundEntity> childBackGrounds = new ArrayList<>();
 
-    public void updateChildBackGrounds(List<ChildBackGroundEntity> newBackGrounds) {
-        this.childBackGrounds.clear();
+    public void replaceAllChildBackGrounds(List<ChildBackGroundEntity> newBackGrounds) {
         if (newBackGrounds != null) {
+            this.childBackGrounds.clear();
             newBackGrounds.forEach(bg -> bg.setChild(this));
             this.childBackGrounds.addAll(newBackGrounds);
         }
+    }
+
+    public void deleteAllChildBackground() {
+        this.childBackGrounds.clear();
+    }
+
+    public void setDefaultProfileImg() {
+        this.setSavedProfileImgName(DEFAULT_PROFILE_IMG);
+        this.setOriginalProfileImgName(null);
     }
 }

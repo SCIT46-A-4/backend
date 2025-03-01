@@ -4,12 +4,7 @@ import com.scit.iLog.domain.GuideEntity;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.child.ChildDiaryEntity;
-import com.scit.iLog.domain.child.ChildEntity;
-import com.scit.iLog.domain.child.ChildRecordEntity;
-import com.scit.iLog.domain.child.FamilyBackGround;
-import com.scit.iLog.domain.child.FamilyBackGroundEntity;
-import com.scit.iLog.domain.child.Gender;
+import com.scit.iLog.domain.child.*;
 import com.scit.iLog.domain.claim.ClaimAnswerEntity;
 import com.scit.iLog.domain.claim.ClaimEntity;
 import com.scit.iLog.domain.claim.ClaimType;
@@ -31,32 +26,32 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
-        private final MemberRepository memberRepository;
-        private final ChildRepository childRepository;
-        private final AnalysisTargetRepository analysisTargetRepository;
-        private final AnalysisResultRepository analysisResultRepository;
-        private final AnalysisResultNoteRepository analysisResultNoteRepository;
-        private final ChildDiaryRepository childDiaryRepository;
-        private final ChildRecordRepository childRecordRepository;
-        private final ClaimRepository claimRepository;
-        private final ClaimAnswerRepository claimAnswerRepository;
-        private final GuideRepository guideRepository;
-        private final ChildHealthCheckRepository childHealthCheckRepository;
-        private final RelationShipRepository relationShipRepository;
-        private final PasswordEncoder passwordEncoder;
-        private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
-        private final FamilyBackgroundRepository familyBackgroundRepository; // 2025-02-28 / 김은진
+    private final MemberRepository memberRepository;
+    private final ChildRepository childRepository;
+    private final AnalysisTargetRepository analysisTargetRepository;
+    private final AnalysisResultRepository analysisResultRepository;
+    private final AnalysisResultNoteRepository analysisResultNoteRepository;
+    private final ChildDiaryRepository childDiaryRepository;
+    private final ChildRecordRepository childRecordRepository;
+    private final ClaimRepository claimRepository;
+    private final ClaimAnswerRepository claimAnswerRepository;
+    private final GuideRepository guideRepository;
+    private final ChildHealthCheckRepository childHealthCheckRepository;
+    private final RelationShipRepository relationShipRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
+    private final FamilyBackgroundRepository familyBackgroundRepository; // 2025-02-28 / 김은진
 
-        @Override
-        public void run(String... args) throws Exception {
-                ThreadLocalRandom random = ThreadLocalRandom.current();
-                LocalDateTime now = LocalDateTime.now();
+    @Override
+    public void run(String... args) throws Exception {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        LocalDateTime now = LocalDateTime.now();
 
-                // 예시용 배열 (랜덤 데이터 생성을 위한 샘플)
-                String[] firstNames = { "김", "이", "박", "최", "정" };
-                String[] lastNames = { "철수", "영희", "갑돌", "갑순", "지영" };
-                String[] locations = { "서울", "부산", "인천", "대구", "광주" };
-                EmotionType[] emotionTypes = EmotionType.values();
+        // 예시용 배열 (랜덤 데이터 생성을 위한 샘플)
+        String[] firstNames = {"김", "이", "박", "최", "정"};
+        String[] lastNames = {"철수", "영희", "갑돌", "갑순", "지영"};
+        String[] locations = {"서울", "부산", "인천", "대구", "광주"};
+        EmotionType[] emotionTypes = EmotionType.values();
 
         // admin은 테스트용 관리자 계정 (한 번만 생성)
         MemberEntity admin = MemberEntity.builder()
@@ -69,22 +64,22 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         memberRepository.save(admin);
 
-            MemberEntity dad = MemberEntity.builder()
-                    .name("daddy")
-                    .password(passwordEncoder.encode("dad123!"))
-                    .signInId("daddy")
-                    .email("dad@example.com")
-                    .role(MemberRole.USER)
-                    .personalInformationCollectionAndUsageAgreement(true)
-                    .relationType(RelationType.GUARDIAN)
-                    .build();
-            memberRepository.save(dad);
+        MemberEntity dad = MemberEntity.builder()
+                .name("daddy")
+                .password(passwordEncoder.encode("dad123!"))
+                .signInId("daddy")
+                .email("dad@example.com")
+                .role(MemberRole.USER)
+                .personalInformationCollectionAndUsageAgreement(true)
+                .relationType(RelationType.GUARDIAN)
+                .build();
+        memberRepository.save(dad);
 
-            // 2025-02-28 / 김은진 / FamilyBackGround 초기 데이터 생성
-            for (FamilyBackGround familyBackGround : FamilyBackGround.values()) {
-                FamilyBackGroundEntity entity = new FamilyBackGroundEntity(familyBackGround);
-                familyBackgroundRepository.save(entity);
-            }
+        // 2025-02-28 / 김은진 / FamilyBackGround 초기 데이터 생성
+        for (FamilyBackGround familyBackGround : FamilyBackGround.values()) {
+            FamilyBackGroundEntity entity = new FamilyBackGroundEntity(familyBackGround);
+            familyBackgroundRepository.save(entity);
+        }
 
         for (int i = 1; i <= 10; i++) {
             // 1. Member 엔티티 생성 (랜덤 이름, 이메일 등)

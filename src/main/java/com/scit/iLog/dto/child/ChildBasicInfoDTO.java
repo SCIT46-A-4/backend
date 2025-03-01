@@ -23,5 +23,4 @@ public class ChildBasicInfoDTO extends BaseTimeDTO {
     private String profileImgSrcUri;
     private String callName;
     private List<FamilyBackGround> familyBackGrounds;
-
 }

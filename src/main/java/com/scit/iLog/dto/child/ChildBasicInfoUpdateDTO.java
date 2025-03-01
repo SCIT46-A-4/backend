@@ -20,5 +20,6 @@ public record ChildBasicInfoUpdateDTO(
                 String callName,
                 List<FamilyBackGround> familyBackGrounds,
                 // 2025-02-28 / 김은진 / 이미지는 마지막에 위치하고 명시적으로 null 허용
-                @Nullable MultipartFile profileImg) {
+                @Nullable MultipartFile profileImg
+) {
 }

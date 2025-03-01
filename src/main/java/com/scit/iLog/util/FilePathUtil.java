@@ -23,13 +23,28 @@ public final class FilePathUtil {
         return os.contains("win") ? childProfileImgWindowsPath : childProfileImgMacPath;
     }
 
+    public String childProfileImgResourceLocation() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return os.contains("win") ? "file:///".concat(childProfileImgWindowsPath) : "file://".concat(childProfileImgMacPath);
+    }
+
     public String childHealthCheckImgUploadPath() {
         String os = System.getProperty("os.name").toLowerCase();
         return os.contains("win") ? childHealthCheckImgWindowsPath : childHealthCheckImgMacPath;
     }
 
-    public String analysisFileUploadPath() {
+    public String childHealthCheckImgResourceLocation() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return os.contains("win") ? "file:///".concat(childHealthCheckImgWindowsPath) : "file://".concat(childHealthCheckImgMacPath);
+    }
+
+    public String childAnalysisFileUploadPath() {
         String os = System.getProperty("os.name").toLowerCase();
         return os.contains("win") ? childAnalysisFileImgWindowsPath : childAnalysisFileMacPath;
+    }
+
+    public String childAnalysisFileResourceLocation() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return os.contains("win") ? "file:///".concat(childAnalysisFileImgWindowsPath) : "file://".concat(childAnalysisFileMacPath);
     }
 }
