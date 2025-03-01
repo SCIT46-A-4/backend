@@ -5,8 +5,8 @@ import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.dto.member.MemberDashboardProfileDTO;
-import com.scit.iLog.dto.member.MemberSelectDTO;
-import com.scit.iLog.dto.member.MyPageDTO;
+import com.scit.iLog.dto.member.MemberDetailsDTO;
+import com.scit.iLog.dto.member.MemberUpdateDTO;
 import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -61,15 +61,16 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public MyPageDTO getMyPageDataById(Long memberId) {
+	public MemberUpdateDTO getMemberUpdateDataById(Long memberId) {
 		MemberEntity member = memberRepository
 				.findById(memberId)
 				.orElseThrow(() -> new EntityNotFoundException(String.format("멤버 조회 실패: %d", memberId)));
-		return MyPageDTO.builder()
+		return MemberUpdateDTO.builder()
 				.signInId(member.getSignInId())
-				.userEmail(member.getEmail())
-				.userName(member.getName())
-				.relationType(member.getRelationType())
+				.email(member.getEmail())
+				.name(member.getName())
+				.relationType(member.getRelationType().getTypeNameKr())
+				.personalInformationCollectionAndUsageAgreement(member.isPersonalInformationCollectionAndUsageAgreement())
 				.build();
 	}
 
@@ -86,15 +87,25 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public MemberSelectDTO findById(Long memberId) {
+	public MemberDetailsDTO getMemberDetailsById(Long memberId) {
 		MemberEntity member = memberRepository.findById(memberId)
 				.orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));
-		return MemberSelectDTO.builder()
-				.id(member.getId())
+		return MemberDetailsDTO.builder()
 				.signInId(member.getSignInId())
 				.email(member.getEmail())
 				.name(member.getName())
-				.relationType(member.getRelationType())
+				.relationType(member.getRelationType().getTypeNameKr())
+				.personalInformationCollectionAndUsageAgreement(member.isPersonalInformationCollectionAndUsageAgreement())
 				.build();
+	}
+
+	@Transactional
+	public void updateMember(Long memberId, String email, String newPassword) {
+		MemberEntity member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));
+		member.setPassword(passwordEncoder.encode(newPassword));
+
+		if (member.getEmail().equals(email)) return;
+		member.setEmail(email);
 	}
 }

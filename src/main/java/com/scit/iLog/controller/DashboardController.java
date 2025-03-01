@@ -31,23 +31,26 @@ import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 public class DashboardController {
     private final ChildService childService;
 
-    // 2025-02-26 김보경
-    /*
-     * D-0: 기본 대시보드 경로 (부모 대시보드로 리다이렉트)
-     * 로고 클릭 시 대시보드로 이동하기 때문에 작성
+    /**
+     * D-1,D-2
+     * @return 부모 권한을 가진 사용자만 볼 수 있는 대시보드 페이지 템플릿의 경로를 반환합니다.
      */
-    @GetMapping
-    public String handleGetDashboardMainView() {
-        return "redirect:/dashboard/guardian";
+    @GetMapping({"","/"})
+    public String handleGetDashboardView(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        return memberDetails.getRelationType() == RelationType.GUARDIAN ?
+                "redirect:/dashboard/guardian" : "redirect:/dashboard/teacher";
     }
 
     /*
-     * D-1
+        D-1
      */
     @GetMapping("/guardian")
     public String handleGetParentDashboardView(
             @AuthenticationPrincipal MemberDetails memberDetails,
-            Model model) {
+            Model model
+            ) {
         ParentDashboardChildListDTO childList = childService.getChildrenProfilesOf(memberDetails.getId());
 
         model.addAttribute("memberName", memberDetails.getName());
@@ -58,10 +61,9 @@ public class DashboardController {
 
     /**
      * D-2
-     * 
      * @return 선생님 권한을 가진 사용자만 볼 수 있는 대시보드 페이지의 템플릿의 경로를 반환합니다.
-     *         이 페이지에서는 하나의 페이지에서 여러 정보를 필요로 하므로
-     *         관련된 API의 구현이 필요합니다.
+     * 이 페이지에서는 하나의 페이지에서 여러 정보를 필요로 하므로
+     * 관련된 API의 구현이 필요합니다.
      */
     @GetMapping("/teacher")
     public String handleGetTeacherDashboardView() {
