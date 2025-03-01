@@ -1,13 +1,12 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.config.SecurityConfig.MemberDetails;
-import com.scit.iLog.dto.PageResponse;
-import com.scit.iLog.dto.child.*;
-import com.scit.iLog.service.analysis.AnalysisService;
-import com.scit.iLog.service.child.ChildRecordService;
-import com.scit.iLog.service.child.ChildService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +15,43 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.scit.iLog.config.SecurityConfig.MemberDetails;
+import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
+import com.scit.iLog.dto.PageResponse;
+import com.scit.iLog.dto.child.ChildBasicInfoDTO;
+import com.scit.iLog.dto.child.ChildBasicInfoInsertDTO;
+import com.scit.iLog.dto.child.ChildBasicInfoUpdateDTO;
+import com.scit.iLog.dto.child.ChildRecordDTO;
+import com.scit.iLog.dto.child.ChildRecordExtraction;
+import com.scit.iLog.dto.child.ChildRecordInsertDTO;
+import com.scit.iLog.dto.child.ChildRecordListItemDTO;
+import com.scit.iLog.dto.child.ChildRecordResponseDTO;
+import com.scit.iLog.dto.child.ChildRecordUpdateRequestDTO;
+import com.scit.iLog.dto.child.ChildRecordUpdateResponseDTO;
+import com.scit.iLog.dto.child.ChildRecordUpdateViewDTO;
+import com.scit.iLog.service.analysis.AnalysisService;
+import com.scit.iLog.service.child.ChildRecordService;
+import com.scit.iLog.service.child.ChildService;
+import com.scit.iLog.util.FilePathUtil;
+import com.scit.iLog.util.PageNavigator;
+
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
@@ -28,43 +61,42 @@ public class ChildrenController {
 
 	/* 2025-02-06 infoDetailsService 선언 */
 	/**
-	 * 컨트롤러에서 서비스를 사용할 준비를 하는 코드
-	 * RequiredArgsConstructor를 통해 자동으로 생성자가 생성
-	 * InfoDetailsService 클래스 주입, 실제 사용할 객체 이름 infoDetailsService
-	 * -> ChildService로 옮겼습니다. 아이의 기본정보이기 때문에.
+	 * 컨트롤러에서 서비스를 사용할 준비를 하는 코드 RequiredArgsConstructor를 통해 자동으로 생성자가 생성
+	 * InfoDetailsService 클래스 주입, 실제 사용할 객체 이름 infoDetailsService -> ChildService로
+	 * 옮겼습니다. 아이의 기본정보이기 때문에.
 	 */
 	private final ChildService childService;
 	private final ChildRecordService childRecordService;
 	private final AnalysisService analysisService;
+	private final FilePathUtil filePathUtil;
+//	private final ChildRecordResponseDTO childRecordResponseDTO;
 
-	// 흐름도: (아이 등록페이지 버튼)    -> 등록페이지 반환
-	//	     등록페이지(등록하기)      -> 등록완료(아이 상세정보 페이지 반환)
-	// 		 아이 상세 정보 수정 페이지 -> 아이 정보 수정 페이지 반환
-	// 
+	// 흐름도: (아이 등록페이지 버튼) -> 등록페이지 반환
+	// 등록페이지(등록하기) -> 등록완료(아이 상세정보 페이지 반환)
+	// 아이 상세 정보 수정 페이지 -> 아이 정보 수정 페이지 반환
+	//
 
 	// 25/2/11 준: api-22 아이 정보 등록 페이지 반환
 	/*
-		C-1
+	 * C-1
 	 */
 	@GetMapping("/new")
 	public String handleGetChildInsertView() {
 		return "children/basicInfoInsertView";
 	}
 
-	// 25/2/11 준: api-23 입력된 아동 정보를 저장 
+	// 25/2/11 준: api-23 입력된 아동 정보를 저장
 	// 반환: 아이 상세 정보페이지
 	/*
-		C-1
+	 * C-1
 	 */
 	@PostMapping("/new")
-	public String handlePostChildBasicInfoInsert(
-			@ModelAttribute ChildBasicInfoInsertDTO childBasicInfoInsertDTO,
-			RedirectAttributes redirectAttributes
-	) {
+	public String handlePostChildBasicInfoInsert(@ModelAttribute ChildBasicInfoInsertDTO childBasicInfoInsertDTO,
+			RedirectAttributes redirectAttributes) {
 		Long childId = childService.saveBasicInfo(childBasicInfoInsertDTO);
 		redirectAttributes.addAttribute("childId", childId);
 
-		return String.format("redirect:/children/%d/basicInfo",childId);
+		return String.format("redirect:/children/%d/basicInfo", childId);
 	}
 
 	/**
@@ -72,9 +104,8 @@ public class ChildrenController {
 	 *
 	 * @param childId
 	 * @param model
-	 * @return children/basicInfoDetailsView.html 뷰 페이지
-	 * 서비스 레이어에서 ChildDetailsDto를 가져와 뷰에 전달
-	 * C-2
+	 * @return children/basicInfoDetailsView.html 뷰 페이지 서비스 레이어에서 ChildDetailsDto를
+	 *         가져와 뷰에 전달 C-2
 	 */
 	@GetMapping("{childId}/basicInfo")
 	public String handleGetChildBasicInfoView(@PathVariable("childId") Long childId, Model model) {
@@ -89,7 +120,7 @@ public class ChildrenController {
 
 	// 25/2/11 api-28: 아동 삭제요청, return: 대쉬보드 Page
 	/*
-		C-2
+	 * C-2
 	 */
 	@DeleteMapping("/{childId}")
 	@ResponseBody
@@ -100,27 +131,21 @@ public class ChildrenController {
 
 	// 25/2/11 준 api-29 수정: 아동 정보수정페이지 요청
 	/*
-		C-3
-		Exception은 checked Exception이기 때문에 어디선가 try catch로 반드시 잡아줘야합니다.
+	 * C-3 Exception은 checked Exception이기 때문에 어디선가 try catch로 반드시 잡아줘야합니다.
 	 */
 	@GetMapping("/{childId}/basicInfo/edit")
-	public String handleGetChildDetailsUpdateView(
-			@PathVariable("childId") Long childId,
-			Model model
-	) {
+	public String handleGetChildDetailsUpdateView(@PathVariable("childId") Long childId, Model model) {
 		model.addAttribute("child", childService.findById(childId));
 		return "children/basicInfoUpdateView";
 	}
 
 	// 25/2/11 준 api-30 아이 정보 수정
 	/*
-		C-3
+	 * C-3
 	 */
 	@PostMapping("/{childId}/basicInfo/edit")
-	public String handlePostChildBasicInfoUpdate(
-			@PathVariable(name = "childId") Long childId,
-			@ModelAttribute ChildBasicInfoUpdateDTO childBasicInfoUpdateDTO
-	) {
+	public String handlePostChildBasicInfoUpdate(@PathVariable(name = "childId") Long childId,
+			@ModelAttribute ChildBasicInfoUpdateDTO childBasicInfoUpdateDTO) {
 		// 아이 정보 수정
 		childService.updateChildBasicInfo(childId, childBasicInfoUpdateDTO);
 		return String.format("redirect:/children/%d/basicInfo", childId);
@@ -133,7 +158,9 @@ public class ChildrenController {
 	 * C-4
 	 */
 	@GetMapping("/{childId}/records/new")
-	public String handleGetChildRecordInsertView() {
+	public String handleGetChildRecordInsertView(@PathVariable(name="childId") Long childId, Model model) 
+	{
+		model.addAttribute("childId", childId);
 		return "children/records/childRecordInsertView";
 	}
 
@@ -142,100 +169,236 @@ public class ChildrenController {
 		아이 신체 정보 저장 요청을 처리
 	 */
 	@PostMapping("/{childId}/records/new")
-	public String handlePostChildRecordInsert(
-			@PathVariable("childId") Long childId,
-			@AuthenticationPrincipal MemberDetails memberDetails,
-			@ModelAttribute ChildRecordInsertDTO childRecordInsertDTO
+	@ResponseBody
+	public ChildRecordResponseDTO handlePostChildRecordInsert(	//String을 ChildRecordResponseDTO로 변경
+	        @PathVariable("childId") Long childId,
+	        @AuthenticationPrincipal MemberDetails memberDetails,
+	        @ModelAttribute ChildRecordInsertDTO childRecordInsertDTO
 	) {
-		Long childRecordId = childRecordService.saveChildRecord(childId, memberDetails.getId(), childRecordInsertDTO);
-		return String.format("redirect:/children/%d/records/%d", childId, childRecordId);
+	    // 아동 신체 정보 저장
+	    Long childRecordId = childRecordService.saveChildRecord(childId, memberDetails.getId(), childRecordInsertDTO);
+	    
+	    // 업로드 완료 후 리다이렉트
+	    // DTO { boolean treu false, Sttring url}
+//	    return String.format("/children/%d/records/%d", childId, childRecordId);
+	 // ✅ JSON 응답 반환
+	    return new ChildRecordResponseDTO(true, String.format("/children/%d/records/%d", childId, childRecordId));
 	}
 
 	/*
-		C-4, C-7
-		문진표에서 신체 정보 가져오기 요청을 처리
+	 * C-4, C-7 문진표에서 신체 정보 가져오기 요청을 처리
 	 */
 	@ResponseBody
 	@PostMapping("/healthCheck/recordData")
 	public ChildRecordExtraction handlePostHealthCheckImg(
-			@RequestParam("healthCheckImg") MultipartFile healthCheckImg
-	) {
+			@RequestParam("healthCheckImg") MultipartFile healthCheckImg) {
 		return analysisService.getExtractChildRecordData(healthCheckImg);
 	}
 
-	/*
-		C-5
+	/**
+	 * API : v1.x.x-2
+	 * C-5 수정 25/2/24 준 
+	 * getMapping( /{childId}/records/{recordId} -> /{recordId}/records/)
+	 * @param recordId
+	 * @param childId
+	 * @param model
+	 * @return
 	 */
 	@GetMapping("/{childId}/records/{recordId}")
 	public String handleGetChildRecordView(
-			@PathVariable("childId") Long childId,
 			@PathVariable("recordId") Long recordId,
+			@PathVariable("childId") Long childId, 
 			Model model
-	) {
+			) {
 		ChildRecordDTO childRecordDTO = childRecordService.findOneById(recordId);
+		String savedFileName = childRecordService.FindHealthCehckByChildRecordId(recordId).getSavedFileName();
 		model.addAttribute("childRecord", childRecordDTO);
+		model.addAttribute("childId", childId);
+		model.addAttribute("savedFileName", savedFileName);
+
 		return "children/records/childRecordDetailsView";
 	}
+	
+	/**
+	 * API : v1.x.x-5
+	 * C-5 정준성
+	 * @param id
+	 * @param response
+	 * @return
+	 */
+	@GetMapping("/download")
+	public String download(@RequestParam(name = "childrenId") Long id, HttpServletResponse response) {
+		// HttpServletResponse
+		// 스프링에서 자동으로 전달해주는 값으로, 클라이언트(사용자)에게 보낼 헤더값을 만든다
+		// 이 객체는 개발자가 새롭게 만들 수 없다. 자동으로 스프링에서 http요청 처리과정을 담당함
 
-	/*
-		C-6
+		// 1. DB에서 데이터를 찾는다
+		System.out.println("download 접속");
+		HealthCheckEntity healthCheckEntity = childRecordService.FindHealthCehckByChildRecordId(id);
+
+		String savedFileName = healthCheckEntity.getSavedFileName();
+		String originalFileName = healthCheckEntity.getOriginalFileName();
+
+		try {
+			// 파일명이 깨질 우려가 있어서 utf-8로 인코딩한다
+			String tempName = URLEncoder.encode(originalFileName, StandardCharsets.UTF_8.toString());
+
+			// 다운로드 명령 설정, 사용자가 받을 파일명 지정
+			response.setHeader("Content-Disposition", "attachment;filename=" + tempName);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		String fullPath = filePathUtil.childHealthCheckImgUploadPath() + savedFileName;
+		System.out.println("fullPath: " + fullPath);
+		FileInputStream filein = null;
+		ServletOutputStream fileout = null;
+
+		try {
+			// 서버에서 실제 파일의 경로를 조회해서 데이터를 읽는다
+			filein = new FileInputStream(fullPath);
+			fileout = response.getOutputStream();
+
+			// fileIn -> fileOut
+			FileCopyUtils.copy(filein, fileout);
+
+			fileout.close();
+			filein.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * API : v1.x.x-3
+	 * C-6 이도훈 2025-02-24~26
+	 * http://localhost:9900/children/1/recordList
+	 * offset → page 변경
+	 * @param childId   아이 ID
+	 * @param model     모델
+	 * @param page      현재 페이지
+	 * @param limit     한 페이지당 아이템 수
+	 * @param sortBy    정렬 기준
+	 * @param direction 정렬 방향
+	 * @return 신체 기록 목록 뷰
 	 */
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/{childId}/recordList")
 	public String handleGetChildRecordListView(
-			@PathVariable("childId") Long childId,
 			Model model,
-			@RequestParam(defaultValue = "0") int offset,
-			@RequestParam(defaultValue = "10") int limit,
-			@RequestParam(defaultValue = "createdAt") String sortBy,
-			@RequestParam(defaultValue = "DESC") String direction
-	) {
-		// 정렬 방향 설정
-		Sort.Direction sortDirection = Sort.Direction.fromString(direction.toUpperCase());
+			@PathVariable("childId") Long childId,
+			@RequestParam(name = "page", defaultValue = "0") int page, // offset → page 변경
+			@RequestParam(name = "limit", defaultValue = "5") int limit,
+			@RequestParam(name = "sortBy", defaultValue = "registerDate") String sortBy,
+			@RequestParam(name = "direction", defaultValue = "DESC") String direction
+			) {
+		// 정렬 방향 변환 (예외 처리 추가)
+		Sort.Direction sortDirection;
+		try {
+			sortDirection = Sort.Direction.valueOf(direction.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			sortDirection = Sort.Direction.DESC;
+		}
 		Sort sort = Sort.by(sortDirection, sortBy);
 
 		// 페이지 요청 객체 생성
-		Pageable pageable = PageRequest.of(offset, limit, sort);
+		Pageable pageable = PageRequest.of(page, limit, sort); // offset → page 변경
+
+		// 아이 이름을 갖고오기
+		ChildBasicInfoDTO childName = childService.findById(childId);
 
 		// 서비스를 통해 페이징된 데이터 조회
 		Page<ChildRecordListItemDTO> childRecordsPage = childRecordService.findPagedChildRecords(childId, pageable);
 
-		// 응답 데이터 구성
-		model.addAttribute("childRecordsPage", PageResponse.<ChildRecordListItemDTO>builder()
-				.content(childRecordsPage.getContent())
-				.pageNumber(childRecordsPage.getNumber())
-				.pageSize(childRecordsPage.getSize())
-				.totalElements(childRecordsPage.getTotalElements())
+		// **PageNavigator 객체 생성 (그룹당 5페이지씩)**
+		PageNavigator pageNavigator = PageNavigator.of()
+				.groupSize(5) // 페이지 네비게이션 그룹 크기 (5개씩)
+				.itemsPerPage(childRecordsPage.getSize())
+				.currentPage(childRecordsPage.getNumber())
 				.totalPages(childRecordsPage.getTotalPages())
-				.last(childRecordsPage.isLast())
-				.build());
+				.build();
+
+		// 응답 데이터 구성
+		model.addAttribute("childRecordsPage",
+				PageResponse
+					.<ChildRecordListItemDTO>builder()
+					.content(childRecordsPage.getContent())
+					.pageNumber(childRecordsPage.getNumber())
+					.pageSize(childRecordsPage.getSize())
+					.totalElements(childRecordsPage.getTotalElements())
+					.totalPages(childRecordsPage.getTotalPages())
+					.last(childRecordsPage.isLast())
+					.build()
+					);
+		
+		// 모델 추가
+		model.addAttribute("childName", childName);
+		model.addAttribute("pageNavigator", pageNavigator);
+		model.addAttribute("sortBy", sortBy);
+		model.addAttribute("direction", direction);
+
 		return "children/records/childRecordListView";
 	}
 
-	/*
-		C-7
+	/**
+	 * API : v1.x.x-4 아이의 기록 삭제
+	 * C-6 이도훈 2025-02-24~26
+	 * @param childId  아이 ID
+	 * @param recordId 기록 ID
+	 */
+	@DeleteMapping("/{childId}/records/{recordId}/delete")
+	@ResponseStatus(HttpStatus.NO_CONTENT) // ✅ 204 No Content 응답 설정 
+	public void deleteChildRecord(
+			@PathVariable("childId") Long childId, 
+			@PathVariable("recordId") Long recordId
+			) {
+		childRecordService.deleteChildRecord(recordId);
+	}
+	
+	/**
+	 * API : v1.x.x-8
+	 * C-7 이도훈
+	 * @param childId
+	 * @param childRecordId
+	 * @param model
+	 * @return
 	 */
 	@GetMapping("/{childId}/records/{childRecordId}/edit")
 	public String handleGetChildRecordUpdateView(
 			@PathVariable("childId") Long childId,
 			@PathVariable("childRecordId") Long childRecordId,
 			Model model
-	) {
-		ChildRecordDTO childRecordDTO = childRecordService.findOneByChildIdAndRecordId(childId, childRecordId);
-		model.addAttribute("childRecord", childRecordDTO);
+			) {
+		ChildRecordUpdateViewDTO childRecordUpdateViewDTO = childRecordService
+			.findOneByUpdateChildIdAndRecordId(childId, childRecordId);
+			
+		model.addAttribute("childRecord", childRecordUpdateViewDTO);
+		
 		return "children/records/childRecordUpdateView";
 	}
-
-	/*
-       C-7
-    */
+	
+	/**
+	 * API : v1.x.x-9
+	 * C-7 이도훈
+	 * @param childId
+	 * @param childRecordId
+	 * @param childRecordUpdateRequestDTO
+	 * @return
+	 * @throws IOException
+	 */
+	@ResponseBody
 	@PostMapping("/{childId}/records/{childRecordId}/edit")
-	public String handlePostChildRecordUpdate(
+	public ChildRecordUpdateResponseDTO handlePostChildRecordUpdate(
 			@PathVariable("childId") Long childId,
 			@PathVariable("childRecordId") Long childRecordId,
-			@ModelAttribute ChildRecordUpdateRequestDTO childRecordUpdateRequestDTO
-	) {
-		childRecordService.updateChildRecord(childRecordId, childRecordUpdateRequestDTO);
-		return String.format("redirect:/children/%d/records/%d", childId, childRecordId);
-	}
+			@ModelAttribute("formData") ChildRecordUpdateRequestDTO childRecordUpdateRequestDTO
+			) throws IOException {
+			
+			childRecordService.updateChildRecord(childRecordId, childRecordUpdateRequestDTO);
+	
+			return new ChildRecordUpdateResponseDTO(true, String.format("/children/%d/records/%d", childId, childRecordId));
+		}
 }

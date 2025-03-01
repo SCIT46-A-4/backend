@@ -1,5 +1,13 @@
 package com.scit.iLog;
 
+import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
 import com.scit.iLog.domain.GuideEntity;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
@@ -14,16 +22,28 @@ import com.scit.iLog.domain.claim.ClaimType;
 import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.domain.sentimentalAnalysis.*;
-import com.scit.iLog.repository.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultNoteEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisSatisfactionEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
+import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
+import com.scit.iLog.domain.sentimentalAnalysis.WeatherEntity;
+import com.scit.iLog.repository.AnalysisResultNoteRepository;
+import com.scit.iLog.repository.AnalysisResultRepository;
+import com.scit.iLog.repository.AnalysisSatisfactionRepository;
+import com.scit.iLog.repository.AnalysisTargetRepository;
+import com.scit.iLog.repository.ChildDiaryRepository;
+import com.scit.iLog.repository.ChildHealthCheckRepository;
+import com.scit.iLog.repository.ChildRecordRepository;
+import com.scit.iLog.repository.ChildRepository;
+import com.scit.iLog.repository.ClaimAnswerRepository;
+import com.scit.iLog.repository.ClaimRepository;
+import com.scit.iLog.repository.GuideRepository;
+import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.repository.RelationShipRepository;
 
-import java.time.LocalDateTime;
-import java.util.concurrent.ThreadLocalRandom;
+import lombok.RequiredArgsConstructor;
 
 @Profile("dev")
 @Component
@@ -65,6 +85,17 @@ public class DataInitializer implements CommandLineRunner {
                 .personalInformationCollectionAndUsageAgreement(false)
                 .build();
         memberRepository.save(admin);
+        
+        MemberEntity player = MemberEntity.builder()
+                .name("player")
+                .password(passwordEncoder.encode("asd123!"))
+                .signInId("asd123")
+                .email("asd@example.com")
+                .role(MemberRole.USER)
+                .relationType(RelationType.GUARDIAN)
+                .personalInformationCollectionAndUsageAgreement(false)
+                .build();
+        memberRepository.save(player);
 
         for (int i = 1; i <= 10; i++) {
             // 1. Member 엔티티 생성 (랜덤 이름, 이메일 등)

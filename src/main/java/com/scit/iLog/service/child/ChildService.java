@@ -25,6 +25,7 @@ import org.springframework.util.ObjectUtils;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.scit.iLog.config.WebConfig.CHILD_PROFILE_REQUEST_ROOT_PATH;
@@ -51,7 +52,14 @@ public class ChildService {
 					.note(childBasicInfoInsertDTO.note())
 					.build();
 			if (!childBasicInfoInsertDTO.profileImg().isEmpty()) {
-				fileManager.saveFile(childBasicInfoInsertDTO.profileImg(), filePathUtil.childProfileImgUploadPath());
+				String savedFileName = FileManager.getSavedFileName(
+			      		  ObjectUtils.isEmpty(childBasicInfoInsertDTO.profileImg().getOriginalFilename()) ? 
+			      						  UUID.randomUUID().toString().concat(".jpeg") :
+			      							childBasicInfoInsertDTO.profileImg().getOriginalFilename() );
+				fileManager.saveFile(
+						childBasicInfoInsertDTO.profileImg(), 
+						filePathUtil.childProfileImgUploadPath(),
+						savedFileName);
 				child.setOriginalProfileImgName(childBasicInfoInsertDTO.profileImg().getOriginalFilename());
 				child.setSavedProfileImgName(FileManager.getSavedFileName(
 						ObjectUtils.isEmpty(childBasicInfoInsertDTO.profileImg().getOriginalFilename()) ?
@@ -126,14 +134,19 @@ public class ChildService {
 				child.setNote(childBasicInfoUpdateDTO.note());
 
 				if (childBasicInfoUpdateDTO.profileImg().isEmpty()) return;
-
 				String existingFilePath = filePathUtil
 						.childProfileImgUploadPath()
 						.concat(child.getSavedProfileImgName());
 				FileManager.deleteFile(existingFilePath);
+				
+				String savedFileName = FileManager.getSavedFileName(
+			      		  ObjectUtils.isEmpty(childBasicInfoUpdateDTO.profileImg().getOriginalFilename()) ? 
+			      						  UUID.randomUUID().toString().concat(".jpeg") :
+			      							childBasicInfoUpdateDTO.profileImg().getOriginalFilename() );
 				fileManager.saveFile(
 						childBasicInfoUpdateDTO.profileImg(),
-						filePathUtil.childProfileImgUploadPath());
+						filePathUtil.childProfileImgUploadPath(),
+						savedFileName);
 				//@TODO 파일명 바꿔줘야지
 			}
 

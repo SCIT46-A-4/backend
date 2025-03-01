@@ -19,7 +19,7 @@ import static jakarta.persistence.FetchType.LAZY;
 public class HealthCheckEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "health_survey_id")
+    @Column(name = "health_check_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)

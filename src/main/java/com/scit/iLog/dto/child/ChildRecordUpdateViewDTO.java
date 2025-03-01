@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Builder
 public record ChildRecordUpdateViewDTO(
         Long id,
+        Long childId,    // 추가
         double weight,
         double height,
         double leftEye,

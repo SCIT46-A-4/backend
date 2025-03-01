@@ -1,15 +1,164 @@
+
 <!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
-    <title>C-6</title>
+    <title>신체정보 목록</title>
+    <!-- Jquery -->
     <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
+    <!-- sweetalert2-->
+    <script src="/js/sweetalert2.js"></script>
+    <!-- bulma -->
+    <link rel="stylesheet" th:href="@{/css/bulma.min.css}">
+    <!-- customColors -->
+    <link rel="stylesheet" th:href="@{/css/customColors.css}">
+    <style>
+    
+        body {
+            background-color: #FDF5BF;
+        }
+        .pagination-link.is-disabled,
+        .pagination-previous.is-disabled,
+        .pagination-next.is-disabled {
+            pointer-events: none;
+            opacity: 0.5;
+            background-color: #d3d3d3;
+            color: #777;
+            border-color: #ccc;
+        }
+        
+        .pagination-list li { margin: 0 3px; }
+        /* hover */
+        .box.hoverable:hover {
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .fixed-size-box {
+			width: 100px; /* 원하는 크기로 조정 */
+			height: 100px; /* 정사각형으로 설정 */
+			border-radius: 50%; /* 원형으로 만듦 */
+			overflow: hidden; /* 넘치는 부분 제거 */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: transparent; /* 배경 제거 */
+		}
+		
+		.div-size-cust {
+			/* padding: 0; */
+			box-shadow: none;
+			background-image: url("/images/ilog.png");
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+        
+    </style>
+ 
+    <script>
+        $(document).ready(function () {
+            function showError(message) {
+                Swal.fire({ icon: 'error', title: '오류', text: message });
+            }
 
+            $(".deleteBtn, .updateBtn, .clickable-row").on("click", function (event) {
+                event.stopPropagation(); // 부모 요소 클릭 방지
+                let recordId = $(this).data("record-id");
+                let childId = $(this).data("child-id");
+
+                if (!recordId || !childId) return showError("데이터를 찾을 수 없습니다.");
+
+                if ($(this).hasClass("deleteBtn")) {
+                    Swal.fire({
+                        title: "정말 삭제하시겠습니까?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "삭제",
+                        cancelButtonText: "취소"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: `/children/${childId}/records/${recordId}/delete`,
+                                type: "DELETE",
+                                success: function () {
+                                    Swal.fire({ icon: "success", title: "삭제되었습니다.", timer: 1500 })
+                                        .then(() => window.location.href = `/children/${childId}/recordList`);
+                                },
+                                error: function (xhr) {
+                                    showError(`삭제 실패: ${xhr.statusText}`);
+                                }
+                            });
+                        }
+                    });
+                } else if ($(this).hasClass("updateBtn")) {
+                    window.location.href = `/children/${childId}/records/${recordId}/edit`;
+                } else {
+                    window.location.href = `/children/${childId}/records/${recordId}`;
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container py-5">
+            <div class="columns is-vcentered">
+				<!-- vertically centered -->
+				<a th:href="@{/dashboard/guardian}">
+					<div class="box fixed-size-box div-size-cust" bis_skin_checked="1"></div>
+				</a>
+
+				<div>
+					<h1 class="title is-1 has-text-centered" th:text="${childName.name} + ' 신체성장 기록'"></h1>
+				</div>
+			</div>
+        
+
+        <div class="columns is-align-items-stretch is-vcentered has-text-centered mb-3">
+            <div class="column is-8">
+                <div class="columns is-vcentered has-text-centered">
+                    <div class="column is-size-4"><strong>등록 날짜</strong></div>
+                    <div class="column is-size-4"><strong>키/몸무게</strong></div>
+                    <div class="column is-size-4"><strong>자료형식</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div th:each="record : ${childRecordsPage.content}" class="columns is-align-items-stretch is-vcentered has-text-centered mb-3 clickable-row"
+            th:data-record-id="${record.id}" th:data-child-id="${childId}">
+            <div class="column is-8">
+                <div class="box hoverable">
+                    <div class="columns is-vcentered has-text-centered">
+                        <div class="column is-size-4" th:text="${#temporals.format(record.registerDate, 'yyyy.MM.dd')}"></div>
+                        <div class="column is-size-4" th:text="|${#numbers.formatDecimal(record.height, 1, 1)} / ${#numbers.formatInteger(record.weight, 0)}|"></div>
+                        <div class="column is-size-4">
+                            <span th:if="${record.hasHealthCheckImg}">✅</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-2">
+                <button class="updateBtn button is-info is-fullwidth" th:data-record-id="${record.id}" th:data-child-id="${childId}">수정</button>
+            </div>
+            <div class="column is-2">
+                <button class="deleteBtn button is-danger is-fullwidth" th:data-record-id="${record.id}" th:data-child-id="${childId}">삭제</button>
+            </div>
+        </div>
+
+        <nav class="pagination is-centered mt-3">
+            <a class="pagination-previous" th:href="@{|/children/${childId}/recordList?page=0|}" th:classappend="${pageNavigator.currentPageIndex == 0} ? 'is-disabled'">≪ 처음</a>
+            <a class="pagination-previous" th:href="@{|/children/${childId}/recordList?page=${pageNavigator.currentPageIndex - 1}|}" th:classappend="${pageNavigator.currentPageIndex == 0} ? 'is-disabled'">＜ 이전</a>
+
+            <ul class="pagination-list">
+                <li th:each="pageIndex : ${#numbers.sequence(pageNavigator.firstPageIndexOfCurrentGroup, pageNavigator.lastPageIndexOfCurrentGroup)}">
+                    <a class="pagination-link" th:href="@{|/children/${childId}/recordList?page=${pageIndex}|}" th:text="${pageIndex + 1}" th:classappend="${pageNavigator.currentPageIndex == pageIndex} ? 'is-current'"></a>
+                </li>
+            </ul>
+            <a class="pagination-next" th:href="@{|/children/${childId}/recordList?page=${pageNavigator.currentPageIndex + 1}|}" th:classappend="${pageNavigator.currentPageIndex == pageNavigator.totalPages - 1} ? 'is-disabled'">다음 ＞</a>
+        </nav>
+    </div>
 </body>
+
 </html>
