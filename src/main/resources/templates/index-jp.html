@@ -1,50 +1,39 @@
 <!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iLog - 아동 발달 추적 서비스</title>
+    <title>iLog - 子どもの発達追跡サービス</title>
     <link rel="stylesheet" href="../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
     <link rel="stylesheet" href="../static/css/customColors.css" th:href="@{/css/customColors.css}">
-    <script src="../static/js/jquery-3.6.0.min.js" th:href="@{/js/jquery-3.6.0.min.js}"></script>
+    <script src="../static/js/jquery-3.6.0.min.js" th:src="@{/js/jquery-3.6.0.min.js}"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
     <style>
         :root {
             --primary-color: #FDF5BF;
             --secondary-color: #BEE6D9;
         }
-
         .has-text-primary-custom {
             color: var(--primary-color) !important;
         }
-
         .has-background-primary-custom {
             background-color: var(--primary-color) !important;
         }
-
         .button.is-primary-custom {
             background-color: var(--primary-color);
             color: white;
         }
-
         .button.is-primary-custom:hover {
             background-color: var(--secondary-color);
         }
-
         .feature-icon {
             font-size: 3rem;
             color: var(--primary-color);
         }
-
         .hero.is-primary-custom {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
         }
-
         .floating-shapes {
             position: absolute;
             width: 100%;
@@ -52,41 +41,36 @@
             overflow: hidden;
             z-index: 0;
         }
-
         .shape {
             position: absolute;
             opacity: 0.1;
         }
-
         .hero-content {
             position: relative;
             z-index: 1;
         }
-
         .h-100 {
             min-height: 200px;
         }
     </style>
     <script>
-        // 네비게이션 바 토글
         document.addEventListener('DOMContentLoaded', () => {
-            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-            if ($navbarBurgers.length > 0) {
-                $navbarBurgers.forEach(el => {
+            const navbarBurgers = Array.from(document.querySelectorAll('.navbar-burger'));
+            if (navbarBurgers.length > 0) {
+                navbarBurgers.forEach(el => {
                     el.addEventListener('click', () => {
                         const target = el.dataset.target;
-                        const $target = document.getElementById(target);
+                        const targetEl = document.getElementById(target);
                         el.classList.toggle('is-active');
-                        $target.classList.toggle('is-active');
+                        targetEl.classList.toggle('is-active');
                     });
                 });
             }
 
-            // 떠다니는 도형 추가
+            // Floating shapes
             const shapes = ['■', '●', '▲', '★'];
             const colors = ['#FF9F43', '#FFC085', '#FFD700', '#FFA07A'];
             const floatingShapes = document.querySelector('.floating-shapes');
-
             for (let i = 0; i < 20; i++) {
                 const shape = document.createElement('div');
                 shape.className = 'shape';
@@ -101,8 +85,6 @@
         });
 
         function changeLanguage(lang) {
-            // 언어 전환 로직 예시
-            // 예를 들어, 서버의 언어 전환 API로 리다이렉트하거나, 쿠키/세션에 언어 값을 저장하는 로직을 추가
             window.location.href = '/?lang=' + lang;
         }
     </script>
@@ -114,30 +96,22 @@
         <a class="navbar-item" href="/">
             <span class="has-text-primary-custom is-size-4 has-text-weight-bold">iLog</span>
         </a>
-
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
         </a>
     </div>
-
     <div id="navbarBasic" class="navbar-menu">
         <div class="navbar-end">
-            <a class="navbar-item" href="#features">주요기능</a>
-            <a class="navbar-item" href="#about">소개</a>
-            <a class="navbar-item" th:href="@{/claims/new}">
-                문의하기
-            </a>
+            <a class="navbar-item" href="#features">機能</a>
+            <a class="navbar-item" href="#about">紹介</a>
+            <a class="navbar-item" th:href="@{/claims/new}">お問い合わせ</a>
             <div class="navbar-item">
                 <div class="buttons">
-                    <a
-                            class="button is-primary-custom has-text-black"
-                            th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-                    >
-                        <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'">
-                            이용하기
-                        </strong>
+                    <a class="button is-primary-custom has-text-black"
+                       th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
+                        <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'ダッシュボードへ' : '利用する'">利用する</strong>
                     </a>
                 </div>
             </div>
@@ -147,29 +121,21 @@
 
 <!-- Hero Section -->
 <section class="hero is-primary-custom is-medium">
-    <div class="floating-shapes">
-        <!-- Decorative shapes will be added by JavaScript -->
-    </div>
+    <div class="floating-shapes"></div>
     <div class="hero-body">
         <div class="container hero-content">
             <div class="columns is-centered">
                 <div class="column is-8 has-text-centered">
-                    <h1 class="title is-1 mb-6">
-                        AI와 함께하는 우리 아이 성장일기
-                    </h1>
+                    <h1 class="title is-1 mb-6">AIとともに子どもの成長日記</h1>
                     <p class="subtitle is-4 mb-6">
-                        감정 분석부터 성장 기록까지, 소중한 우리 아이의 모든 순간
+                        感情分析から成長記録まで、大切な子どものすべての瞬間を記録します。
                     </p>
                     <div class="buttons is-centered">
-                        <a
-                                class="button is-white is-large"
-                                th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-                        >
-                            <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'">이용하기</strong>
+                        <a class="button is-white is-large"
+                           th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
+                            <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'ダッシュボードへ' : '利用する'">利用する</strong>
                         </a>
-                        <a class="button is-white is-outlined is-large has-text-black">
-                            더 알아보기
-                        </a>
+                        <a class="button is-white is-outlined is-large has-text-black">もっと詳しく</a>
                     </div>
                 </div>
             </div>
@@ -180,60 +146,48 @@
 <!-- Features Section -->
 <section class="section" id="features">
     <div class="container">
-        <h2 class="title is-2 has-text-centered mb-6">주요 기능</h2>
+        <h2 class="title is-2 has-text-centered mb-6">主な機能</h2>
         <div class="columns is-multiline">
             <div class="column is-one-third">
                 <div class="box has-text-centered h-100">
-                        <span class="icon feature-icon mb-4">
-                            <i class="fas fa-robot"></i>
-                        </span>
-                    <h3 class="title is-4">AI 감정 분석</h3>
-                    <p>아이의 일기와 그림을 AI로 분석하여 감정 상태를 파악하고 맞춤 솔루션을 제안해드려요.</p>
+                    <span class="icon feature-icon mb-4"><i class="fas fa-robot"></i></span>
+                    <h3 class="title is-4">AI感情分析</h3>
+                    <p>日記や絵をAIが解析し、子どもの感情を把握します。</p>
                 </div>
             </div>
             <div class="column is-one-third">
                 <div class="box has-text-centered h-100">
-                        <span class="icon feature-icon mb-4">
-                            <i class="fas fa-heart"></i>
-                        </span>
-                    <h3 class="title is-4">심리 설문</h3>
-                    <p>정기적인 심리 설문으로 아이의 마음 상태를 체계적으로 관리해요.</p>
+                    <span class="icon feature-icon mb-4"><i class="fas fa-heart"></i></span>
+                    <h3 class="title is-4">心理調査</h3>
+                    <p>定期的なアンケートで子どもの心の状態を管理します。</p>
                 </div>
             </div>
             <div class="column is-one-third">
                 <div class="box has-text-centered h-100">
-                        <span class="icon feature-icon mb-4">
-                            <i class="fas fa-child"></i>
-                        </span>
-                    <h3 class="title is-4">성장 기록</h3>
-                    <p>키, 몸무게부터 건강 검진까지 우리 아이의 성장 정보를 한눈에 확인해요.</p>
+                    <span class="icon feature-icon mb-4"><i class="fas fa-child"></i></span>
+                    <h3 class="title is-4">成長記録</h3>
+                    <p>身長、体重、健康診断など、子どもの成長を一元管理します。</p>
                 </div>
             </div>
             <div class="column is-one-third">
                 <div class="box has-text-centered h-100">
-                        <span class="icon feature-icon mb-4">
-                            <i class="fas fa-chart-line"></i>
-                        </span>
-                    <h3 class="title is-4">통계 및 이력</h3>
-                    <p>아이의 성장 과정을 그래프로 한눈에 보고 변화를 확인할 수 있어요.</p>
+                    <span class="icon feature-icon mb-4"><i class="fas fa-chart-line"></i></span>
+                    <h3 class="title is-4">統計と履歴</h3>
+                    <p>チャートで成長の変化を確認できます。</p>
                 </div>
             </div>
             <div class="column is-one-third">
                 <div class="box has-text-centered h-100">
-                        <span class="icon feature-icon mb-4">
-                            <i class="fas fa-users"></i>
-                        </span>
-                    <h3 class="title is-4">정보 공유</h3>
-                    <p>선생님, 전문가와 아이의 성장 정보를 안전하게 공유해요.</p>
+                    <span class="icon feature-icon mb-4"><i class="fas fa-users"></i></span>
+                    <h3 class="title is-4">情報共有</h3>
+                    <p>先生や専門家と安全に情報を共有します。</p>
                 </div>
             </div>
             <div class="column is-one-third">
                 <div class="box has-text-centered h-100">
-                        <span class="icon feature-icon mb-4">
-                            <i class="fas fa-lock"></i>
-                        </span>
-                    <h3 class="title is-4">권한 관리</h3>
-                    <p>아이의 정보를 안전하게 보호하고 공유 권한을 세밀하게 관리해요.</p>
+                    <span class="icon feature-icon mb-4"><i class="fas fa-lock"></i></span>
+                    <h3 class="title is-4">権限管理</h3>
+                    <p>情報の安全な管理と共有権限を細かく設定します。</p>
                 </div>
             </div>
         </div>
@@ -245,17 +199,14 @@
     <div class="container">
         <div class="columns is-centered">
             <div class="column is-8 has-text-centered">
-                <h2 class="title is-2 mb-6">지금 시작해보세요</h2>
+                <h2 class="title is-2 mb-6">今すぐ始めましょう</h2>
                 <p class="subtitle is-5 mb-6">
-                    우리 아이의 특별한 순간을 더 특별하게 기록하세요
+                    子どもの特別な瞬間をさらに特別に記録しましょう。
                 </p>
-                <a
-                        class="button is-primary-custom is-large has-text-black"
-                        th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-                >
-                    <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '무료로 시작하기'">무료로 시작하기</strong>
+                <a class="button is-primary-custom is-large has-text-black"
+                   th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
+                    <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'ダッシュボードへ' : '無料で始める'">無料で始める</strong>
                 </a>
-
             </div>
         </div>
     </div>
@@ -267,36 +218,32 @@
         <div class="columns">
             <div class="column is-4">
                 <h3 class="title is-4 has-text-primary-custom">iLog</h3>
-                <p>아이의 성장을 더 특별하게 기록하세요</p>
+                <p>子どもの成長をより特別に記録しましょう。</p>
             </div>
             <div class="column is-4">
-                <h3 class="title is-5">바로가기</h3>
+                <h3 class="title is-5">リンク</h3>
                 <ul>
-                    <li><a href="/guides">이용안내</a></li>
-                    <li><a href="/claims">고객센터</a></li>
-                    <li><a href="/privacy">개인정보처리방침</a></li>
-                    <li><a href="/terms">이용약관</a></li>
+                    <li><a href="/guides">利用案内</a></li>
+                    <li><a href="/claims">カスタマーセンター</a></li>
+                    <li><a href="/privacy">プライバシーポリシー</a></li>
+                    <li><a href="/terms">利用規約</a></li>
                 </ul>
             </div>
             <div class="column is-4">
-                <h3 class="title is-5">
-                    <a th:href="@{/claims/new}">
-                        문의하기
-                    </a>
-                </h3>
-                <p>이메일: support@ilog.com</p>
-                <p>전화: 1234-5678</p>
-                <p>운영시간: 평일 09:00-18:00</p>
+                <h3 class="title is-5"><a th:href="@{/claims/new}">お問い合わせ</a></h3>
+                <p>メール: support@ilog.com</p>
+                <p>電話: 1234-5678</p>
+                <p>営業時間: 平日 09:00-18:00</p>
             </div>
         </div>
-        <!-- 언어 전환 드롭다운 추가 -->
+        <!-- 言語切替ドロップダウン -->
         <div class="columns">
             <div class="column is-12 has-text-centered">
                 <div class="select is-small">
                     <select id="languageSelect" onchange="changeLanguage(this.value)">
-                        <option value="kr" selected>한국어</option>
+                        <option value="jp" selected>日本語</option>
+                        <option value="kr">한국어</option>
                         <option value="en">English</option>
-                        <option value="jp">日本語</option>
                     </select>
                 </div>
             </div>

@@ -3,6 +3,7 @@ package com.scit.iLog;
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.scit.iLog.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,10 +13,7 @@ import com.scit.iLog.domain.GuideEntity;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.child.ChildDiaryEntity;
-import com.scit.iLog.domain.child.ChildEntity;
-import com.scit.iLog.domain.child.ChildRecordEntity;
-import com.scit.iLog.domain.child.Gender;
+import com.scit.iLog.domain.child.*;
 import com.scit.iLog.domain.claim.ClaimAnswerEntity;
 import com.scit.iLog.domain.claim.ClaimEntity;
 import com.scit.iLog.domain.claim.ClaimType;
@@ -29,19 +27,6 @@ import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetEntity;
 import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
 import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
 import com.scit.iLog.domain.sentimentalAnalysis.WeatherEntity;
-import com.scit.iLog.repository.AnalysisResultNoteRepository;
-import com.scit.iLog.repository.AnalysisResultRepository;
-import com.scit.iLog.repository.AnalysisSatisfactionRepository;
-import com.scit.iLog.repository.AnalysisTargetRepository;
-import com.scit.iLog.repository.ChildDiaryRepository;
-import com.scit.iLog.repository.ChildHealthCheckRepository;
-import com.scit.iLog.repository.ChildRecordRepository;
-import com.scit.iLog.repository.ChildRepository;
-import com.scit.iLog.repository.ClaimAnswerRepository;
-import com.scit.iLog.repository.ClaimRepository;
-import com.scit.iLog.repository.GuideRepository;
-import com.scit.iLog.repository.MemberRepository;
-import com.scit.iLog.repository.RelationShipRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -63,6 +48,7 @@ public class DataInitializer implements CommandLineRunner {
     private final RelationShipRepository relationShipRepository;
     private final PasswordEncoder passwordEncoder;
     private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
+    private final FamilyBackgroundRepository familyBackgroundRepository; // 2025-02-28 / 김은진
 
     @Override
     public void run(String... args) throws Exception {
@@ -78,8 +64,8 @@ public class DataInitializer implements CommandLineRunner {
         // admin은 테스트용 관리자 계정 (한 번만 생성)
         MemberEntity admin = MemberEntity.builder()
                 .name("ADMIN")
-                .password(passwordEncoder.encode("ADMIN123!"))
                 .signInId("ADMIN")
+                .password(passwordEncoder.encode("ADMIN123!"))
                 .email("admin@example.com")
                 .role(MemberRole.ADMIN)
                 .personalInformationCollectionAndUsageAgreement(false)
@@ -96,6 +82,23 @@ public class DataInitializer implements CommandLineRunner {
                 .personalInformationCollectionAndUsageAgreement(false)
                 .build();
         memberRepository.save(player);
+
+        MemberEntity dad = MemberEntity.builder()
+                .name("daddy")
+                .password(passwordEncoder.encode("dad123!"))
+                .signInId("daddy")
+                .email("dad@example.com")
+                .role(MemberRole.USER)
+                .personalInformationCollectionAndUsageAgreement(true)
+                .relationType(RelationType.GUARDIAN)
+                .build();
+        memberRepository.save(dad);
+
+        // 2025-02-28 / 김은진 / FamilyBackGround 초기 데이터 생성
+        for (FamilyBackGround familyBackGround : FamilyBackGround.values()) {
+            FamilyBackGroundEntity entity = new FamilyBackGroundEntity(familyBackGround);
+            familyBackgroundRepository.save(entity);
+        }
 
         for (int i = 1; i <= 10; i++) {
             // 1. Member 엔티티 생성 (랜덤 이름, 이메일 등)

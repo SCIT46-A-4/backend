@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum FamilyBackGround {
     DUAL_INCOME("맞벌이 가정"),
+    SINGLE_INCOME_DAD("부 외벌이 가정"),
+    SINGLE_INCOME_MOM("모 외벌이 가정"),
     SINGLE_PARENT("한부모 가정"),
     GRANDPARENTING("조손 가정"),
     MULTICULTURAL("다문화 가정"),

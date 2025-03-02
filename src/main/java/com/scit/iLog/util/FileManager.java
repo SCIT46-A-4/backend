@@ -1,5 +1,7 @@
 package com.scit.iLog.util;
 
+import com.scit.iLog.exception.FileDeleteFailException;
+import com.scit.iLog.exception.FileSaveFailException;
 import com.scit.iLog.exception.HealthCheckFileDeleteFailException;
 import com.scit.iLog.exception.HealthCheckFileSaveFailException;
 import lombok.Getter;
@@ -26,8 +28,7 @@ public final class FileManager {
 	/*
 		파일을 저장하고 저장된 파일 이름을 반환하는 메서드
 	 */
-	public void saveFile(MultipartFile uploadFile, String uploadPath, String savedFileName) 
-	{
+	public void saveFile(MultipartFile uploadFile, String uploadPath, String savedFileName) {
         if (ObjectUtils.isEmpty(uploadFile)) {
             throw new IllegalArgumentException("저장할 파일이 존재하지 않음.");
         } else if (uploadFile.isEmpty()) {
@@ -52,19 +53,19 @@ public final class FileManager {
 			uploadFile.transferTo(savedFile);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new HealthCheckFileSaveFailException(
-					String.format("HealthCheck 파일 저장 실패: %s", savedFile.getAbsolutePath()));
+			throw new FileSaveFailException(String.format("파일 저장 실패: %s", savedFile.getAbsolutePath()));
 		}
 	}
 
 	/*
 		원본파일이름을 받아서 저장할 파일이름을 반환합니다.
 	 */
-	public static String getSavedFileName(String originalFilename) {
+	public static String getSavedFileName(String originalFileName) {
 		// 파일명과 확장자 분리 (확장자가 없을 경우에도 안전하게 처리)
-		int dotIndex = originalFilename.lastIndexOf('.');
-		String baseName = (dotIndex != -1) ? originalFilename.substring(0, dotIndex) : originalFilename;
-		String extension = (dotIndex != -1) ? originalFilename.substring(dotIndex) : "";
+		// 멀티파트파일의 originalFileName은 확장자를 포함함
+		int dotIndex = originalFileName.lastIndexOf('.');
+		String baseName = (dotIndex != -1) ? originalFileName.substring(0, dotIndex) : originalFileName;
+		String extension = (dotIndex != -1) ? originalFileName.substring(dotIndex) : "";
 
 		// UUID를 이용해 파일명 중복 방지
 		String uuid = UUID.randomUUID().toString();
@@ -102,7 +103,7 @@ public final class FileManager {
 			log.info("파일 삭제 완료: {}", filePath);
 		} catch (IOException e) {
 			log.error("파일 삭제 중 오류 발생: {}", filePath, e);
-			throw new HealthCheckFileDeleteFailException(String.format("HealthCheck 파일 삭제 실패: %s", filePath));
+			throw new FileDeleteFailException(String.format("파일 삭제 실패: %s", filePath));
 		}
 	}
 

@@ -30,6 +30,19 @@ import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 @RequestMapping("/dashboard")
 public class DashboardController {
     private final ChildService childService;
+
+    /**
+     * D-1,D-2
+     * @return 부모 권한을 가진 사용자만 볼 수 있는 대시보드 페이지 템플릿의 경로를 반환합니다.
+     */
+    @GetMapping({"","/"})
+    public String handleGetDashboardView(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        return memberDetails.getRelationType() == RelationType.GUARDIAN ?
+                "redirect:/dashboard/guardian" : "redirect:/dashboard/teacher";
+    }
+
     /*
         D-1
      */
@@ -54,6 +67,6 @@ public class DashboardController {
      */
     @GetMapping("/teacher")
     public String handleGetTeacherDashboardView() {
-    	return "dashboard/dashboardTeacherView";
+        return "dashboard/dashboardTeacherView";
     }
 }

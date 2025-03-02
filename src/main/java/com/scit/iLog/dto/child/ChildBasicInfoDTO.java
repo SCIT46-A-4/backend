@@ -13,15 +13,14 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChildBasicInfoDTO extends BaseTimeDTO
-{
+public class ChildBasicInfoDTO extends BaseTimeDTO {
     private Long id;
     private String name;
     private LocalDateTime birthDate;
     private String birthLocation;
     private String note;
     private Gender gender;
-	private String profileImgSrcUri;
+    private String profileImgSrcUri;
     private String callName;
     private List<FamilyBackGround> familyBackGrounds;
 }

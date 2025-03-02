@@ -55,6 +55,8 @@ public class SecurityConfig {
                                 "/auth/idPwFind",
                                 "/guides",
                                 "/claims",
+                                "/send-verification-code",
+                                "/verify-code",
                                 "/js/**",
                                 "/css/**",
                                 "/images/**"
@@ -115,11 +117,7 @@ public class SecurityConfig {
         	MemberEntity member = memberRepository
                     .findBySignInId(signInId)
                     //사용자가 존재하지 않으면 커스텀 예외(WrongSignInIdException)를 발생시킴.
-                    .orElseThrow(() -> new WrongSignInIdException(
-                    		String.format(
-                    				"회원 조회 실패 아이디 : %s", signInId
-                    				)
-                    		));
+                    .orElseThrow(() -> new WrongSignInIdException(String.format("회원 조회 실패 아이디 : %s", signInId)));
             //사용자가 존재할 경우, MemberDetails 객체 생성 및 반환
             return MemberDetails.builder()
                             .id(member.getId())
