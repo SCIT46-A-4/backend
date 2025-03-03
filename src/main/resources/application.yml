@@ -36,7 +36,7 @@ spring:
 
 
 
-childProfileImgWindowsPath: C:/ilog/childProfileImgs/
+childProfileImgWindowsPath: C:/ilog/childProfileImgs
 childProfileImgMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childProfileImgs
 childHealthCheckImgWindowsPath: C:/ilog/childHealthCheckImgs
 childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childHealthCheckImgs

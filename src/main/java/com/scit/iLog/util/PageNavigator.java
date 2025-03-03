@@ -37,13 +37,23 @@ public final class PageNavigator {
         calculatePagination();
     }
 
+    /**
+     * C-6 이도훈 2025-02-24~26
+     */
     private void calculatePagination() {
         this.itemCountPerGroup = itemsPerPage * groupSize;
-        this.groupCount = totalPages / itemCountPerGroup;
+        // 그룹 개수 계산 (올림 처리)
+        this.groupCount = (totalPages + groupSize - 1) / groupSize;
         this.totalItemCount = itemsPerPage * totalPages;
         this.groupOfCurrentPage = currentPageIndex / groupSize;//0-based indexing
-        this.firstPageIndexOfCurrentGroup = groupOfCurrentPage * 10 + 1;//1-based indexing
-        this.lastPageIndexOfCurrentGroup = firstPageIndexOfCurrentGroup + groupSize - 1;
-        this.firstPageIndexOfNextGroup = ((groupOfCurrentPage+1)*groupSize) + 1;
+        // 현재 그룹의 첫 번째 페이지 (0-based index)
+        this.firstPageIndexOfCurrentGroup = groupOfCurrentPage * groupSize;
+        // 현재 그룹의 마지막 페이지 (최대 totalPages - 1을 초과하지 않도록 처리)
+        this.lastPageIndexOfCurrentGroup = Math.min(firstPageIndexOfCurrentGroup + groupSize - 1, totalPages - 1);
+        // 다음 그룹의 첫 번째 페이지 (초과하면 -1 설정)
+        this.firstPageIndexOfNextGroup = (groupOfCurrentPage + 1) * groupSize;
+        if (this.firstPageIndexOfNextGroup >= totalPages) {
+            this.firstPageIndexOfNextGroup = -1; // 다음 그룹이 없을 경우 -1로 설정
+        }
     }
 }

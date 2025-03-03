@@ -1,15 +1,248 @@
 <!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
-    <title>C-4</title>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아동 신체정보 등록</title>
 
+    <!-- Bulma 스타일 -->
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/customColors.css">
+
+     <!-- FilePond CSS -->
+	<link rel="stylesheet" href="/css/filepond.css">
+	<link rel="stylesheet" href="/css/filepond-plugin-image-preview.css">
+
+    <!-- jQuery 로드 -->
+	<script src="/js/jquery-3.7.1.min.js"></script>
+
+    <!-- FilePond 라이브러리 및 플러그인 -->
+    <script src="/js/filepond/filepond.min.js"></script>
+    <script src="/js/filepond/filepond.jquery.js"></script>
+	<script src="/js/filepond/filepond-plugin-file-validate-size.js"></script>
+	<script src="/js/filepond/filepond-plugin-file-validate-type.min.js"></script>
+    <script src="/js/filepond/filepond-plugin-file-encode.min.js"></script>
+    <script src="/js/filepond/filepond-plugin-image-preview.js"></script>
+    <script src="/js/filepond/filepond-plugin-image-exif-orientation.min.js"></script>
+    <script src="/js/filepond/filepond-plugin-image-edit.js"></script>
+    
+
+
+    <style>
+        body {
+            background-color: #FDF5BF;
+        }
+        .fixed-size-box {
+			width: 100px; /* 원하는 크기로 조정 */
+			height: 100px; /* 정사각형으로 설정 */
+			border-radius: 50%; /* 원형으로 만듦 */
+			overflow: hidden; /* 넘치는 부분 제거 */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: transparent; /* 배경 제거 */
+		}
+        
+        .div-size-cust {
+			/* padding: 0; */
+			box-shadow: none;
+			background-image: url("/images/ilog.png");
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+    </style>
+
+    <script>
+        $(document).ready(function () {
+
+            console.log("✅ Document 로드됨");
+
+            // ✅ FilePond 플러그인 등록
+            if (typeof FilePond !== "undefined") {
+                FilePond.registerPlugin(
+                    FilePondPluginImagePreview,
+                    FilePondPluginImageExifOrientation,
+                    FilePondPluginFileValidateSize,
+                    FilePondPluginFileEncode,
+                    FilePondPluginFileValidateType
+                );
+
+                // ✅ FilePond 설정 적용 (파일 미리보기 포함)
+                $(".filepond").each(function () {
+                    FilePond.create(this, {
+                        allowMultiple: false, // 하나의 파일만 업로드 가능
+                        maxFileSize: '30MB',
+                        acceptedFileTypes: ["image/*"],
+                        imagePreviewHeight: 300,
+                        imageCropAspectRatio: "1:1",
+                        imageResizeTargetWidth: 300,
+                        imageResizeTargetHeight: 150,
+                        labelIdle: "파일을 여기로 드래그하거나 <span class='filepond--label-action'>찾아보기</span>",
+                        stylePanelLayout: "integrated",
+                        credits: false, // FilePond 워터마크 제거
+                        styleLoadIndicatorPosition: "center bottom",
+                        styleProgressIndicatorPosition: "right bottom",
+                        styleButtonProcessItemPosition: "right bottom",
+                        styleButtonRemoveItemPosition: "left bottom",
+                        stylePanelAspectRatio: "0.5", // 정사각형 패널
+                        styleItemPanelAspectRatio: "0.5", // 파일 아이템 패널 크기 조정
+                        stylePanelBackgroundColor: "#666666", // ✅ 더 진한 회색 적용
+                    });
+                });
+
+                // ✅ FilePond에서 선택한 이미지 미리보기 활성화
+                $(".filepond").on("FilePond:addfile", function (e) {
+                    console.log("📌 파일 추가됨:", e.detail.file);
+                });
+
+            } else {
+                console.error("❌ FilePond가 로드되지 않았습니다.");
+            }
+
+            console.log("✅ FilePond 초기화 완료");
+
+            // ✅ 폼 제출 이벤트를 가로채서 FilePond의 파일을 FormData에 추가
+            $("#childRecordForm").on("submit", function (event) {
+                event.preventDefault(); // 기본 폼 제출 방지
+                console.log("📌 폼 제출 이벤트 발생");
+
+                let formData = new FormData();
+                const childId = $(this).data("child-id");  // Thymeleaf에서 전달받은 childId
+
+                // ✅ 폼 데이터 추가
+                formData.append("height", $("input[name='height']").val());
+                formData.append("weight", $("input[name='weight']").val());
+                formData.append("leftEye", $("input[name='leftEye']").val());
+                formData.append("rightEye", $("input[name='rightEye']").val());
+                formData.append("note", $("textarea[name='note']").val());
+
+                // ✅ FilePond에서 선택한 파일 가져오기
+                let pondInstance = FilePond.find(document.querySelector('.filepond'));
+                let files = pondInstance.getFiles();
+
+                if (files.length > 0) {
+                    formData.append("healthCheckImg", files[0].file); // ✅ 파일 키값을 DTO와 일치
+                    console.log("📌 파일 추가 완료:", files[0].file.name);
+                } else {
+                	/* formData.append("healthCheckImg", ""); */
+                    console.warn("❌ 파일이 업로드되지 않음");
+                }
+
+                console.log("📌 FormData 확인:", formData); // FormData 내용 확인
+
+                // ✅ AJAX를 사용하여 데이터 전송
+                $.ajax({
+                    url: `/children/${childId}/records/new`, // 컨트롤러 URL
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    dataType: "json",  // JSON 응답을 받도록 설정
+                    success: function (response) {
+                        console.log("✅ 서버 응답:", response);
+
+                        if (response.success) {
+                            // ✅ 성공 시 리다이렉트
+                            console.log("✅ 업로드 성공! 이동할 URL:", response.redirectUrl);
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            // ❌ 실패 시 에러 메시지 출력
+                            console.error("❌ 업로드 실패: 서버에서 success=false 응답");
+                            alert("업로드에 실패했습니다. 다시 시도해 주세요.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("❌ AJAX 오류:", xhr.responseText);
+                        alert("업로드 중 오류가 발생했습니다. 다시 시도해 주세요.");
+                    }
+                });
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <!-- <h1 class="title has-text-centered">아동 신체정보 등록</h1> -->
+                    <div class="columns is-centered is-flex is-align-items-center is-justify-content-center">
+						<a th:href="@{/dashboard/guardian}">
+							<div class="box fixed-size-box div-size-cust" bis_skin_checked="1"></div>
+						</a>
+                        <div class="ml-4">
+                            <h1 class="title has-text-centered">아동 신체정보 등록</h1>
+                        </div>
+                    </div>
+                    <form id="childRecordForm" th:data-child-id="${childId}" method="post"
+                        enctype="multipart/form-data">
+                        <div class="box">
+                            <div class="columns is-multiline">
+                            
+                                <div class="column is-half">
+                                    <label class="label">키*</label>
+                                    <input class="input" 
+                                    	type="number" 
+                                    	step="0.1"
+                                    	name="height" 
+                                    	required 
+                                    	placeholder="000.0cm 단위">
+                                </div>
+                            
+                                <div class="column is-half">
+                                    <label class="label">몸무게*</label>
+                                    <input class="input" 
+                                    	type="number" 
+                                    	step="0.1"
+                                    	name="weight" 
+                                    	required 
+                                    	placeholder="00.0kg 단위">
+                                </div>
+                            
+                                <div class="column is-half">
+                                    <label class="label">시력_좌</label>
+                                    <input class="input" 
+                                    	type="number" 
+                                    	step="0.1" 
+                                    	name="leftEye" 
+                                    	placeholder="0.0 형식">
+                                </div>
+                            
+                                <div class="column is-half">
+                                    <label class="label">시력_우</label>
+                                    <input class="input" 
+                                    	type="number" 
+                                    	step="0.1" 
+                                    	name="rightEye" 
+                                    	placeholder="0.0 형식">
+                                </div>
+                            
+                                <div class="column is-full">
+                                    <label class="label">소견</label>
+                                    <textarea class="textarea" name="note" placeholder="추가 소견 입력"></textarea>
+                                </div>
+                            
+                            </div>
+                        </div>
+
+                        <!-- 파일 업로드 -->
+                        <input type="file" class="filepond" name="healthCheckImg" multiple data-allow-reorder="true"
+                            data-max-file-size="30MB" data-max-files="1">
+
+                        <!-- 등록 버튼 -->
+                        <div class="has-text-centered">
+                            <button type="submit" class="button is-dark is-medium">등록하기</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
+
 </html>

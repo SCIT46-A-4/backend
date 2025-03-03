@@ -5,11 +5,11 @@ import com.scit.iLog.domain.child.ChildBackGroundEntity;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.child.FamilyBackGroundEntity;
+import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoInsertDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoUpdateDTO;
 import com.scit.iLog.dto.child.ChildProfileDTO;
-import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.FamilyBackgroundRepository;
 import com.scit.iLog.repository.RelationShipRepository;
@@ -99,7 +99,7 @@ public class ChildService {
     }
 
     // 25/2/13 준: api-??: 아이 정보 찾아서 반환
-    public ChildBasicInfoDTO findById(Long childId) {
+    public ChildBasicInfoDTO findBasicInfoById(Long childId) {
         ChildEntity child = childRepository.findById(childId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
         return ChildBasicInfoDTO.builder()

@@ -1,15 +1,185 @@
 <!DOCTYPE html>
 <html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://thymeleaf.org/extras/spring-security"
 >
-<head>
-    <meta charset="UTF-8">
-    <title>C-7</title>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>아동 신체정보 수정</title>
 
-</body>
+    <!-- Bulma 스타일 -->
+    <link rel="stylesheet" href="/css/bulma.min.css" />
+    <link rel="stylesheet" href="/css/customColors.css" />
+
+    <!-- FilePond CSS -->
+    <link rel="stylesheet" href="/css/filepond.css" />
+    <link rel="stylesheet" href="/css/filepond-plugin-image-preview.css" />
+
+    <!-- jQuery -->
+    <script src="/js/jquery-3.7.1.min.js"></script>
+
+    <!-- sweetalert2-->
+    <script src="/js/sweetalert2.js"></script>
+
+    <!-- FilePond 라이브러리 및 플러그인 -->
+    <script src="/js/childRecordUpdate.js"></script>
+    <script src="/js/filepond/filepond.min.js"></script>
+    <script src="/js/filepond/filepond.jquery.js"></script>
+    <script src="/js/filepond/filepond-plugin-image-preview.js"></script>
+    <script src="/js/filepond/filepond-plugin-file-validate-size.js"></script>
+    <script src="/js/filepond/filepond-plugin-file-validate-type.min.js"></script>
+    <script src="/js/filepond/filepond-plugin-file-encode.min.js"></script>
+    <script src="/js/filepond/filepond-plugin-image-exif-orientation.min.js"></script>
+    <script src="/js/filepond/filepond-plugin-image-edit.js"></script>
+
+    <style>
+      .fixed-size-box {
+        width: 100px; /* 원하는 크기로 조정 */
+        height: 100px; /* 정사각형으로 설정 */
+        border-radius: 50%; /* 원형으로 만듦 */
+        overflow: hidden; /* 넘치는 부분 제거 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent; /* 배경 제거 */
+      }
+
+      .div-size-cust {
+        /* padding: 0; */
+        box-shadow: none;
+        background-image: url('/images/ilog.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+    </style>
+  </head>
+
+  <body>
+    <input
+      type="hidden"
+      id="myHealthCheckImageSrc"
+      th:value="${childRecord.healthCheckImage.healthCheckImageSrc}"
+    />
+    <section class="section">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="columns is-vcentered">
+              <!-- vertically centered -->
+              <a th:href="@{/dashboard/guardian}">
+                <div
+                  class="box fixed-size-box div-size-cust"
+                  bis_skin_checked="1"
+                ></div>
+              </a>
+
+              <div>
+                <h1 class="title has-text-centered">아동 신체정보 수정</h1>
+              </div>
+            </div>
+
+            <!-- 수정 폼: childRecord 객체에서 값을 바인딩 -->
+            <form
+              id="childRecordForm"
+              th:data-child-id="${childRecord.childId}"
+              th:data-record-id="${childRecord.id}"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <div class="box">
+                <div class="columns is-multiline">
+                  <div class="column is-half">
+                    <label class="label">키*</label>
+                    <input
+                      class="input"
+                      type="number"
+                      step="0.1"
+                      name="height"
+                      required
+                      placeholder="000.0cm 단위"
+                      th:value="${childRecord.height}"
+                    />
+                  </div>
+
+                  <div class="column is-half">
+                    <label class="label">몸무게*</label>
+                    <input
+                      class="input"
+                      type="number"
+                      step="0.1"
+                      name="weight"
+                      required
+                      placeholder="00.0kg 단위"
+                      th:value="${childRecord.weight}"
+                    />
+                  </div>
+
+                  <div class="column is-half">
+                    <label class="label">시력_좌</label>
+                    <input
+                      class="input"
+                      type="number"
+                      step="0.1"
+                      name="leftEye"
+                      placeholder="0.0 형식"
+                      th:value="${childRecord.leftEye}"
+                    />
+                  </div>
+
+                  <div class="column is-half">
+                    <label class="label">시력_우</label>
+                    <input
+                      class="input"
+                      type="number"
+                      step="0.1"
+                      name="rightEye"
+                      placeholder="0.0 형식"
+                      th:value="${childRecord.rightEye}"
+                    />
+                  </div>
+
+                  <div class="column is-full">
+                    <label class="label">소견</label>
+                    <textarea
+                      class="textarea"
+                      name="note"
+                      placeholder="추가 소견 입력"
+                      th:text="${childRecord.note}"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 파일 업로드 -->
+              <input
+                type="file"
+                class="filepond"
+                id="filepond"
+                name="healthCheckImg"
+                multiple
+                data-allow-reorder="true"
+                data-max-file-size="30MB"
+                data-max-files="1"
+              />
+
+              <!-- 버튼 -->
+              <div class="has-text-centered">
+                <button type="submit" class="button is-dark is-medium">
+                  수정하기
+                </button>
+                <a
+                  th:href="@{/children/{childId}/recordList(childId=${childId})}"
+                  class="button is-light is-medium"
+                  >취소하기</a
+                >
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
 </html>

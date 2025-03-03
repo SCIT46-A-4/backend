@@ -1,5 +1,14 @@
 package com.scit.iLog;
 
+import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
+
+import com.scit.iLog.repository.*;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
 import com.scit.iLog.domain.GuideEntity;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
@@ -11,16 +20,15 @@ import com.scit.iLog.domain.claim.ClaimType;
 import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.domain.sentimentalAnalysis.*;
-import com.scit.iLog.repository.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultNoteEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisSatisfactionEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
+import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
+import com.scit.iLog.domain.sentimentalAnalysis.WeatherEntity;
 
-import java.time.LocalDateTime;
-import java.util.concurrent.ThreadLocalRandom;
+import lombok.RequiredArgsConstructor;
 
 @Profile("dev")
 @Component
@@ -63,6 +71,17 @@ public class DataInitializer implements CommandLineRunner {
                 .personalInformationCollectionAndUsageAgreement(false)
                 .build();
         memberRepository.save(admin);
+        
+        MemberEntity player = MemberEntity.builder()
+                .name("player")
+                .password(passwordEncoder.encode("asd123!"))
+                .signInId("asd123")
+                .email("asd@example.com")
+                .role(MemberRole.USER)
+                .relationType(RelationType.GUARDIAN)
+                .personalInformationCollectionAndUsageAgreement(false)
+                .build();
+        memberRepository.save(player);
 
         MemberEntity dad = MemberEntity.builder()
                 .name("daddy")

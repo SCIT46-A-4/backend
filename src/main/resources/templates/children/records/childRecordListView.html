@@ -1,15 +1,326 @@
 <!DOCTYPE html>
 <html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://thymeleaf.org/extras/spring-security"
 >
-<head>
-    <meta charset="UTF-8">
-    <title>C-6</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>신체정보 목록</title>
+    <!-- Jquery -->
     <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
+    <!-- sweetalert2-->
+    <script src="/js/sweetalert2.js"></script>
+    <!-- bulma -->
+    <link rel="stylesheet" th:href="@{/css/bulma.min.css}" />
+    <!-- customColors -->
+    <link rel="stylesheet" th:href="@{/css/customColors.css}" />
+    <style>
+      body {
+        background-color: #fdf5bf;
+        min-height: 100vh;
+      }
 
-</body>
+      .board-container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 0;
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+
+      .board-header {
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 1rem;
+        font-weight: bold;
+      }
+
+      .board-row {
+        border-bottom: 1px solid #e0e0e0;
+        transition: background-color 0.2s;
+        cursor: pointer;
+      }
+
+      .board-row:last-child {
+        border-bottom: none;
+      }
+
+      .board-row:hover {
+        background-color: #f8f8f8;
+      }
+
+      .board-cell {
+        padding: 1.2rem 1rem;
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      .board-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+
+      .board-row:hover .board-actions {
+        opacity: 1;
+      }
+
+      .pagination-link.is-disabled,
+      .pagination-previous.is-disabled,
+      .pagination-next.is-disabled {
+        pointer-events: none;
+        opacity: 0.5;
+        background-color: #d3d3d3;
+        color: #777;
+        border-color: #ccc;
+      }
+
+      .pagination-list li {
+        margin: 0 3px;
+      }
+
+      .has-image-icon {
+        color: #4caf50;
+        font-size: 1.5rem;
+      }
+
+      .fixed-size-box {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+      }
+
+      .div-size-cust {
+        box-shadow: none;
+        background-image: url('/images/ilog.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .title-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .add-record-btn {
+        margin-left: auto;
+      }
+
+      .board-image-cell {
+        width: 70px;
+      }
+
+      .board-date-cell {
+        width: 25%;
+      }
+
+      .board-measurements-cell {
+        width: 35%;
+      }
+
+      .no-records {
+        text-align: center;
+        padding: 3rem;
+        color: #888;
+        font-style: italic;
+      }
+
+      #outer-container {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .list-item {
+        border-bottom: 1px solid;
+      }
+    </style>
+
+    <script>
+      $(document).ready(function () {
+        function showError(message) {
+          Swal.fire({ icon: 'error', title: '오류', text: message });
+        }
+
+        $('.board-row').on('click', function (event) {
+          if (!$(event.target).closest('.board-actions').length) {
+            let recordId = $(this).data('record-id');
+            let childId = $(this).data('child-id');
+            window.location.href = `/children/${childId}/records/${recordId}`;
+          }
+        });
+
+        $('.deleteBtn').on('click', function (event) {
+          event.stopPropagation();
+          let recordId = $(this).closest('.board-row').data('record-id');
+          let childId = $(this).closest('.board-row').data('child-id');
+
+          if (!recordId || !childId)
+            return showError('데이터를 찾을 수 없습니다.');
+
+          Swal.fire({
+            title: '정말 삭제하시겠습니까?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $.ajax({
+                url: `/children/${childId}/records/${recordId}/delete`,
+                type: 'DELETE',
+                success: function () {
+                  Swal.fire({
+                    icon: 'success',
+                    title: '삭제되었습니다.',
+                    timer: 1500,
+                  }).then(
+                    () =>
+                      (window.location.href = `/children/${childId}/recordList`)
+                  );
+                },
+                error: function (xhr) {
+                  showError(`삭제 실패: ${xhr.statusText}`);
+                },
+              });
+            }
+          });
+        });
+
+        $('.updateBtn').on('click', function (event) {
+          event.stopPropagation();
+          let recordId = $(this).closest('.board-row').data('record-id');
+          let childId = $(this).closest('.board-row').data('child-id');
+
+          if (!recordId || !childId)
+            return showError('데이터를 찾을 수 없습니다.');
+
+          window.location.href = `/children/${childId}/records/${recordId}/edit`;
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="outer-container" class="container py-5 p-5">
+      <div class="title-container">
+        <a th:href="@{/dashboard/guardian}">
+          <div class="box fixed-size-box div-size-cust"></div>
+        </a>
+
+        <h1
+          class="title is-2 ml-4"
+          th:text="${childName.name} + ' 신체성장 기록'"
+        ></h1>
+
+        <a
+          th:href="@{/children/{childId}/records/new(childId=${childId})}"
+          class="add-record-btn"
+        >
+          <button class="button is-primary">
+            <span class="icon">
+              <i class="fas fa-plus">+</i>
+            </span>
+            <span>신규 기록 추가</span>
+          </button>
+        </a>
+      </div>
+
+      <div class="board-container">
+        <div class="board-header columns is-mobile m-0">
+          <div class="column board-date-cell">등록 날짜</div>
+          <div class="column board-measurements-cell">키 / 몸무게</div>
+          <div class="column board-image-cell">이미지</div>
+          <div class="column">관리</div>
+        </div>
+
+        <div th:if="${childRecordsPage.content.isEmpty()}" class="no-records">
+          등록된 신체 기록이 없습니다.
+        </div>
+
+        <div
+          th:each="record : ${childRecordsPage.content}"
+          class="board-row columns is-mobile m-0 is-vcentered list-item"
+          th:data-record-id="${record.id}"
+          th:data-child-id="${childId}"
+        >
+          <div
+            class="column board-cell board-date-cell"
+            th:text="${#temporals.format(record.registerDate, 'yyyy.MM.dd')}"
+          ></div>
+          <div
+            class="column board-cell board-measurements-cell"
+            th:text="|${#numbers.formatDecimal(record.height, 1, 1)}cm / ${#numbers.formatDecimal(record.weight, 1, 1)}kg|"
+          ></div>
+          <div class="column board-cell board-image-cell">
+            <span th:if="${record.hasHealthCheckImg}" class="has-image-icon"
+              >📷</span
+            >
+            <span th:unless="${record.hasHealthCheckImg}">-</span>
+          </div>
+          <div class="column board-cell">
+            <div class="board-actions">
+              <button class="updateBtn button is-small is-info">수정</button>
+              <button class="deleteBtn button is-small is-danger">삭제</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav
+        class="pagination is-centered mt-5"
+        th:if="${!childRecordsPage.content.isEmpty()}"
+      >
+        <a
+          class="pagination-previous"
+          th:href="@{|/children/${childId}/recordList?page=0|}"
+          th:classappend="${pageNavigator.currentPageIndex == 0} ? 'is-disabled'"
+          >≪ 처음</a
+        >
+        <a
+          class="pagination-previous"
+          th:href="@{|/children/${childId}/recordList?page=${pageNavigator.currentPageIndex - 1}|}"
+          th:classappend="${pageNavigator.currentPageIndex == 0} ? 'is-disabled'"
+          >＜ 이전</a
+        >
+
+        <ul class="pagination-list">
+          <li
+            th:each="pageIndex : ${#numbers.sequence(pageNavigator.firstPageIndexOfCurrentGroup, pageNavigator.lastPageIndexOfCurrentGroup)}"
+          >
+            <a
+              class="pagination-link"
+              th:href="@{|/children/${childId}/recordList?page=${pageIndex}|}"
+              th:text="${pageIndex + 1}"
+              th:classappend="${pageNavigator.currentPageIndex == pageIndex} ? 'is-current'"
+            ></a>
+          </li>
+        </ul>
+
+        <a
+          class="pagination-next"
+          th:href="@{|/children/${childId}/recordList?page=${pageNavigator.currentPageIndex + 1}|}"
+          th:classappend="${pageNavigator.currentPageIndex == pageNavigator.totalPages - 1} ? 'is-disabled'"
+          >다음 ＞</a
+        >
+        <a
+          class="pagination-next"
+          th:href="@{|/children/${childId}/recordList?page=${pageNavigator.totalPages - 1}|}"
+          th:classappend="${pageNavigator.currentPageIndex == pageNavigator.totalPages - 1} ? 'is-disabled'"
+          >끝 ≫</a
+        >
+      </nav>
+    </div>
+  </body>
 </html>

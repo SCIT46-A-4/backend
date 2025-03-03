@@ -5,14 +5,14 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record ChildRecordDTO(
-        Long id,
+public record ChildRecordDetailsDTO(
+        Long childRecordId,
         double weight,
         double height,
         double leftEye,
         double rightEye,
         String note,
         LocalDateTime registerDate,
-        String healthCheckImageSrc
+        HealthCheckImageDTO healthCheckImage
 ) {
 }
