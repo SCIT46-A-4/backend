@@ -28,8 +28,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.scit.iLog.config.WebConfig.CHILD_PROFILE_REQUEST_ROOT_PATH;
@@ -101,7 +99,7 @@ public class ChildService {
     }
 
     // 25/2/13 준: api-??: 아이 정보 찾아서 반환
-    public ChildBasicInfoDTO findById(Long childId) {
+    public ChildBasicInfoDTO findBasicInfoById(Long childId) {
         ChildEntity child = childRepository.findById(childId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
         return ChildBasicInfoDTO.builder()

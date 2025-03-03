@@ -1,14 +1,11 @@
 package com.scit.iLog.service.child;
 
+import com.scit.iLog.config.WebConfig;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.ChildRecordEntity;
 import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.dto.child.ChildRecordDTO;
-import com.scit.iLog.dto.child.ChildRecordInsertDTO;
-import com.scit.iLog.dto.child.ChildRecordListItemDTO;
-import com.scit.iLog.dto.child.ChildRecordUpdateRequestDTO;
-import com.scit.iLog.dto.child.ChildRecordUpdateViewDTO;
+import com.scit.iLog.dto.child.*;
 import com.scit.iLog.repository.ChildHealthCheckRepository;
 import com.scit.iLog.repository.ChildRecordRepository;
 import com.scit.iLog.repository.ChildRepository;
@@ -24,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Member;
 import java.time.Instant;
 
 import static com.scit.iLog.config.WebConfig.HEALTHCHECK_IMAGES_REQUEST_ROOT_PATH;
@@ -37,26 +35,6 @@ public class ChildRecordService {
     private final ChildHealthCheckRepository healthCheckRepository;
     private final FileManager fileManager;
     private final FilePathUtil filePathUtil;
-
-    public ChildRecordDTO findOneByChildIdAndRecordId(Long childId, Long recordId) {
-        ChildRecordEntity childRecord = childRecordRepository.findByChildIdAndRecordId(childId, recordId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("아이 신체정보 조회실패: %d /%d",childId,recordId)));
-        return ChildRecordDTO.builder()
-                .registerDate(childRecord.getRegisterDate())
-                .note(childRecord.getNote())
-                .height(childRecord.getHeight())
-                .weight(childRecord.getWeight())
-                .leftEye(childRecord.getLeftEye())
-                .rightEye(childRecord.getRightEye())
-                .healthCheckImageSrc(
-                        HEALTHCHECK_IMAGES_REQUEST_ROOT_PATH
-                                .concat(
-                                        childRecord
-                                                .getHealthCheck()
-                                                .getSavedFileName())
-                )
-                .build();
-    }
 
     /**
      * Controller : handleGetChildRecordListView
@@ -83,45 +61,37 @@ public class ChildRecordService {
 	/**
 	 * C-6 이도훈 2025-02-24~26
 	 *
-	 * @param recordId
+	 * @param childRecordId
 	 */
 	@Transactional
-	public void deleteChildRecord(Long recordId) {
-		ChildRecordEntity childRecordEntity =
-				childRecordRepository.findById(recordId)
-						.orElseThrow(() ->
-								new EntityNotFoundException("Record not found with ID: " + recordId)
-						);
-
+	public void deleteChildRecord(Long childRecordId) {
+		ChildRecordEntity childRecordEntity = findChildRecordById(childRecordId);
 		childRecordRepository.delete(childRecordEntity);
 	}
 
-	public ChildRecordDTO findOneById(Long childRecordId) {
-		ChildRecordEntity childRecord =
-				childRecordRepository.findById(childRecordId).orElseThrow(() ->
-					new EntityNotFoundException(String.format("ChildRecord 조회 실패: %d", childRecordId))
-					);
-
-		return ChildRecordDTO.builder()
-				.id(childRecord.getId())
+	@Transactional(readOnly = true)
+	public ChildRecordDetailsDTO findDetailsById(Long childRecordId) {
+		ChildRecordEntity childRecord = findChildRecordById(childRecordId);
+		return ChildRecordDetailsDTO.builder()
+				.childRecordId(childRecord.getId())
 				.weight(childRecord.getWeight())
 				.height(childRecord.getHeight())
 				.registerDate(childRecord.getRegisterDate())
 				.note(childRecord.getNote())
 				.leftEye(childRecord.getLeftEye())
 				.rightEye(childRecord.getRightEye())
-				.childId(childRecord.getChild().getId())
+				.healthCheckImage(
+						new HealthCheckImageDTO(
+								!ObjectUtils.isEmpty(childRecord.getHealthCheck()),
+								ObjectUtils.isEmpty(childRecord.getHealthCheck()) ? null :
+										HEALTHCHECK_IMAGES_REQUEST_ROOT_PATH.concat(childRecord.getHealthCheck().getSavedFileName())))
 				.build();
 	}
 
-	public HealthCheckEntity findHealthCheckOneById(Long healthCehckId) {
-		return healthCheckRepository.findById(healthCehckId)
-				.orElseThrow(() -> new EntityNotFoundException("healthCehckId를 찾지 못했습니다"));
-	}
-
-	public HealthCheckEntity FindHealthCehckByChildRecordId(Long childRecordId) {
+	public String findHealthCheckFileNameByChildRecordId(Long childRecordId) {
 		return healthCheckRepository.findByChildRecordId(childRecordId)
-				.orElseThrow(() -> new EntityNotFoundException("Health Check를 찾지 못했습니다."));
+				.orElseThrow(() -> new EntityNotFoundException("Health Check를 찾지 못했습니다."))
+				.getSavedFileName();
 	}
 
 	/**
@@ -178,16 +148,11 @@ public class ChildRecordService {
 	 * Controller : handleGetChildRecordUpdateView
 	 * API : v1.x.x-8
 	 * C-7 이도훈
-	 * @param childId
 	 * @param childRecordId
 	 * @return
 	 */
-	public ChildRecordUpdateViewDTO findOneByUpdateChildIdAndRecordId(Long childId, Long childRecordId) {
-		ChildRecordEntity childRecord =
-				childRecordRepository.findByChildIdAndRecordId(childId, childRecordId)
-					.orElseThrow(() -> new EntityNotFoundException
-							(String.format("아이 신체정보 조회실패: %d /%d", childId, childRecordId))
-						);
+	public ChildRecordUpdateViewDTO getChildRecordUpdateInfoByRecordId(Long childRecordId) {
+		ChildRecordEntity childRecord = findChildRecordById(childRecordId);
 		return ChildRecordUpdateViewDTO.builder()
 				.id(childRecord.getId()) // record id
 				.childId(childRecord.getChild().getId()) // childId 추가
@@ -197,7 +162,11 @@ public class ChildRecordService {
 				.weight(childRecord.getWeight())
 				.leftEye(childRecord.getLeftEye())
 				.rightEye(childRecord.getRightEye())
-				.healthCheckImageSrc(childRecord.getHealthCheck().getSavedFileName())
+				.healthCheckImage(
+						new HealthCheckImageDTO(
+								!ObjectUtils.isEmpty(childRecord.getHealthCheck()),
+								ObjectUtils.isEmpty(childRecord.getHealthCheck()) ? null :
+										HEALTHCHECK_IMAGES_REQUEST_ROOT_PATH.concat(childRecord.getHealthCheck().getSavedFileName())))
 				.build();
 	}
 
@@ -206,107 +175,85 @@ public class ChildRecordService {
 	 * API : v1.x.x-9
 	 * C-7 이도훈
 	 * @param childRecordId
-	 * @param childRecordUpdateRequestDTO
 	 */
 	@Transactional
-	public void updateChildRecord(Long childRecordId, ChildRecordUpdateRequestDTO childRecordUpdateRequestDTO)
-	{
+	public void updateChildRecord(Long childId, Long memberId, Long childRecordId, ChildRecordUpdateRequestDTO childRecordUpdateRequestDTO) {
+		ChildRecordEntity childRecord = findChildRecordById(childRecordId);
+		ChildEntity child = childRepository.findById(childId)
+				.orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d",childId)));
+		MemberEntity member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new EntityNotFoundException(String.format("Member 조회 실패: %d", memberId)));
+		// 1. 기본 필드 업데이트
+		updateBasicFields(childRecord, childRecordUpdateRequestDTO);
 
-	    // 1. 기존 ChildRecordEntity 조회
-	    ChildRecordEntity childRecord = childRecordRepository.findById(childRecordId)
-	            .orElseThrow(() ->
-	            	new EntityNotFoundException(String.format("ChildRecord 조회 실패: %d", childRecordId)
-	            			));
+		// 2. 파일 처리: 새 파일 요청이 있으면 업데이트, 그렇지 않으면 기존 파일 삭제 처리
+		if (isFileUpdateRequested(childRecordUpdateRequestDTO)) {
+			processHealthCheckFileUpdate(child, member, childRecord, childRecordUpdateRequestDTO);
+		} else {
+			processHealthCheckFileDeletion(childRecord);
+		}
+	}
 
-	    // 2. 텍스트/숫자 필드 업데이트 (값이 있을 때만 변경)
-	    childRecord.setNote(childRecordUpdateRequestDTO.note());
-	    childRecord.setHeight(childRecordUpdateRequestDTO.height());
-	    childRecord.setWeight(childRecordUpdateRequestDTO.weight());
-	    childRecord.setLeftEye(childRecordUpdateRequestDTO.leftEye());
-	    childRecord.setRightEye(childRecordUpdateRequestDTO.rightEye());
-	    if (childRecordUpdateRequestDTO.registerDate() != null) {
-	        childRecord.setRegisterDate(childRecordUpdateRequestDTO.registerDate());
-	    }
+	private ChildRecordEntity findChildRecordById(Long childRecordId) {
+		return childRecordRepository.findById(childRecordId)
+				.orElseThrow(() -> new EntityNotFoundException(String.format("ChildRecord 조회 실패: %d", childRecordId)));
+	}
 
-	    // 3. 파일 관련 처리
-		 // 새 파일이 없으면 -> 사용자가 기존 이미지를 삭제했을 가능성이 있으므로,
-		 // 만약 기존 이미지가 있다면 삭제 처리 후 HealthCheckEntity의 파일 정보를 null로 변경합니다.
-		 if (
-			childRecordUpdateRequestDTO.healthCheckImg() ==
-			null || childRecordUpdateRequestDTO.healthCheckImg().isEmpty()
-			)	{
-			 	if (childRecord.getHealthCheck() != null) {
+	private void updateBasicFields(ChildRecordEntity childRecord, ChildRecordUpdateRequestDTO childRecordUpdateRequestDTO) {
+		childRecord.setNote(childRecordUpdateRequestDTO.note());
+		childRecord.setHeight(childRecordUpdateRequestDTO.height());
+		childRecord.setWeight(childRecordUpdateRequestDTO.weight());
+		childRecord.setLeftEye(childRecordUpdateRequestDTO.leftEye());
+		childRecord.setRightEye(childRecordUpdateRequestDTO.rightEye());
+		if (ObjectUtils.isEmpty(childRecordUpdateRequestDTO.registerDate())) return;
+		childRecord.setRegisterDate(childRecordUpdateRequestDTO.registerDate());
+	}
 
-			 		HealthCheckEntity healthCheck = childRecord.getHealthCheck();
+	private boolean isFileUpdateRequested(ChildRecordUpdateRequestDTO request) {
+		return !ObjectUtils.isEmpty(request.healthCheckImg()) && !request.healthCheckImg().isEmpty();
+	}
 
-			 		if (
-			 			healthCheck.getSavedFileName() !=
-			 			null && !healthCheck.getSavedFileName().isEmpty()
-			 			)	{
-			 			String existingFilePath = filePathUtil.childHealthCheckImgUploadPath()
-			 					.concat(healthCheck.getSavedFileName());
+	private void processHealthCheckFileDeletion(ChildRecordEntity childRecord) {
+		HealthCheckEntity healthCheck = childRecord.getHealthCheck();
+		if (ObjectUtils.isEmpty(healthCheck)) return;
+		String existingFileName = healthCheck.getSavedFileName();
+		if (existingFileName != null && !existingFileName.isEmpty()) {
+			String existingFilePath = filePathUtil.childHealthCheckImgUploadPath().concat(existingFileName);
+			FileManager.deleteFile(existingFilePath);
+		}
+		// 파일 관련 정보를 null 처리하여 삭제 효과 반영
+		healthCheck.setOriginalFileName(null);
+		healthCheck.setSavedFileName(null);
+	}
 
-			 			FileManager.deleteFile(existingFilePath);
-			 			}
-				         // 기존 HealthCheckEntity를 삭제하지 않고, 파일 관련 정보를 null로 변경합니다.
-				         healthCheck.setOriginalFileName(null);
-				         healthCheck.setSavedFileName(null);
-			 		}
-			 	return; // 파일 업데이트 없이 종료 (텍스트/숫자 정보만 업데이트)
-		 }
+	private void processHealthCheckFileUpdate(ChildEntity child, MemberEntity member, ChildRecordEntity childRecord, ChildRecordUpdateRequestDTO request) {
+		String newOriginalFileName = StringUtils.hasText(request.healthCheckImg().getOriginalFilename()) ?
+				request.healthCheckImg().getOriginalFilename() : "unknown".concat(Instant.now().toString()).concat(".jpg");
 
-	    // 4. 새 파일의 파일명 가져오기
-	    String newFileName = childRecordUpdateRequestDTO.healthCheckImg().getOriginalFilename();
+		if (!ObjectUtils.isEmpty(childRecord.getHealthCheck())) {
+			// 기존 HealthCheckEntity가 존재하는 경우 DB에서 재조회 후 업데이트
+			HealthCheckEntity existingHealthCheck = childRecord.getHealthCheck();
 
-	    // 5. 파일 업데이트 처리
-	    // 기존에 HealthCheckEntity가 존재하는 경우
-	    if (childRecord.getHealthCheck() != null) {
-	        HealthCheckEntity healthCheck = healthCheckRepository.findById(childRecord.getHealthCheck().getId())
-	                .orElseThrow(() -> new EntityNotFoundException(
-	                        String.format("HealthCheck 조회 실패: %d", childRecord.getHealthCheck().getId())
-	                        ));
+			// 기존 파일 삭제
+			String existingFileName = existingHealthCheck.getSavedFileName();
+			if (StringUtils.hasText(existingFileName) && !existingFileName.isEmpty()) {
+				String existingFilePath = filePathUtil.childHealthCheckImgUploadPath().concat(existingFileName);
+				FileManager.deleteFile(existingFilePath);
+			}
 
-	        // 5-1. 기존 파일명과 새 파일명이 동일하면 파일 업데이트를 건너뜁니다.
-	        if (Objects.equals(newFileName, healthCheck.getSavedFileName())) {
-	            return;
-	        }
+			healthCheckRepository.deleteById(existingHealthCheck.getId());
+		}
+		// 새 파일 저장 및 HealthCheckEntity 업데이트
+		String newSavedFileName = FileManager.getSavedFileName(newOriginalFileName);
+		fileManager.saveFile(request.healthCheckImg(), filePathUtil.childHealthCheckImgUploadPath(), newSavedFileName);
 
-	        // 5-2. 기존 파일 삭제 (savedFileName이 null이 아닐 경우에만)
-	        if (healthCheck.getSavedFileName() !=null && !healthCheck.getSavedFileName().isEmpty()) {
-
-	        	String existingFilePath =
-	            		filePathUtil.childHealthCheckImgUploadPath().concat(healthCheck.getSavedFileName());
-
-	            FileManager.deleteFile(existingFilePath);
-	        }
-
-	        // 5-3. 새 파일 저장 (실제 폴더에 저장)
-	        String savedFileName = FileManager.getSavedFileName(newFileName);
-	        fileManager.saveFile(
-	        		childRecordUpdateRequestDTO.healthCheckImg(),
-	                filePathUtil.childHealthCheckImgUploadPath(),
-	                savedFileName
-	        		);
-
-	        // 5-4. DB의 HealthCheckEntity 업데이트
-	        healthCheck.setOriginalFileName(newFileName);
-	        healthCheck.setSavedFileName(savedFileName);
-	    } else {
-	        // 기존에 HealthCheckEntity가 없는 경우 → 새로 생성
-	        String savedFileName = FileManager.getSavedFileName(newFileName);
-	        fileManager.saveFile(childRecordUpdateRequestDTO.healthCheckImg(),
-	                filePathUtil.childHealthCheckImgUploadPath(), savedFileName);
-
-	        HealthCheckEntity newHealthCheck = HealthCheckEntity.builder()
-	                .child(childRecord.getChild())
-	                // member 정보가 필요하면 추가 (예: .member(member))
-	                .childRecord(childRecord)
-	                .originalFileName(newFileName)
-	                .savedFileName(savedFileName)
-	                .build();
-
-	        healthCheckRepository.save(newHealthCheck);
-	        childRecord.setHealthCheck(newHealthCheck);
-	    }
+		HealthCheckEntity healthCheck = healthCheckRepository.save(HealthCheckEntity.builder()
+				.childRecord(childRecord)
+				.child(child)
+				.member(member)
+				.originalFileName(newOriginalFileName)
+				.savedFileName(newSavedFileName)
+				.build());
+		childRecord.setHealthCheck(healthCheck);
 	}
 }

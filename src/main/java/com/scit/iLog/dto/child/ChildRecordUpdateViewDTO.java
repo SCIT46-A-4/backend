@@ -14,6 +14,6 @@ public record ChildRecordUpdateViewDTO(
         double rightEye,
         String note,
         LocalDateTime registerDate,
-        String healthCheckImageSrc
+        HealthCheckImageDTO healthCheckImage
 ) {
 }

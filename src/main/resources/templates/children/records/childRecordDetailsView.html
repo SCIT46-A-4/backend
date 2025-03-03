@@ -1,131 +1,196 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>아동신체정보조회</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>아동신체정보조회</title>
 
-<script src="/js/jquery-3.7.1.min.js"></script>
-<link rel="stylesheet" href="/css/bulma.min.css">
-<link rel="stylesheet" href="/css/customColors.css">
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="/css/bulma.min.css" />
+    <link rel="stylesheet" href="/css/customColors.css" />
 
-<style>
-.preview-box {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	height: 100%;
-}
+    <style>
+      .preview-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
 
-.preview-image {
-	max-width: 100%;
-	max-height: 100%;
-	object-fit: cover;
-}
+      .preview-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+      }
 
-.fixed-size-box {
-	width: 100px; /* 원하는 크기로 조정 */
-	height: 100px; /* 정사각형으로 설정 */
-	border-radius: 50%; /* 원형으로 만듦 */
-	overflow: hidden; /* 넘치는 부분 제거 */
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: transparent; /* 배경 제거 */
-}
+      .fixed-size-box {
+        width: 100px; /* 원하는 크기로 조정 */
+        height: 100px; /* 정사각형으로 설정 */
+        border-radius: 50%; /* 원형으로 만듦 */
+        overflow: hidden; /* 넘치는 부분 제거 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent; /* 배경 제거 */
+      }
 
-.div-size-cust {
-	/* padding: 0; */
-	box-shadow: none;
-	background-image: url("/images/ilog.png");
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-}
-</style>
-<script>
-    function handleImageError(img) 
-    {
+      .div-size-cust {
+        /* padding: 0; */
+        box-shadow: none;
+        background-image: url('/images/ilog.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+    </style>
+    <script>
+      function handleImageError(img) {
         img.style.display = 'none'; // 이미지를 숨깁니다.
-        document.getElementById("downloadBtn").style.display = 'none';
-    }
-    
+        document.getElementById('downloadBtn').style.display = 'none';
+      }
+
+      function downloadImage() {
+        // 이미지 URL을 가져옵니다
+        const imageUrl = document.getElementById('preview').src;
+
+        // 다운로드를 위한 임시 링크 생성
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = extractImageFileName(imageUrl); // 다운로드될 파일 이름
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      function extractImageFileName(path) {
+        if (typeof path !== 'string' || path.trim() === '') return '';
+        const lastSlashIndex = path.lastIndexOf('/');
+        return lastSlashIndex === -1
+          ? path
+          : path.substring(lastSlashIndex + 1);
+      }
     </script>
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <div class="columns is-vcentered">
+          <!-- vertically centered -->
+          <a th:href="@{/dashboard/guardian}">
+            <div
+              class="box fixed-size-box div-size-cust"
+              bis_skin_checked="1"
+            ></div>
+          </a>
 
-</head>
-<body>
-	<section class="section">
-		<div class="container">
-			<div class="columns is-vcentered">
-				<!-- vertically centered -->
-				<a th:href="@{/dashboard/guardian}">
-					<div class="box fixed-size-box div-size-cust" bis_skin_checked="1"></div>
-				</a>
+          <div>
+            <h1 class="title has-text-centered">아동신체정보조회</h1>
+          </div>
+        </div>
 
-				<div>
-					<h1 class="title has-text-centered">아동신체정보조회</h1>
-				</div>
-			</div>
+        <div class="columns">
+          <div class="column is-half">
+            <div class="box preview-box">
+              <div th:if="${childRecord.healthCheckImage.hasHealthCheckImage}">
+                <img
+                  id="preview"
+                  class="preview-image"
+                  th:src="@{/healthCheckImages/{fileName}(fileName=${savedFileName})}"
+                  onerror="handleImageError(this)"
+                />
+                <button
+                  id="downloadBtn"
+                  class="button is-link mt-3"
+                  th:attr="disabled=${!childRecord.healthCheckImage.hasHealthCheckImage}"
+                  th:onclick="downloadImage()"
+                >
+                  다운로드
+                </button>
+              </div>
+            </div>
+          </div>
 
-			<div class="columns">
-				<div class="column is-half">
-					<div class="box preview-box">
-						<div th:if="${savedFileName != null and savedFileName != ''}">
-							<img id="preview" class="preview-image" th:src="@{/healthCheckImages/{fileName}(fileName=${savedFileName})}" onerror="handleImageError(this)"> <a th:href="@{/children/download(childrenId=${childRecord.id})}">
-								<button id="downloadBtn" class="button is-link mt-3" th:attr="disabled=${savedFileName == null ? 'true' : null}">다운로드</button>
-							</a>
-						</div>
-					</div>
-				</div>
-				<!-- <div class="column is-full" th:unless="${savedFileName != null and savedFileName != ''}"> </div> -->
-					<div class="column is-half">
-						<div class="box">
-							<div class="columns">
-								<div class="column">
-									<label class="label">등록일</label>
-									<input class="input" th:value="${#temporals.format(childRecord.registerDate, 'yyyy-MM-dd HH:mm')}" disabled>
-								</div>
-							</div>
-							<div class="columns">
-								<div class="column">
-									<label class="label">키 (cm)</label>
-									<input class="input" th:value="${#numbers.formatDecimal(childRecord.height, 1, 1)}" type="number" step="0.1" disabled>
-								</div>
-								<div class="column">
-									<label class="label">몸무게 (kg)</label>
-									<input class="input" th:value="${#numbers.formatDecimal(childRecord.weight, 1, 1)}" type="number" step="0.1" disabled>
-								</div>
-							</div>
-							<div class="columns">
-								<div class="column">
-									<label class="label">시력 (좌)</label>
-									<input class="input" th:value="${#numbers.formatDecimal(childRecord.leftEye, 1, 1)}" type="number" step="0.01" disabled>
-								</div>
-								<div class="column">
-									<label class="label">시력 (우)</label>
-									<input class="input" th:value="${#numbers.formatDecimal(childRecord.rightEye, 1, 1)}" type="number" step="0.01" disabled>
-								</div>
-							</div>
-							<div class="columns">
-								<div class="column">
-									<label class="label">소견</label>
-									<textarea class="textarea" th:text="${childRecord.note}" disabled></textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-			</div>
-			<div class="has-text-centered mt-4">
-			
-			<a th:href="@{/children/{childId}/records/{childRecordId}/edit(childId=${childId}, childRecordId=${childRecord.id})}">
-    			<button class="button is-primary">수정하기</button>
-			</a>
-				 <a th:href="@{/children/{childId}/recordList(childId=${childRecord.childId})}">
-					<button class="button is-info">아동신체정보 목록</button>
-				</a>
-			</div>
-		</div>
-	</section>
-</body>
+          <div class="column is-half">
+            <div class="box">
+              <div class="columns">
+                <div class="column">
+                  <label class="label">등록일</label>
+                  <input
+                    class="input"
+                    th:value="${#temporals.format(childRecord.registerDate, 'yyyy-MM-dd HH:mm')}"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div class="columns">
+                <div class="column">
+                  <label class="label">키 (cm)</label>
+                  <input
+                    class="input"
+                    th:value="${#numbers.formatDecimal(childRecord.height, 1, 1)}"
+                    type="number"
+                    step="0.1"
+                    disabled
+                  />
+                </div>
+                <div class="column">
+                  <label class="label">몸무게 (kg)</label>
+                  <input
+                    class="input"
+                    th:value="${#numbers.formatDecimal(childRecord.weight, 1, 1)}"
+                    type="number"
+                    step="0.1"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div class="columns">
+                <div class="column">
+                  <label class="label">시력 (좌)</label>
+                  <input
+                    class="input"
+                    th:value="${#numbers.formatDecimal(childRecord.leftEye, 1, 1)}"
+                    type="number"
+                    step="0.01"
+                    disabled
+                  />
+                </div>
+                <div class="column">
+                  <label class="label">시력 (우)</label>
+                  <input
+                    class="input"
+                    th:value="${#numbers.formatDecimal(childRecord.rightEye, 1, 1)}"
+                    type="number"
+                    step="0.01"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div class="columns">
+                <div class="column">
+                  <label class="label">소견</label>
+                  <textarea
+                    class="textarea"
+                    th:text="${childRecord.note}"
+                    disabled
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="has-text-centered mt-4">
+          <a
+            th:href="@{/children/{childId}/records/{childRecordId}/edit(childId=${childId}, childRecordId=${childRecord.childRecordId})}"
+          >
+            <button class="button is-primary">수정하기</button>
+          </a>
+          <a th:href="@{/children/{childId}/recordList(childId=${childId})}">
+            <button class="button is-info">아동신체정보 목록</button>
+          </a>
+        </div>
+      </div>
+    </section>
+  </body>
 </html>

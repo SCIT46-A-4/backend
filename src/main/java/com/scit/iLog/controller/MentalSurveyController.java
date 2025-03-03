@@ -1,8 +1,12 @@
 package com.scit.iLog.controller;
 
+import com.scit.iLog.dto.child.ChildBasicInfoDTO;
+import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /* 
@@ -12,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/mentalSurveys")
+@RequestMapping("/children/{childId}/mentalSurveys")
 public class MentalSurveyController {
+	private final ChildService childService;
+
 	/* 2025-02-07 이도훈 주석 작성 및 메서드 명 수정.
 	 * childOverView.html에서 설문목록 버튼 클릭 시 GET 요청을 처리한다.
 	 * 우리 아이 설문 목록 페이지를 출력한다.
@@ -29,19 +35,20 @@ public class MentalSurveyController {
 		return "children/mentalSurveys/mentalSurveyListView";
     }
 
-	// 설문쓰기_심리 바로가기
-	/* 2025-02-07 이도훈 주석 작성 및 메서드 명 수정.
-	 * surveySelectView.html에서 심리 설문 버튼 클릭 시 GET방식으로 요청을 처리한다.
-	 * 심리 설문 작성 페이지를 출력한다.
-	 * 이 페이지에서 심리 설문 정보를 입력한다.
-	 * URL, 메서드명, 리턴 값 수정.
-	 * @return /mental/claimInsertView.html
-	 *
+	/**
+	 * 2025-02-25 김보경
+	 * 설문조사 등록 페이지 바로가기
 	 * S-2
+	 * @return children/mentalSurvey/mentalSurveyDetailsView 뷰 페이지
 	 */
 	@GetMapping("/new")
-	public String handleGetInsertMentalSurveyView() {
-		return "children/mentalSurveys/insertView";
+	public String handleGetMentalSurveyInsertView(
+			@PathVariable("childId") Long childId,
+			Model model
+	) {
+		ChildBasicInfoDTO childBasicInfo = childService.getBasicInfoById(childId);
+		model.addAttribute("childBasicInfo", childBasicInfo);
+		return "children/mentalSurvey/mentalSurveyDetailsView";
 	}
 
 	/*
