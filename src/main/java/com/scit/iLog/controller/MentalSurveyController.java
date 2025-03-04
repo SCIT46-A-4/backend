@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -62,9 +63,9 @@ public class MentalSurveyController {
 	public ChildMentalStatsDTO handleGetMentalSurveyStats(
 			@PathVariable("childId") Long childId,
 			@RequestParam(value = "startDate", required = false)
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
 			@RequestParam(value = "endDate", required = false)
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
 	) {
 		// 데이터베이스에서 시간순으로 정렬된 데이터 조회
 		return mentalSurveyService.getMentalSurveyStatsBetween(childId, startDate, endDate);

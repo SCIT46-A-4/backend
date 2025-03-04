@@ -5,6 +5,7 @@ import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.analysis.*;
 import com.scit.iLog.dto.child.ChildRecordListItemDTO;
+import com.scit.iLog.dto.mentalsurvey.ChildMentalStatsDTO;
 import com.scit.iLog.service.analysis.AnalysisResultService;
 import com.scit.iLog.service.analysis.AnalysisService;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +13,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
 
 @Controller
 @RequiredArgsConstructor
@@ -183,4 +188,18 @@ public class AnalysisController {
     /*
         @TODO 재분석 기능 추가 필요.
      */
+
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    @GetMapping("/results/stats/emotion/data")
+    public ChildEmotionRatioDataDTO handleGetAnalysisStatsData(
+            @PathVariable("childId") Long childId,
+            @RequestParam(value = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) {
+        // 데이터베이스에서 시간순으로 정렬된 데이터 조회
+        return analysisResultService.getChildEmotionRatioDataBetween(childId, startDate, endDate);
+    }
 }

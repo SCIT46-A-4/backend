@@ -31,7 +31,7 @@ public class MemberController {
         변경후: /members/myDetails
      */
     @GetMapping("/myDetails")
-    public String handleGetMyPage(
+    public String handleGetMyDetails(
             Authentication authentication,
             Model model
     ) {

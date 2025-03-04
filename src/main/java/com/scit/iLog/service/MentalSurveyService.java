@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -124,10 +125,11 @@ public class MentalSurveyService {
                 .build();
     }
 
-    public ChildMentalStatsDTO getMentalSurveyStatsBetween(Long childId, LocalDateTime startDate, LocalDateTime endDate) {
+    public ChildMentalStatsDTO getMentalSurveyStatsBetween(Long childId, LocalDate startDate, LocalDate endDate) {
         if (!ObjectUtils.isEmpty(startDate) && !ObjectUtils.isEmpty(endDate)) {
             // 기간 내 데이터 조회 (시작 날짜와 종료 날짜 사이)
-            List<ChildMentalSurveyStatPointDataDTO> surveyResponseStatPointData = mentalSurveyResponseRepository.findAllByCreatedAtBetweenOrderByCreatedAtAsc(startDate, endDate).stream()
+            List<ChildMentalSurveyStatPointDataDTO> surveyResponseStatPointData = mentalSurveyResponseRepository
+                    .findAllByCreatedAtBetweenOrderByCreatedAtAsc(startDate.atStartOfDay(), endDate.atStartOfDay()).stream()
                     .map(mentalSurveyResponse ->
                             ChildMentalSurveyStatPointDataDTO.builder()
                                     .date(mentalSurveyResponse.getCreatedAt())

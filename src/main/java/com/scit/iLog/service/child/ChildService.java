@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.text.Normalizer;
@@ -221,9 +222,11 @@ public class ChildService {
                         .birthDate(relationShip.getChild().getBirthDate())
                         .name(relationShip.getChild().getName())
                         .profileImgSrc(
-                                // 파일 이름은 확장자를 포함
                                 CHILD_PROFILE_REQUEST_ROOT_PATH.concat(
-                                        relationShip.getChild().getSavedProfileImgName()))
+                                        StringUtils.hasText(relationShip.getChild().getSavedProfileImgName()) ?
+                                                relationShip.getChild().getSavedProfileImgName() :
+                                                ChildEntity.DEFAULT_PROFILE_IMG
+                                ))
                         .build())
                 .toList();
         return new ParentDashboardChildListDTO(childProfiles.size(), childProfiles);

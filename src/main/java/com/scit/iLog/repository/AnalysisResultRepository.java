@@ -9,10 +9,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AnalysisResultRepository extends JpaRepository<AnalysisResultEntity, Long> {
-    @Query("select cr from ChildRecordEntity cr where cr.child.id = :childId and (cr.registerDate between :startDate and :endDate)")
+    @Query("select ar from AnalysisResultEntity ar where ar.analysisTarget.child.id = :childId and (ar.createdAt between :startDate and :endDate)")
     List<AnalysisResultEntity> findAllByCreatedAtBetween(
             @Param("childId") Long childId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
+
+    List<AnalysisResultEntity> findAllByCreatedAtBetweenOrderByCreatedAtDesc(LocalDateTime localDateTime, LocalDateTime localDateTime1);
 }
