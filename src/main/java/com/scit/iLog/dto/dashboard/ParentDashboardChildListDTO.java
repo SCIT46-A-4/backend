@@ -6,6 +6,6 @@ import java.util.List;
 
 public record ParentDashboardChildListDTO(
         int numberOfChildren,
-        List<ChildProfileDTO> childProfileList
+        List<ChildProfileDTO> childProfiles
 ) {
 }

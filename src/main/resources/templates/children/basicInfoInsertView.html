@@ -271,7 +271,7 @@
                 contentType: false,
                 success: function (response) {
                   if (response.childId) {
-                    window.location.href = `/children/${response.childId}/details`;
+                    window.location.href = `/children/${response.childId}/basicInfo`;
                   }
                 },
                 error: function (xhr, status, error) {

@@ -1,17 +1,21 @@
 package com.scit.iLog.service.child;
 
+import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.child.ChildBackGroundEntity;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.child.FamilyBackGroundEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoInsertDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoUpdateDTO;
 import com.scit.iLog.dto.child.ChildProfileDTO;
+import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.FamilyBackgroundRepository;
+import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.RelationShipRepository;
 import com.scit.iLog.util.FileManager;
 import com.scit.iLog.util.FilePathUtil;
@@ -42,10 +46,11 @@ public class ChildService {
     private final FilePathUtil filePathUtil;
     private final FileManager fileManager;
     private final FamilyBackgroundRepository familyBackgroundRepository;
+    private final MemberRepository memberRepository;
 
     // 25/2/12 준: api-23 아이 새로운 아이 등록(저장)
     @Transactional
-    public Long saveBasicInfo(ChildBasicInfoInsertDTO childBasicInfoInsertDTO) {
+    public Long saveBasicInfo(Long memberId, ChildBasicInfoInsertDTO childBasicInfoInsertDTO) {
         log.info("gender: {}", childBasicInfoInsertDTO.gender());
         ChildEntity child = childRepository.save(ChildEntity.builder()
                 .name(childBasicInfoInsertDTO.name())
@@ -95,6 +100,17 @@ public class ChildService {
                     .toList();
             child.replaceAllChildBackGrounds(childBackGrounds);
         }
+
+        MemberEntity member = memberRepository
+                .findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Member 조회 실패: %d", memberId)));
+        RelationShipEntity relationShip = RelationShipEntity.builder()
+                .relationType(member.getRelationType())
+                .child(child)
+                .member(member)
+                .permissionLevel(PermissionLevel.OWNER)
+                .build();
+        relationShipRepository.save(relationShip);
         return child.getId();
     }
 
@@ -123,7 +139,7 @@ public class ChildService {
         // 기본 정보 업데이트
         child.setName(childBasicInfoUpdateDTO.name());
         child.setGender(childBasicInfoUpdateDTO.gender());
-        child.setBirthDate(childBasicInfoUpdateDTO.birthDate());
+        child.setBirthDate(childBasicInfoUpdateDTO.birthDate().atStartOfDay());
         child.setBirthLocation(childBasicInfoUpdateDTO.birthLocation());
         child.setNote(childBasicInfoUpdateDTO.note());
         child.setCallName(childBasicInfoUpdateDTO.callName()); // callName 업데이트 추가 (2025-02-28 / 김은진)
@@ -161,7 +177,7 @@ public class ChildService {
         if (profileImg.isEmpty()) return;
         // 그렇지 않으면 기존 이미지 삭제 후 새 이미지 저장
         if (hasText(child.getOriginalProfileImgName())) {
-            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat(child.getSavedProfileImgName());
+            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat("/").concat(child.getSavedProfileImgName());
             FileManager.deleteFile(existingFilePath);
         }
         String originalFileName = hasText(profileImg.getOriginalFilename())
@@ -201,7 +217,7 @@ public class ChildService {
         List<RelationShipEntity> relationShips = relationShipRepository.findAllByMemberId(memberId);
         List<ChildProfileDTO> childProfiles = relationShips.stream()
                 .map(relationShip -> ChildProfileDTO.builder()
-                        .id(relationShip.getChild().getId())
+                        .childId(relationShip.getChild().getId())
                         .birthDate(relationShip.getChild().getBirthDate())
                         .name(relationShip.getChild().getName())
                         .profileImgSrc(
@@ -210,9 +226,7 @@ public class ChildService {
                                         relationShip.getChild().getSavedProfileImgName()))
                         .build())
                 .toList();
-        return new ParentDashboardChildListDTO(
-                childProfiles.size(),
-                childProfiles);
+        return new ParentDashboardChildListDTO(childProfiles.size(), childProfiles);
     }
 
     @Transactional(readOnly = true)
@@ -239,6 +253,12 @@ public class ChildService {
                 .birthLocation(child.getBirthLocation())
                 .familyBackGrounds(familyBackGrounds) // 가정환경 정보 설정(2025-02-28 / 김은진)
                 .build();
+    }
+
+    public ChildNameDTO getChildName(Long childId) {
+        ChildEntity child = childRepository.findById(childId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
+        return new ChildNameDTO(child.getName());
     }
 
     /*

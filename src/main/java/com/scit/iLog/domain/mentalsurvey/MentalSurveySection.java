@@ -11,6 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class MentalSurveySection {
     private String title;
-    @Transient
     private List<MentalSurveyQuestion> questions;
 }

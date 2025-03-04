@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>설문 응답 작성</title>
+    <!-- Bulma CSS -->
+    <link
+      rel="stylesheet"
+      th:href="/css/bulma.min.css"
+      href="../../../static/css/bulma.min.css"
+    />
+    <style>
+      .primary-color {
+        color: #fdf5bf;
+      }
+      .secondary-bg {
+        background-color: #bee6d9;
+      }
+      .question-box {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+    <script
+      src="../../../static/js/jquery-3.7.1.min.js"
+      th:src="@{/js/jquery-3.7.1.min.js}"
+    ></script>
+    <script
+      src="../../../static/js/sweetalert2.js"
+      th:src="@{/js/sweetalert2.js}"
+    ></script>
+    <script>
+      $(document).ready(function () {
+        $('#mentalSurveyForm').submit(function (event) {
+          event.preventDefault(); // 기본 폼 제출 방지
+
+          // JSON 객체 구성 (DTO 형식에 맞춤)
+          let data = {
+            surveyId: $("input[name='surveyId']").val(),
+            surveyTitle: $("input[name='surveyTitle']").val(),
+            childId: $("input[name='childId']").val(),
+            respondentId: $("input[name='respondentId']").val(),
+            createdAt: new Date().toISOString(),
+            sectionResponses: [],
+          };
+
+          // 각 섹션 처리
+          $('.section-box').each(function (secIndex, secElement) {
+            let sectionTitle = $(secElement)
+              .find("input[name^='sectionResponses'][name$='.sectionTitle']")
+              .val();
+            let questionResponses = [];
+
+            // 각 질문 처리
+            $(secElement)
+              .find('.question-box')
+              .each(function (qIndex, qElement) {
+                let questionItem = $(qElement)
+                  .find(
+                    "input[name^='sectionResponses'][name$='.questionResponses[__" +
+                      qIndex +
+                      "__].questionItem']"
+                  )
+                  .val();
+                let scoreVal = $(qElement)
+                  .find("input[type='radio']:checked")
+                  .val();
+                if (scoreVal === undefined) {
+                  scoreVal = 0; // 선택되지 않은 경우 기본값 (또는 유효성 검증 후 오류 처리 가능)
+                } else {
+                  scoreVal = parseInt(scoreVal);
+                }
+                questionResponses.push({
+                  questionItem: questionItem,
+                  answer: '', // 텍스트 입력은 제거됨
+                  score: scoreVal,
+                });
+              });
+
+            data.sectionResponses.push({
+              sectionTitle: sectionTitle,
+              questionResponses: questionResponses,
+            });
+          });
+
+          // JSON 데이터 전송
+          $.ajax({
+            url: $('#mentalSurveyForm').attr('action'),
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+              Swal.fire('설문 응답이 제출되었습니다.');
+            },
+            error: function (xhr, status, error) {
+              Swal.fire('설문 제출에 실패하였습니다.');
+            },
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <!-- 설문 제목과 설명 -->
+        <h1 class="title primary-color" th:text="${mentalSurvey.title}">
+          설문 제목
+        </h1>
+        <p th:text="${mentalSurvey.description}">설문 설명</p>
+        <!-- 설문 응답 폼 (JSON 전송) -->
+        <form
+          id="mentalSurveyForm"
+          th:action="@{'/children/' + ${childId} + '/mentalSurveys/' + ${mentalSurvey.id} + '/responses/new'}"
+          method="post"
+        >
+          <!-- 설문 관련 메타 정보 -->
+          <input type="hidden" name="surveyId" th:value="${mentalSurvey.id}" />
+          <input
+            type="hidden"
+            name="surveyTitle"
+            th:value="${mentalSurvey.title}"
+          />
+          <input type="hidden" name="childId" th:value="${childId}" />
+          <input type="hidden" name="respondentId" th:value="${respondentId}" />
+
+          <!-- 각 섹션별 폼 출력 -->
+          <div
+            th:each="section, secStat : ${mentalSurvey.sections}"
+            class="section-box"
+          >
+            <div class="box">
+              <h2 class="subtitle primary-color" th:text="${section.title}">
+                섹션 제목
+              </h2>
+              <!-- 섹션 내 질문 반복 -->
+              <div
+                th:each="question, qStat : ${section.questions}"
+                class="question-box"
+              >
+                <p>
+                  <strong th:text="${question.item}">질문 항목</strong>
+                </p>
+                <p th:text="${question.example}">예시 내용</p>
+                <!-- 점수 선택: 1-5 라디오 버튼 -->
+                <div class="field">
+                  <label class="label">점수 (1-5)</label>
+                  <div class="control">
+                    <label class="radio">
+                      <input
+                        type="radio"
+                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        value="1"
+                      />
+                      1
+                    </label>
+                    <label class="radio">
+                      <input
+                        type="radio"
+                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        value="2"
+                      />
+                      2
+                    </label>
+                    <label class="radio">
+                      <input
+                        type="radio"
+                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        value="3"
+                      />
+                      3
+                    </label>
+                    <label class="radio">
+                      <input
+                        type="radio"
+                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        value="4"
+                      />
+                      4
+                    </label>
+                    <label class="radio">
+                      <input
+                        type="radio"
+                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        value="5"
+                      />
+                      5
+                    </label>
+                  </div>
+                </div>
+                <!-- 질문 항목 hidden 필드 -->
+                <input
+                  type="hidden"
+                  name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].questionItem"
+                  th:value="${question.item}"
+                />
+              </div>
+              <!-- 섹션 제목 hidden 필드 -->
+              <input
+                type="hidden"
+                name="sectionResponses[__${secStat.index}__].sectionTitle"
+                th:value="${section.title}"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <button type="submit" class="button secondary-bg">
+                제출하기
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </body>
+</html>

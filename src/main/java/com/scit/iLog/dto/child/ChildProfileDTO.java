@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record ChildProfileDTO(
-        Long id,
+        Long childId,
         String name,
         LocalDateTime birthDate,
         String profileImgSrc

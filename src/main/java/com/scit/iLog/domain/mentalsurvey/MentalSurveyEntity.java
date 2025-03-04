@@ -1,8 +1,10 @@
 package com.scit.iLog.domain.mentalsurvey;
 
-import jakarta.persistence.Transient;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,12 +14,15 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@Document(collection = "mentalSurveys")
+@Document(collection = "mentalSurveys")
 public class MentalSurveyEntity {
     @Id
     private String id;
     private String title;
-    @Transient
+    private String description;
     private List<MentalSurveySection> sections;
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
+    private LocalDateTime lastModifiedAt;
 }

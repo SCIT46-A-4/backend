@@ -1,34 +1,465 @@
 <!DOCTYPE html>
 <html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
-        xmlns:sec="http://thymeleaf.org/extras/spring-security"
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 >
-<head>
-    <meta charset="UTF-8">
-    <title>대시보드페이지</title>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-	<h1>대쉬보드</h1>
-	<!-- 내 아이 상세페이지 접속 준성's -->
-	<!-- 2/5 HTML 파일, 링크 수정 -->
-	<a th:href="@{/children/details}"> 내 아이 상세페이지: /children/details 접속 </a>
+  <head>
+    <meta charset="UTF-8" />
+    <title>보호자 대시보드 - iLog</title>
+    <script
+      src="../../static/js/jquery-3.7.1.min.js"
+      th:src="@{/js/Jquery-3.7.1.min.js}"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="../../static/css/bulma.min.css"
+      th:href="@{/css/bulma.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 전역 차트 변수
+        let emotionChart, developmentChart;
 
-	<!-- 그림, 사진, 음성 분석 페이지로 바로가기 -->
-	<p><a th:href="@{/children/analysis}">AI로 우리아이 사진, 글, 그림, 음성 분석하기</a></p>
-	
-	<!-- 우리 아이 일기 통계로 바로가기 보경's-->
-    <p><a th:href="@{/children/diaryStatistics}">우리 아이 일기장</a></p>
-	
-	<!-- 그림, 사진, 음성 분석 페이지 접속 제환's -->
-	<!-- 2/4 HTML 파일, 링크 수정 -->
-	<a th:href="@{/statisticsDetails}">우리아이 성장곡선</a>
+        // 아동 선택에 따른 대시보드 업데이트 함수
+        async function updateDashboard(childId) {
+          try {
+            // 로딩 인디케이터 표시
+            document.getElementById('childInfoLoading').style.display = 'block';
+            document.getElementById('childInfoContainer').style.display =
+              'none';
 
-    <!-- 25/2/5 은진 : 내 아이 상세페이지 이동 -->
-    <a th:href="@{/children/details}"> 상세보기 </a>
-    
-    <a th:href="@{/children/new}"> 아이 등록 page</a>
+            // 아동 정보 업데이트
+            const childResponse = await fetch(`/api/child/${childId}`);
+            const childData = await childResponse.json();
+            updateChildInfo(childData);
 
-</body>
+            // 감정 분석 데이터 업데이트
+            const emotionResponse = await fetch(
+              `/api/child/${childId}/emotion-data`
+            );
+            const emotionData = await emotionResponse.json();
+            renderEmotionChart(emotionData);
+
+            // 발달 지표 데이터 업데이트
+            const developmentResponse = await fetch(
+              `/api/child/${childId}/development-data`
+            );
+            const developmentData = await developmentResponse.json();
+            renderDevelopmentChart(developmentData);
+
+            // 분석 결과 업데이트 (예: 태그 배열 형태로 반환)
+            const analysisResponse = await fetch(
+              `/api/child/${childId}/analysis-data`
+            );
+            const analysisData = await analysisResponse.json();
+            updateAnalysisResults(analysisData);
+          } catch (error) {
+            console.error('대시보드 업데이트 중 에러 발생:', error);
+          }
+        }
+
+        // 아동 정보 업데이트: 이름, 생년월일, 사진 등
+        function updateChildInfo(data) {
+          document.getElementById('childName').textContent = data.name;
+          document.getElementById('childBirthdate').textContent = new Date(
+            data.birthDate
+          ).toLocaleDateString();
+          if (data.profileImgSrc) {
+            document.querySelector('.child-photo').src = data.profileImgSrc;
+          }
+          // 데이터 로드 완료 후 로딩 인디케이터 숨기고 정보 표시
+          document.getElementById('childInfoLoading').style.display = 'none';
+          document.getElementById('childInfoContainer').style.display = 'block';
+        }
+
+        // 감정 분석 추이 차트 렌더링
+        function renderEmotionChart(data) {
+          // data 예시: { categories: ['1월', '2월', ...], positive: [65, 59, ...], negative: [28, 48, ...] }
+          emotionChart = Highcharts.chart('emotionChart', {
+            chart: { type: 'line', height: 220 },
+            title: { text: '감정 분석 추이' },
+            xAxis: { categories: data.categories },
+            yAxis: { title: { text: '감정 지수' } },
+            series: [
+              { name: '긍정', data: data.positive, color: '#BEE6D9' },
+              { name: '부정', data: data.negative, color: '#FFB6C1' },
+            ],
+          });
+        }
+
+        // 발달 지표 차트 렌더링
+        function renderDevelopmentChart(data) {
+          // data 예시: [ { name: '인지발달', y: 30, color: '#BEE6D9' }, ... ]
+          developmentChart = Highcharts.chart('developmentChart', {
+            chart: { type: 'pie', height: 220 },
+            title: { text: '발달 지표' },
+            plotOptions: {
+              pie: {
+                innerSize: '50%',
+                dataLabels: {
+                  enabled: true,
+                  format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                },
+              },
+            },
+            series: [{ name: '발달 영역', data: data }],
+          });
+        }
+
+        // 분석 결과 영역 업데이트 (예: 태그 목록)
+        function updateAnalysisResults(data) {
+          // data 예시: { tags: ['긍정적', '활동적', '창의적'] }
+          const analysisContainer = document.getElementById('analysisResults');
+          analysisContainer.innerHTML = '';
+          if (data.tags && data.tags.length > 0) {
+            data.tags.forEach((tag) => {
+              const span = document.createElement('span');
+              span.className = 'tag is-primary';
+              span.textContent = tag;
+              analysisContainer.appendChild(span);
+            });
+          } else {
+            analysisContainer.textContent = '분석 결과 없음';
+          }
+        }
+
+        // 아동 목록이 있을 경우, 페이지 로드시 첫 번째 아동으로 대시보드 업데이트
+        const childSelector = document.getElementById('childSelector');
+        if (childSelector && childSelector.options.length > 0) {
+          updateDashboard(childSelector.value);
+        }
+
+        // 아동 선택 변경 이벤트 처리
+        if (childSelector) {
+          // 초기 링크 업데이트
+          updateChildLinks(childSelector.value);
+
+          // 선택 변경 시 업데이트
+          childSelector.addEventListener('change', function (e) {
+            const childId = e.target.value;
+            updateChildLinks(childId);
+            // 대시보드 업데이트 함수 호출 (이미 구현되어 있다면)
+            updateDashboard(childId);
+          });
+        }
+      });
+
+      function updateChildLinks(childId) {
+        document.getElementById(
+          'surveySelectLink'
+        ).href = `/children/${childId}/mentalSurvey/selects`;
+        document.getElementById(
+          'surveyStatsLink'
+        ).href = `/children/${childId}/mentalSurveys/responses/stats`;
+        document.getElementById(
+          'analysisInsertLink'
+        ).href = `/children/${childId}/analysis/new`;
+        document.getElementById(
+          'analysisResultListLink'
+        ).href = `/children/${childId}/mentalSurveys/responses/stats`;
+      }
+    </script>
+    <style>
+      :root {
+        --primary-color: #fdf5bf;
+        --secondary-color: #bee6d9;
+        --bulma-navbar-item-img-max-height: 100px;
+      }
+      .navbar {
+        background-color: var(--primary-color);
+      }
+      @media screen and (min-width: 1024px) {
+        .navbar,
+        .navbar-end,
+        .navbar-menu,
+        .navbar-start {
+          align-items: stretch;
+          display: flex;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .navbar {
+          align-items: stretch;
+          display: flex;
+          justify-content: space-between;
+        }
+        .navbar-end {
+          align-items: center;
+          display: flex;
+        }
+      }
+      /* 카드 높이 조정 */
+      .card.stats-card {
+        background-color: var(--secondary-color);
+        margin-bottom: 1rem;
+        max-height: 350px;
+      }
+      .child-photo {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        margin: 0 auto;
+        display: block;
+      }
+      /* 통계 차트 컨테이너 높이 조정 */
+      .stats-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        height: 250px;
+        overflow: hidden;
+      }
+      #logo {
+        max-height: 100px;
+        width: 100px;
+        height: auto;
+      }
+      .has-background-color-primary {
+        background-color: var(--primary-color);
+      }
+      .has-background-color-secondary {
+        background-color: var(--secondary-color);
+      }
+      /* Skeleton / 로딩 UI 예시 */
+      .skeleton {
+        background-color: #e0e0e0;
+        height: 100px;
+        border-radius: 4px;
+        animation: shimmer 1.5s infinite linear;
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: -200px 0;
+        }
+        100% {
+          background-position: 200px 0;
+        }
+      }
+      #addChildButton {
+        border: none;
+        box-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+      }
+      #addChildButton:hover {
+        background-color: #cbe4dcf5;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <img
+            id="logo"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="iLog 로고"
+          />
+        </a>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/guides"><span>이용안내</span></a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/claims"><span>고객센터</span></a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(부모)</span
+              >
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container">
+        <!-- 아이가 없는 경우: 대문짝 만한 메시지와 등록 인터페이스 -->
+        <th:block th:if="${#lists.isEmpty(childProfiles.childProfiles)}">
+          <div
+            class="notification has-text-centered has-background-color-primary"
+            style="
+              min-height: 60vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-direction: column;
+            "
+          >
+            <p class="title is-1 is-black has-text-primary-00">
+              등록된 아이가 없습니다.
+            </p>
+            <a href="/children/new">
+              <button
+                id="addChildButton"
+                class="
+                  button
+                  has-background-color-secondary
+                  is-large
+                  has-text-primary-00
+                "
+              >
+                + 새로운 아이 등록하기
+              </button>
+            </a>
+          </div>
+        </th:block>
+        <!-- 아이가 있을 경우: 대시보드 전체 표시 -->
+        <th:block th:unless="${#lists.isEmpty(childProfiles.childProfiles)}">
+          <div class="columns">
+            <!-- Left Column - Child Info -->
+            <div class="column is-3">
+              <div class="card">
+                <div class="card-content">
+                  <div class="field">
+                    <div class="control">
+                      <div class="select is-fullwidth">
+                        <select id="childSelector">
+                          <th:block
+                            th:each="child : ${childProfiles.childProfiles}"
+                          >
+                            <option
+                              th:value="${child.childId}"
+                              th:text="${child.name}"
+                            ></option>
+                          </th:block>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 로딩 인디케이터 -->
+                  <div id="childInfoLoading" style="display: none">
+                    <div class="skeleton">
+                      <p style="padding: 10px; text-align: center">
+                        아이 정보를 불러오는 중입니다...
+                      </p>
+                    </div>
+                  </div>
+                  <!-- 아동 정보 컨테이너 -->
+                  <div id="childInfoContainer">
+                    <figure class="image is-square mb-4">
+                      <img
+                        src="../../static/images/ilog.png"
+                        th:src="@{/images/ilog.png}"
+                        alt="아이 사진"
+                        class="child-photo"
+                      />
+                    </figure>
+                    <div class="content">
+                      <p class="title is-4" id="childName">아이 이름</p>
+                      <p class="subtitle is-6" id="childBirthdate">
+                        YYYY-MM-dd
+                      </p>
+                      <button class="button is-fullwidth is-info is-light mb-2">
+                        우리 아이 상세 보기
+                      </button>
+                      <a href="/children/new">
+                        <button class="button is-fullwidth is-primary is-light">
+                          + 새로운 아이 등록하기
+                        </button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Middle Column - Statistics -->
+            <div class="column is-6">
+              <div class="card stats-card">
+                <div class="card-content">
+                  <p class="title is-4">감정 분석 추이</p>
+                  <div id="emotionChart" class="stats-container"></div>
+                </div>
+              </div>
+              <div class="card stats-card">
+                <div class="card-content">
+                  <p class="title is-4">발달 지표</p>
+                  <div id="developmentChart" class="stats-container"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Right Column - Additional Info -->
+            <div class="column is-3">
+              <div class="card">
+                <div class="card-content">
+                  <p class="title is-4">심리 설문</p>
+                  <div class="content" id="surveyResults">
+                    <p>최근 설문: 2024-01-15</p>
+                    <p>최근 설문 결과: 긍정적</p>
+                    <div class="container">
+                      <a
+                        id="surveySelectLink"
+                        th:href="@{/children/{childId}/mentalSurvey/selects}"
+                      >
+                        <button
+                          class="button has-background-secondary is-size-6"
+                        >
+                          설문 작성하기
+                        </button>
+                      </a>
+                      <a
+                        id="surveyStatsLink"
+                        th:href="@{/children/{childId}/mentalSurveys/reponses/stats}"
+                      >
+                        <button
+                          class="button has-background-secondary is-size-6"
+                        >
+                          설문 결과 추이 확인하기
+                        </button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card mt-4">
+                <div class="card-content">
+                  <p class="title is-4">우리 아이 분석 결과</p>
+                  <div class="content" id="analysisResults">
+                    <!-- 분석 결과 태그가 동적으로 업데이트됨 -->
+                  </div>
+                  <div class="container">
+                    <a
+                      id="analysisInsertLink"
+                      th:href="@{/children/{childId}/analysis/new}"
+                    >
+                      <button class="button has-background-secondary is-size-6">
+                        분석하러가기
+                      </button>
+                    </a>
+                    <a
+                      id="analysisResultListLink"
+                      th:href="@{/children/{childId}/mentalSurveys/reponses/stats}"
+                    >
+                      <button class="button has-background-secondary is-size-6">
+                        분석 결과목록 바로가기
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End Right Column -->
+          </div>
+        </th:block>
+      </div>
+    </section>
+  </body>
 </html>
