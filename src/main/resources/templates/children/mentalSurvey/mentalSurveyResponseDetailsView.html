@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>설문 결과 조회</title>
+    <!-- Bulma CSS -->
+    <link
+      rel="stylesheet"
+      href="../../../static/css/bulma.min.css"
+      th:href="@{/css/bulma.min.css}"
+    />
+    <style>
+      .primary-color {
+        color: #fdf5bf;
+      }
+      .secondary-bg {
+        background-color: #bee6d9;
+      }
+    </style>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/sweetalert2.js"></script>
+    <!-- 외부 스크립트 파일 불러오기 -->
+    <script>
+      $(document).ready(function () {
+        $('#deleteButton').click(function () {
+          if (confirm('정말 삭제하시겠습니까?')) {
+            var childId = $(this).data('child-id');
+            var responseId = $(this).data('response-id');
+            var url =
+              '/children/' +
+              childId +
+              '/mentalSurveys/responses/' +
+              responseId +
+              '/delete';
+
+            $.ajax({
+              url: url,
+              type: 'DELETE',
+              success: function (result) {
+                Swal.fire('삭제되었습니다.');
+                // 삭제 후 다른 설문 결과 보기 페이지로 이동
+                window.location.href =
+                  '/children/' + childId + '/mentalSurveys/responses/stats';
+              },
+              error: function (xhr, status, error) {
+                Swal.fire('삭제에 실패하였습니다: ' + error);
+              },
+            });
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <!-- 설문 제목 -->
+        <h1
+          class="title primary-color"
+          th:text="${responseDetails.surveyTitle}"
+        >
+          설문 제목
+        </h1>
+        <div class="box">
+          <!-- 총 점수 -->
+          <p>
+            <strong>총 점수:</strong>
+            <span th:text="${responseDetails.totalLikertScore}">0</span>
+          </p>
+          <!-- 코멘트 -->
+          <p>
+            <strong>코멘트:</strong>
+            <span th:text="${responseDetails.comment}">없음</span>
+          </p>
+          <!-- 설문 제출 일시 -->
+          <p>
+            <strong>설문일시:</strong>
+            <span
+              th:text="${#dates.format(responseDetails.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
+              >2025-02-17 00:00:00</span
+            >
+          </p>
+        </div>
+        <!-- 버튼 영역 -->
+        <div class="buttons">
+          <!-- 다른 설문 결과 보기 링크 -->
+          <a
+            th:href="@{'/children/' + ${responseDetails.childId} + '/mentalSurveys/responses/stats'}"
+            class="button secondary-bg"
+          >
+            다른 설문 보기
+          </a>
+          <!-- 삭제 버튼: data 속성으로 childId와 responseId 전달 -->
+          <button
+            id="deleteButton"
+            type="button"
+            class="button is-danger"
+            th:attr="data-child-id=${responseDetails.childId}, data-response-id=${responseDetails.id}"
+          >
+            삭제
+          </button>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

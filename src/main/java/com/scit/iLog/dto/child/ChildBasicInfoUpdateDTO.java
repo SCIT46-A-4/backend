@@ -6,13 +6,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.lang.Nullable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public record ChildBasicInfoUpdateDTO(
                 String name,
-                @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") // 2025-02-28 / 김은진 / 날짜 형식 변환
-                LocalDateTime birthDate,
+//                @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") // 2025-02-28 / 김은진 / 날짜 형식 변환
+                LocalDate birthDate,
                 String birthLocation,
                 String note,
                 Gender gender,

@@ -11,5 +11,5 @@ import java.util.List;
 public class SectionResponse {
     private String sectionTitle;
     private List<QuestionResponse> questionResponses;
-    private double sectionLikertScore;
+    private int sectionLikertScore;
 }

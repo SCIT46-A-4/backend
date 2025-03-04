@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>아동 상세 정보 등록 페이지</title>
   <script src="/js/jquery-3.7.1.min.js"></script>
+  <script src="/js/sweetalert2.js"></script>
 
   <!-- bulma -->
   <link rel="stylesheet" href="../../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
@@ -21,7 +22,7 @@
   <link rel="stylesheet" href="../../static/css/filepond-plugin-image-preview.css" th:href="@{/css/filepond-plugin-image-preview.css}">
 
   <!-- FilePond JS -->
-  <script src="/js/filepond.min.js"></script>
+  <script src="/js/filepond/filepond.min.js"></script>
   <script src="/js/filepond-plugin-file-encode.min.js"></script>
   <script src="/js/filepond-plugin-file-validate-type.min.js"></script>
   <script src="/js/filepond-plugin-image-preview.min.js"></script>
@@ -270,7 +271,7 @@
           rule: 'required',
           errorMessage: '아동과의 관계를 입력해주세요.'
         }])
-        .onSuccess(async (event) => {
+        .onSuccess((event) => {
           event.preventDefault();
           const form = document.getElementById('registration-form');
           const formData = new FormData();
@@ -293,7 +294,7 @@
             // 날짜 처리
             const birthDateInput = document.getElementById('birth-date').value;
             if (birthDateInput) {
-              formData.append('birthDate', birthDateInput + 'T00:00:00');
+              formData.append('birthDate', birthDateInput);
             }
 
             // FilePond 파일 처리
@@ -310,15 +311,20 @@
             }
 
             // AJAX로 폼 제출
-            const response = await $.ajax({
+            $.ajax({
               url: form.action,
               type: 'POST',
               data: formData,
               processData: false,
-              contentType: false
+              contentType: false,
+              success: function (res) {
+                if (res) window.location.href = form.action.replace('/edit', '');
+                console.log('성공:', res);
+              },
+              error: function (xhr, status, error) {
+                Swal.fire('에러:', error);
+              }
             });
-
-            window.location.href = form.action.replace('/edit', '');
           } catch (error) {
             console.error('에러 상세 정보:', error);
             let errorMessage = '수정 중 오류가 발생했습니다.';
@@ -365,7 +371,7 @@
 
         <!-- 오른쪽 수정 폼 -->
         <div class="column is-half right-half">
-          <form id="registration-form" th:action="@{|/children/${childBasicInfo.id}/details/edit|}" method="post"
+          <form id="registration-form" th:action="@{|/children/${childBasicInfo.id}/basicInfo/edit|}" method="post"
             enctype="multipart/form-data">
             <input type="hidden" id="child-id" th:value="${childBasicInfo.id}">
 

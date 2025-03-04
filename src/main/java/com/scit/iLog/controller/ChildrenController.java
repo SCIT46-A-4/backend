@@ -77,9 +77,10 @@ public class ChildrenController {
 	@PostMapping("/new")
 	public ChildBasicInfoInsertResponseDTO handlePostChildBasicInfoInsert(
 			@ModelAttribute ChildBasicInfoInsertDTO childBasicInfoInsertDTO,
+			@AuthenticationPrincipal MemberDetails memberDetails,
 			RedirectAttributes redirectAttributes
 	) {
-		Long childId = childService.saveBasicInfo(childBasicInfoInsertDTO);
+		Long childId = childService.saveBasicInfo(memberDetails.getId(), childBasicInfoInsertDTO);
 		redirectAttributes.addAttribute("childId", childId);
 		log.info("childId: {}", childId.toString());
 		return new ChildBasicInfoInsertResponseDTO(childId);
@@ -94,7 +95,7 @@ public class ChildrenController {
 	 * @return children/basicInfoDetailsView.html 뷰 페이지
 	 * 서비스 레이어에서 ChildDetailsDto를 가져와 뷰에 전달
 	 */
-	@GetMapping("/{childId}/details")
+	@GetMapping("/{childId}/basicInfo")
 	public String handleGetChildBasicInfoView(
 			@PathVariable("childId") Long childId,
 			Model model
@@ -139,14 +140,15 @@ public class ChildrenController {
 	 * C-3
 	 * 25/2/11 준 api-30 아이 정보 수정
 	 */
+	@ResponseBody
 	@PostMapping("/{childId}/basicInfo/edit")
-	public String handlePostChildBasicInfoUpdate(
+	public boolean handlePostChildBasicInfoUpdate(
 			@PathVariable("childId") Long childId,
 			@ModelAttribute ChildBasicInfoUpdateDTO updateDTO
 	) {
 		log.info("수정 요청 - 가정환경 데이터: {}", updateDTO.familyBackGrounds());
 		childService.updateChildBasicInfo(childId, updateDTO);
-		return String.format("redirect:/children/%d/details", childId);
+		return true;
 	}
 
 	/**

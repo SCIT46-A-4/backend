@@ -9,5 +9,5 @@ import lombok.*;
 public class QuestionResponse {
     private String questionItem;
     private String answer;
-    private double score;
+    private int score;
 }

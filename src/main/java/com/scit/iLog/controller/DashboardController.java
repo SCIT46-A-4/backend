@@ -50,12 +50,12 @@ public class DashboardController {
     public String handleGetParentDashboardView(
             @AuthenticationPrincipal MemberDetails memberDetails,
             Model model
-            ) {
-        ParentDashboardChildListDTO childList = childService.getChildrenProfilesOf(memberDetails.getId());
+    ) {
+        ParentDashboardChildListDTO childProfiles = childService.getChildrenProfilesOf(memberDetails.getId());
 
         model.addAttribute("memberName", memberDetails.getName());
-        model.addAttribute("relationType", memberDetails.getRelationType().toString());
-        model.addAttribute("childList", childList);
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
+        model.addAttribute("childProfiles", childProfiles);
         return "dashboard/dashboardGuardianView";
     }
 
