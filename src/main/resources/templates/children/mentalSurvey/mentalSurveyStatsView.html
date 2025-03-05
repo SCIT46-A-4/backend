@@ -6,7 +6,7 @@
 >
   <head>
     <meta charset="UTF-8" />
-    <title>S-1</title>
+    <title>심리 설문 통계 보기</title>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -57,96 +57,100 @@
           url: `/children/${getChildIdFromURL()}/mentalSurveys/responses/stats/data`,
           type: 'GET',
           dataType: 'json',
-          success: function (mentalStats) {
-            // seriesData가 없거나 길이가 0인 경우 메시지와 버튼 표시.
-            if (
-              !mentalStats.seriesData ||
-              mentalStats.seriesData.length === 0
-            ) {
-              document.getElementById('container').innerHTML =
-                '<div style="text-align: center; margin-top: 50px;">' +
-                '<h1 style="font-size: 36px; color: #FDF5BF;">실시한 설문이 없습니다.</h1>' +
-                '<button onclick="location.href=\'/children/' +
-                getChildIdFromURL() +
-                '/mentalSurveys/responses/new\'" style="font-size: 20px; padding: 10px 20px; background-color: #BEE6D9; border: none; cursor: pointer;">설문 작성하기</button>' +
-                '</div>';
-              return;
-            }
-
-            // data: [{ date, resultScore, detailUrl }, ...] 형식의 배열이라 가정.
-            // Highcharts에서 사용하는 밀리초 단위의 타임스탬프로 변환 후 데이터 배열 생성.
-            let seriesData = mentalStats.seriesData.map((statPointData) => {
-              return [
-                new Date(statPointData.date).getTime(),
-                statPointData.resultScore,
-                statPointData.detailUrl,
-              ];
-            });
-
-            // 데이터가 시간순으로 정렬되어 있지 않을 경우, 정렬
-            seriesData.sort((a, b) => a[0] - b[0]);
-
-            // Highcharts 차트 초기화: 마커 클릭 시 해당 링크로 이동하도록 설정.
-            Highcharts.stockChart('container', {
-              chart: { type: 'line' },
-              title: { text: 'Highcharts 시계열 데이터' },
-              xAxis: {
-                type: 'datetime',
-                title: { text: '시간' },
-              },
-              yAxis: {
-                title: { text: '값' },
-              },
-              rangeSelector: {
-                selected: 1,
-                buttons: [
-                  { type: 'day', count: 7, text: '1주' },
-                  { type: 'month', count: 1, text: '1달' },
-                  { type: 'all', text: '전체' },
-                ],
-              },
-              tooltip: {
-                formatter: function () {
-                  return `<b>${Highcharts.dateFormat(
-                    '%Y-%m-%d',
-                    this.x
-                  )}</b>: ${this.y}`;
-                },
-              },
-              series: [
-                {
-                  name: '값 변화',
-                  data: seriesData.map((d) => [d[0], d[1]]),
-                  marker: {
-                    enabled: true,
-                    radius: 5,
-                  },
-                  point: {
-                    events: {
-                      click: function () {
-                        // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
-                        let pointData = seriesData.find(
-                          (item) => item[0] === this.x
-                        );
-                        if (pointData && pointData[2]) {
-                          window.open(pointData[2], '_blank');
-                        }
-                      },
-                    },
-                  },
-                },
-              ],
-            });
-          },
+          success: renderMentalStatsChart,
           error: function (xhr, status, error) {
             console.error('mentalsurvey 데이터 가져오기 실패:', error);
           },
         });
       });
+      function renderMentalStatsChart(mentalStats) {
+        // seriesData가 없거나 길이가 0인 경우 메시지와 버튼 표시.
+        if (!mentalStats.seriesData || mentalStats.seriesData.length === 0) {
+          document.getElementById('container').innerHTML =
+            '<div style="text-align: center; margin-top: 50px;">' +
+            '<h1 style="font-size: 36px; color: #FDF5BF;">실시한 설문이 없습니다.</h1>' +
+            '<button onclick="location.href=\'/children/' +
+            getChildIdFromURL() +
+            '/mentalSurveys/selects\'" style="font-size: 20px; padding: 10px 20px; background-color: #BEE6D9; border: none; cursor: pointer;">설문 작성하기</button>' +
+            '</div>';
+          return;
+        }
+
+        // data: [{ date, resultScore, detailUrl }, ...] 형식의 배열이라 가정.
+        // Highcharts에서 사용하는 밀리초 단위의 타임스탬프로 변환 후 데이터 배열 생성.
+        let seriesData = mentalStats.seriesData.map((statPointData) => {
+          return [
+            new Date(statPointData.date).getTime(),
+            statPointData.resultScore,
+            statPointData.detailUrl,
+          ];
+        });
+
+        // 데이터가 시간순으로 정렬되어 있지 않을 경우, 정렬
+        seriesData.sort((a, b) => a[0] - b[0]);
+
+        // Highcharts 차트 초기화: 마커 클릭 시 해당 링크로 이동하도록 설정.
+        Highcharts.stockChart('container', {
+          chart: { type: 'line' },
+          title: { text: '심리 설문 결과' },
+          xAxis: {
+            type: 'datetime',
+            title: { text: '시간' },
+          },
+          yAxis: {
+            title: { text: '심리 척도값' },
+          },
+          rangeSelector: {
+            selected: 1,
+            buttons: [
+              { type: 'day', count: 7, text: '1주' },
+              { type: 'month', count: 1, text: '1달' },
+              { type: 'all', text: '전체' },
+            ],
+          },
+          tooltip: {
+            formatter: function () {
+              return `<b>${Highcharts.dateFormat('%Y-%m-%d', this.x)}</b>: ${
+                this.y
+              }`;
+            },
+          },
+          series: [
+            {
+              name: '값 변화',
+              data: seriesData.map((d) => [d[0], d[1]]),
+              marker: {
+                enabled: true,
+                radius: 5,
+              },
+              point: {
+                events: {
+                  click: function () {
+                    // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
+                    let pointData = seriesData.find(
+                      (item) => item[0] === this.x
+                    );
+                    if (pointData && pointData[2]) {
+                      window.open(pointData[2], '_blank');
+                    }
+                  },
+                },
+              },
+            },
+          ],
+        });
+      }
     </script>
   </head>
   <body>
-    <h2>시계열 데이터 차트 (마크 클릭 시 링크 이동)</h2>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
+          <span>대시보드로 가기</span>
+        </a>
+      </div>
+    </nav>
+    <h2>심리 설문 통계 보기</h2>
     <div id="container" style="width: 100%; height: 500px"></div>
   </body>
 </html>

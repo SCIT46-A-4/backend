@@ -24,8 +24,8 @@
       $(document).ready(function () {
         $('#deleteButton').click(function () {
           if (confirm('정말 삭제하시겠습니까?')) {
-            var childId = $(this).data('child-id');
-            var responseId = $(this).data('response-id');
+            var childId = $(this).data('childId');
+            var responseId = $(this).data('responseId');
             var url =
               '/children/' +
               childId +
@@ -52,6 +52,13 @@
     </script>
   </head>
   <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
+          <span>대시보드로 가기</span>
+        </a>
+      </div>
+    </nav>
     <section class="section">
       <div class="container">
         <!-- 설문 제목 -->
@@ -76,7 +83,7 @@
           <p>
             <strong>설문일시:</strong>
             <span
-              th:text="${#dates.format(responseDetails.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
+              th:text="${#temporals.format(responseDetails.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
               >2025-02-17 00:00:00</span
             >
           </p>
@@ -95,7 +102,7 @@
             id="deleteButton"
             type="button"
             class="button is-danger"
-            th:attr="data-child-id=${responseDetails.childId}, data-response-id=${responseDetails.id}"
+            th:attr="data-childId=${responseDetails.childId}, data-responseId=${responseDetails.responseId}"
           >
             삭제
           </button>

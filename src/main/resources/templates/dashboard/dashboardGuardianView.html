@@ -21,6 +21,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <script src="https://code.highcharts.com/highcharts.js"></script>
+    <!-- <script src="https://code.highcharts.com/stock/highstock.js"></script> -->
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
@@ -30,38 +31,60 @@
         let mentalSurveyScoreLineChart, childEmotionScorePieChart;
 
         // 아동 선택에 따른 대시보드 업데이트 함수
-        async function updateDashboard(childId) {
-          try {
-            // 로딩 인디케이터 표시
-            document.getElementById('childInfoLoading').style.display = 'block';
-            document.getElementById('childInfoContainer').style.display =
-              'none';
+        // 아동 선택에 따른 대시보드 업데이트 함수 (jQuery ajax 버전)
+        function updateDashboard(childId) {
+          // 로딩 인디케이터 표시
+          $('#childInfoLoading').show();
+          $('#childInfoContainer').hide();
 
-            // 아동 정보 업데이트
-            // const childResponse = await fetch(`/children/${childId}`);
-            // const childData = await childResponse.json();
-            updateChildInfo(childId);
+          // 아동 정보 업데이트
+          updateChildInfo(childId);
 
-            // 심리 설문 데이터 업데이트
-            const today = new Date().toISOString().split('T')[0];
-            const aWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split('T')[0];
-            const mentalSurveyScoresResponse = await fetch(
-              `/children/${childId}/mentalSurveys/responses/stats/data?startDate=${aWeekAgo}&endDate=${today}`
-            );
-            const mentalSurveyScores = await mentalSurveyScoresResponse.json();
-            renderMentalSurveyTimeSeriesChart(mentalSurveyScores);
+          // 날짜 파라미터 설정
+          const today = new Date().toISOString().split('T')[0];
+          const aMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0];
 
-            // 감정 분석 데이터 업데이트
-            const emotionRatios = await fetch(
-              `/children/${childId}/analysis/results/stats/emotion/data?startDate=${aWeekAgo}&endDate=${today}`
-            );
-            const emotionRatioData = await emotionRatios.json();
-            renderEmotinoRatioChart(emotionRatioData);
-          } catch (error) {
-            console.error('대시보드 업데이트 중 에러 발생:', error);
-          }
+          // 심리 설문 데이터 업데이트
+          $.ajax({
+            url: `/children/${childId}/mentalSurveys/responses/stats/data`,
+            method: 'GET',
+            data: {
+              startDate: aMonthAgo,
+              endDate: today,
+            },
+            dataType: 'json',
+            success: function (mentalSurveyScores) {
+              renderMentalStatsChart(mentalSurveyScores);
+            },
+            error: function (xhr, status, error) {
+              console.error(
+                '대시보드 업데이트 중 심리 설문 데이터 에러:',
+                error
+              );
+            },
+          });
+
+          // 감정 분석 데이터 업데이트
+          $.ajax({
+            url: `/children/${childId}/analysis/results/stats/emotion/data`,
+            method: 'GET',
+            data: {
+              startDate: aMonthAgo,
+              endDate: today,
+            },
+            dataType: 'json',
+            success: function (emotionRatioData) {
+              renderEmotionRatioChart(emotionRatioData);
+            },
+            error: function (xhr, status, error) {
+              console.error(
+                '대시보드 업데이트 중 감정 분석 데이터 에러:',
+                error
+              );
+            },
+          });
         }
 
         // 아동 정보 업데이트: 이름, 생년월일, 사진 등
@@ -91,11 +114,12 @@
             (statPointData) => statPointData.date
           );
           const guardianScores = data.seriesData.map((statPointData) => ({
-            x: new Date(statPointData.date + 'Z'),
-            y: statPointData.guardianScore,
+            x: new Date(statPointData.date).getTime(),
+            y: statPointData.resultScore, // Use guardianScore or resultScore if available
             url: statPointData.detailUrl,
             label: statPointData.label,
           }));
+
           mentalSurveyScoreLineChart = Highcharts.chart(
             'mentalSurveyScoreLineChart',
             {
@@ -109,7 +133,7 @@
                   dataLabels: {
                     enabled: true,
                     formatter: function () {
-                      return this.label;
+                      return this.point.options.label || '';
                     },
                   },
                   point: {
@@ -135,8 +159,8 @@
           );
         }
 
-        // 발달 지표 차트 렌더링
-        function renderEmotinoRatioChart(data) {
+        // 감정 통계 차트 렌더링
+        function renderEmotionRatioChart(data) {
           // data 예시: [ { name: '인지발달', y: 30, color: '#BEE6D9' }, ... ]
           const emotionData = data.seriesData.map((statPointData) => ({
             name: statPointData.label,
@@ -157,7 +181,7 @@
                   },
                 },
               },
-              series: [{ name: '발달 영역', data: data }],
+              series: [{ name: '감정 통계', data: data }],
             }
           );
         }
@@ -186,7 +210,7 @@
       function updateChildLinks(childId) {
         document.getElementById(
           'surveySelectLink'
-        ).href = `/children/${childId}/mentalSurvey/selects`;
+        ).href = `/children/${childId}/mentalSurveys/selects`;
         document.getElementById(
           'surveyStatsLink'
         ).href = `/children/${childId}/mentalSurveys/responses/stats`;
@@ -195,7 +219,7 @@
         ).href = `/children/${childId}/analysis/new`;
         document.getElementById(
           'analysisResultListLink'
-        ).href = `/children/${childId}/mentalSurveys/responses/stats`;
+        ).href = `/children/${childId}/analysis/resultList`;
       }
 
       function getRandomColor() {
@@ -203,6 +227,76 @@
         const randomColor = Math.floor(Math.random() * 16777215).toString(16);
         // 6자리 숫자로 맞추기 위해 앞에 '0'을 붙임 (padStart)
         return '#' + randomColor.padStart(6, '0');
+      }
+
+      function renderMentalStatsChart(mentalStats) {
+        // seriesData가 없거나 길이가 0인 경우 메시지와 버튼 표시.
+        if (!mentalStats.seriesData || mentalStats.seriesData.length === 0) {
+          document.getElementById('mentalSurveyScoreLineChart').innerHTML =
+            '<div style="text-align: center; margin-top: 50px;">' +
+            '<h1 style="font-size: 36px; color: #FDF5BF;">실시한 설문이 없습니다.</h1>' +
+            '<button onclick="location.href=\'/children/' +
+            getChildIdFromURL() +
+            '/mentalSurveys/selects\'" style="font-size: 20px; padding: 10px 20px; background-color: #BEE6D9; border: none; cursor: pointer;">설문 작성하기</button>' +
+            '</div>';
+          return;
+        }
+
+        // data: [{ date, resultScore, detailUrl }, ...] 형식의 배열이라 가정.
+        // Highcharts에서 사용하는 밀리초 단위의 타임스탬프로 변환 후 데이터 배열 생성.
+        let seriesData = mentalStats.seriesData.map((statPointData) => {
+          return [
+            new Date(statPointData.date).getTime(),
+            statPointData.resultScore,
+            statPointData.detailUrl,
+          ];
+        });
+
+        // 데이터가 시간순으로 정렬되어 있지 않을 경우, 정렬
+        seriesData.sort((a, b) => a[0] - b[0]);
+
+        // Highcharts 차트 초기화 (일반 line 차트로 변경)
+        Highcharts.chart('mentalSurveyScoreLineChart', {
+          chart: { type: 'line' },
+          title: { text: '심리 설문 결과' },
+          xAxis: {
+            type: 'datetime',
+            title: { text: '시간' },
+          },
+          yAxis: {
+            title: { text: '심리 척도값' },
+          },
+          tooltip: {
+            formatter: function () {
+              return `<b>${Highcharts.dateFormat('%Y-%m-%d', this.x)}</b>: ${
+                this.y
+              }`;
+            },
+          },
+          series: [
+            {
+              name: '값 변화',
+              data: seriesData.map((d) => [d[0], d[1]]),
+              marker: {
+                enabled: true,
+                radius: 5,
+              },
+              point: {
+                events: {
+                  click: function () {
+                    // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
+                    let pointData = seriesData.find(
+                      (item) => item[0] === this.x
+                    );
+                    if (pointData && pointData[2]) {
+                      window.open(pointData[2], '_blank');
+                    }
+                  },
+                },
+              },
+            },
+          ],
+        });
       }
     </script>
     <style>
@@ -438,7 +532,7 @@
               </div>
               <div class="card stats-card">
                 <div class="card-content">
-                  <p class="title is-4">발달 지표</p>
+                  <p class="title is-4">감정 지표</p>
                   <div
                     id="childEmotionScorePieChart"
                     class="stats-container"

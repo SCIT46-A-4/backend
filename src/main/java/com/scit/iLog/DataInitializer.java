@@ -1,9 +1,15 @@
 package com.scit.iLog;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.scit.iLog.domain.mentalsurvey.MentalSurveyResponseEntity;
+import com.scit.iLog.domain.mentalsurvey.QuestionResponse;
+import com.scit.iLog.domain.mentalsurvey.SectionResponse;
 import com.scit.iLog.repository.*;
+import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,6 +55,7 @@ public class DataInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
     private final FamilyBackgroundRepository familyBackgroundRepository; // 2025-02-28 / 김은진
+    private final MentalSurveyResponseRepository mentalSurveyResponseRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -71,7 +78,7 @@ public class DataInitializer implements CommandLineRunner {
                 .personalInformationCollectionAndUsageAgreement(false)
                 .build();
         memberRepository.save(admin);
-        
+
         MemberEntity player = MemberEntity.builder()
                 .name("player")
                 .password(passwordEncoder.encode("asd123!"))
@@ -118,6 +125,7 @@ public class DataInitializer implements CommandLineRunner {
                     .personalInformationCollectionAndUsageAgreement(true)
                     .build();
             memberRepository.save(mom);
+            System.out.println(fullName + ": SignInId: " + signInId);
 
             // 각 mom마다 2명의 자녀 생성
             for (int j = 0; j < 2; j++) {
@@ -145,6 +153,47 @@ public class DataInitializer implements CommandLineRunner {
                         .build();
                 relationShipRepository.save(relationship);
 
+                // **** MentalSurveyResponseEntity 테스트 데이터 추가 ****
+                // **** MentalSurveyResponseEntity 테스트 데이터 추가 ****
+                // 각 자녀에 대해 20건의 설문 응답 테스트 데이터를 생성하도록 변경
+                for (int r = 0; r < 20; r++) {
+                    List<SectionResponse> sectionResponses = new ArrayList<>();
+
+                    // 섹션 1: "감정 표현 및 조절"
+                    List<QuestionResponse> questionResponses1 = new ArrayList<>();
+                    questionResponses1.add(new QuestionResponse("기본 감정 표현", "아이가 기쁠 때 웃음", 4));
+                    questionResponses1.add(new QuestionResponse("비언어적 표현", "아이가 손짓, 표정으로 감정을 표현함", 3));
+                    questionResponses1.add(new QuestionResponse("감정 조절", "화가 났을 때 빨리 진정됨", 5));
+                    questionResponses1.add(new QuestionResponse("감정 변화", "최근 감정 변화가 뚜렷함", 4));
+                    int section1Score = questionResponses1.stream().mapToInt(q -> q.getScore()).sum();
+                    sectionResponses.add(new SectionResponse("감정 표현 및 조절", questionResponses1, section1Score));
+
+                    // 섹션 2: "애착 행동 및 사회성"
+                    List<QuestionResponse> questionResponses2 = new ArrayList<>();
+                    questionResponses2.add(new QuestionResponse("애착 행동", "보호자에게 지나치게 매달림", 3));
+                    questionResponses2.add(new QuestionResponse("낯선 사람 반응", "낯선 사람에게 경계심을 보임", 4));
+                    questionResponses2.add(new QuestionResponse("놀이 행동", "특정 놀이에 집착하는 경향이 있음", 3));
+                    questionResponses2.add(new QuestionResponse("또래 반응", "또래와의 상호작용 시 거부 반응을 보임", 4));
+                    int section2Score = questionResponses2.stream().mapToInt(q -> q.getScore()).sum();
+                    sectionResponses.add(new SectionResponse("애착 행동 및 사회성", questionResponses2, section2Score));
+
+                    int totalScore = sectionResponses.stream().mapToInt(SectionResponse::getSectionLikertScore).sum();
+                    String comment = "테스트 데이터: 심리 평가 결과 총점 " + totalScore;
+
+                    MentalSurveyResponseEntity mentalSurveyResponse = MentalSurveyResponseEntity.builder()
+                            .surveyId("survey1")
+                            .surveyTitle("만 2~3세 심리 평가 체크리스트 - 버전 1")
+                            .relationType(RelationType.GUARDIAN.name())
+                            .childId(girl.getId())
+                            .respondentId(mom.getId())
+                            .totalLikertScore(totalScore)
+                            .sectionResponses(sectionResponses)
+                            .comment(comment)
+                            .build();
+
+                    mentalSurveyResponseRepository.save(mentalSurveyResponse);
+                }
+
                 // 각 자녀마다 40개의 AnalysisTarget 및 연관 데이터 생성
                 for (int k = 0; k < 40; k++) {
                     // 3. AnalysisTarget 엔티티 생성
@@ -169,12 +218,11 @@ public class DataInitializer implements CommandLineRunner {
                             .recordedAt(now.minusHours(random.nextInt(24)))
                             .weatherDesc("Weather: " + (random.nextBoolean() ? "Clear" : "Cloudy"))
                             .build();
-                    // 연관 대상에 weather 설정 (setter 사용)
                     analysisTarget.setWeather(weather);
 
                     // 4. AnalysisResult 엔티티 생성
                     AnalysisResultEntity analysisResult = AnalysisResultEntity.builder()
-                            .emotionScore(0.5 + random.nextDouble())
+                            .emotionScore(random.nextDouble())
                             .analysisTarget(analysisTarget)
                             .analysisResult("Detailed analysis result " + random.nextInt(1000))
                             .suggestedSolution("Suggested solution " + random.nextInt(500))
@@ -217,7 +265,6 @@ public class DataInitializer implements CommandLineRunner {
                             .build();
                     childRecordRepository.save(record);
 
-                    // 11. HealthCheck 엔티티 생성
                     HealthCheckEntity healthCheck = HealthCheckEntity.builder()
                             .child(girl)
                             .childRecord(record)

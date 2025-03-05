@@ -7,6 +7,7 @@ import java.util.List;
 
 @Builder
 public record MentalSurveyResponseDetailsDTO(
+        Long childId,
         int totalLikertScore,
         List<SectionResponseDetailsDTO> sectionResponses,
         String comment,
