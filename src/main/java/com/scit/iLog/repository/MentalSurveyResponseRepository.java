@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MentalSurveyResponseRepository extends MongoRepository<MentalSurveyResponseEntity, String> {
-    @Query("{ 'childId': #{#childId}, 'respondentId': #{#repondentId}, 'createdAt': { $gte: #{#startDate}, $lte: #{#endDate} } }")
+    @Query("{ 'childId': ?0, 'respondentId': ?1, 'createdAt': { $gte: ?2, $lte: ?3 } }")
     List<MentalSurveyResponseEntity> findByChildIdAndRespondentIdAndCreatedAtBetween(
             @Param("childId") Long childId,
             @Param("respondentId") Long respondentId,

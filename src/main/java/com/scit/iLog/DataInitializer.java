@@ -107,7 +107,7 @@ public class DataInitializer implements CommandLineRunner {
             familyBackgroundRepository.save(entity);
         }
 
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 2; i++) {
             // 1. Member 엔티티 생성 (랜덤 이름, 이메일 등)
             String firstName = firstNames[random.nextInt(firstNames.length)];
             String lastName = lastNames[random.nextInt(lastNames.length)];
@@ -138,8 +138,8 @@ public class DataInitializer implements CommandLineRunner {
                         .birthDate(now.minusYears(random.nextInt(3) + 1)) // 1~3세
                         .birthLocation(birthLocation)
                         .note("Healthy baby with energy " + random.nextInt(100))
-                        .originalProfileImgName("profile_orig_" + random.nextInt(1000) + ".jpg")
-                        .savedProfileImgName("profile_saved_" + random.nextInt(1000) + ".jpg")
+                        .originalProfileImgName(null)
+                        .savedProfileImgName(null)
                         .gender(Gender.WOMAN)
                         .build();
                 childRepository.save(girl);
@@ -156,24 +156,24 @@ public class DataInitializer implements CommandLineRunner {
                 // **** MentalSurveyResponseEntity 테스트 데이터 추가 ****
                 // **** MentalSurveyResponseEntity 테스트 데이터 추가 ****
                 // 각 자녀에 대해 20건의 설문 응답 테스트 데이터를 생성하도록 변경
-                for (int r = 0; r < 20; r++) {
+                for (int r = 0; r < 10; r++) {
                     List<SectionResponse> sectionResponses = new ArrayList<>();
 
                     // 섹션 1: "감정 표현 및 조절"
                     List<QuestionResponse> questionResponses1 = new ArrayList<>();
-                    questionResponses1.add(new QuestionResponse("기본 감정 표현", "아이가 기쁠 때 웃음", 4));
-                    questionResponses1.add(new QuestionResponse("비언어적 표현", "아이가 손짓, 표정으로 감정을 표현함", 3));
-                    questionResponses1.add(new QuestionResponse("감정 조절", "화가 났을 때 빨리 진정됨", 5));
-                    questionResponses1.add(new QuestionResponse("감정 변화", "최근 감정 변화가 뚜렷함", 4));
+                    questionResponses1.add(new QuestionResponse("기본 감정 표현", "아이가 기쁠 때 웃음", (int) (random.nextDouble() * 5)));
+                    questionResponses1.add(new QuestionResponse("비언어적 표현", "아이가 손짓, 표정으로 감정을 표현함", (int) (random.nextDouble() * 5)));
+                    questionResponses1.add(new QuestionResponse("감정 조절", "화가 났을 때 빨리 진정됨", (int) (random.nextDouble() * 5)));
+                    questionResponses1.add(new QuestionResponse("감정 변화", "최근 감정 변화가 뚜렷함", (int) (random.nextDouble() * 5)));
                     int section1Score = questionResponses1.stream().mapToInt(q -> q.getScore()).sum();
                     sectionResponses.add(new SectionResponse("감정 표현 및 조절", questionResponses1, section1Score));
 
                     // 섹션 2: "애착 행동 및 사회성"
                     List<QuestionResponse> questionResponses2 = new ArrayList<>();
-                    questionResponses2.add(new QuestionResponse("애착 행동", "보호자에게 지나치게 매달림", 3));
-                    questionResponses2.add(new QuestionResponse("낯선 사람 반응", "낯선 사람에게 경계심을 보임", 4));
-                    questionResponses2.add(new QuestionResponse("놀이 행동", "특정 놀이에 집착하는 경향이 있음", 3));
-                    questionResponses2.add(new QuestionResponse("또래 반응", "또래와의 상호작용 시 거부 반응을 보임", 4));
+                    questionResponses2.add(new QuestionResponse("애착 행동", "보호자에게 지나치게 매달림", (int) (random.nextDouble() * 5)));
+                    questionResponses2.add(new QuestionResponse("낯선 사람 반응", "낯선 사람에게 경계심을 보임", (int) (random.nextDouble() * 5)));
+                    questionResponses2.add(new QuestionResponse("놀이 행동", "특정 놀이에 집착하는 경향이 있음", (int) (random.nextDouble() * 5)));
+                    questionResponses2.add(new QuestionResponse("또래 반응", "또래와의 상호작용 시 거부 반응을 보임", (int) (random.nextDouble() * 5)));
                     int section2Score = questionResponses2.stream().mapToInt(q -> q.getScore()).sum();
                     sectionResponses.add(new SectionResponse("애착 행동 및 사회성", questionResponses2, section2Score));
 
@@ -195,7 +195,7 @@ public class DataInitializer implements CommandLineRunner {
                 }
 
                 // 각 자녀마다 40개의 AnalysisTarget 및 연관 데이터 생성
-                for (int k = 0; k < 40; k++) {
+                for (int k = 0; k < 20; k++) {
                     // 3. AnalysisTarget 엔티티 생성
                     AnalysisTargetEntity analysisTarget = AnalysisTargetEntity.builder()
                             .child(girl)
@@ -243,7 +243,7 @@ public class DataInitializer implements CommandLineRunner {
                     analysisSatisfactionRepository.save(analysisSatisfaction);
                 }
                 // 6. ChildDiary 엔티티 생성 (40개)
-                for (int k = 0; k < 40; k++) {
+                for (int k = 0; k < 20; k++) {
                     ChildDiaryEntity diary = ChildDiaryEntity.builder()
                             .author(mom)
                             .child(girl)
@@ -253,7 +253,7 @@ public class DataInitializer implements CommandLineRunner {
                     childDiaryRepository.save(diary);
                 }
                 // 7. ChildRecord 엔티티 생성 (40개) 및 HealthCheck 생성
-                for (int k = 0; k < 40; k++) {
+                for (int k = 0; k < 20; k++) {
                     ChildRecordEntity record = ChildRecordEntity.builder()
                             .child(girl)
                             .height(70.0 + random.nextDouble() * 20)  // 70 ~ 90

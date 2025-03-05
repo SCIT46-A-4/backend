@@ -1,6 +1,7 @@
 package com.scit.iLog.service.analysis;
 
 import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetEntity;
 import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
 import com.scit.iLog.dto.analysis.*;
 import com.scit.iLog.repository.AnalysisResultRepository;
@@ -67,11 +68,16 @@ public class AnalysisResultService {
 				);
 	}
 
+	@Transactional(readOnly = true)
 	public ChildEmotionRatioDataDTO getChildEmotionRatioDataBetween(Long childId, LocalDate startDate, LocalDate endDate) {
 		if (!ObjectUtils.isEmpty(startDate) && !ObjectUtils.isEmpty(endDate)) {
 			// 기간 내 데이터 조회 (시작 날짜와 종료 날짜 사이)
-			List<AnalysisResultEntity> analysisResults = analysisResultRepository
-					.findAllByCreatedAtBetweenOrderByCreatedAtDesc(startDate.atStartOfDay(), endDate.atStartOfDay());
+//			List<AnalysisResultEntity> analysisResults = analysisResultRepository
+//					.findAllByCreatedAtBetween(childId, startDate.atStartOfDay(), endDate.atStartOfDay());
+			List<AnalysisTargetEntity> analysisTargets = analysisTargetRepository
+					.findByChildIdAndCreatedAtBetween(childId, startDate.atTime(0,0,0), endDate.atTime(23,59,59));
+			List<AnalysisResultEntity> analysisResults = analysisTargets.stream()
+					.map(analysisTarget -> analysisTarget.getAnalysisResult()).toList();
 			// 전체 건수가 0이면 빈 리스트 반환
 			long totalCount = analysisResults.size();
 			if (totalCount == 0) {
@@ -96,7 +102,7 @@ public class AnalysisResultService {
 			LocalDateTime dayAMonthAgo = today.minusMonths(1);
 			// 기간 내 데이터 조회 (시작 날짜와 종료 날짜 사이)
 			List<AnalysisResultEntity> analysisResults = analysisResultRepository
-					.findAllByCreatedAtBetweenOrderByCreatedAtDesc(dayAMonthAgo, today);
+					.findAllByCreatedAtBetween(childId, dayAMonthAgo, today);
 			// 전체 건수가 0이면 빈 리스트 반환
 			long totalCount = analysisResults.size();
 			if (totalCount == 0) {

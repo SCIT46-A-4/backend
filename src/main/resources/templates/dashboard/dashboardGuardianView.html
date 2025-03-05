@@ -21,7 +21,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <script src="https://code.highcharts.com/highcharts.js"></script>
-    <!-- <script src="https://code.highcharts.com/stock/highstock.js"></script> -->
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
@@ -165,6 +164,7 @@
           const emotionData = data.seriesData.map((statPointData) => ({
             name: statPointData.label,
             y: statPointData.emotionRatio,
+            percentage: statPointData.emotionRatio,
             color: getRandomColor(),
           }));
           childEmotionScorePieChart = Highcharts.chart(
@@ -181,7 +181,7 @@
                   },
                 },
               },
-              series: [{ name: '감정 통계', data: data }],
+              series: [{ name: '감정 통계', data: emotionData }],
             }
           );
         }
@@ -297,6 +297,15 @@
             },
           ],
         });
+      }
+      function getChildIdFromURL() {
+        // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
+        const pathParts = window.location.pathname.split('/');
+        // pathParts 예시: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
+        if (pathParts.length > 2 && pathParts[1] === 'children') {
+          return pathParts[2]; // 인덱스 2가 childId입니다.
+        }
+        return null;
       }
     </script>
     <style>
