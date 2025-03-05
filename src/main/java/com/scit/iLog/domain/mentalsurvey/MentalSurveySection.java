@@ -1,6 +1,5 @@
 package com.scit.iLog.domain.mentalsurvey;
 
-import jakarta.persistence.Transient;
 import lombok.*;
 
 import java.util.List;

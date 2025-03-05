@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html
-  lang="ko"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
 >
   <head>
     <meta charset="UTF-8" />
@@ -10,7 +9,7 @@
     <!-- Bulma CSS -->
     <link
       rel="stylesheet"
-      th:href="/css/bulma.min.css"
+      th:href="@{/css/bulma.min.css}"
       href="../../../static/css/bulma.min.css"
     />
     <style>
@@ -77,7 +76,7 @@
                 }
                 questionResponses.push({
                   questionItem: questionItem,
-                  answer: '', // 텍스트 입력은 제거됨
+                  example: '', // 텍스트 입력은 제거됨
                   score: scoreVal,
                 });
               });
@@ -96,6 +95,10 @@
             contentType: 'application/json; charset=utf-8',
             success: function (response) {
               Swal.fire('설문 응답이 제출되었습니다.');
+              window.location.href =
+                '/children/' +
+                getChildIdFromURL() +
+                '/mentalSurveys/responses/stats';
             },
             error: function (xhr, status, error) {
               Swal.fire('설문 제출에 실패하였습니다.');
@@ -103,9 +106,25 @@
           });
         });
       });
+      function getChildIdFromURL() {
+        // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
+        const pathParts = window.location.pathname.split('/');
+        // pathParts 예시: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
+        if (pathParts.length > 2 && pathParts[1] === 'children') {
+          return pathParts[2]; // 인덱스 2가 childId입니다.
+        }
+        return null;
+      }
     </script>
   </head>
   <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
+          <span>대시보드로 가기</span>
+        </a>
+      </div>
+    </nav>
     <section class="section">
       <div class="container">
         <!-- 설문 제목과 설명 -->
@@ -135,7 +154,10 @@
             class="section-box"
           >
             <div class="box">
-              <h2 class="subtitle primary-color" th:text="${section.title}">
+              <h2
+                class="subtitle primary-color"
+                th:text="${section.sectionTitle}"
+              >
                 섹션 제목
               </h2>
               <!-- 섹션 내 질문 반복 -->
@@ -154,7 +176,7 @@
                     <label class="radio">
                       <input
                         type="radio"
-                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
                         value="1"
                       />
                       1
@@ -162,7 +184,7 @@
                     <label class="radio">
                       <input
                         type="radio"
-                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
                         value="2"
                       />
                       2
@@ -170,7 +192,7 @@
                     <label class="radio">
                       <input
                         type="radio"
-                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
                         value="3"
                       />
                       3
@@ -178,7 +200,7 @@
                     <label class="radio">
                       <input
                         type="radio"
-                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
                         value="4"
                       />
                       4
@@ -186,7 +208,7 @@
                     <label class="radio">
                       <input
                         type="radio"
-                        name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].score"
+                        th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
                         value="5"
                       />
                       5
@@ -196,15 +218,15 @@
                 <!-- 질문 항목 hidden 필드 -->
                 <input
                   type="hidden"
-                  name="sectionResponses[__${secStat.index}__].questionResponses[__${qStat.index}__].questionItem"
+                  th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].questionItem|"
                   th:value="${question.item}"
                 />
               </div>
               <!-- 섹션 제목 hidden 필드 -->
               <input
                 type="hidden"
-                name="sectionResponses[__${secStat.index}__].sectionTitle"
-                th:value="${section.title}"
+                th:name="|sectionResponses[__${secStat.index}__].sectionTitle|"
+                th:value="${section.sectionTitle}"
               />
             </div>
           </div>

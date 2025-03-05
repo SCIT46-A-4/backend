@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html
-  lang="ko"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
 >
   <head>
     <meta charset="UTF-8" />
@@ -10,7 +9,7 @@
     <!-- Bulma CSS -->
     <link
       rel="stylesheet"
-      th:href="/css/bulma.min.css"
+      th:href="@{/css/bulma.min.css}"
       href="../../../static/css/bulma.min.css"
     />
     <style>
@@ -23,6 +22,13 @@
     </style>
   </head>
   <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
+          <span>대시보드로 가기</span>
+        </a>
+      </div>
+    </nav>
     <section class="section">
       <div class="container">
         <h1 class="title primary-color">설문 목록</h1>

@@ -1,28 +1,26 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveySelectInfoDTO;
-import com.scit.iLog.service.MentalSurveyService;
-import com.scit.iLog.service.child.ChildService;
-import com.scit.iLog.dto.mentalsurvey.*;
+import com.scit.iLog.dto.mentalsurvey.ChildMentalStatsDTO;
+import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseDetailsDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseInsertDTO;
 import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyDetailsDTO;
 import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyListDTO;
+import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveySelectInfoDTO;
+import com.scit.iLog.service.MentalSurveyService;
+import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
-import static com.scit.iLog.config.SecurityConfig.*;
+import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 
 /* 
  * 2025-02-07 이도훈
@@ -46,7 +44,7 @@ public class MentalSurveyController {
 	 */
 	@GetMapping("/responses/stats")
 	public String handleGetSurveysListPage() {
-		return "children/mentalSurveys/mentalSurveyStatsView";
+		return "children/mentalSurvey/mentalSurveyStatsView";
 	}
 
 
@@ -61,13 +59,14 @@ public class MentalSurveyController {
 	@GetMapping("/responses/stats/data")
 	public ChildMentalStatsDTO handleGetMentalSurveyStats(
 			@PathVariable("childId") Long childId,
+			@AuthenticationPrincipal MemberDetails memberDetails,
 			@RequestParam(value = "startDate", required = false)
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
 			@RequestParam(value = "endDate", required = false)
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
 	) {
 		// 데이터베이스에서 시간순으로 정렬된 데이터 조회
-		return mentalSurveyService.getMentalSurveyStatsBetween(childId, startDate, endDate);
+		return mentalSurveyService.getMentalSurveyStatsBetween(childId, memberDetails.getId(), startDate, endDate);
 	}
 
 	/**
@@ -86,7 +85,7 @@ public class MentalSurveyController {
 		MentalSurveyDetailsDTO mentalSurveyInfo = mentalSurveyService.getMetalSurveyDetails(mentalSurveyId);
 		model.addAttribute("childName", childMentalSurveyInfo);
 		model.addAttribute("mentalSurvey", mentalSurveyInfo);
-		return "children/mentalSurveys/mentalSurveyResponseInsertView";
+		return "children/mentalSurvey/mentalSurveyResponseInsertView";
 	}
 
 	/*
@@ -105,6 +104,7 @@ public class MentalSurveyController {
 		String responseId = mentalSurveyService.saveMentalSurveyResponse(
 				childId,
 				memberId,
+				memberDetails.getRelationType(),
 				mentalSurveyId,
 				mentalSurveyResponseInsertDTO);
 		return String.format("redirect:/children/%d/mentalSurveys/responses/%s/details", childId, responseId);
@@ -118,17 +118,17 @@ public class MentalSurveyController {
 	 * 이 페이지에서 '심리 설문'과 '건강 문진'을 선택한다.
 	 * URL, 메서드명, 리턴 값 수정.
 	 * @return mentalSurveyResponseDetailsView.html
-	 *
 	 * S-3
 	 */
 	@GetMapping("/responses/{responseId}/details")
 	public String handleGetMentalSurveyDetailsView(
+			@PathVariable("childId") Long childId,
 			@PathVariable("responseId") String responseId,
 			Model model
 	) {
-		MentalSurveyResponseDetailsDTO responseDetails = mentalSurveyService.getResponseDetailsById(responseId);
+		MentalSurveyResponseDetailsDTO responseDetails = mentalSurveyService.getResponseDetailsById(childId, responseId);
 		model.addAttribute("responseDetails", responseDetails);
-		return "children/mentalSurveys/mentalSurveyResponseDetailsView";
+		return "children/mentalSurvey/mentalSurveyResponseDetailsView";
 	}
 
 	/*
@@ -141,7 +141,7 @@ public class MentalSurveyController {
 	) {
 		List<MentalSurveySelectInfoDTO> mentalSurveySelectInfo =  mentalSurveyService.getMentalSurveySelectInfo(childId);
 		model.addAttribute("mentalSurveys", mentalSurveySelectInfo);
-		return "children/mentalSurveys/mentalSurveySelectView";
+		return "children/mentalSurvey/mentalSurveySelectView";
 	}
 
 	/*
@@ -151,6 +151,6 @@ public class MentalSurveyController {
 	public String handleGetMentalSurveyListView(Model model) {
 		MentalSurveyListDTO mentalSurveys = mentalSurveyService.getAllMentalSurveys();
 		model.addAttribute("mentalSurveys", mentalSurveys);
-		return "children/mentalSurveys/mentalSurveyListView";
+		return "children/mentalSurvey/mentalSurveyListView";
 	}
 }

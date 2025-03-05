@@ -7,11 +7,11 @@ import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.child.FamilyBackGroundEntity;
 import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoInsertDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoUpdateDTO;
 import com.scit.iLog.dto.child.ChildProfileDTO;
+import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.FamilyBackgroundRepository;
@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.text.Normalizer;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.scit.iLog.config.WebConfig.CHILD_PROFILE_REQUEST_ROOT_PATH;
-import static org.springframework.util.StringUtils.*;
+import static org.springframework.util.StringUtils.hasText;
 
 @Slf4j
 @Service
@@ -221,9 +222,11 @@ public class ChildService {
                         .birthDate(relationShip.getChild().getBirthDate())
                         .name(relationShip.getChild().getName())
                         .profileImgSrc(
-                                // 파일 이름은 확장자를 포함
                                 CHILD_PROFILE_REQUEST_ROOT_PATH.concat(
-                                        relationShip.getChild().getSavedProfileImgName()))
+                                        StringUtils.hasText(relationShip.getChild().getSavedProfileImgName()) ?
+                                                relationShip.getChild().getSavedProfileImgName() :
+                                                ChildEntity.DEFAULT_PROFILE_IMG
+                                ))
                         .build())
                 .toList();
         return new ParentDashboardChildListDTO(childProfiles.size(), childProfiles);
