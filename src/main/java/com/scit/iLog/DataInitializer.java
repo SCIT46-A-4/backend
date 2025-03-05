@@ -1,20 +1,5 @@
 package com.scit.iLog;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
-import com.scit.iLog.domain.mentalsurvey.MentalSurveyResponseEntity;
-import com.scit.iLog.domain.mentalsurvey.QuestionResponse;
-import com.scit.iLog.domain.mentalsurvey.SectionResponse;
-import com.scit.iLog.repository.*;
-import org.antlr.v4.runtime.misc.LogManager;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-
 import com.scit.iLog.domain.GuideEntity;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
@@ -26,15 +11,21 @@ import com.scit.iLog.domain.claim.ClaimType;
 import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
-import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultNoteEntity;
-import com.scit.iLog.domain.sentimentalAnalysis.AnalysisSatisfactionEntity;
-import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetEntity;
-import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
-import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
-import com.scit.iLog.domain.sentimentalAnalysis.WeatherEntity;
-
+import com.scit.iLog.domain.mentalsurvey.MentalSurveyResponseEntity;
+import com.scit.iLog.domain.mentalsurvey.QuestionResponse;
+import com.scit.iLog.domain.mentalsurvey.SectionResponse;
+import com.scit.iLog.domain.sentimentalAnalysis.*;
+import com.scit.iLog.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Profile("dev")
 @Component

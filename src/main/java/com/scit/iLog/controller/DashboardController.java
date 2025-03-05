@@ -2,12 +2,10 @@ package com.scit.iLog.controller;
 
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
-import com.scit.iLog.service.MemberService;
 import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

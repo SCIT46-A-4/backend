@@ -3,7 +3,7 @@ package com.scit.iLog.repository;
 import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.child.FamilyBackGroundEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository; // 2025-02-28 / 김은진
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 

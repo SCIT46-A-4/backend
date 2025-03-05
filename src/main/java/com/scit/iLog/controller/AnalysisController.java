@@ -4,8 +4,6 @@ import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.analysis.*;
-import com.scit.iLog.dto.child.ChildRecordListItemDTO;
-import com.scit.iLog.dto.mentalsurvey.ChildMentalStatsDTO;
 import com.scit.iLog.service.analysis.AnalysisResultService;
 import com.scit.iLog.service.analysis.AnalysisService;
 import lombok.RequiredArgsConstructor;

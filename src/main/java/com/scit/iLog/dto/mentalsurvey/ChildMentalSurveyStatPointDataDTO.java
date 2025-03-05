@@ -3,7 +3,6 @@ package com.scit.iLog.dto.mentalsurvey;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Builder
 public record ChildMentalSurveyStatPointDataDTO(

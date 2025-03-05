@@ -1,28 +1,26 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveySelectInfoDTO;
-import com.scit.iLog.service.MentalSurveyService;
-import com.scit.iLog.service.child.ChildService;
-import com.scit.iLog.dto.mentalsurvey.*;
+import com.scit.iLog.dto.mentalsurvey.ChildMentalStatsDTO;
+import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseDetailsDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseInsertDTO;
 import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyDetailsDTO;
 import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyListDTO;
+import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveySelectInfoDTO;
+import com.scit.iLog.service.MentalSurveyService;
+import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.scit.iLog.config.SecurityConfig.*;
+import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 
 /* 
  * 2025-02-07 이도훈

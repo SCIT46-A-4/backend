@@ -7,11 +7,11 @@ import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.child.FamilyBackGroundEntity;
 import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoInsertDTO;
 import com.scit.iLog.dto.child.ChildBasicInfoUpdateDTO;
 import com.scit.iLog.dto.child.ChildProfileDTO;
+import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.FamilyBackgroundRepository;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.scit.iLog.config.WebConfig.CHILD_PROFILE_REQUEST_ROOT_PATH;
-import static org.springframework.util.StringUtils.*;
+import static org.springframework.util.StringUtils.hasText;
 
 @Slf4j
 @Service

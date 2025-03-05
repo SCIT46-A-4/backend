@@ -1,30 +1,14 @@
 package com.scit.iLog.domain.child;
 
-import static jakarta.persistence.FetchType.LAZY;
+import com.scit.iLog.domain.BaseTimeEntity;
+import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.CreationTimestamp;
-
-import com.scit.iLog.domain.BaseTimeEntity;
-import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import static jakarta.persistence.FetchType.LAZY;
 
 // child에 대한 자세한 정보들
 @Entity
