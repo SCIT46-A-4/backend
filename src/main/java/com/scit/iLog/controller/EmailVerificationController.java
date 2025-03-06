@@ -8,72 +8,110 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class EmailVerificationController {
-    private final EmailService emailService;
+public class EmailVerificationController
+	{
+		private final EmailService emailService;
 
-    /**
-     * 인증번호 전송 API
-     */
-    @PostMapping("/send-verification-code")
-    public ResponseEntity<Map<String, Object>> handleSendVerificationCode(
-            @RequestParam("email") String email,
-            HttpSession session
-    ) {
-        Map<String, Object> response = new HashMap<>();
+		/**
+		 * 인증번호 전송 API
+		 */
+		@PostMapping("/send-verification-code")
+		public ResponseEntity<Map<String, Object>> handleSendVerificationCode(@RequestParam("email") String email,
+				HttpSession session)
+			{
+				Map<String, Object> response = new HashMap<>();
 
-        // 인증번호 생성
-        String code = emailService.generateVerificationCode();
-        // 생성된 인증번호를 세션에 저장 (실제 서비스에서는 Redis 등 캐시나 DB에 저장할 수도 있음)
-        session.setAttribute("verificationCode", code);
-        session.setAttribute("verificationEmail", email);
-        log.info("code: {}, email: {}", code, email);
-        try {
-            emailService.sendVerificationEmail(email, code);
-            response.put("success", true);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "인증번호 전송에 실패했습니다.");
-            return ResponseEntity.status(500).body(response);
-        }
-    }
+				// 인증번호 생성
+				String code = emailService.generateVerificationCode();
+				// 생성된 인증번호를 세션에 저장 (실제 서비스에서는 Redis 등 캐시나 DB에 저장할 수도 있음)
+				session.setAttribute("verificationCode", code);
+				session.setAttribute("verificationEmail", email);
+				log.info("code: {}, email: {}", code, email);
+				try
+					{
+						emailService.sendVerificationEmail(email, code);
+						response.put("success", true);
+						return ResponseEntity.ok(response);
+					} catch (Exception e)
+					{
+						response.put("success", false);
+						response.put("message", "인증번호 전송에 실패했습니다.");
+						return ResponseEntity.status(500).body(response);
+					}
+			}
 
-    /**
-     * 인증번호 검증 API
-     */
-    @PostMapping("/verify-code")
-    public ResponseEntity<Map<String, Object>> handleVerifyCode(
-            @RequestParam("email") String email,
-            @RequestParam("code") String code,
-            HttpSession session
-    ) {
-        Map<String, Object> response = new HashMap<>();
-        String storedCode = (String) session.getAttribute("verificationCode");
-        String storedEmail = (String) session.getAttribute("verificationEmail");
+		/**
+		 * 인증번호 검증 API
+		 */
+		@PostMapping("/verify-code")
+		public ResponseEntity<Map<String, Object>> handleVerifyCode(@RequestParam("email") String email,
+				@RequestParam("code") String code, HttpSession session)
+			{
+				Map<String, Object> response = new HashMap<>();
+				String storedCode = (String) session.getAttribute("verificationCode");
+				String storedEmail = (String) session.getAttribute("verificationEmail");
 
-        if (!ObjectUtils.isEmpty(storedCode) &&
-                !ObjectUtils.isEmpty(storedEmail) &&
-                storedEmail.equals(email) &&
-                storedCode.equals(code)
-        ) {
-            response.put("success", true);
-            // 인증 성공 시 세션에서 인증번호 정보를 제거하거나, 인증된 상태로 처리
-            session.removeAttribute("verificationCode");
-            session.removeAttribute("verificationEmail");
-            return ResponseEntity.ok(response);
-        } else {
-            response.put("success", false);
-            response.put("message", "인증 번호가 올바르지 않습니다.");
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
-}
+				if (!ObjectUtils.isEmpty(storedCode) && !ObjectUtils.isEmpty(storedEmail) && storedEmail.equals(email)
+						&& storedCode.equals(code))
+					{
+						response.put("success", true);
+						// 인증 성공 시 세션에서 인증번호 정보를 제거하거나, 인증된 상태로 처리
+						session.removeAttribute("verificationCode");
+						session.removeAttribute("verificationEmail");
+						return ResponseEntity.ok(response);
+					} else
+					{
+						response.put("success", false);
+						response.put("message", "인증 번호가 올바르지 않습니다.");
+						return ResponseEntity.badRequest().body(response);
+					}
+			}
 
+		@PostMapping
+		@ResponseBody
+		public boolean sendEmailInviteLink(@RequestParam(name = "childId") Long childId,
+				@RequestParam(name = "memberId") Long memberId, @RequestParam(name = "alias") String alias)
+				throws Exception
+			{
+				try
+					{
+						return true;
+					} catch (Exception e)
+					{
+						throw new Exception("메세지 보내는 도중 문제가 발생했습니다.");
+
+						return false;
+					}
+			}
+
+		@GetMapping("/verify")
+		public ResponseEntity<String> verifyEmail(@RequestParam String token)
+			{
+				boolean isResult = emailService.findInviteCode(token);
+
+				if (isResult)
+					{
+						VerificationToken tokenEntity = verificationToken.get();
+						tokenEntity.setClicked(true); // 클릭 여부 업데이트
+						tokenRepository.save(tokenEntity);
+
+						return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
+					} else
+					{
+						return ResponseEntity.badRequest().body("유효하지 않은 토큰입니다.");
+					}
+			}
+
+	}
