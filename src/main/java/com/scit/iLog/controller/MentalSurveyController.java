@@ -1,14 +1,9 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveySelectInfoDTO;
-import com.scit.iLog.service.MentalSurveyService;
-import com.scit.iLog.service.child.ChildService;
-import com.scit.iLog.dto.mentalsurvey.*;
-import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseDetailsDTO;
-import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseInsertDTO;
-import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyDetailsDTO;
-import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyListDTO;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,13 +11,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.scit.iLog.config.SecurityConfig.MemberDetails;
+import com.scit.iLog.dto.mentalsurvey.ChildMentalStatsDTO;
+import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
+import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseChartDTO;
+import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseDetailsDTO;
+import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseInsertDTO;
+import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyDetailsDTO;
+import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyListDTO;
+import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveySelectInfoDTO;
+import com.scit.iLog.service.MentalSurveyService;
+import com.scit.iLog.service.child.ChildService;
 
-import static com.scit.iLog.config.SecurityConfig.*;
+import lombok.RequiredArgsConstructor;
 
 /* 
  * 2025-02-07 이도훈
@@ -46,7 +54,7 @@ public class MentalSurveyController {
 	 */
 	@GetMapping("/responses/stats")
 	public String handleGetSurveysListPage() {
-		return "children/mentalSurveys/mentalSurveyStatsView";
+		return "children/mentalSurvey/mentalSurveyStatsView";
 	}
 
 
@@ -86,7 +94,7 @@ public class MentalSurveyController {
 		MentalSurveyDetailsDTO mentalSurveyInfo = mentalSurveyService.getMetalSurveyDetails(mentalSurveyId);
 		model.addAttribute("childName", childMentalSurveyInfo);
 		model.addAttribute("mentalSurvey", mentalSurveyInfo);
-		return "children/mentalSurveys/mentalSurveyResponseInsertView";
+		return "children/mentalSurvey/mentalSurveyResponseInsertView";
 	}
 
 	/*
@@ -128,7 +136,7 @@ public class MentalSurveyController {
 	) {
 		MentalSurveyResponseDetailsDTO responseDetails = mentalSurveyService.getResponseDetailsById(responseId);
 		model.addAttribute("responseDetails", responseDetails);
-		return "children/mentalSurveys/mentalSurveyResponseDetailsView";
+		return "children/mentalSurvey/mentalSurveyResponseDetailsView";
 	}
 
 	/*
@@ -141,7 +149,7 @@ public class MentalSurveyController {
 	) {
 		List<MentalSurveySelectInfoDTO> mentalSurveySelectInfo =  mentalSurveyService.getMentalSurveySelectInfo(childId);
 		model.addAttribute("mentalSurveys", mentalSurveySelectInfo);
-		return "children/mentalSurveys/mentalSurveySelectView";
+		return "children/mentalSurvey/mentalSurveySelectView";
 	}
 
 	/*
@@ -151,6 +159,34 @@ public class MentalSurveyController {
 	public String handleGetMentalSurveyListView(Model model) {
 		MentalSurveyListDTO mentalSurveys = mentalSurveyService.getAllMentalSurveys();
 		model.addAttribute("mentalSurveys", mentalSurveys);
-		return "children/mentalSurveys/mentalSurveyListView";
+		return "children/mentalSurvey/mentalSurveyListView";
 	}
+	
+	// 시작 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		/**
+		 * v1.x.x-10
+		 * D-2 25/3/5 준성 MentalSurveyResponse 작업
+		 * @param childId
+		 * @param calendarNum
+		 * @return
+		 */
+		@ResponseBody
+		@PostMapping("/{calanderNum}/GetScores")
+		public List<MentalSurveyResponseChartDTO> getMentalScores(@PathVariable(name="childId") Long childId, 
+									  @PathVariable(name="calanderNum", required = false) Long calendarNum)
+		{
+			// 주간(7), 월간(30), 반개월간(180) 구분
+			calendarNum = (calendarNum == null)? 7 : calendarNum;
+			
+			List<MentalSurveyResponseChartDTO> mentalSurveyResponseChartDTOList = new ArrayList<>();
+			
+			if(calendarNum <= 7) 		mentalSurveyResponseChartDTOList= mentalSurveyService.getLastWeekData(childId);
+			else if(calendarNum <= 30)  mentalSurveyResponseChartDTOList = mentalSurveyService.getLastMonthData(childId);
+			else if(calendarNum <= 180) mentalSurveyResponseChartDTOList = mentalSurveyService.getLastYearData(childId);
+			
+			return mentalSurveyResponseChartDTOList;
+		}
+		
+		// 끝 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 }

@@ -10,7 +10,7 @@
     <!-- Bulma CSS -->
     <link
       rel="stylesheet"
-      th:href="/css/bulma.min.css"
+      th:href="@{/css/bulma.min.css}"
       href="../../../static/css/bulma.min.css"
     />
     <style>
@@ -43,9 +43,7 @@
                   </div>
                 </div>
                 <div class="media-right">
-                  <a th:href="${survey.link}" class="button secondary-bg"
-                    >바로가기</a
-                  >
+                  <a th:href="@{${survey.link}}" class="button secondary-bg">바로가기</a>
                 </div>
               </article>
             </div>
