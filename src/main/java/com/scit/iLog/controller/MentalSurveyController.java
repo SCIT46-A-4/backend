@@ -81,9 +81,9 @@ public class MentalSurveyController {
 			@PathVariable("mentalSurveyId") String mentalSurveyId,
 			Model model
 	) {
-		ChildNameDTO childMentalSurveyInfo = childService.getChildName(childId);
+		String childName = childService.getChildNameById(childId);
 		MentalSurveyDetailsDTO mentalSurveyInfo = mentalSurveyService.getMetalSurveyDetails(mentalSurveyId);
-		model.addAttribute("childName", childMentalSurveyInfo);
+		model.addAttribute("childName", childName);
 		model.addAttribute("mentalSurvey", mentalSurveyInfo);
 		return "children/mentalSurvey/mentalSurveyResponseInsertView";
 	}

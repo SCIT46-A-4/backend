@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<html
-        lang="ko"
-        xmlns:th="http://www.thymeleaf.org"
->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title>설문 응답 작성</title>
@@ -128,6 +125,7 @@
     <section class="section">
       <div class="container">
         <!-- 설문 제목과 설명 -->
+        <h1>[[ ${childName} ]]의</h1>
         <h1 class="title primary-color" th:text="${mentalSurvey.title}">
           설문 제목
         </h1>

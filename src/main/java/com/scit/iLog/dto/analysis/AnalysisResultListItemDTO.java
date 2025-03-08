@@ -6,8 +6,11 @@ import java.time.LocalDateTime;
 
 @Builder
 public record AnalysisResultListItemDTO(
+        Long analysisTargetId,
+        Long analysisResultId,
         String analysisTargetFileSrcUri,
         String analysisResultTitle,
-        LocalDateTime analysisDate
+        LocalDateTime analysisDate,
+        LocalDateTime createdAt
 ) {
 }

@@ -1,6 +1,7 @@
 package com.scit.iLog.dto.analysis;
 
-public record AnalysisResultNoteInsertDTO(
+public record AnalysisResultNoteDetailsViewDTO(
+        Long id,
         String content
 ) {
 }
