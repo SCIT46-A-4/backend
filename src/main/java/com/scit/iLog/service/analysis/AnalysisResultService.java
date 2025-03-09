@@ -101,8 +101,7 @@ public class AnalysisResultService {
 			LocalDateTime today = LocalDateTime.now();
 			LocalDateTime dayAMonthAgo = today.minusMonths(1);
 			// 기간 내 데이터 조회 (시작 날짜와 종료 날짜 사이)
-			List<AnalysisResultEntity> analysisResults = analysisResultRepository
-					.findAllByCreatedAtBetween(childId, dayAMonthAgo, today);
+			List<AnalysisResultEntity> analysisResults = analysisResultRepository.findAllByCreatedAtBetween(childId, dayAMonthAgo, today);
 			// 전체 건수가 0이면 빈 리스트 반환
 			long totalCount = analysisResults.size();
 			if (totalCount == 0) {

@@ -1,5 +1,6 @@
 package com.scit.iLog.service.child;
 
+import com.scit.iLog.controller.DashboardController;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.child.ChildBackGroundEntity;
@@ -39,12 +40,12 @@ import static org.springframework.util.StringUtils.hasText;
 @Service
 @RequiredArgsConstructor
 public class ChildService {
-    private final ChildRepository childRepository;
-    private final RelationShipRepository relationShipRepository;
-    private final FilePathUtil filePathUtil;
-    private final FileManager fileManager;
-    private final FamilyBackgroundRepository familyBackgroundRepository;
-    private final MemberRepository memberRepository;
+        private final ChildRepository childRepository;
+        private final RelationShipRepository relationShipRepository;
+        private final FilePathUtil filePathUtil;
+        private final FileManager fileManager;
+        private final FamilyBackgroundRepository familyBackgroundRepository;
+        private final MemberRepository memberRepository;
 
     // 25/2/12 준: api-23 아이 새로운 아이 등록(저장)
     @Transactional
@@ -275,10 +276,81 @@ public class ChildService {
         ChildEntity child = childRepository.findById(childId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
 
-        // 기존의 가정환경 데이터를 리스트로 변환하여 반환
-        return child.getChildBackGrounds().stream()
-                .map(ChildBackGroundEntity::getFamilyBackGround)
-                .map(FamilyBackGroundEntity::getFamilyBackGround)
-                .toList();
-    }
+                // 기존의 가정환경 데이터를 리스트로 변환하여 반환
+                return child.getChildBackGrounds().stream()
+                                .map(ChildBackGroundEntity::getFamilyBackGround)
+                                .map(FamilyBackGroundEntity::getFamilyBackGround)
+                                .toList();
+        }
+
+
+        //-------------------------------------------------------------------------------------
+        /*
+         * v1.x.x-11
+         * D-2
+         * handleGetTeacherDashboardView
+         * 2025-03-04 / 김은진 / 교사용 대시보드에서 모든 아이들의 기본 정보 조회
+         */
+        @Transactional(readOnly = true)
+        public List<ChildBasicInfoDTO> getAllChildrenBasicInfo(DashboardController.SortOption sortOption) {
+                List<ChildEntity> children;
+                switch (sortOption) {
+                        case NAME:
+                                children = childRepository.findAllByOrderByNameAsc();
+                                break;
+                        case BIRTH_DATE:
+                                children = childRepository.findAllByOrderByBirthDateAsc();
+                                break;
+                        case REGISTER_DATE:
+                                children = childRepository.findAllByOrderByCreatedAtDesc();
+                                break;
+                        default:
+                                children = childRepository.findAll();
+                }
+
+                return children.stream()
+                                .map(child -> ChildBasicInfoDTO.builder()
+                                                .id(child.getId())
+                                                .name(child.getName())
+                                                .birthDate(child.getBirthDate())
+                                                .gender(child.getGender())
+                                                .profileImgSrcUri(filePathUtil.childProfileImgUploadPath())
+                                                .note(child.getNote())
+                                                .build())
+                                .collect(Collectors.toList());
+        }
+
+        /*
+         * v1.x.x-12
+         * D-2
+         * getChildProfile
+         * 2025-03-04 / 김은진 / 특정 아이의 기본 정보 조회
+         */
+        @Transactional(readOnly = true)
+        public ChildBasicInfoDTO getChildBasicInfo(Long childId) {
+                ChildEntity child = childRepository.findById(childId)
+                                .orElseThrow(() -> new EntityNotFoundException("Child not found with id: " + childId));
+
+                // 프로필 이미지 경로 설정
+                String profileImgPath;
+                if (child.getSavedProfileImgName() != null
+                                && !child.getSavedProfileImgName().equals(ChildEntity.DEFAULT_PROFILE_IMG)) {
+                        profileImgPath = "/childProfile/" + child.getSavedProfileImgName();
+                } else {
+                        profileImgPath = "/static/images/default-profile.png"; // static 폴더 경로 추가
+                }
+
+                return ChildBasicInfoDTO.builder()
+                                .id(child.getId())
+                                .name(child.getName())
+                                .birthDate(child.getBirthDate())
+                                .gender(child.getGender())
+                                .profileImgSrcUri(profileImgPath)
+                                .familyBackGrounds(child.getChildBackGrounds().stream()
+                                                .map(bg -> bg.getFamilyBackGround().getFamilyBackGround())
+                                                .collect(Collectors.toList()))
+                                .note(child.getNote())
+                                .build();
+        }
+        //김은진 끝 -----------------------------------------------------------------
 }
