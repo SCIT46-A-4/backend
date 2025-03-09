@@ -7,12 +7,9 @@ import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.child.FamilyBackGroundEntity;
 import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.dto.child.ChildBasicInfoDTO;
-import com.scit.iLog.dto.child.ChildBasicInfoInsertDTO;
-import com.scit.iLog.dto.child.ChildBasicInfoUpdateDTO;
-import com.scit.iLog.dto.child.ChildProfileDTO;
+import com.scit.iLog.dto.child.*;
 import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
-import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
+import com.scit.iLog.exception.ChildNotFoundException;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.FamilyBackgroundRepository;
 import com.scit.iLog.repository.MemberRepository;
@@ -116,10 +113,10 @@ public class ChildService {
     }
 
     // 25/2/13 준: api-??: 아이 정보 찾아서 반환
-    public ChildBasicInfoDTO findBasicInfoById(Long childId) {
+    public ChildRecordListBasicInfoDTO findBasicInfoById(Long childId) {
         ChildEntity child = childRepository.findById(childId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
-        return ChildBasicInfoDTO.builder()
+        return ChildRecordListBasicInfoDTO.builder()
                 .id(child.getId())
                 .name(child.getName())
                 .birthDate(child.getBirthDate())
@@ -129,6 +126,39 @@ public class ChildService {
                 .callName(child.getCallName())
                 .note(child.getNote())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public ChildBasicInfoDetailsDTO getBasicInfoById(Long childId) {
+        ChildEntity child = childRepository.findById(childId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
+
+        // 2025-02-28 / 김은진 / 가정환경 정보 조회
+        // 가정환경 정보 조회
+        List<FamilyBackGround> familyBackGrounds = child.getChildBackGrounds().stream()
+                .map(childBackground -> childBackground.getFamilyBackGround().getFamilyBackGround())
+                .collect(Collectors.toList());
+
+        return ChildBasicInfoDetailsDTO.builder()
+                .id(child.getId())
+                .name(child.getName())
+                .birthDate(child.getBirthDate())
+                .note(child.getNote())
+                .profileImgSrcUri(hasText(child.getOriginalProfileImgName())
+                        ? CHILD_PROFILE_REQUEST_ROOT_PATH.concat(child.getSavedProfileImgName())
+                        : CHILD_PROFILE_REQUEST_ROOT_PATH.concat(ChildEntity.DEFAULT_PROFILE_IMG)) // 기본 이미지
+                .gender(child.getGender())
+                .callName(child.getCallName())
+                .birthLocation(child.getBirthLocation())
+                .familyBackGrounds(familyBackGrounds) // 가정환경 정보 설정(2025-02-28 / 김은진)
+                .build();
+    }
+
+    public String getChildNameById(Long childId) {
+        return childRepository
+                .findById(childId)
+                .orElseThrow(() -> new ChildNotFoundException(childId))
+                .getName();
     }
 
     // child의 정보를 수정하는 함수
@@ -220,6 +250,9 @@ public class ChildService {
                 .map(relationShip -> ChildProfileDTO.builder()
                         .childId(relationShip.getChild().getId())
                         .birthDate(relationShip.getChild().getBirthDate())
+                        .birthLocation(relationShip.getChild().getBirthLocation())
+                        .gender(relationShip.getChild().getGender().getTypeNameKr())
+                        .callName(relationShip.getChild().getCallName())
                         .name(relationShip.getChild().getName())
                         .profileImgSrc(
                                 CHILD_PROFILE_REQUEST_ROOT_PATH.concat(
@@ -232,37 +265,6 @@ public class ChildService {
         return new ParentDashboardChildListDTO(childProfiles.size(), childProfiles);
     }
 
-    @Transactional(readOnly = true)
-    public ChildBasicInfoDTO getBasicInfoById(Long childId) {
-        ChildEntity child = childRepository.findById(childId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
-
-        // 2025-02-28 / 김은진 / 가정환경 정보 조회
-        // 가정환경 정보 조회
-        List<FamilyBackGround> familyBackGrounds = child.getChildBackGrounds().stream()
-                .map(childBackground -> childBackground.getFamilyBackGround().getFamilyBackGround())
-                .collect(Collectors.toList());
-
-        return ChildBasicInfoDTO.builder()
-                .id(child.getId())
-                .name(child.getName())
-                .birthDate(child.getBirthDate())
-                .note(child.getNote())
-                .profileImgSrcUri(hasText(child.getOriginalProfileImgName())
-                        ? CHILD_PROFILE_REQUEST_ROOT_PATH.concat(child.getSavedProfileImgName())
-                        : CHILD_PROFILE_REQUEST_ROOT_PATH.concat(ChildEntity.DEFAULT_PROFILE_IMG)) // 기본 이미지
-                .gender(child.getGender())
-                .callName(child.getCallName())
-                .birthLocation(child.getBirthLocation())
-                .familyBackGrounds(familyBackGrounds) // 가정환경 정보 설정(2025-02-28 / 김은진)
-                .build();
-    }
-
-    public ChildNameDTO getChildName(Long childId) {
-        ChildEntity child = childRepository.findById(childId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
-        return new ChildNameDTO(child.getName());
-    }
 
     /*
      * 2024-02-27 김보경

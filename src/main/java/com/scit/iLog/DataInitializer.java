@@ -17,14 +17,18 @@ import com.scit.iLog.domain.mentalsurvey.SectionResponse;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
 import com.scit.iLog.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Profile("dev")
@@ -47,7 +51,10 @@ public class DataInitializer implements CommandLineRunner {
     private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
     private final FamilyBackgroundRepository familyBackgroundRepository; // 2025-02-28 / 김은진
     private final MentalSurveyResponseRepository mentalSurveyResponseRepository;
+    private final AnalysisTypeRepository analysisTypeRepository;
+    private final AnalysisTargetTypeRepository analysisTargetTypeRepository;
 
+    @Transactional
     @Override
     public void run(String... args) throws Exception {
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -58,6 +65,7 @@ public class DataInitializer implements CommandLineRunner {
         String[] lastNames = {"철수", "영희", "갑돌", "갑순", "지영"};
         String[] locations = {"서울", "부산", "인천", "대구", "광주"};
         EmotionType[] emotionTypes = EmotionType.values();
+        AnalysisType[] analysisTypes = AnalysisType.values();
 
         // admin은 테스트용 관리자 계정 (한 번만 생성)
         MemberEntity admin = MemberEntity.builder()
@@ -96,6 +104,11 @@ public class DataInitializer implements CommandLineRunner {
         for (FamilyBackGround familyBackGround : FamilyBackGround.values()) {
             FamilyBackGroundEntity entity = new FamilyBackGroundEntity(familyBackGround);
             familyBackgroundRepository.save(entity);
+        }
+
+        for (AnalysisType analysisType : AnalysisType.values()) {
+            AnalysisTypeEntity analysisTypeEntity = AnalysisTypeEntity.create(analysisType);
+            analysisTypeRepository.save(analysisTypeEntity);
         }
 
         for (int i = 1; i <= 2; i++) {
@@ -192,13 +205,21 @@ public class DataInitializer implements CommandLineRunner {
                             .child(girl)
                             .registerDate(now.minusDays(random.nextInt(30)))
                             .uploadedBy(mom)
-                            .originalTargetFileName("survey_orig_" + random.nextInt(1000) + ".jpg")
-                            .savedTargetFileName("survey_saved_" + random.nextInt(1000) + ".jpg")
+                            .originalTargetFileName("test-target.png")
+                            .savedTargetFileName("test-target.png")
                             .supplement("Supplement info " + random.nextInt(100))
                             .companion("Companion info " + random.nextInt(100))
-                            .type(AnalysisType.PHOTO)
                             .build();
                     analysisTargetRepository.save(analysisTarget);
+
+                    List<AnalysisTargetTypeEntity> analysisTargetTypes = analysisTypeRepository.findAll()
+                            .stream()
+                            .map(analysisType -> AnalysisTargetTypeEntity.builder()
+                                    .analysisTarget(analysisTarget)
+                                    .analysisType(analysisType)
+                                    .build())
+                            .toList();
+                    analysisTargetTypeRepository.saveAll(analysisTargetTypes);
 
                     // 13. Weather 엔티티 생성
                     WeatherEntity weather = WeatherEntity.builder()
@@ -211,11 +232,13 @@ public class DataInitializer implements CommandLineRunner {
                             .build();
                     analysisTarget.setWeather(weather);
 
+
                     // 4. AnalysisResult 엔티티 생성
                     AnalysisResultEntity analysisResult = AnalysisResultEntity.builder()
                             .emotionScore(random.nextDouble())
                             .analysisTarget(analysisTarget)
-                            .analysisResult("Detailed analysis result " + random.nextInt(1000))
+                            .title("Analysis " + UUID.randomUUID().toString())
+                            .analysisResultText("Detailed analysis result " + random.nextInt(1000))
                             .suggestedSolution("Suggested solution " + random.nextInt(500))
                             .emotionType(emotionTypes[random.nextInt(emotionTypes.length)])
                             .build();
@@ -260,8 +283,8 @@ public class DataInitializer implements CommandLineRunner {
                             .child(girl)
                             .childRecord(record)
                             .member(mom)
-                            .originalFileName("health_orig_" + random.nextInt(1000) + ".jpg")
-                            .savedFileName("health_saved_" + random.nextInt(1000) + ".jpg")
+                            .originalFileName("test-healthCheck.png")
+                            .savedFileName("test-healthCheck.png")
                             .build();
                     childHealthCheckRepository.save(healthCheck);
                 }

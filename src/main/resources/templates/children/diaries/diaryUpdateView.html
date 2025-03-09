@@ -1,33 +1,133 @@
 <!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
->
-<head>
-    <meta charset="UTF-8">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
     <title>우리 아이 일기장 수정 페이지</title>
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" th:href="@{/css/bulma.min.css}" />
     <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-
-<h1>우리 아이 일기장 수정 페이지</h1>
-
-  <form th:action="@{|/children/diaries/${diaryUpdate.id}/edit|}" method="post">
-        <div>
-            <label for="content">내용:</label>
-            <textarea 
-            id="content" 
-            name="content" 
-            rows="10" 
-            cols="50" 
-            th:text="${diaryUpdate.content}"
-            >
-            </textarea>
+    <script src="/js/just-validate.production.min.js"></script>
+    <style>
+      body {
+        background-color: #fdf5bf; /* 프라이머리 컬러 */
+      }
+      .secondary-bg {
+        background-color: #bee6d9;
+        border: none;
+        color: #333;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const validation = new JustValidate('#diaryEditForm');
+        validation
+          .addField('#title', [
+            {
+              rule: 'required',
+              errorMessage: '제목을 입력해주세요.',
+            },
+            {
+              rule: 'minLength',
+              value: 3,
+              errorMessage: '제목은 최소 3글자 이상이어야 합니다.',
+            },
+          ])
+          .addField('#content', [
+            {
+              rule: 'required',
+              errorMessage: '내용을 입력해주세요.',
+            },
+            {
+              rule: 'minLength',
+              value: 5,
+              errorMessage: '내용은 최소 5글자 이상이어야 합니다.',
+            },
+          ]);
+      });
+    </script>
+  </head>
+  <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard"> Dashboard </a>
+        <a
+          role="button"
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navMenu"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div id="navMenu" class="navbar-menu">
+        <div class="navbar-start">
+          <!-- 추가 메뉴 -->
         </div>
-        
-        <div>
-            <button type="submit">수정 완료</button>
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container">
+        <h1 class="title has-text-centered" style="color: #fdf5bf">
+          우리 아이 일기장 수정 페이지
+        </h1>
+        <div class="box">
+          <form
+            id="diaryEditForm"
+            th:action="@{|/children/diaries/${diary.id}/edit|}"
+            method="post"
+          >
+            <!-- Hidden 필드: id와 createdAt (수정 불가 값) -->
+            <input type="hidden" name="id" th:value="${diary.id}" />
+            <input
+              type="hidden"
+              th:value="${#temporals.format(diary.createdAt, 'yyyy-MM-dd\'T\'HH:mm:ss')}"
+              disabled
+            />
+
+            <!-- 제목 입력 필드 -->
+            <div class="field">
+              <label class="label" for="title">제목</label>
+              <div class="control">
+                <input
+                  class="input"
+                  type="text"
+                  id="title"
+                  name="title"
+                  placeholder="일기 제목을 입력해주세요."
+                  required
+                  th:value="${diary.title}"
+                />
+              </div>
+            </div>
+            <!-- 내용 입력 필드 -->
+            <div class="field">
+              <label class="label" for="content">내용</label>
+              <div class="control">
+                <textarea
+                  class="textarea"
+                  id="content"
+                  name="content"
+                  rows="10"
+                  placeholder="수정할 일기 내용을 입력해주세요."
+                  required
+                  th:text="${diary.content}"
+                ></textarea>
+              </div>
+            </div>
+            <!-- 제출 버튼 -->
+            <div class="field is-grouped is-grouped-centered">
+              <div class="control">
+                <button type="submit" class="button secondary-bg">
+                  수정 완료
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-    </form>
-</body>
+      </div>
+    </section>
+  </body>
 </html>

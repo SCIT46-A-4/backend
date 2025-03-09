@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChildBasicInfoDTO extends BaseTimeDTO {
+public class ChildBasicInfoDetailsDTO extends BaseTimeDTO {
     private Long id;
     private String name;
     private LocalDateTime birthDate;
