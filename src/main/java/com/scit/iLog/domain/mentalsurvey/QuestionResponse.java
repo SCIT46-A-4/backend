@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 public class QuestionResponse {
     private String questionItem;
-    private String answer;
+    private String example;
     private int score;
 }

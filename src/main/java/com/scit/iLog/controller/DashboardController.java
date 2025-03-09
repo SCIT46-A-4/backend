@@ -1,26 +1,21 @@
 package com.scit.iLog.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.dto.child.ChildBasicInfoDTO;
 import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.service.child.ChildService;
-
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 
 /**
  * 사용자의 대시보드 페이지 조회에 필요한 요청을 처리하는 컨트롤러.
@@ -71,7 +66,7 @@ public class DashboardController {
      * v1.x.x-11
      * D-2
      * 수정 2025-03-03 / 김은진 / 모든 아이들의 기본 정보 조회
-     * 
+     *
      * @return 선생님 권한을 가진 사용자만 볼 수 있는 대시보드 페이지의 템플릿의 경로를 반환합니다.
      *         이 페이지에서는 하나의 페이지에서 여러 정보를 필요로 하므로
      *         관련된 API의 구현이 필요합니다.
@@ -94,12 +89,12 @@ public class DashboardController {
         return "dashboard/dashboardTeacherView";
     }
 
-    
+
 
     /**
      * v1.x.x-12
      * 2025-03-04 김은진 / 특정아동의 프로필 정보 조회
-     * 
+     *
      * @param childId 조회할 아동의 ID
      * @return ChildBasicInfoDTO 아동의 기본 프로필 정보를 포함한 DTO
      */

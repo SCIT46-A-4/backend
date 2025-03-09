@@ -2,8 +2,6 @@ package com.scit.iLog.util;
 
 import com.scit.iLog.exception.FileDeleteFailException;
 import com.scit.iLog.exception.FileSaveFailException;
-import com.scit.iLog.exception.HealthCheckFileDeleteFailException;
-import com.scit.iLog.exception.HealthCheckFileSaveFailException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,5 @@
 package com.scit.iLog.dto.member;
 
-import com.scit.iLog.domain.RelationType;
 import lombok.Builder;
 
 @Builder

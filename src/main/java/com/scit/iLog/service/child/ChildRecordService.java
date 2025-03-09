@@ -1,6 +1,5 @@
 package com.scit.iLog.service.child;
 
-import com.scit.iLog.config.WebConfig;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.child.ChildRecordEntity;
 import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Member;
 import java.time.Instant;
 
 import static com.scit.iLog.config.WebConfig.HEALTHCHECK_IMAGES_REQUEST_ROOT_PATH;

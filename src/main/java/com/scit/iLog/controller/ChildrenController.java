@@ -1,5 +1,15 @@
 package com.scit.iLog.controller;
 
+import com.scit.iLog.config.SecurityConfig.MemberDetails;
+import com.scit.iLog.dto.PageResponse;
+import com.scit.iLog.dto.child.*;
+import com.scit.iLog.service.analysis.AnalysisService;
+import com.scit.iLog.service.child.ChildRecordService;
+import com.scit.iLog.service.child.ChildService;
+import com.scit.iLog.util.FilePathUtil;
+import com.scit.iLog.util.PageNavigator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -8,40 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.scit.iLog.config.SecurityConfig.MemberDetails;
-import com.scit.iLog.dto.PageResponse;
-import com.scit.iLog.dto.child.ChildBasicInfoDTO;
-import com.scit.iLog.dto.child.ChildBasicInfoInsertDTO;
-import com.scit.iLog.dto.child.ChildBasicInfoInsertResponseDTO;
-import com.scit.iLog.dto.child.ChildBasicInfoUpdateDTO;
-import com.scit.iLog.dto.child.ChildRecordDetailsDTO;
-import com.scit.iLog.dto.child.ChildRecordExtraction;
-import com.scit.iLog.dto.child.ChildRecordInsertDTO;
-import com.scit.iLog.dto.child.ChildRecordListItemDTO;
-import com.scit.iLog.dto.child.ChildRecordResponseDTO;
-import com.scit.iLog.dto.child.ChildRecordUpdateRequestDTO;
-import com.scit.iLog.dto.child.ChildRecordUpdateResponseDTO;
-import com.scit.iLog.dto.child.ChildRecordUpdateViewDTO;
-import com.scit.iLog.service.analysis.AnalysisService;
-import com.scit.iLog.service.child.ChildRecordService;
-import com.scit.iLog.service.child.ChildService;
-import com.scit.iLog.util.FilePathUtil;
-import com.scit.iLog.util.PageNavigator;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
@@ -101,7 +80,7 @@ public class ChildrenController {
 			Model model
 	) {
 		// ID에 해당하는 아동 기본 정보를 조회
-		ChildBasicInfoDTO childBasicInfo = childService.getBasicInfoById(childId);
+		ChildBasicInfoDetailsDTO childBasicInfo = childService.getBasicInfoById(childId);
 		// 조회한 데이터를 뷰(Model)에 추가
 		model.addAttribute("childBasicInfo", childBasicInfo);
 		log.info("childProfileImgSrc in dto: {}", childBasicInfo.getProfileImgSrcUri());
@@ -130,7 +109,7 @@ public class ChildrenController {
 			@PathVariable("childId") Long childId,
 			Model model
 	) {
-		ChildBasicInfoDTO childBasicInfo = childService.getBasicInfoById(childId);
+		ChildBasicInfoDetailsDTO childBasicInfo = childService.getBasicInfoById(childId);
 		log.debug("수정 페이지 로딩 - 가정환경 데이터: {}", childBasicInfo.getFamilyBackGrounds());
 		model.addAttribute("childBasicInfo", childBasicInfo);
 		return "children/basicInfoUpdateView";
@@ -235,7 +214,7 @@ public class ChildrenController {
 			Model model
 	) {
 		// 아이의 기본 정보와 페이징된 레코드 조회
-		ChildBasicInfoDTO childName = childService.findBasicInfoById(childId);
+		ChildRecordListBasicInfoDTO childName = childService.findBasicInfoById(childId);
 		Page<ChildRecordListItemDTO> childRecordsPage = childRecordService.findPagedChildRecords(childId, pageable);
 
 		// 페이지 네비게이터 생성 (예: 그룹당 5페이지씩)

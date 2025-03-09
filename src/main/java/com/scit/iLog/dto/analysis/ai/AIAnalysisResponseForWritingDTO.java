@@ -4,10 +4,11 @@ import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
 import lombok.Builder;
 
 @Builder
-public record AiAnalysisResponseDTO(
+public record AIAnalysisResponseForWritingDTO(
         String suggestedSolution,
         String analysisResult,
         double emotionScore,
-        EmotionType emotionType
+        EmotionType emotionType,
+        String analyzedText
 ) {
 }

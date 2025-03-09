@@ -1,24 +1,5 @@
 package com.scit.iLog.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.mentalsurvey.ChildMentalStatsDTO;
 import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseChartDTO;
@@ -29,8 +10,19 @@ import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyListDTO;
 import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveySelectInfoDTO;
 import com.scit.iLog.service.MentalSurveyService;
 import com.scit.iLog.service.child.ChildService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 
 /* 
  * 2025-02-07 이도훈
@@ -69,13 +61,14 @@ public class MentalSurveyController {
 	@GetMapping("/responses/stats/data")
 	public ChildMentalStatsDTO handleGetMentalSurveyStats(
 			@PathVariable("childId") Long childId,
+			@AuthenticationPrincipal MemberDetails memberDetails,
 			@RequestParam(value = "startDate", required = false)
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
 			@RequestParam(value = "endDate", required = false)
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
 	) {
 		// 데이터베이스에서 시간순으로 정렬된 데이터 조회
-		return mentalSurveyService.getMentalSurveyStatsBetween(childId, startDate, endDate);
+		return mentalSurveyService.getMentalSurveyStatsBetween(childId, memberDetails.getId(), startDate, endDate);
 	}
 
 	/**
@@ -90,9 +83,9 @@ public class MentalSurveyController {
 			@PathVariable("mentalSurveyId") String mentalSurveyId,
 			Model model
 	) {
-		ChildNameDTO childMentalSurveyInfo = childService.getChildName(childId);
+		String childName = childService.getChildNameById(childId);
 		MentalSurveyDetailsDTO mentalSurveyInfo = mentalSurveyService.getMetalSurveyDetails(mentalSurveyId);
-		model.addAttribute("childName", childMentalSurveyInfo);
+		model.addAttribute("childName", childName);
 		model.addAttribute("mentalSurvey", mentalSurveyInfo);
 		return "children/mentalSurvey/mentalSurveyResponseInsertView";
 	}
@@ -113,6 +106,7 @@ public class MentalSurveyController {
 		String responseId = mentalSurveyService.saveMentalSurveyResponse(
 				childId,
 				memberId,
+				memberDetails.getRelationType(),
 				mentalSurveyId,
 				mentalSurveyResponseInsertDTO);
 		return String.format("redirect:/children/%d/mentalSurveys/responses/%s/details", childId, responseId);
@@ -126,15 +120,15 @@ public class MentalSurveyController {
 	 * 이 페이지에서 '심리 설문'과 '건강 문진'을 선택한다.
 	 * URL, 메서드명, 리턴 값 수정.
 	 * @return mentalSurveyResponseDetailsView.html
-	 *
 	 * S-3
 	 */
 	@GetMapping("/responses/{responseId}/details")
 	public String handleGetMentalSurveyDetailsView(
+			@PathVariable("childId") Long childId,
 			@PathVariable("responseId") String responseId,
 			Model model
 	) {
-		MentalSurveyResponseDetailsDTO responseDetails = mentalSurveyService.getResponseDetailsById(responseId);
+		MentalSurveyResponseDetailsDTO responseDetails = mentalSurveyService.getResponseDetailsById(childId, responseId);
 		model.addAttribute("responseDetails", responseDetails);
 		return "children/mentalSurvey/mentalSurveyResponseDetailsView";
 	}
@@ -161,7 +155,7 @@ public class MentalSurveyController {
 		model.addAttribute("mentalSurveys", mentalSurveys);
 		return "children/mentalSurvey/mentalSurveyListView";
 	}
-	
+
 	// 시작 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		/**
 		 * v1.x.x-10
@@ -172,21 +166,21 @@ public class MentalSurveyController {
 		 */
 		@ResponseBody
 		@PostMapping("/{calanderNum}/GetScores")
-		public List<MentalSurveyResponseChartDTO> getMentalScores(@PathVariable(name="childId") Long childId, 
-									  @PathVariable(name="calanderNum", required = false) Long calendarNum)
+		public List<MentalSurveyResponseChartDTO> getMentalScores(@PathVariable(name="childId") Long childId,
+																  @PathVariable(name="calanderNum", required = false) Long calendarNum)
 		{
 			// 주간(7), 월간(30), 반개월간(180) 구분
 			calendarNum = (calendarNum == null)? 7 : calendarNum;
-			
+
 			List<MentalSurveyResponseChartDTO> mentalSurveyResponseChartDTOList = new ArrayList<>();
-			
+
 			if(calendarNum <= 7) 		mentalSurveyResponseChartDTOList= mentalSurveyService.getLastWeekData(childId);
 			else if(calendarNum <= 30)  mentalSurveyResponseChartDTOList = mentalSurveyService.getLastMonthData(childId);
 			else if(calendarNum <= 180) mentalSurveyResponseChartDTOList = mentalSurveyService.getLastYearData(childId);
-			
+
 			return mentalSurveyResponseChartDTOList;
 		}
-		
+
 		// 끝 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 }

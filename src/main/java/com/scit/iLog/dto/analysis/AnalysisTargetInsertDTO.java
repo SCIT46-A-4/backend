@@ -11,6 +11,9 @@ import java.util.List;
 public record AnalysisTargetInsertDTO(
         MultipartFile analysisTargetFile,
         LocalDateTime targetDate,
+        String locationName,
+        double latitude,
+        double longitude,
         String companion,
         String supplementaryComment,
         List<AnalysisType> analysisTypes,

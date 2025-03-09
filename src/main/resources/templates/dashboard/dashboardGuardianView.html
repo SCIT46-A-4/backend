@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html
-  lang="ko"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
 >
   <head>
     <meta charset="UTF-8" />
@@ -27,109 +26,163 @@
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         // 전역 차트 변수
-        let emotionChart, developmentChart;
+        let mentalSurveyScoreLineChart, childEmotionScorePieChart;
 
         // 아동 선택에 따른 대시보드 업데이트 함수
-        async function updateDashboard(childId) {
-          try {
-            // 로딩 인디케이터 표시
-            document.getElementById('childInfoLoading').style.display = 'block';
-            document.getElementById('childInfoContainer').style.display =
-              'none';
+        // 아동 선택에 따른 대시보드 업데이트 함수 (jQuery ajax 버전)
+        function updateDashboard(childId) {
+          // 로딩 인디케이터 표시
+          $('#childInfoLoading').show();
+          $('#childInfoContainer').hide();
 
-            // 아동 정보 업데이트
-            const childResponse = await fetch(`/api/child/${childId}`);
-            const childData = await childResponse.json();
-            updateChildInfo(childData);
+          // 아동 정보 업데이트
+          updateChildInfo(childId);
 
-            // 감정 분석 데이터 업데이트
-            const emotionResponse = await fetch(
-              `/api/child/${childId}/emotion-data`
-            );
-            const emotionData = await emotionResponse.json();
-            renderEmotionChart(emotionData);
+          // 날짜 파라미터 설정
+          const today = new Date().toISOString().split('T')[0];
+          const aMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0];
 
-            // 발달 지표 데이터 업데이트
-            const developmentResponse = await fetch(
-              `/api/child/${childId}/development-data`
-            );
-            const developmentData = await developmentResponse.json();
-            renderDevelopmentChart(developmentData);
+          // 심리 설문 데이터 업데이트
+          $.ajax({
+            url: `/children/${childId}/mentalSurveys/responses/stats/data`,
+            method: 'GET',
+            data: {
+              startDate: aMonthAgo,
+              endDate: today,
+            },
+            dataType: 'json',
+            success: function (mentalSurveyScores) {
+              renderMentalStatsChart(mentalSurveyScores);
+            },
+            error: function (xhr, status, error) {
+              console.error(
+                '대시보드 업데이트 중 심리 설문 데이터 에러:',
+                error
+              );
+            },
+          });
 
-            // 분석 결과 업데이트 (예: 태그 배열 형태로 반환)
-            const analysisResponse = await fetch(
-              `/api/child/${childId}/analysis-data`
-            );
-            const analysisData = await analysisResponse.json();
-            updateAnalysisResults(analysisData);
-          } catch (error) {
-            console.error('대시보드 업데이트 중 에러 발생:', error);
-          }
+          // 감정 분석 데이터 업데이트
+          $.ajax({
+            url: `/children/${childId}/analysis/results/stats/emotion/data`,
+            method: 'GET',
+            data: {
+              startDate: aMonthAgo,
+              endDate: today,
+            },
+            dataType: 'json',
+            success: function (emotionRatioData) {
+              renderEmotionRatioChart(emotionRatioData);
+            },
+            error: function (xhr, status, error) {
+              console.error(
+                '대시보드 업데이트 중 감정 분석 데이터 에러:',
+                error
+              );
+            },
+          });
         }
 
         // 아동 정보 업데이트: 이름, 생년월일, 사진 등
-        function updateChildInfo(data) {
-          document.getElementById('childName').textContent = data.name;
+        function updateChildInfo(childId) {
+          const childOption = document.getElementById(`child-${childId}`);
+          document.getElementById('childName').textContent =
+            childOption.textContent;
           document.getElementById('childBirthdate').textContent = new Date(
-            data.birthDate
+            childOption.getAttribute('data-birthDate')
           ).toLocaleDateString();
-          if (data.profileImgSrc) {
-            document.querySelector('.child-photo').src = data.profileImgSrc;
+          const profileImgSrc = childOption.getAttribute('data-profileImgSrc');
+          if (profileImgSrc) {
+            document.querySelector('.child-photo').src = profileImgSrc;
           }
           // 데이터 로드 완료 후 로딩 인디케이터 숨기고 정보 표시
           document.getElementById('childInfoLoading').style.display = 'none';
           document.getElementById('childInfoContainer').style.display = 'block';
+          document.getElementById(
+            'childDetailLink'
+          ).href = `/children/${childId}/basicInfo`;
         }
 
         // 감정 분석 추이 차트 렌더링
-        function renderEmotionChart(data) {
-          // data 예시: { categories: ['1월', '2월', ...], positive: [65, 59, ...], negative: [28, 48, ...] }
-          emotionChart = Highcharts.chart('emotionChart', {
-            chart: { type: 'line', height: 220 },
-            title: { text: '감정 분석 추이' },
-            xAxis: { categories: data.categories },
-            yAxis: { title: { text: '감정 지수' } },
-            series: [
-              { name: '긍정', data: data.positive, color: '#BEE6D9' },
-              { name: '부정', data: data.negative, color: '#FFB6C1' },
-            ],
-          });
-        }
+        function renderMentalSurveyTimeSeriesChart(data) {
+          // data
+          const categories = data.seriesData.map(
+            (statPointData) => statPointData.date
+          );
+          const guardianScores = data.seriesData.map((statPointData) => ({
+            x: new Date(statPointData.date).getTime(),
+            y: statPointData.resultScore, // Use guardianScore or resultScore if available
+            url: statPointData.detailUrl,
+            label: statPointData.label,
+          }));
 
-        // 발달 지표 차트 렌더링
-        function renderDevelopmentChart(data) {
-          // data 예시: [ { name: '인지발달', y: 30, color: '#BEE6D9' }, ... ]
-          developmentChart = Highcharts.chart('developmentChart', {
-            chart: { type: 'pie', height: 220 },
-            title: { text: '발달 지표' },
-            plotOptions: {
-              pie: {
-                innerSize: '50%',
-                dataLabels: {
-                  enabled: true,
-                  format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+          mentalSurveyScoreLineChart = Highcharts.chart(
+            'mentalSurveyScoreLineChart',
+            {
+              chart: { type: 'line', height: 220 },
+              title: { text: '심리 설문 결과' },
+              xAxis: { type: 'datetime' },
+              yAxis: { title: { text: '심리 척도값' } },
+              plotOptions: {
+                series: {
+                  cursor: 'pointer',
+                  dataLabels: {
+                    enabled: true,
+                    formatter: function () {
+                      return this.point.options.label || '';
+                    },
+                  },
+                  point: {
+                    events: {
+                      click: function () {
+                        if (this.options.url) {
+                          window.open(this.options.url, '_blank');
+                        }
+                      },
+                    },
+                  },
                 },
               },
-            },
-            series: [{ name: '발달 영역', data: data }],
-          });
+              series: [
+                {
+                  name: '보호자 설문 결과',
+                  data: data.guardianScores,
+                  color: '#BEE6D9',
+                },
+                // { name: '부정', data: data.negative, color: '#FFB6C1' },
+              ],
+            }
+          );
         }
 
-        // 분석 결과 영역 업데이트 (예: 태그 목록)
-        function updateAnalysisResults(data) {
-          // data 예시: { tags: ['긍정적', '활동적', '창의적'] }
-          const analysisContainer = document.getElementById('analysisResults');
-          analysisContainer.innerHTML = '';
-          if (data.tags && data.tags.length > 0) {
-            data.tags.forEach((tag) => {
-              const span = document.createElement('span');
-              span.className = 'tag is-primary';
-              span.textContent = tag;
-              analysisContainer.appendChild(span);
-            });
-          } else {
-            analysisContainer.textContent = '분석 결과 없음';
-          }
+        // 감정 통계 차트 렌더링
+        function renderEmotionRatioChart(data) {
+          // data 예시: [ { name: '인지발달', y: 30, color: '#BEE6D9' }, ... ]
+          const emotionData = data.seriesData.map((statPointData) => ({
+            name: statPointData.label,
+            y: statPointData.emotionRatio,
+            percentage: statPointData.emotionRatio,
+            color: getRandomColor(),
+          }));
+          childEmotionScorePieChart = Highcharts.chart(
+            'childEmotionScorePieChart',
+            {
+              chart: { type: 'pie', height: 220 },
+              title: { text: '감정 통계' },
+              plotOptions: {
+                pie: {
+                  innerSize: '50%',
+                  dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                  },
+                },
+              },
+              series: [{ name: '감정 통계', data: emotionData }],
+            }
+          );
         }
 
         // 아동 목록이 있을 경우, 페이지 로드시 첫 번째 아동으로 대시보드 업데이트
@@ -156,7 +209,7 @@
       function updateChildLinks(childId) {
         document.getElementById(
           'surveySelectLink'
-        ).href = `/children/${childId}/mentalSurvey/selects`;
+        ).href = `/children/${childId}/mentalSurveys/selects`;
         document.getElementById(
           'surveyStatsLink'
         ).href = `/children/${childId}/mentalSurveys/responses/stats`;
@@ -165,7 +218,93 @@
         ).href = `/children/${childId}/analysis/new`;
         document.getElementById(
           'analysisResultListLink'
-        ).href = `/children/${childId}/mentalSurveys/responses/stats`;
+        ).href = `/children/${childId}/analysis/resultList`;
+      }
+
+      function getRandomColor() {
+        // 0부터 16777215(=0xFFFFFF) 사이의 랜덤 정수를 생성하고, 16진수 문자열로 변환
+        const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+        // 6자리 숫자로 맞추기 위해 앞에 '0'을 붙임 (padStart)
+        return '#' + randomColor.padStart(6, '0');
+      }
+
+      function renderMentalStatsChart(mentalStats) {
+        // seriesData가 없거나 길이가 0인 경우 메시지와 버튼 표시.
+        if (!mentalStats.seriesData || mentalStats.seriesData.length === 0) {
+          document.getElementById('mentalSurveyScoreLineChart').innerHTML =
+            '<div style="text-align: center; margin-top: 50px;">' +
+            '<h1 style="font-size: 36px; color: #FDF5BF;">실시한 설문이 없습니다.</h1>' +
+            '<button onclick="location.href=\'/children/' +
+            getChildIdFromURL() +
+            '/mentalSurveys/selects\'" style="font-size: 20px; padding: 10px 20px; background-color: #BEE6D9; border: none; cursor: pointer;">설문 작성하기</button>' +
+            '</div>';
+          return;
+        }
+
+        // data: [{ date, resultScore, detailUrl }, ...] 형식의 배열이라 가정.
+        // Highcharts에서 사용하는 밀리초 단위의 타임스탬프로 변환 후 데이터 배열 생성.
+        let seriesData = mentalStats.seriesData.map((statPointData) => {
+          return [
+            new Date(statPointData.date).getTime(),
+            statPointData.resultScore,
+            statPointData.detailUrl,
+          ];
+        });
+
+        // 데이터가 시간순으로 정렬되어 있지 않을 경우, 정렬
+        seriesData.sort((a, b) => a[0] - b[0]);
+
+        // Highcharts 차트 초기화 (일반 line 차트로 변경)
+        Highcharts.chart('mentalSurveyScoreLineChart', {
+          chart: { type: 'line' },
+          title: { text: '심리 설문 결과' },
+          xAxis: {
+            type: 'datetime',
+            title: { text: '시간' },
+          },
+          yAxis: {
+            title: { text: '심리 척도값' },
+          },
+          tooltip: {
+            formatter: function () {
+              return `<b>${Highcharts.dateFormat('%Y-%m-%d', this.x)}</b>: ${
+                this.y
+              }`;
+            },
+          },
+          series: [
+            {
+              name: '값 변화',
+              data: seriesData.map((d) => [d[0], d[1]]),
+              marker: {
+                enabled: true,
+                radius: 5,
+              },
+              point: {
+                events: {
+                  click: function () {
+                    // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
+                    let pointData = seriesData.find(
+                      (item) => item[0] === this.x
+                    );
+                    if (pointData && pointData[2]) {
+                      window.open(pointData[2], '_blank');
+                    }
+                  },
+                },
+              },
+            },
+          ],
+        });
+      }
+      function getChildIdFromURL() {
+        // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
+        const pathParts = window.location.pathname.split('/');
+        // pathParts 예시: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
+        if (pathParts.length > 2 && pathParts[1] === 'children') {
+          return pathParts[2]; // 인덱스 2가 childId입니다.
+        }
+        return null;
       }
     </script>
     <style>
@@ -280,7 +419,7 @@
         </div>
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-light">
+            <a class="button is-light" th:href="@{/members/myDetails}">
               <span class="icon"><i class="fas fa-user"></i></span>
               <span th:text="|${memberName}(${relationType})|"
                 >김미영(부모)</span
@@ -339,6 +478,8 @@
                             <option
                               th:value="${child.childId}"
                               th:text="${child.name}"
+                              th:id="|child-${child.childId}|"
+                              th:attr="data-birthDate=${child.birthDate}, data-profileImgSrc=${child.profileImgSrc}"
                             ></option>
                           </th:block>
                         </select>
@@ -357,6 +498,7 @@
                   <div id="childInfoContainer">
                     <figure class="image is-square mb-4">
                       <img
+                        id="child-profile-photo"
                         src="../../static/images/ilog.png"
                         th:src="@{/images/ilog.png}"
                         alt="아이 사진"
@@ -368,9 +510,13 @@
                       <p class="subtitle is-6" id="childBirthdate">
                         YYYY-MM-dd
                       </p>
-                      <button class="button is-fullwidth is-info is-light mb-2">
-                        우리 아이 상세 보기
-                      </button>
+                      <a id="childDetailLink">
+                        <button
+                          class="button is-fullwidth is-info is-light mb-2"
+                        >
+                          우리 아이 상세 보기
+                        </button>
+                      </a>
                       <a href="/children/new">
                         <button class="button is-fullwidth is-primary is-light">
                           + 새로운 아이 등록하기
@@ -386,13 +532,19 @@
               <div class="card stats-card">
                 <div class="card-content">
                   <p class="title is-4">감정 분석 추이</p>
-                  <div id="emotionChart" class="stats-container"></div>
+                  <div
+                    id="mentalSurveyScoreLineChart"
+                    class="stats-container"
+                  ></div>
                 </div>
               </div>
               <div class="card stats-card">
                 <div class="card-content">
-                  <p class="title is-4">발달 지표</p>
-                  <div id="developmentChart" class="stats-container"></div>
+                  <p class="title is-4">감정 지표</p>
+                  <div
+                    id="childEmotionScorePieChart"
+                    class="stats-container"
+                  ></div>
                 </div>
               </div>
             </div>

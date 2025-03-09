@@ -142,7 +142,7 @@ public class StatisticsService {
 	    }
 
 	    // 해당 기간 동안의 모든 분석 결과를 조회
-	    List<AnalysisResultEntity> results = analysisResultRepository.findAllByCreatedAtBetween(childId, startDate, endDate);
+	    List<AnalysisResultEntity> results = analysisResultRepository.findAllByRegisterDateBetween(childId, startDate, endDate);
 	    long totalCount = results.size();
 
 	    Map<EmotionType, Long> countByEmotion = results.stream()
