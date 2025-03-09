@@ -14,13 +14,17 @@ import com.scit.iLog.repository.MentalSurveyResponseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.data.domain.Sort.Order.*;
 
 @Slf4j
 @Service
@@ -196,7 +200,7 @@ public class MentalSurveyService {
     private List<MentalSurveyResponseChartDTO> getSurveyData(Long childId, LocalDateTime startDate, LocalDateTime endDate)
     {
     	System.out.println("-------------------------------------------");
-    	Sort sort = Sort.by(Order.asc("createdAt"));
+    	Sort sort = Sort.by(asc("createdAt"));
 
     	List<MentalSurveyResponseEntity> mentalSurveyResponseEntity
     	// = mentalSurveyResponseRepository.findAllByCreatedAtBetween(startDate, endDate, sort);
