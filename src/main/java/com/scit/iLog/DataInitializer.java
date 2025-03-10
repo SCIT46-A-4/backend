@@ -300,7 +300,6 @@ public class DataInitializer implements CommandLineRunner {
             ClaimAnswerEntity claimAnswer = ClaimAnswerEntity.builder()
                     .claim(claim)
                     .author(admin)
-//                    .title("Re: Service Issue " + random.nextInt(1000))
                     .content("We have resolved the issue " + random.nextInt(1000))
                     .build();
             claimAnswerRepository.save(claimAnswer);

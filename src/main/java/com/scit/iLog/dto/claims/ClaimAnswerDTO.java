@@ -8,7 +8,6 @@ import lombok.Builder;
 public record ClaimAnswerDTO(
         Long answerId,
         String authorName,
-//        String title,
         String content,
         LocalDateTime createdAt
 ) {

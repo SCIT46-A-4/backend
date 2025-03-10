@@ -15,7 +15,7 @@ public class WeatherController {
     private final WeatherService weatherService;
 
     @GetMapping("/weather")
-    public WeatherResponse handleGEtWeatherRecordRequest(
+    public WeatherResponse handleGetWeatherRecordRequest(
             @RequestParam("lat") double lat,
             @RequestParam("lon") double lon,
             @RequestParam("dt") LocalDateTime dt

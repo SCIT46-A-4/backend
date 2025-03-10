@@ -69,10 +69,11 @@ public class ClaimController {
 	 * CL-1
 	 */
 	@GetMapping("/claimsList")
-	public String handleGetClaimsListView(@AuthenticationPrincipal UserDetails userDetails,
+	public String handleGetClaimsListView(
+			@AuthenticationPrincipal UserDetails userDetails,
 			@PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-			Model model) {
-
+			Model model
+	) {
 		String signInId = userDetails.getUsername();
 
 		// ✅ 본인이 작성한 글 + ADMIN은 모든 글 조회 가능
@@ -124,8 +125,10 @@ public class ClaimController {
 	 * CL-2
 	 */
 	@PostMapping("/new")
-	public String handleInsertClaim(@AuthenticationPrincipal UserDetails userDetails,
-			@ModelAttribute ClaimsInsertDTO claimInsertDTO, RedirectAttributes redirectAttributes) {
+	public String handleInsertClaim(
+			@AuthenticationPrincipal UserDetails userDetails,
+			@ModelAttribute ClaimsInsertDTO claimInsertDTO, RedirectAttributes redirectAttributes
+	) {
 		log.info("📌 handleInsertClaim 호출됨 - 사용자 ID: {}", userDetails.getUsername());
 		log.info("✅ 입력된 제목: {}, 내용: {}, 유형: {}", claimInsertDTO.getTitle(), claimInsertDTO.getContent(),
 				claimInsertDTO.getType());
@@ -160,8 +163,11 @@ public class ClaimController {
 	 * CL-3
 	 */
 	@GetMapping("/{claimId}")
-	public String handleGetClaimDetailsView(@PathVariable("claimId") Long claimId,
-			@AuthenticationPrincipal UserDetails userDetails, Model model) {
+	public String handleGetClaimDetailsView(
+			@PathVariable("claimId") Long claimId,
+			@AuthenticationPrincipal UserDetails userDetails,
+			Model model
+	) {
 		ClaimDetailsDTO claimDetailsDTO = claimService.getClaimDetailsById(claimId);
 
 		model.addAttribute("claimDetails", claimDetailsDTO);
@@ -204,9 +210,12 @@ public class ClaimController {
 	 * @return "redirect:/claims/{claimId}" (문의 상세 페이지로 이동)
 	 */
 	@PostMapping("/{claimId}/answer")
-	public String handlePostClaimAnswer(@PathVariable("claimId") Long claimId,
-			@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute ClaimAnswerDTO answerDTO,
-			RedirectAttributes redirectAttributes) {
+	public String handlePostClaimAnswer(
+			@PathVariable("claimId") Long claimId,
+			@AuthenticationPrincipal UserDetails userDetails,
+			@ModelAttribute ClaimAnswerDTO answerDTO,
+			RedirectAttributes redirectAttributes
+	) {
 		String signInId = userDetails.getUsername();
 
 		log.info("📌 [컨트롤러] 답변 등록 요청 - claimId: {}, 작성자: {}, 내용: {}", claimId, signInId, answerDTO.content());
@@ -222,5 +231,4 @@ public class ClaimController {
 
 		return "redirect:/claims/" + claimId; // 문의 상세 페이지로 이동
 	}
-
 }

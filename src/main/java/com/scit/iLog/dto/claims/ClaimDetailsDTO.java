@@ -10,7 +10,6 @@ import lombok.Builder;
 @Builder
 public record ClaimDetailsDTO(
         Long claimId,
-//        String authorName,
         String title,
         String content,
         ClaimType type,

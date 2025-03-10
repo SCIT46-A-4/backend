@@ -64,7 +64,6 @@ public class SecurityConfig {
                                 "/images/**"
                                 )
                         .permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/claims/*").permitAll() // DELETE 요청 허용 추가
                         .requestMatchers("/dashboard/guardian").access(
                                 anyOf(allOf(hasRole("USER"), hasRole("GUARDIAN")), hasRole("ADMIN"))
                         )
