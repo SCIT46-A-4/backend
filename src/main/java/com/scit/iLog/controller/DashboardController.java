@@ -55,6 +55,7 @@ public class DashboardController {
     ) {
         ParentDashboardChildListDTO childProfiles = childService.getChildrenProfilesOf(memberDetails.getId());
 
+        model.addAttribute("memberId", memberDetails.getId());
         model.addAttribute("memberName", memberDetails.getName());
         model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         model.addAttribute("childProfiles", childProfiles);

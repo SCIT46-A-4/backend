@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,10 +87,10 @@
         }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 권한 삭제 버튼 이벤트
             document.querySelectorAll('.button.is-pink').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     if (confirm('정말 이 권한을 삭제하시겠습니까?')) {
                         // TODO: 권한 삭제 API 호출
                         const row = this.closest('tr');
@@ -102,89 +103,93 @@
             });
 
             // 초대 링크 생성 버튼 이벤트
-            document.querySelector('.permission-header .button.is-light').addEventListener('click', function() {
+            document.querySelector('.permission-header .button.is-light').addEventListener('click', function () {
                 // TODO: 초대 링크 생성 API 호출
                 alert('초대 링크가 생성되었습니다. 클립보드에 복사되었습니다.');
             });
         });
     </script>
 </head>
+
 <body>
-<div class="container">
-    <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (부모)</h1>
+    <div class="container">
+        <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (부모)</h1>
 
-    <div class="permission-header">
-        <div class="buttons">
-            <button class="button is-mint">피아노 선생님</button>
-            <button class="button is-mint">정보열람 권한을 보낼 선생님 이메일(전화번호 등)을 입력해서 초대하기</button>
-        </div>
-        <button class="button is-light">초대링크 보내기</button>
-    </div>
-
-    <div class="status-box">
-        <div class="columns">
-            <div class="column">
-                <p>조대중: 1명</p>
-                <p>승인 완료: 5건</p>
+        <button class="permission-header">
+            <div class="buttons">
+                <!-- <button class="button is-mint">피아노 선생님</button> -->
+                <input type="text" class="input" name="postCallName" placeholder="호칭을 입력하세요.">
+                <!-- <button class="button is-mint">정보열람 권한을 보낼 선생님 이메일(전화번호 등)을 입력해서 초대하기</button> -->
+                <input type="text" class="input" name="postEmail" placeholder="정보열람 권한을 보낼 선생님 이메일을 입력하세요.">
             </div>
-            <div class="column has-text-right">
-                <button class="button is-mint">피아노 선생님</button>
-                <button class="button is-mint">초대 취소</button>
+            <button class="button is-light">초대링크 보내기</button>
+        </button>
+
+        <div class="status-box">
+            <div class="columns">
+                <div class="column">
+                    <p>조대중: 1명</p>
+                    <p>승인 완료: 5건</p>
+                </div>
+                <div class="column has-text-right">
+                    <button class="button is-mint">피아노 선생님</button>
+                    <button class="button is-mint">초대 취소</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="table-container">
-        <h2 class="title is-4 mb-4">승인된 리스트</h2>
-        <table class="table is-fullwidth">
-            <thead>
-            <tr>
-                <th>보호자 이름</th>
-                <th>내 자녀 이름</th>
-                <th>승인한 날짜</th>
-                <th>자녀와의 관계</th>
-                <th>관리</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>해바라기반 선생님</td>
-                <td>김승현</td>
-                <td>2024년 12월 20일</td>
-                <td>교사</td>
-                <td><button class="button is-small is-pink">권한 삭제</button></td>
-            </tr>
-            <tr>
-                <td>김구라</td>
-                <td>김승현</td>
-                <td>2024년 12월 20일</td>
-                <td>부</td>
-                <td><button class="button is-small is-pink">권한 삭제</button></td>
-            </tr>
-            <tr>
-                <td>김구라</td>
-                <td>김승현</td>
-                <td>2024년 12월 20일</td>
-                <td>부</td>
-                <td><button class="button is-small is-pink">권한 삭제</button></td>
-            </tr>
-            <tr>
-                <td>구본 선생님</td>
-                <td>김승현</td>
-                <td>2024년 12월 20일</td>
-                <td>교사</td>
-                <td><button class="button is-small is-pink">권한 삭제</button></td>
-            </tr>
-            <tr>
-                <td>구본 선생님</td>
-                <td>김수현</td>
-                <td>2024년 12월 20일</td>
-                <td>교사</td>
-                <td><button class="button is-small is-pink">권한 삭제</button></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="table-container">
+            <h2 class="title is-4 mb-4">승인된 리스트</h2>
+            <table class="table is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>보호자 이름</th>
+                        <th>내 자녀 이름</th>
+                        <th>승인한 날짜</th>
+                        <th>자녀와의 관계</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>해바라기반 선생님</td>
+                        <td>김승현</td>
+                        <td>2024년 12월 20일</td>
+                        <td>교사</td>
+                        <td><button class="button is-small is-pink">권한 삭제</button></td>
+                    </tr>
+                    <tr>
+                        <td>김구라</td>
+                        <td>김승현</td>
+                        <td>2024년 12월 20일</td>
+                        <td>부</td>
+                        <td><button class="button is-small is-pink">권한 삭제</button></td>
+                    </tr>
+                    <tr>
+                        <td>김구라</td>
+                        <td>김승현</td>
+                        <td>2024년 12월 20일</td>
+                        <td>부</td>
+                        <td><button class="button is-small is-pink">권한 삭제</button></td>
+                    </tr>
+                    <tr>
+                        <td>구본 선생님</td>
+                        <td>김승현</td>
+                        <td>2024년 12월 20일</td>
+                        <td>교사</td>
+                        <td><button class="button is-small is-pink">권한 삭제</button></td>
+                    </tr>
+                    <tr>
+                        <td>구본 선생님</td>
+                        <td>김수현</td>
+                        <td>2024년 12월 20일</td>
+                        <td>교사</td>
+                        <td><button class="button is-small is-pink">권한 삭제</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 </body>
+
 </html>

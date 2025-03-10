@@ -27,6 +27,7 @@ public class EmailVerificationController
 		private final EmailService emailService;
 
 		/**
+		 * 보호자용
 		 * 인증번호 전송 API
 		 */
 		@PostMapping("/send-verification-code")
@@ -55,6 +56,7 @@ public class EmailVerificationController
 			}
 
 		/**
+		 * 교사용
 		 * 인증번호 검증 API
 		 */
 		@PostMapping("/verify-code")
