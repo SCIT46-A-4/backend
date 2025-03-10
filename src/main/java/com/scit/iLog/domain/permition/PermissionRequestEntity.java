@@ -60,6 +60,7 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     @Column(name = "request_link_code")
     private String requestLinkCode;
     
+    // 마감시간
     // 그럼 저기에 있는 사람의 별칭은 어떻게 세팅할 것인가?
     
     public void setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus status)
