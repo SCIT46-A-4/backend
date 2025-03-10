@@ -30,16 +30,6 @@ public class MemberController {
         기존: /members/{memberId}/info
         변경후: /members/myDetails
      */
-//    @GetMapping("/myDetails")
-//    public String handleGetMyPage(
-//            Authentication authentication,
-//            Model model
-//    ) {
-//        if (!authentication.isAuthenticated()) return "redirect:/";
-//        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
-//        model.addAttribute("memberDetails",memberService.getMemberDetailsById(memberDetails.getId()));
-//        return "/member/memberDetailsView";
-//    }
     @GetMapping("/myDetails")
     public String handleGetMyPage(
             Authentication authentication,
