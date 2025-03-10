@@ -16,5 +16,12 @@ public interface AnalysisResultRepository extends JpaRepository<AnalysisResultEn
             @Param("endDate") LocalDateTime endDate
     );
 
+    @Query("select a from AnalysisResultEntity a where a.analysisTarget.child.id = :childId and (a.analysisTarget.registerDate between :startDate and :endDate)")
+    List<AnalysisResultEntity> findAllByRegisterDateBetween(
+            @Param("childId") Long childId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
     List<AnalysisResultEntity> findAllByCreatedAtBetweenOrderByCreatedAtDesc(LocalDateTime localDateTime, LocalDateTime localDateTime1);
 }

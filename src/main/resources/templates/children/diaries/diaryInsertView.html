@@ -1,26 +1,131 @@
 <!DOCTYPE html>
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
->
-<head>
-    <meta charset="UTF-8">
+<html lang="en" xmlns:th="http://thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
     <title>우리 아이 일기장 쓰기 페이지</title>
+    <!-- Bulma CSS -->
+    <link
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
+      href="../../../static/css/bulma.min.css"
+    />
+    <!-- jQuery and just-validate -->
     <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-
-<h1>우리 아이 일기장 쓰기 페이지</h1>
-	<div class="diary-insert">
-        <h1>새 일기 작성</h1>
-        <form th:action="@{/children/{childId}/diaries/new(childId=${childId})}" method="post">
-         	<input type="hidden" name="childId" th:value="${childId}" />
-            <div>
-                <label for="content">일기 내용:</label>
-                <textarea id="content" name="content" rows="4" cols="50" placeholder="일기 내용을 작성해주세요." required></textarea>
+    <script src="/js/just-validate.production.min.js"></script>
+    <style>
+      /* 프라이머리 컬러: #FDF5BF, 세컨더리 컬러: #BEE6D9 */
+      body {
+        background-color: #fdf5bf;
+      }
+      .secondary-bg {
+        background-color: #bee6d9;
+        border: none;
+        color: #333;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const validation = new JustValidate('#diaryForm');
+        validation
+          .addField('#title', [
+            {
+              rule: 'required',
+              errorMessage: '제목을 입력해주세요.',
+            },
+            {
+              rule: 'minLength',
+              value: 3,
+              errorMessage: '제목은 최소 3글자 이상이어야 합니다.',
+            },
+          ])
+          .addField('#content', [
+            {
+              rule: 'required',
+              errorMessage: '내용을 입력해주세요.',
+            },
+            {
+              rule: 'minLength',
+              value: 5,
+              errorMessage: '내용은 최소 5글자 이상이어야 합니다.',
+            },
+          ]);
+      });
+    </script>
+  </head>
+  <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard"> Dashboard </a>
+        <a
+          role="button"
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navMenu"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div id="navMenu" class="navbar-menu">
+        <div class="navbar-start">
+          <!-- 추가 메뉴가 필요하면 이곳에 삽입 -->
+        </div>
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container">
+        <h1 class="title has-text-centered" style="color: #fdf5bf">
+          우리 아이 일기장 쓰기 페이지
+        </h1>
+        <div class="box">
+          <h2 class="subtitle">새 일기 작성</h2>
+          <form
+            id="diaryForm"
+            th:action="@{/children/{childId}/diaries/new(childId=${childId})}"
+            method="post"
+          >
+            <input type="hidden" name="childId" th:value="${childId}" />
+            <!-- 제목 인풋 추가 -->
+            <div class="field">
+              <label class="label" for="title">제목</label>
+              <div class="control">
+                <input
+                  class="input"
+                  type="text"
+                  id="title"
+                  name="title"
+                  placeholder="일기의 제목을 입력해주세요."
+                  required
+                />
+              </div>
             </div>
-            <button type="submit">작성하기</button>
-        </form>
-    </div>
-</body>
+            <!-- 내용 입력 -->
+            <div class="field">
+              <label class="label" for="content">일기 내용</label>
+              <div class="control">
+                <textarea
+                  class="textarea"
+                  id="content"
+                  name="content"
+                  rows="4"
+                  placeholder="일기 내용을 작성해주세요."
+                  required
+                ></textarea>
+              </div>
+            </div>
+            <!-- 제출 버튼 -->
+            <div class="field is-grouped">
+              <div class="control">
+                <button type="submit" class="button secondary-bg">
+                  작성하기
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </body>
 </html>

@@ -2,14 +2,15 @@
   —bulma-primary-h: 161deg;
   —bulma-primary-s: 44%;
   —bulma-primary-l: 82%;
-  --primary: #FDF5BF;
-  --secondary: #BEE6D9;
+  --primary: #fdf5bf;
+  --secondary: #bee6d9;
+  --third: #ffb6b9;
 }
 
 .is-secondary {
-  background-color: #BEE6D9;
+  background-color: #bee6d9;
 }
 
 .is-third {
-  background-color: #FFB6B9;
+  background-color: #ffb6b9;
 }

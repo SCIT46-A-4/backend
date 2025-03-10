@@ -1,17 +1,21 @@
 package com.scit.iLog.controller;
 
+import java.time.LocalDateTime;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.scit.iLog.domain.PeriodType;
 import com.scit.iLog.dto.stats.ChildEmotionStatsDTO;
 import com.scit.iLog.dto.stats.ChildPhysicalStatsDTO;
 import com.scit.iLog.service.StatisticsService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -74,5 +78,34 @@ public class StatisticsController {
             @RequestParam("periodType") PeriodType periodType
             ) {
         return statisticsService.getEmotionStatsBy(childId,startDate,endDate,periodType);
+    }
+    
+    
+    //-------------------------------------------------------------------------------------------------
+    /**
+     * 2025-03-05~07 이도훈
+     * v1.x.x-13
+     * D-2 
+     * @param childId
+     * @param startDate
+     * @param endDate
+     * @param periodType
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/{childId}/dashBoardEmotionStats")
+    public ChildEmotionStatsDTO handleGetDashBoardChildEmotionStats(
+            @PathVariable("childId") Long childId,
+            @RequestParam("startDate")
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") //시작일 년월일로 지정
+            LocalDateTime startDate,
+            @RequestParam(value = "endDate")
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") //종료일 년월일로 지정
+            LocalDateTime endDate,
+            @RequestParam("periodType") PeriodType periodType
+    		) {
+    	
+    	return statisticsService.getDashBoardEmotionStatsBy(childId, startDate, endDate, periodType);
+    
     }
 }

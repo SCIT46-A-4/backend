@@ -2,6 +2,7 @@ package com.scit.iLog.controller;
 
 import com.scit.iLog.dto.mentalsurvey.ChildMentalStatsDTO;
 import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
+import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseChartDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseDetailsDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseInsertDTO;
 import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyDetailsDTO;
@@ -18,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.scit.iLog.config.SecurityConfig.MemberDetails;
@@ -81,9 +83,9 @@ public class MentalSurveyController {
 			@PathVariable("mentalSurveyId") String mentalSurveyId,
 			Model model
 	) {
-		ChildNameDTO childMentalSurveyInfo = childService.getChildName(childId);
+		String childName = childService.getChildNameById(childId);
 		MentalSurveyDetailsDTO mentalSurveyInfo = mentalSurveyService.getMetalSurveyDetails(mentalSurveyId);
-		model.addAttribute("childName", childMentalSurveyInfo);
+		model.addAttribute("childName", childName);
 		model.addAttribute("mentalSurvey", mentalSurveyInfo);
 		return "children/mentalSurvey/mentalSurveyResponseInsertView";
 	}
@@ -153,4 +155,32 @@ public class MentalSurveyController {
 		model.addAttribute("mentalSurveys", mentalSurveys);
 		return "children/mentalSurvey/mentalSurveyListView";
 	}
+
+	// 시작 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		/**
+		 * v1.x.x-10
+		 * D-2 25/3/5 준성 MentalSurveyResponse 작업
+		 * @param childId
+		 * @param calendarNum
+		 * @return
+		 */
+		@ResponseBody
+		@PostMapping("/{calanderNum}/GetScores")
+		public List<MentalSurveyResponseChartDTO> getMentalScores(@PathVariable(name="childId") Long childId,
+																  @PathVariable(name="calanderNum", required = false) Long calendarNum)
+		{
+			// 주간(7), 월간(30), 반개월간(180) 구분
+			calendarNum = (calendarNum == null)? 7 : calendarNum;
+
+			List<MentalSurveyResponseChartDTO> mentalSurveyResponseChartDTOList = new ArrayList<>();
+
+			if(calendarNum <= 7) 		mentalSurveyResponseChartDTOList= mentalSurveyService.getLastWeekData(childId);
+			else if(calendarNum <= 30)  mentalSurveyResponseChartDTOList = mentalSurveyService.getLastMonthData(childId);
+			else if(calendarNum <= 180) mentalSurveyResponseChartDTOList = mentalSurveyService.getLastYearData(childId);
+
+			return mentalSurveyResponseChartDTOList;
+		}
+
+		// 끝 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 }

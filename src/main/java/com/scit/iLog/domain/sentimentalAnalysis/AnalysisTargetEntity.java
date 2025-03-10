@@ -5,8 +5,11 @@ import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -31,9 +34,9 @@ public class AnalysisTargetEntity extends BaseTimeEntity {
     @JoinColumn(name = "uploaded_by")
     private MemberEntity uploadedBy;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private AnalysisType type;
+    @Builder.Default
+    @OneToMany(mappedBy = "analysisTarget")
+    private List<AnalysisTargetTypeEntity> analysisTargetTypes = new ArrayList<>();
 
     @Column(name = "original_target_file_name", length = 200)
     private String originalTargetFileName;
@@ -58,4 +61,21 @@ public class AnalysisTargetEntity extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "analysisTarget", fetch = LAZY)
     private AnalysisResultEntity analysisResult;
+
+    @Column(name = "locationName")
+    private String locationName;
+
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Column(name = "longitude")
+    private double longitude;
+
+    public void replaceAllAnalysisTargetTypes(List<AnalysisTargetTypeEntity> analysisTargetTypes) {
+        if (!ObjectUtils.isEmpty(analysisTargetTypes)) {
+            this.analysisTargetTypes.clear();
+            analysisTargetTypes.forEach(att -> att.setAnalysisTarget(this));
+            this.analysisTargetTypes.addAll(analysisTargetTypes);
+        }
+    }
 }

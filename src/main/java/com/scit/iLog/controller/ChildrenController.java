@@ -80,7 +80,7 @@ public class ChildrenController {
 			Model model
 	) {
 		// ID에 해당하는 아동 기본 정보를 조회
-		ChildBasicInfoDTO childBasicInfo = childService.getBasicInfoById(childId);
+		ChildBasicInfoDetailsDTO childBasicInfo = childService.getBasicInfoById(childId);
 		// 조회한 데이터를 뷰(Model)에 추가
 		model.addAttribute("childBasicInfo", childBasicInfo);
 		log.info("childProfileImgSrc in dto: {}", childBasicInfo.getProfileImgSrcUri());
@@ -109,7 +109,7 @@ public class ChildrenController {
 			@PathVariable("childId") Long childId,
 			Model model
 	) {
-		ChildBasicInfoDTO childBasicInfo = childService.getBasicInfoById(childId);
+		ChildBasicInfoDetailsDTO childBasicInfo = childService.getBasicInfoById(childId);
 		log.debug("수정 페이지 로딩 - 가정환경 데이터: {}", childBasicInfo.getFamilyBackGrounds());
 		model.addAttribute("childBasicInfo", childBasicInfo);
 		return "children/basicInfoUpdateView";
@@ -214,7 +214,7 @@ public class ChildrenController {
 			Model model
 	) {
 		// 아이의 기본 정보와 페이징된 레코드 조회
-		ChildBasicInfoDTO childName = childService.findBasicInfoById(childId);
+		ChildRecordListBasicInfoDTO childName = childService.findBasicInfoById(childId);
 		Page<ChildRecordListItemDTO> childRecordsPage = childRecordService.findPagedChildRecords(childId, pageable);
 
 		// 페이지 네비게이터 생성 (예: 그룹당 5페이지씩)

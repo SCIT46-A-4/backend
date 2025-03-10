@@ -23,8 +23,8 @@ public class AnalysisResultEntity extends BaseTimeEntity {
     @JoinColumn(name = "analysis_target_id", nullable = false)
     private AnalysisTargetEntity analysisTarget;
 
-    @Column(name = "analysis_result", length = 1000)
-    private String analysisResult;
+    @Column(name = "analysis_result_text", length = 1000)
+    private String analysisResultText;
 
     @Column(name = "suggested_solution", length = 1000)
     private String suggestedSolution;
@@ -39,9 +39,9 @@ public class AnalysisResultEntity extends BaseTimeEntity {
     @Column(name = "title")
     private String title;
 
-    @OneToOne(mappedBy = "analysisResult", fetch = LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "analysisResult", fetch = LAZY, cascade = CascadeType.ALL)
     public AnalysisSatisfactionEntity satisfaction;
 
-    @OneToOne(mappedBy = "analysisResult", fetch = LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "analysisResult", fetch = LAZY, cascade = CascadeType.ALL)
     private AnalysisResultNoteEntity analysisResultNote;
 }

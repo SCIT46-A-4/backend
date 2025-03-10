@@ -1,18 +1,24 @@
 package com.scit.iLog.controller;
 
 import com.scit.iLog.domain.child.ChildDiaryEntity;
-import com.scit.iLog.dto.diary.DiaryUpdateDto;
+import com.scit.iLog.dto.diary.ChildDiaryInsertDTO;
+import com.scit.iLog.dto.diary.DiaryDetailsDTO;
+import com.scit.iLog.dto.diary.DiaryUpdateDTO;
+import com.scit.iLog.dto.diary.DiaryUpdateRequestDTO;
 import com.scit.iLog.service.child.ChildDiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import static com.scit.iLog.config.SecurityConfig.*;
+
 @Controller
-@RequestMapping("/children")
+@RequestMapping("/children/{childId}/diaries")
 @RequiredArgsConstructor
 public class DiaryController {
 	private final ChildDiaryService childDiaryService;
@@ -62,9 +68,19 @@ public class DiaryController {
      * @return 해당 뷰를 통해 일기 작성 화면이 표시됨
      * CD-2
      */
-    @GetMapping("/diaries/new")
+    @GetMapping("/new")
     public String handleGetDiaryInsertView() {
         return "children/diaries/diaryInsertView";
+    }
+
+    @PostMapping("/new")
+    public String handlePostDiaryInsert(
+            @PathVariable("childId") Long childId,
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @ModelAttribute ChildDiaryInsertDTO childDiaryInsertDTO
+    ) {
+        Long diaryId = childDiaryService.saveDiary(childId, memberDetails.getId(), childDiaryInsertDTO);
+        return String.format("redirect:/children/%d/diaries/%d/details", childId, diaryId);
     }
 
     /*
@@ -72,13 +88,14 @@ public class DiaryController {
 		/children/diaries/diaryDetailView를 출력 요청을 처리하는 메서드.
 		CD-3
 	*/
-    @GetMapping("/{childId}/diaries/{diaryId}/details")
+    @GetMapping("/{diaryId}/details")
     public String handleGetDiaryDetailView(
             @PathVariable("childId") Long childId,
             @PathVariable("diaryId") Long diaryId,
             Model model
     ) {
-        childDiaryService.findDiaryDetailsById(diaryId);
+        DiaryDetailsDTO diaryDetails = childDiaryService.findDiaryDetailsById(diaryId);
+        model.addAttribute("diaryDetails", diaryDetails);
         return "children/diaries/diaryDetailsView";
     }
 
@@ -92,12 +109,12 @@ public class DiaryController {
      *
      * CD-4
      */
-    @GetMapping("/diaryList/{diaryId}/edit")
+    @GetMapping("/{diaryId}/edit")
     public String handleGetDiaryUpdateView(
     		@RequestParam("diaryId") Long diaryId,
     		Model model
     ) {
-    	DiaryUpdateDto diary = childDiaryService.findDiaryUpdateInfoById(diaryId);
+    	DiaryUpdateDTO diary = childDiaryService.findDiaryUpdateInfoById(diaryId);
     	model.addAttribute("diary", diary);
     	return "children/diaries/diaryUpdateView";
     }
@@ -114,10 +131,11 @@ public class DiaryController {
             /*
                 여기 diaryId는 경로변수로 받는 것이 좋습니다.
              */
+            @PathVariable("childId") Long childId,
             @PathVariable("diaryId") Long diaryId,
-    		@ModelAttribute DiaryUpdateDto diaryUpdateDTO
+    		@ModelAttribute DiaryUpdateRequestDTO diaryUpdateDTO
     ) {
     	childDiaryService.updateDiary(diaryId, diaryUpdateDTO);
-    	return "children/diaries/diaryUpdateView";
+    	return String.format("redirect:/children/%d/diaries/%d/details",childId,diaryId);
     }
 }
