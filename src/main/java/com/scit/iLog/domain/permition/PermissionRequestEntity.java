@@ -1,5 +1,7 @@
 package com.scit.iLog.domain.permition;
 
+import java.time.LocalDateTime;
+
 import com.scit.iLog.domain.BaseTimeEntity;
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.child.ChildEntity;
@@ -16,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -60,8 +63,9 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     @Column(name = "request_link_code")
     private String requestLinkCode;
     
-    // 마감시간
     // 그럼 저기에 있는 사람의 별칭은 어떻게 세팅할 것인가?
+    @Column(name = "alias")
+    private String alias;
     
     public void setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus status)
     {

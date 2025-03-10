@@ -50,24 +50,42 @@ public class EmailService {
      * childName   : 아이이름
      * option	   : 비고, 추가란
      * **/
-    public void sendAuthInviteEmail(String to, String guardionName, String childName, String... option)
+    public void sendAuthInviteEmail(String to, String guardionName, Long childId, 
+    								Long requesterId, String _alias, String inviteeEmail,
+    								String etc)
     {
     	// DB에 저장하는 로직 필요
         SimpleMailMessage message = new SimpleMailMessage();
-        String str = option.length < 1? "" : option[0];
+        String str = etc.length() < 1? "" : etc;
         String token = UUID.randomUUID().toString();
         String verificationUrl = "http://localhost:8080/verifyLink?token=" + token;
         
         message.setFrom("ilog@ilog.com");  // 발신자 주소
         message.setTo(to);
-        message.setSubject(guardionName +"로부터" + childName + " 권한 초대 링크입니다.");
+        message.setSubject(guardionName +"로부터" + " 권한 초대 링크입니다.");
         message.setText("안녕하세요,\n\n"
-        				+ childName + "의 인증 링크: \n" 
+        				+ "인증 링크: \n" 
         				+ verificationUrl + "\n"
         				+ str);
         mailSender.send(message);
         
         // DB에 해당 사항을 하나 만들어서 save 하는 로직 필요.
+		
+        PermissionRequestDTO permissionRequestDto = 
+        		PermissionRequestDTO.builder()
+        		.alias(_alias)
+        		.childId(childId)
+        		.requesterId(requesterId)
+        		.inviteeId(requesterId)
+        		.relationType(RelationType.TEACHER)
+        		.permissionRequestStatus(PermissionRequestStatus.PENDING)
+        		.requestCodeLink(token)
+        		.build();
+        
+    	Optional<MemberEntity> requesterEntity  	 = memberRepository.findById(permissionRequestDto.getRequesterId());	// 요청보낸사람
+    	Optional<MemberEntity> inviteeEntity = memberRepository.findById(permissionRequestDto.getInviteeId());		// 초대받은사람
+    	childRepository .findById(permissionRequestDto.getChildId());
+        
     }
     
     // 초대 받은 사람이 링크 클릭시, 이것이 db에 있는지 확인하고 업데이트 하는 로직
@@ -93,18 +111,19 @@ public class EmailService {
     
     public void savePermissionEntity(PermissionRequestDTO dto)
     {
-    	Optional<MemberEntity> requesterEntity = memberRepository.findById(dto.requesterId());  // 요청보낸사람
-    	Optional<MemberEntity> inviteeEntity   = memberRepository.findById(dto.inviteeId());	// 초대받은사람
-    	Optional<ChildEntity>  childEntity     = childRepository.findById(dto.childId());	 	// 초대받은사람
+    	Optional<MemberEntity> requesterEntity = memberRepository.findById(dto.getRequesterId());  // 요청보낸사람
+    	Optional<MemberEntity> inviteeEntity   = memberRepository.findById(dto.getInviteeId());	// 초대받은사람
+    	Optional<ChildEntity>  childEntity     = childRepository.findById(dto.getChildId());	 	// 초대받은사람
     	
     	PermissionRequestEntity _entity = 
     			PermissionRequestEntity.builder()
     			.requester(requesterEntity.get())
     			.child(childEntity.get())
     			.invitee(requesterEntity.get())
-    			.relationType(dto.relationType())
-    			.permissionStatus(dto.permissionRequestStatus())
-    			.requestLinkCode(dto.requestCodeLink())
+    			.relationType(dto.getRelationType())
+    			.permissionStatus(dto.getPermissionRequestStatus())
+    			.requestLinkCode(dto.getRequestCodeLink())
+    			.alias(dto.getAlias())
     			.build();
     }
 }

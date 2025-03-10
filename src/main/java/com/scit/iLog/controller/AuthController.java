@@ -96,4 +96,11 @@ public class AuthController {
 		boolean isExists = memberService.checkSignInIdExists(signInId);
         return ResponseEntity.ok(isExists);  // ✅ 중복이면 true, 사용 가능하면 false 반환
 	}
+	
+	@GetMapping("/parentsView")
+	public String getAuthPage()
+	{
+		
+		return "/children/permissions/guardianView";
+	}
 }
