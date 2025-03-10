@@ -14,13 +14,17 @@ import com.scit.iLog.repository.MentalSurveyResponseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.data.domain.Sort.Order.*;
 
 @Slf4j
 @Service
@@ -181,4 +185,69 @@ public class MentalSurveyService {
                          ))
                  .toList();
     }
+
+    // 시작>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // ------------------------ MentalSurveyResponse 25/3/5 준성 작업 -----------------------
+    /**
+     * v1.x.x-10
+     * getMentalScores
+     * D-2 25/3/5 준성 MentalSurveyResponse 작업
+     * @param childId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    private List<MentalSurveyResponseChartDTO> getSurveyData(Long childId, LocalDateTime startDate, LocalDateTime endDate)
+    {
+    	System.out.println("-------------------------------------------");
+    	Sort sort = Sort.by(asc("createdAt"));
+
+    	List<MentalSurveyResponseEntity> mentalSurveyResponseEntity
+    	// = mentalSurveyResponseRepository.findAllByCreatedAtBetween(startDate, endDate, sort);
+    	= mentalSurveyResponseRepository.findAllByChildIdAndCreatedAtBetween(childId, startDate, endDate, sort);
+
+    	List<MentalSurveyResponseChartDTO> chartDtoList = new ArrayList<>();
+    	System.out.println("childId: " + childId);
+    	System.out.println("start: " + startDate);
+    	System.out.println("end: " + endDate);
+    	for(int i = 0; i < mentalSurveyResponseEntity.size(); i++)
+    		System.out.println(mentalSurveyResponseEntity.get(i).getId());
+
+
+    	for(var data : mentalSurveyResponseEntity)
+    		{
+    			MentalSurveyResponseChartDTO _dto = MentalSurveyResponseChartDTO.builder()
+    										.totalLikertScore(data.getTotalLikertScore())
+    										.comment(data.getComment())
+    										.surveyTitle(data.getSurveyTitle())
+    										.createdAt(data.getCreatedAt())
+    										.respondentId(data.getRespondentId())
+    										.build();
+    			chartDtoList.add(_dto);
+    		}
+    	System.out.println("-------------------------------------------");
+    	return chartDtoList;
+    }
+
+    // 1주일치 데이터 조회
+    public List<MentalSurveyResponseChartDTO> getLastWeekData(Long childId)
+    {
+        return getSurveyData(childId, LocalDateTime.now().minusWeeks(1), LocalDateTime.now());
+    }
+
+    // 1개월치 데이터 조회
+    public List<MentalSurveyResponseChartDTO> getLastMonthData(Long childId)
+    {
+        return getSurveyData(childId, LocalDateTime.now().minusMonths(1), LocalDateTime.now());
+    }
+
+    // 1년치 데이터 조회
+    public List<MentalSurveyResponseChartDTO> getLastYearData(Long childId)
+    {
+        return getSurveyData(childId, LocalDateTime.now().minusYears(1), LocalDateTime.now());
+    }
+    // 끝 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
 }

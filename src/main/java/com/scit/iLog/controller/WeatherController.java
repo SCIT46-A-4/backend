@@ -17,9 +17,9 @@ public class WeatherController {
     @GetMapping("/weather")
     public WeatherResponse handleGEtWeatherRecordRequest(
             @RequestParam("lat") double lat,
-            @RequestParam("log") double lon,
-            @RequestParam("dt")LocalDateTime dt
-            ) {
+            @RequestParam("lon") double lon,
+            @RequestParam("dt") LocalDateTime dt
+    ) {
         return weatherService.getWeatherRecordOf(lat, lon, dt);
     }
 }

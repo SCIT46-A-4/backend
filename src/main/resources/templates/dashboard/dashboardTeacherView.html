@@ -1,69 +1,4 @@
 <!DOCTYPE html>
-<html lang="ko">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>교사용 대시보드 - iLog</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <style>
-        .navbar {
-            background-color: #FFE4E1;
-        }
-
-        .student-list {
-            height: calc(100vh - 200px);
-            overflow-y: auto;
-        }
-
-        .student-item {
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .student-item:hover {
-            background-color: #f5f5f5;
-        }
-
-        .student-item.active {
-            background-color: #FFE4E1;
-        }
-
-        .stats-container {
-            background-color: white;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            height: 300px;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Navigation -->
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item">
-                <strong>D-2</strong>
-            </a>
-        </div>
-
-        <div class="navbar-end">
-            <div class="navbar-item">
-                <div class="buttons">
-                    <!-- G-1 guideListView.html-->
-                    <a class="button is-light" th:href="@{/guides}">이용안내</a>
-                    <!-- CL-1 claimListView.html-->
-                    <a class="button is-light" th:href="@{/claims}">고객 센터</a>
-                    <!-- 로그인 정보 -->
-                    <a class="button is-light" th:href="@{/members/myDetails}">
-                        <span class="icon"><i class="fas fa-user"></i></span>
-                        <span>김수영(선생)</span>
 <html lang="ko" xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 
 <head>
@@ -691,52 +626,6 @@
         </div>
     </nav>
 
-    <section class="section">
-        <div class="container is-fluid">
-            <div class="columns">
-                <!-- Left Column - Student List -->
-                <div class="column is-3">
-                    <div class="field">
-                        <div class="control">
-                            <div class="select is-fullwidth mb-2">
-                                <select id="yearSelector">
-                                    <option>2025년</option>
-                                    <option>2024년</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- <div class="field">
-                        <div class="control">
-                            <div class="select is-fullwidth mb-4">
-                                <select id="classSelector">
-                                    <option>해바라기 반</option>
-                                    <option>장미 반</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div> -->
-
-                    <div class="student-list">
-                        <div class="student-item active">
-                            <p class="has-text-weight-bold">김승현</p>
-                            <p class="is-size-7">2020.09.01 | 2시간 전</p>
-                        </div>
-                        <div class="student-item">
-                            <p class="has-text-weight-bold">김우주</p>
-                            <p class="is-size-7">2020.03.23 | 어제</p>
-                        </div>
-                        <div class="student-item">
-                            <p class="has-text-weight-bold">박규리</p>
-                            <p class="is-size-7">2020.01.23 | 1주일 전</p>
-                        </div>
-                        <div class="student-item">
-                            <p class="has-text-weight-bold">이채연</p>
-                            <p class="is-size-7">2020.07.20 | 24.12.01</p>
-                        </div>
-                        <!-- P-1 childPermissionRequestView.html -->
-                    </div>
-                    <div>
 
     <!-- 본문 섹션 -->
     <section class="section">
@@ -799,18 +688,6 @@
                     </div>
                 </div>
 
-                <!-- Right Column - Student Details -->
-                <div class="column">
-                    <div class="columns">
-                        <!-- Student Profile -->
-                        <div class="column is-4">
-                            <div class="card">
-                                <div class="card-content has-text-centered">
-                                    <figure class="image is-128x128 is-inline-block mb-4">
-                                        <img class="is-rounded" src="/placeholder.svg" alt="학생 사진">
-                                    </figure>
-                                    <p class="title is-4">김승현 (3세)</p>
-                                    <p class="subtitle is-6">2020-09-01</p>
                 <!-- 오른쪽 컬럼 (아동 상세 정보) -->
                 <div class="column right-column">
                     <div class="columns">
@@ -870,23 +747,6 @@
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="column">
-                            <div class="columns is-multiline">
-                                <!-- S-1 mentalSurveyListView.html -->
-                                <div class="column is-6">
-                                    <button class="button is-fullwidth is-info is-light">최근 설문 결과 보기</button>
-                                </div>
-                                <!-- AI-1 analysisResultListView.html -->
-                                <div class="column is-6">
-                                    <button class="button is-fullwidth is-success is-light">최근 분석 결과 보기</button>
-                                </div>
-                                <!-- S-4 mentalSurveyInsertView.html -->
-                                <div class="column is-6">
-                                    <button class="button is-fullwidth is-warning is-light">체크리스트 작성하기</button>
-                                </div>
-                                <!-- AI-2 analysisInsertView.html -->
-                                <div class="column is-6">
                         <!-- 바로가기 버튼들 -->
                         <div class="column">
                             <div class="columns is-multiline">
@@ -906,8 +766,6 @@
                         </div>
                     </div>
 
-                    <!-- Charts -->
-                    <div class="columns">
                     <div class="columns">
                         <!-- 설문조사 점수 통계 그래프 -->
                         <div class="column is-8">
@@ -917,10 +775,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="column is-4">
-                            <div class="card">
-                                <div class="card-content">
-                                    <div id="progressChart" class="stats-container"></div>
 
                         <!-- 설문조사 결과 감정 그래프 -->
                         <div class="column is-4">
@@ -939,67 +793,6 @@
             </div>
         </div>
     </section>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Trend Chart
-            Highcharts.chart('trendChart', {
-                chart: {
-                    type: 'line',
-                    backgroundColor: '#FFE4E1'
-                },
-                title: {
-                    text: '감정 분석 추이'
-                },
-                xAxis: {
-                    categories: ['2025/01/11', '2025/01/11', '2025/01/11', '2025/01/11', '2025/01/11', '2025/01/11']
-                },
-                yAxis: {
-                    title: {
-                        text: '수치'
-                    }
-                },
-                series: [{
-                    name: '감정 지수',
-                    data: [43, 52, 57, 69, 97, 79]
-                }]
-            });
-
-            // Progress Chart
-            Highcharts.chart('progressChart', {
-                chart: {
-                    type: 'pie'
-                },
-                title: {
-                    text: '전체 진행도'
-                },
-                plotOptions: {
-                    pie: {
-                        innerSize: '60%'
-                    }
-                },
-                series: [{
-                    name: '진행도',
-                    data: [
-                        ['완료', 60],
-                        ['진행중', 40]
-                    ]
-                }]
-            });
-
-            // Student list click handler
-            document.querySelectorAll('.student-item').forEach(item => {
-                item.addEventListener('click', function () {
-                    document.querySelectorAll('.student-item').forEach(el => {
-                        el.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                });
-            });
-        });
-    </script>
-</body>
-
 </body>
 
 

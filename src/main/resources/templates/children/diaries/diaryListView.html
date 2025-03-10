@@ -1,95 +1,190 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org"
->
-<head>
-<meta charset="UTF-8">
-<title>우리 아이 일기장 목록 페이지</title>
-<script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-
-	<h2>김승현군 일기장 목록 페이지</h2>
-
-	<p>아이 일기 목록</p>
-	<a th:href="@{/children/{childId}/diaries/new(childId=${childId})}">일기 쓰기</a>
-	<hr>
-	<div id="list">
-		<label>번호</label>&nbsp; 
-		<label>등록일</label>&nbsp; 
-		<label>제목</label>&nbsp;
-	</div>
-	
-	        <!-- 일기 목록 테이블 -->
-        <table class="diary-list-table" border="1">
-    <thead>
-        <tr>
-            <th>번호</th>
-            <th>일기</th>
-            <th>작성일</th>
-            <th>삭제</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- 일기 목록 반복문 -->
-        <tr th:each="diary : ${list.content}">
-            <td th:text="${diary.id}"></td>
-            <td>
-            	<a th:href="@{/children/diaries/{id}(id=${diary.id})}">보기</a>
-            </td>
-            <td th:text="${diary.content}"></td>
-			<td>
-			    <button type="button" class="deleteBtn" th:data-diary-id="${diary.id}">삭제</button>
-			</td>
-        </tr>
-    </tbody>
-</table>
-	        <!-- 페이징 처리 -->
-        <div class="pagination">
-            <div th:if="${list.totalPages > 1}">
-                <ul>
-                    <li th:class="${list.hasPrevious() ? '' : 'disabled'}">
-                        <a th:href="@{/diaries(id=${childId}, page=0)}">&laquo; 처음</a>
-                    </li>
-                    <li th:class="${list.hasPrevious() ? '' : 'disabled'}">
-                        <a th:href="@{/diaries(id=${childId}, page=${list.number - 1})}">&lt; 이전</a>
-                    </li>
-                    <li th:each="i : ${#numbers.sequence(0, list.totalPages - 1)}"
-                        th:class="${i == list.number ? 'active' : ''}">
-                        <a th:href="@{/diaries(id=${childId}, page=${i})}" th:text="${i + 1}"></a>
-                    </li>
-                    <li th:class="${list.hasNext() ? '' : 'disabled'}">
-                        <a th:href="@{/diaries(id=${childId}, page=${list.number + 1})}">다음 &gt;</a>
-                    </li>
-                    <li th:class="${list.hasNext() ? '' : 'disabled'}">
-                        <a th:href="@{/diaries(id=${childId}, page=${list.totalPages - 1})}">마지막 &raquo;</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-</body>
-<script>
-$(document).ready(function() {
-    $(".deleteBtn").click(function() {
- 		let diaryId = Number($(this).attr("data-diary-id"));
-        if (!confirm("정말로 삭제하시겠습니까?")) {
-            return;
-        }
-
-        $.ajax({
-            type: "DELETE",
-            url: "/children/diaries/" + diaryId,
-            success: function(response) {
-                if (response === "fail") {
-                    alert("삭제할 일기가 존재하지 않습니다.");
-                } else {
-                    window.location.href = response; // 삭제 성공 시 페이지 이동
-                }
-            },
-            error: function() {
-                alert("삭제 중 오류가 발생했습니다.");
-            }
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>우리 아이 일기장 목록 페이지</title>
+    <link
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
+      href="../../../static/css/bulma.min.css"
+    />
+    <style>
+      /* 프라이머리 컬러: #FDF5BF, 세컨더리 컬러: #BEE6D9 */
+      .primary-color {
+        color: #fdf5bf;
+      }
+      .secondary-bg {
+        background-color: #bee6d9;
+      }
+      /* 네비게이션 바 사용자 정의 */
+      .navbar {
+        background-color: #bee6d9;
+      }
+      .navbar-item,
+      .navbar-link {
+        color: #333;
+      }
+      /* 추가적인 마진 조정 */
+      .content-section {
+        margin-top: 2rem;
+      }
+    </style>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/sweetalert2.js"></script>
+    <script>
+      $(document).ready(function () {
+        // navbar burger toggle (모바일)
+        $('.navbar-burger').click(function () {
+          $('.navbar-burger, .navbar-menu').toggleClass('is-active');
         });
-    });
-});
-</script>
+
+        $('.deleteBtn').click(function () {
+          let diaryId = Number($(this).attr('data-diary-id'));
+          if (!confirm('정말로 삭제하시겠습니까?')) {
+            return;
+          }
+          $.ajax({
+            type: 'DELETE',
+            url: '/children/diaries/' + diaryId,
+            success: function (response) {
+              if (response === 'fail') {
+                Swal.fire('삭제할 일기가 존재하지 않습니다.');
+              } else {
+                window.location.href = response; // 삭제 성공 시 페이지 이동
+              }
+            },
+            error: function () {
+              Swal.fire('삭제 중 오류가 발생했습니다.');
+            },
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard"> Dashboard </a>
+        <a
+          role="button"
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navMenu"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div id="navMenu" class="navbar-menu">
+        <div class="navbar-start">
+          <!-- 추가 메뉴가 필요하면 이곳에 삽입 -->
+        </div>
+      </div>
+    </nav>
+
+    <section class="section content-section">
+      <div class="container">
+        <h2 class="title is-3" style="color: #fdf5bf">
+          김승현군 일기장 목록 페이지
+        </h2>
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <p class="subtitle">아이 일기 목록</p>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <a
+                class="button secondary-bg"
+                th:href="@{/children/{childId}/diaries/new(childId=${childId})}"
+              >
+                일기 쓰기
+              </a>
+            </div>
+          </div>
+        </div>
+        <hr />
+
+        <!-- 일기 목록 테이블 -->
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>일기</th>
+              <th>작성일</th>
+              <th>삭제</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 일기 목록 반복문 -->
+            <tr th:each="diary : ${list.content}">
+              <td th:text="${diary.id}"></td>
+              <td>
+                <a th:href="@{/children/diaries/{id}(id=${diary.id})}">보기</a>
+              </td>
+              <td th:text="${diary.content}"></td>
+              <td>
+                <button
+                  type="button"
+                  class="button is-danger deleteBtn"
+                  th:data-diary-id="${diary.id}"
+                >
+                  삭제
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 페이징 처리 -->
+        <nav
+          class="pagination is-centered"
+          role="navigation"
+          aria-label="pagination"
+          th:if="${list.totalPages > 1}"
+        >
+          <a
+            class="pagination-previous"
+            th:classappend="${list.hasPrevious() ? '' : ' is-disabled'}"
+            th:href="@{/diaries(id=${childId}, page=0)}"
+            >&laquo; 처음</a
+          >
+          <a
+            class="pagination-previous"
+            th:classappend="${list.hasPrevious() ? '' : ' is-disabled'}"
+            th:href="@{/diaries(id=${childId}, page=${list.number - 1})}"
+            >&lt; 이전</a
+          >
+          <ul class="pagination-list">
+            <li
+              th:each="i : ${#numbers.sequence(0, list.totalPages - 1)}"
+              th:classappend="${i == list.number ? ' is-current' : ''}"
+            >
+              <a
+                class="pagination-link"
+                th:href="@{/diaries(id=${childId}, page=${i})}"
+                th:text="${i + 1}"
+              ></a>
+            </li>
+          </ul>
+          <a
+            class="pagination-next"
+            th:classappend="${list.hasNext() ? '' : ' is-disabled'}"
+            th:href="@{/diaries(id=${childId}, page=${list.number + 1})}"
+            >다음 &gt;</a
+          >
+          <a
+            class="pagination-next"
+            th:classappend="${list.hasNext() ? '' : ' is-disabled'}"
+            th:href="@{/diaries(id=${childId}, page=${list.totalPages - 1})}"
+            >마지막 &raquo;</a
+          >
+        </nav>
+      </div>
+    </section>
+  </body>
 </html>

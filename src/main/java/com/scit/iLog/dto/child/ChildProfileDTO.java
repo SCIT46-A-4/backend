@@ -9,6 +9,9 @@ public record ChildProfileDTO(
         Long childId,
         String name,
         LocalDateTime birthDate,
-        String profileImgSrc
+        String profileImgSrc,
+        String birthLocation,
+        String gender,
+        String callName
 ) {
 }
