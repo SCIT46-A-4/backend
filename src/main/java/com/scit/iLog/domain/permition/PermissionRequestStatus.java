@@ -5,8 +5,7 @@ import lombok.Getter;
 @Getter
 public enum PermissionRequestStatus
 	{
-		PENDING("송신중"), ACCEPTED("수락됨"), 
-		DENIED("거부"), EXPIRED("파기");
+		PENDING("송신중"), ACCEPTED("수락됨"), EXPIRED("파기");
 		
 		private final String permitionStatus;
 		

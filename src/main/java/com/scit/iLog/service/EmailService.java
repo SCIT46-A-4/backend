@@ -7,8 +7,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.permition.PermissionRequestDTO;
 import com.scit.iLog.domain.permition.PermissionRequestEntity;
+import com.scit.iLog.domain.permition.PermissionRequestStatus;
+import com.scit.iLog.repository.ChildRepository;
+import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.PermissionRequestRepository;
 
 import java.util.Optional;
@@ -21,6 +27,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EmailService {
     private final JavaMailSender mailSender;
     private final PermissionRequestRepository permissionRequestRepository;
+    private final MemberRepository memberRepository;
+    private final ChildRepository childRepository;
     /**
      * 인증번호를 포함한 이메일을 전송합니다.
      * @param to 수신자 이메일 주소
@@ -48,7 +56,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         String str = option.length < 1? "" : option[0];
         String token = UUID.randomUUID().toString();
-        String verificationUrl = "http://localhost:8080/verify?token=" + token;
+        String verificationUrl = "http://localhost:8080/verifyLink?token=" + token;
         
         message.setFrom("ilog@ilog.com");  // 발신자 주소
         message.setTo(to);
@@ -58,37 +66,46 @@ public class EmailService {
         				+ verificationUrl + "\n"
         				+ str);
         mailSender.send(message);
+        
+        // DB에 해당 사항을 하나 만들어서 save 하는 로직 필요.
     }
     
-    public boolean findInviteCode(String code)
+    // 초대 받은 사람이 링크 클릭시, 이것이 db에 있는지 확인하고 업데이트 하는 로직
+    public void findInviteCodeAndUpdate(String code) throws Exception
     {
-    	Optional<PermissionRequestEntity> resultEntity = permissionRequestRepository.findByRequestLinkCode(code);
+    	// null을 검색하면 문제 다른 유저 것도 검색될 수 있어서 null 체크로 방지
+    	if(code == null) throw new IllegalArgumentException("받은 링크가 null입니다.");
     	
-    	if(resultEntity.isPresent()) 
-    		{
-    			// 만약 존재하면 update 로직 필요
-    			// 아래 거는 지워야 할 수 있음
-    			PermissionRequestDTO dto = PermissionRequestDTO.builder()
-    										.id(resultEntity.get().getId())
-    										.childId(resultEntity.get().getChild().getId())
-    										.requesterId(resultEntity.get().getRequester().getId())
-    										.inviteeId(resultEntity.get().getInvitee().getId())
-    										.relationType(resultEntity.get().getRelationType())
-    										.permissionRequestStatus(resultEntity.get().getPermissionStatus())
-    										.build();
-    			
-    			
-    			return true;
-    		}
-    	else
-    		return false;
+    	Optional<PermissionRequestEntity> resultEntity = 
+    			permissionRequestRepository.findByRequestLinkCode(code);
     	
+    	resultEntity.orElseThrow(() -> new Exception("링크가 같은 것을 DB에서 찾지 못했습니다."));
+    	
+    	// 존재하면 update
+    	resultEntity.get().setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus.ACCEPTED);	
     }
 
     public static String generateVerificationCode() {
         ThreadLocalRandom current = ThreadLocalRandom.current();
         int code = 100000 + current.nextInt(900000); // 100000 ~ 999999
         return String.valueOf(code);
+    }
+    
+    public void savePermissionEntity(PermissionRequestDTO dto)
+    {
+    	Optional<MemberEntity> requesterEntity = memberRepository.findById(dto.requesterId());  // 요청보낸사람
+    	Optional<MemberEntity> inviteeEntity   = memberRepository.findById(dto.inviteeId());	// 초대받은사람
+    	Optional<ChildEntity>  childEntity     = childRepository.findById(dto.childId());	 	// 초대받은사람
+    	
+    	PermissionRequestEntity _entity = 
+    			PermissionRequestEntity.builder()
+    			.requester(requesterEntity.get())
+    			.child(childEntity.get())
+    			.invitee(requesterEntity.get())
+    			.relationType(dto.relationType())
+    			.permissionStatus(dto.permissionRequestStatus())
+    			.requestLinkCode(dto.requestCodeLink())
+    			.build();
     }
 }
 

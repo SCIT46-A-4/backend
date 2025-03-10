@@ -13,5 +13,6 @@ public record PermissionRequestDTO(
         Long inviteeId,
         Long childId,
         RelationType relationType,
-        PermissionRequestStatus permissionRequestStatus
+        PermissionRequestStatus permissionRequestStatus,
+        String requestCodeLink
 ) {}

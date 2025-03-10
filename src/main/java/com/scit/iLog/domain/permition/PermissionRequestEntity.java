@@ -61,4 +61,11 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     private String requestLinkCode;
     
     // 그럼 저기에 있는 사람의 별칭은 어떻게 세팅할 것인가?
+    
+    public void setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus status)
+    {
+    	// 스태이터스 변경 로직, 변경이 되는 순간 코드는 초기화한다.
+    	this.permissionStatus = status;
+    	this.requestLinkCode = null;
+    }
 }

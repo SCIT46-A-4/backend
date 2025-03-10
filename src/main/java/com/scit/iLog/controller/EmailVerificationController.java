@@ -1,21 +1,23 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.service.EmailService;
-import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import com.scit.iLog.service.EmailService;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -86,32 +88,21 @@ public class EmailVerificationController
 				throws Exception
 			{
 				try
-					{
+					{ 
+						emailService.sendAuthInviteEmail(alias, alias, alias, null);
 						return true;
-					} catch (Exception e)
+					} 
+				catch (Exception e)
 					{
 						throw new Exception("메세지 보내는 도중 문제가 발생했습니다.");
-
-						return false;
 					}
 			}
 
-		@GetMapping("/verify")
-		public ResponseEntity<String> verifyEmail(@RequestParam String token)
+		@GetMapping("/verifyLink")
+		public ResponseEntity<String> verifyEmail(@RequestParam String token) throws Exception 
 			{
-				boolean isResult = emailService.findInviteCode(token);
+				emailService.findInviteCodeAndUpdate(token);
 
-				if (isResult)
-					{
-						VerificationToken tokenEntity = verificationToken.get();
-						tokenEntity.setClicked(true); // 클릭 여부 업데이트
-						tokenRepository.save(tokenEntity);
-
-						return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
-					} else
-					{
-						return ResponseEntity.badRequest().body("유효하지 않은 토큰입니다.");
-					}
+		        return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
 			}
-
 	}
