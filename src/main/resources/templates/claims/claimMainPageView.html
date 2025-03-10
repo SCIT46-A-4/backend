@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>고객 센터</title>
+
+    <!-- Bulma 스타일 -->
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/customColors.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- customColors.css 추가 -->
+    <link rel="stylesheet" th:href="@{/css/customColors.css}" />
+
+    <script src="/js/jquery-3.7.1.min.js"></script>
+
+    <style>
+        /* ✅ 디테일뷰 배경색 적용 */
+        html {
+            background-color: var(--primary);
+            /* #FDF5BF */
+        }
+
+        /* 제목 스타일 */
+        .title-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .title-container h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .title-container p {
+            font-size: 1rem;
+            color: gray;
+        }
+
+        /* 버튼 스타일 */
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            gap: 20px;
+        }
+
+        .box {
+            width: 280px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .disabled {
+            background-color: #f5f5f5;
+            color: #b0b0b0;
+            cursor: not-allowed;
+        }
+
+        .box:hover {
+            transform: scale(1.05);
+        }
+
+        .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <!-- 제목 -->
+            <div class="title-container">
+                <h1>고객센터</h1>
+                <p>Hello, what can we do for you</p>
+                <p>궁금한 점은 검색으로 쉽고 빠르게 확인하세요</p>
+            </div>
+
+            <!-- 버튼 컨테이너 -->
+            <div class="buttons-container">
+                <!-- 스마트봇 문의하기 (비활성화) -->
+                <a th:href="@{/claims/claimsList}" class="box has-background-light">
+                    <span class="icon">🔍</span>
+                    <p>문의사항 조회하기</p>
+                    <small>(조회 바로가기)</small>
+                </a>
+
+                <!-- 톡톡 문의하기 -->
+                <a th:href="@{/claims/new}" class="box has-background-light">
+                    <span class="icon">💬</span>
+                    <p>톡톡 문의하기</p>
+                    <small>(문의글 보내기/남기기)</small>
+                </a>
+
+                <!-- 이용안내/가이드 -->
+                <a th:href="@{/guides}" class="box has-background-light">
+                    <span class="icon">📖</span>
+                    <p>이용안내/가이드</p>
+                    <small>(이용안내 바로가기)</small>
+                </a>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

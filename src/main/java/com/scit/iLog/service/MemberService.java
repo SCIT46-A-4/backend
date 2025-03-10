@@ -94,7 +94,8 @@ public class MemberService {
 				.signInId(member.getSignInId())
 				.email(member.getEmail())
 				.name(member.getName())
-				.relationType(member.getRelationType().getTypeNameKr())
+//				.relationType(member.getRelationType().getTypeNameKr())
+				.relationType(member.getRelationType() != null ? member.getRelationType().getTypeNameKr() : "설정되지 않음")
 				.personalInformationCollectionAndUsageAgreement(member.isPersonalInformationCollectionAndUsageAgreement())
 				.build();
 	}
