@@ -13,7 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static com.scit.iLog.config.SecurityConfig.MemberDetails;
+import static com.scit.iLog.config.SecurityConfig.*;
 
 @Slf4j
 @Controller
@@ -31,15 +31,25 @@ public class MemberController {
         변경후: /members/myDetails
      */
     @GetMapping("/myDetails")
-    public String handleGetMyDetails(
+    public String handleGetMyPage(
             Authentication authentication,
             Model model
     ) {
         if (!authentication.isAuthenticated()) return "redirect:/";
-        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
-        model.addAttribute("memberDetails",memberService.getMemberDetailsById(memberDetails.getId()));
+
+        try {
+            MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
+            model.addAttribute("memberDetails", memberService.getMemberDetailsById(memberDetails.getId()));
+        } catch (Exception e) {
+            log.error("회원 정보 조회 중 오류 발생: {}", e.getMessage());
+            model.addAttribute("errorMessage", "회원 정보를 불러오는 중 문제가 발생했습니다.");
+        }
+
         return "/member/memberDetailsView";
     }
+    
+    
+    
 
     /*
         M-1

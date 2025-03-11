@@ -3,6 +3,7 @@ package com.scit.iLog.controller;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.child.*;
+import com.scit.iLog.exception.ChildNotFoundException;
 import com.scit.iLog.service.analysis.AnalysisService;
 import com.scit.iLog.service.child.ChildRecordService;
 import com.scit.iLog.service.child.ChildService;
@@ -66,9 +67,9 @@ public class ChildrenController {
 	}
 
 	/**
-	 *
 	 * C-2
 	 * 특정 ID에 해당하는 아동 기본 정보를 조회하여 "아동 기본 정보 조회 페이지" 뷰에 전달하는 핸들러
+	 *
 	 * @param childId
 	 * @param model
 	 * @return children/basicInfoDetailsView.html 뷰 페이지
@@ -136,13 +137,14 @@ public class ChildrenController {
 	 * PathVariable 및 model 추가
 	 * 아동 상세 정보 등록 페이지를 조회
 	 * 25/2/11 준 : api-24 아이 상제정보 등록페이지 반환
+	 *
 	 * @return children/records/childRecordInsertView 뷰 페이지
 	 */
 	@GetMapping("/{childId}/records/new")
 	public String handleGetChildRecordInsertView(
-            @PathVariable("childId") Long childId,
-            Model model
-    ) {
+			@PathVariable("childId") Long childId,
+			Model model
+	) {
 		model.addAttribute("childId", childId);
 		return "children/records/childRecordInsertView";
 	}
@@ -153,15 +155,15 @@ public class ChildrenController {
 	 */
 	@ResponseBody
 	@PostMapping("/{childId}/records/new")
-	public ChildRecordResponseDTO handlePostChildRecordInsert(	//String을 ChildRecordResponseDTO로 변경
-	        @PathVariable("childId") Long childId,
-	        @AuthenticationPrincipal MemberDetails memberDetails,
-	        @ModelAttribute ChildRecordInsertDTO childRecordInsertDTO
+	public ChildRecordResponseDTO handlePostChildRecordInsert(    //String을 ChildRecordResponseDTO로 변경
+																  @PathVariable("childId") Long childId,
+																  @AuthenticationPrincipal MemberDetails memberDetails,
+																  @ModelAttribute ChildRecordInsertDTO childRecordInsertDTO
 	) {
-	    // 아동 신체 정보 저장
-	    Long childRecordId = childRecordService.saveChildRecord(childId, memberDetails.getId(), childRecordInsertDTO);
-	    // 업로드 완료 후 클라이언트에서 리다이렉트
-	    return new ChildRecordResponseDTO(true, String.format("/children/%d/records/%d", childId, childRecordId));
+		// 아동 신체 정보 저장
+		Long childRecordId = childRecordService.saveChildRecord(childId, memberDetails.getId(), childRecordInsertDTO);
+		// 업로드 완료 후 클라이언트에서 리다이렉트
+		return new ChildRecordResponseDTO(true, String.format("/children/%d/records/%d", childId, childRecordId));
 	}
 
 	/*
@@ -172,7 +174,7 @@ public class ChildrenController {
 	@PostMapping("/healthCheck/recordData")
 	public ChildRecordExtraction handlePostHealthCheckImg(
 			@RequestParam("healthCheckImg") MultipartFile healthCheckImg
-    ) {
+	) {
 		return analysisService.getExtractChildRecordData(healthCheckImg);
 	}
 
@@ -180,6 +182,7 @@ public class ChildrenController {
 	 * API : v1.x.x-2
 	 * C-5 수정 25/2/24 준
 	 * getMapping( /{childId}/records/{recordId} -> /{recordId}/records/)
+	 *
 	 * @param recordId
 	 * @param childId
 	 * @param model
@@ -190,7 +193,7 @@ public class ChildrenController {
 			@PathVariable("recordId") Long recordId,
 			@PathVariable("childId") Long childId,
 			Model model
-    ) {
+	) {
 		ChildRecordDetailsDTO childRecordDetailsDTO = childRecordService.findDetailsById(recordId);
 		model.addAttribute("childId", childId);
 		model.addAttribute("childRecord", childRecordDetailsDTO);
@@ -202,8 +205,9 @@ public class ChildrenController {
 	 * C-6 이도훈 2025-02-24~26
 	 * http://localhost:9900/children/1/recordList
 	 * offset → page 변경
-	 * @param childId   아이 ID
-	 * @param model     모델
+	 *
+	 * @param childId 아이 ID
+	 * @param model   모델
 	 * @return 신체 기록 목록 뷰
 	 */
 	@ResponseStatus(HttpStatus.OK)
@@ -251,6 +255,7 @@ public class ChildrenController {
 	/**
 	 * API : v1.x.x-4 아이의 기록 삭제
 	 * C-6 이도훈 2025-02-24~26
+	 *
 	 * @param childId  아이 ID
 	 * @param recordId 기록 ID
 	 */
@@ -266,6 +271,7 @@ public class ChildrenController {
 	/**
 	 * API : v1.x.x-8
 	 * C-7 이도훈
+	 *
 	 * @param childId
 	 * @param childRecordId
 	 * @param model
@@ -285,6 +291,7 @@ public class ChildrenController {
 	/**
 	 * API : v1.x.x-9
 	 * C-7 이도훈
+	 *
 	 * @param childId
 	 * @param childRecordId
 	 * @param childRecordUpdateRequestDTO

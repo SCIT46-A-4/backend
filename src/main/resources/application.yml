@@ -15,7 +15,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: bldolphin96@gmail.com
-    password: qdgvllurgurlnseo
+    password:   
     properties:
       mail:
         smtp:
@@ -43,6 +43,7 @@ childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/images/
 childAnalysisFileImgWindowsPath: C:/ilog/childAnalysisFiles
 childAnalysisFileMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childAnalysisFiles
 
+openWeatherApiKey:
 #  Windows 경로를 사용할 때는 "file:///" (슬래시 3개)를 사용
 #  Unix/Linux 시스템에서는 "file://" (슬래시 2개)를 사용
 #  경로 구분자는 항상 forward slash(/)를 사용 (Windows의 백슬래시가 아님)

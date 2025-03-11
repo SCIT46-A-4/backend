@@ -80,8 +80,14 @@ public class ChildEntity extends BaseTimeEntity {
 
     public void replaceAllChildBackGrounds(List<ChildBackGroundEntity> newBackGrounds) {
         if (newBackGrounds != null) {
+            for (ChildBackGroundEntity old : this.childBackGrounds) {
+                old.setChild(null);
+            }
             this.childBackGrounds.clear();
-            newBackGrounds.forEach(bg -> bg.setChild(this));
+
+            for (ChildBackGroundEntity bg : newBackGrounds) {
+                bg.setChild(this);
+            }
             this.childBackGrounds.addAll(newBackGrounds);
         }
     }

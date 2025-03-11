@@ -13,6 +13,20 @@
     <!-- 폰트어썸 -->
     <script src="https://kit.fontawesome.com/def97ee41b.js" crossorigin="anonymous"></script>
 
+    <style>
+        /* ✅ 디테일뷰 배경색 적용 */
+        html {
+            background-color: var(--primary);
+            /* #FDF5BF */
+        }
+
+        /* ✅ 제목과 검색창 사이 간격 증가 */
+        .title.is-3 {
+            margin-bottom: 20px;
+            /* 기존보다 여유롭게 간격 조정 */
+        }
+    </style>
+
     <script>
         $(function () {
             init();
@@ -21,11 +35,11 @@
         });
 
         function init() {
-            $("#searchBtn").on("click", function(){
+            $("#searchBtn").on("click", function () {
                 performSearch(false);
             });
             // 초기화 버튼: 검색어를 지우고 기본 데이터를 로드
-            $("#resetBtn").on("click", function(){
+            $("#resetBtn").on("click", function () {
                 $("#searchWord").val("");
                 performSearch(true);
             });
@@ -99,57 +113,53 @@
         }
     </script>
 </head>
+
 <body>
-<section class="section">
-    <div class="container">
-        <div class="has-text-centered">
-            <h1 class="title is-3">이용안내</h1>
-            <h2 class="title is-3">무엇을 도와드릴까요?</h2>
-        </div>
-        <!-- 검색 창 -->
-        <div class="box">
-            <form id="searchForm">
-                <div class="field is-grouped">
-                    <!-- 검색 기준 선택 -->
-                    <div class="control">
-                        <div class="select">
-                            <select name="searchItem" id="searchItem">
-                                <option value="title">제목</option>
-                                <option value="content">본문</option>
-                            </select>
+    <section class="section">
+        <div class="container">
+            <div class="has-text-centered">
+                <h1 class="title is-3">이용안내</h1>
+                <h2 class="title is-3 mb-5">무엇을 도와드릴까요?</h2>
+            </div>
+            <!-- 검색 창 -->
+            <div class="box">
+                <form id="searchForm">
+                    <div class="field is-grouped">
+                        <!-- 검색 기준 선택 -->
+                        <div class="control">
+                            <div class="select">
+                                <select name="searchItem" id="searchItem">
+                                    <option value="title">제목</option>
+                                    <option value="content">본문</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- 검색어 입력 -->
+                        <div class="control is-expanded">
+                            <input class="input" type="text" name="searchWord" id="searchWord"
+                                placeholder="검색어를 입력하세요" />
+                        </div>
+                        <!-- 검색 버튼 -->
+                        <div class="control">
+                            <button type="button" class="button is-primary" id="searchBtn">
+                                <span class="icon"><i class="fas fa-search"></i></span>
+                            </button>
+                        </div>
+                        <!-- 초기화 버튼 -->
+                        <div class="control">
+                            <button type="button" class="button is-light" id="resetBtn">
+                                초기화
+                            </button>
                         </div>
                     </div>
-                    <!-- 검색어 입력 -->
-                    <div class="control is-expanded">
-                        <input
-                                class="input"
-                                type="text"
-                                name="searchWord"
-                                id="searchWord"
-                                placeholder="검색어를 입력하세요"
-                        />
-                    </div>
-                    <!-- 검색 버튼 -->
-                    <div class="control">
-                        <button type="button" class="button is-primary" id="searchBtn">
-                            <span class="icon"><i class="fas fa-search"></i></span>
-                        </button>
-                    </div>
-                    <!-- 초기화 버튼 -->
-                    <div class="control">
-                        <button type="button" class="button is-light" id="resetBtn">
-                            초기화
-                        </button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
+            <!-- 검색 결과 리스트 -->
+            <div id="searchResults">
+                <!-- AJAX로 결과가 추가될 공간 -->
+            </div>
         </div>
-        <!-- 검색 결과 리스트 -->
-        <div id="searchResults">
-            <!-- AJAX로 결과가 추가될 공간 -->
-        </div>
-    </div>
-</section>
+    </section>
 </body>
 
 </html>
