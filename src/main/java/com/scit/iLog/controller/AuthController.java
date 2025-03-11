@@ -127,6 +127,7 @@ public class AuthController {
 	{
 		// memberId를 이용해서 사용자가 요청한 repository 조회
 		MemberEntity user = memberService.findById(memberId).orElseThrow(() -> new Exception("멤버가 존재하지 않습니다"));
+<<<<<<< HEAD
 		
 //		List<PermissionRequestDTO> list = emailService.findPermissionRequestDTOList(memberId, childId);
 //		model.addAttribute("list", list);
@@ -144,12 +145,18 @@ public class AuthController {
 		}
 		
 		throw new Exception("사용자의 역할군에 알맞는 리턴 매핑을 찾지 못했습니다.");
+=======
+		return "children/permissions/guardianView";
+>>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
 	}
 	
 	
 	@GetMapping("/permissionTeacher/{memberId}")
-	public String handleGetPermissionTeacher() 
+	public String handleGetPermissionTeacher(@PathVariable(name = "memberId") Long memberId, Model model) throws Exception 
 	{
+		model.addAttribute("list", emailService.findAllByPermissionEntity(memberId));
+
+		
 		return "children/permissions/teacherView";
 	}
 	

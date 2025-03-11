@@ -83,6 +83,7 @@ public class DashboardController {
         // 사용자 이름과 관계 유형을 모델에 추가
         model.addAttribute("userName", memberDetails.getName());
         model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
+        model.addAttribute("memberId", memberDetails.getId());
 
         model.addAttribute("childId", childId);
         model.addAttribute("currentSort", sortOption);
