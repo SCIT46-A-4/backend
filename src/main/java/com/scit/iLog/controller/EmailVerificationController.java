@@ -90,7 +90,7 @@ public class EmailVerificationController
 						return ResponseEntity.badRequest().body(response);
 					}
 			}
-
+		
 		@PostMapping("/send-invite-link")
 		@ResponseBody
 		public boolean sendEmailInviteLink(
@@ -113,19 +113,13 @@ public class EmailVerificationController
 					MemberDetailsDTO memberDto = memberService.getMemberDetailsById(memberId);
 					childService.findBasicInfoById(childId);
 					
-					System.out.println("==================================================");
-					System.out.println("member: " + memberDto.email());
-					System.out.println(memberDto.name());
-					System.out.println(childId);
-					System.out.println(alias);
-					System.out.println(inviteeEmail);
-					System.out.println("==================================================");
+
 
 						emailService.sendAuthInviteEmail(
 								memberDto.email(),
 								memberDto.name(),
 								childId,
-								memberId, //requesterId?로 값을 뭘 넣어야 하는지 모르겠음
+								memberId,
 								alias,
 								inviteeEmail,
 								"" );

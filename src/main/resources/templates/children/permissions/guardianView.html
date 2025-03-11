@@ -133,7 +133,7 @@
                         inviteeEmail: inviteeEmail
                     },
                     success: function(response) {
-                        if (response.success) {
+                        if (response == true) {
                             alert('인증 코드가 전송되었습니다.');
                         } else {
                             alert(response.message || '이메일 전송에 실패했습니다.');
