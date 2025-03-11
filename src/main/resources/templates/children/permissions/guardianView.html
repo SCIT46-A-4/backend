@@ -111,7 +111,7 @@
         }) */
         $(document).ready(function () {
             $('.send-email-button').on('click', function () {
-            	const alias = $('input[name="alias"]').val();
+               const alias = $('input[name="alias"]').val();
                 const inviteeEmail = $('input[name="inviteeEmail"]').val();
                 const childId = $('input[name="childId"]').val();
                 const memberId = $('input[name="memberId"]').val();
@@ -123,7 +123,7 @@
                 }
 
                 $.ajax({
-					url: '/send-invite-link',
+               url: '/send-invite-link',
                     method: 'POST',
                     data: {
                         childId: childId,
@@ -153,8 +153,8 @@
         <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (부모)</h1>
         
         <!-- 동적 값(childId, memberId)은 서버에서 채워지거나 자바스크립트로 설정 -->
-		<input type="hidden" name="childId" th:value="${childId}">
-		<input type="hidden" name="memberId" th:value="${memberId}">
+      <input type="hidden" name="childId" th:value="${childId}">
+      <input type="hidden" name="memberId" th:value="${memberId}">
 
         <div class="permission-header">
             <div class="buttons">
@@ -191,43 +191,17 @@
                         <th>관리</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>해바라기반 선생님</td>
-                        <td>김승현</td>
-                        <td>2024년 12월 20일</td>
-                        <td>교사</td>
-                        <td><button class="button is-small is-pink">권한 삭제</button></td>
-                    </tr>
-                    <tr>
-                        <td>김구라</td>
-                        <td>김승현</td>
-                        <td>2024년 12월 20일</td>
-                        <td>부</td>
-                        <td><button class="button is-small is-pink">권한 삭제</button></td>
-                    </tr>
-                    <tr>
-                        <td>김구라</td>
-                        <td>김승현</td>
-                        <td>2024년 12월 20일</td>
-                        <td>부</td>
-                        <td><button class="button is-small is-pink">권한 삭제</button></td>
-                    </tr>
-                    <tr>
-                        <td>구본 선생님</td>
-                        <td>김승현</td>
-                        <td>2024년 12월 20일</td>
-                        <td>교사</td>
-                        <td><button class="button is-small is-pink">권한 삭제</button></td>
-                    </tr>
-                    <tr>
-                        <td>구본 선생님</td>
-                        <td>김수현</td>
-                        <td>2024년 12월 20일</td>
-                        <td>교사</td>
-                        <td><button class="button is-small is-pink">권한 삭제</button></td>
-                    </tr>
-                </tbody>
+            <tbody>
+                <tr th:each="permission : ${list}" th:data-id="${permission.id}">
+                <td th:text="${permission.guardianName}">보호자 이름</td>
+                <td th:text="${permission.childName}">내 자녀 이름</td>
+                <td th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}">승인한 날짜</td>
+                <td th:text="${permission.relation}">자녀와의 관계</td>
+            <td>
+                <button class="button is-small is-pink delete-button">권한 삭제</button>
+            </td>
+        </tr>
+</tbody>
             </table>
         </div>
     </div>

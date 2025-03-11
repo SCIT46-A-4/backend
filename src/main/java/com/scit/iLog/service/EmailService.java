@@ -1,13 +1,19 @@
 package com.scit.iLog.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scit.iLog.domain.PermissionLevel;
+import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
@@ -17,12 +23,10 @@ import com.scit.iLog.domain.permition.PermissionRequestStatus;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.PermissionRequestRepository;
+import com.scit.iLog.repository.RelationShipRepository;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -32,6 +36,7 @@ public class EmailService {
     private final PermissionRequestRepository permissionRequestRepository;
     private final MemberRepository memberRepository;
     private final ChildRepository childRepository;
+    private final RelationShipRepository relationShipRepository;
     /**
      * 인증번호를 포함한 이메일을 전송합니다.
      * @param to 수신자 이메일 주소
@@ -100,7 +105,6 @@ public class EmailService {
         Optional<MemberEntity> requesterEntity = memberRepository.findById(permissionRequestDto.getRequesterId());	// 요청보낸사람
         Optional<MemberEntity> inviteeEntity = memberRepository.findById(permissionRequestDto.getInviteeId());		// 초대받은사람
         childRepository .findById(permissionRequestDto.getChildId());
- 
         
         return savePermissionEntity(permissionRequestDto);
     }
@@ -127,6 +131,7 @@ public class EmailService {
     	
     	// 코드 받은 사람이 있고, 제한 시간 안에 들어왔다면 update
     	resultEntity.get().setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus.ACCEPTED);
+    	saveRelationShipEntity(resultEntity.get());
     }
 
     public static String generateVerificationCode() {
@@ -155,6 +160,22 @@ public class EmailService {
     	return permissionRequestRepository.save(_entity);
     }
     
+    // 교사가 링크 클릭시 Child와 RelationShip생성.
+    public RelationShipEntity saveRelationShipEntity(PermissionRequestEntity permissionRequestEntity)
+    {
+    	Optional<MemberEntity> inviteeEntity   = memberRepository.findById(permissionRequestEntity.getInvitee().getId());	// 초대받은사람
+    	Optional<ChildEntity>  childEntity     = childRepository.findById(permissionRequestEntity.getChild().getId());
+    	
+    	RelationShipEntity _entity = 
+    			RelationShipEntity.builder()
+    			.member(inviteeEntity.get())
+    			.child(childEntity.get())
+    			.permissionLevel(PermissionLevel.VIEWER)
+    			.relationType(RelationType.TEACHER)
+    			.build();
+    	return relationShipRepository.save(_entity);
+    }
+    
     public boolean checkInTimeLimit(LocalDateTime time, long limitTime)
     {
     	// 제한 시간 안이면 true, 제한시간 오버됐으면 false
@@ -164,6 +185,31 @@ public class EmailService {
     	
     	return result;
     	
+    }
+    
+    public List<PermissionRequestDTO> findPermissionRequestDTOList(Long memberId, Long childId) {
+    	Optional<PermissionRequestEntity> requesterEntity   = permissionRequestRepository.findByRequesterIdAndChildId(memberId, childId);
+    	
+    	PermissionRequestDTO toDto = 
+    			PermissionRequestDTO.builder()
+    			.requesterId(requesterEntity.get().getRequester().getId())
+    			.inviteeId(requesterEntity.get().getRequester().getId())
+    			.childId(requesterEntity.get().getChild().getId())
+    			.relationType(requesterEntity.get().getRelationType())
+    			.permissionStatus(requesterEntity.get().getPermissionStatus())
+    			.requestLinkCode(dto.getRequestCodeLink())
+    			.alias(dto.getAlias())
+    			.build();
+    	return toDto;
+    	/*
+        private Long requesterId;	//보낸 멤버 ID
+        private Long inviteeId;		//받은 멤버 ID
+        private Long childId;
+        private RelationType relationType;
+        private PermissionRequestStatus permissionRequestStatus;
+        private String requestCodeLink;
+        private String alias;		//호칭
+    	 * */
     }
 }
 

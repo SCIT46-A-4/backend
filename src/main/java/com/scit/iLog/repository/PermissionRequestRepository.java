@@ -11,4 +11,7 @@ import com.scit.iLog.domain.permition.PermissionRequestEntity;
 public interface PermissionRequestRepository extends JpaRepository<PermissionRequestEntity, Long>
 	{
 	  Optional<PermissionRequestEntity> findByRequestLinkCode(String requestLinkCode);
+
+	Optional<PermissionRequestEntity> findByRequesterIdAndChildId(Long memberId, Long childId);
+
 	}

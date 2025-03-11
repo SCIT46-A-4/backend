@@ -1,5 +1,7 @@
 package com.scit.iLog.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,11 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.scit.iLog.domain.permition.PermissionRequestDTO;
 import com.scit.iLog.dto.auth.SignUpDTO;
+import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/auth")
 public class AuthController {
 	private final MemberService memberService;
+	private final EmailService emailService; 
 
 	/**
 	 * 회원가입 화면 요청
@@ -121,6 +124,8 @@ public class AuthController {
 			@PathVariable(name="childId") Long childId,
 			Model model
 			) {
+		List<PermissionRequestDTO> list = emailService.findPermissionRequestDTOList(memberId, childId);
+		model.addAttribute("list", list);
 		return "children/permissions/guardianView";
 	}
 	

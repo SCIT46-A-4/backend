@@ -18,11 +18,11 @@ import lombok.Setter;
 public class PermissionRequestDTO
 {
         private Long id;
-        private Long requesterId;
-        private Long inviteeId;
+        private Long requesterId;	//보낸 멤버 ID
+        private Long inviteeId;		//받은 멤버 ID
         private Long childId;
         private RelationType relationType;
         private PermissionRequestStatus permissionRequestStatus;
         private String requestCodeLink;
-        private String alias;
+        private String alias;		//호칭
 }
