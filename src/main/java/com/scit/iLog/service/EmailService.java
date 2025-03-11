@@ -17,6 +17,8 @@ import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.PermissionRequestRepository;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -62,12 +64,30 @@ public class EmailService {
     		Long childId, 
     		Long requesterId,
     		String _alias,
+<<<<<<< HEAD
     		String inviteeEmail, // 사용자가 뷰에서 입력한 이메일
     		String etc	)
+=======
+    		String inviteeEmail,
+    		String etc)
+>>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
     {
+<<<<<<< HEAD
+=======
+    	Optional<MemberEntity> requesterEntity = memberRepository.findById(requesterId);
+    	inviteeEmail = requesterEntity.get().getEmail();
+    	
+>>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
     	// DB에 저장하는 로직 필요
         SimpleMailMessage message = new SimpleMailMessage();
+<<<<<<< HEAD
         //String str = etc.length() < 1? "" : etc;
+=======
+//        String str = etc.length() < 1? "" : etc;
+        String str = (etc == null || etc.length() < 1) ? "" : etc; //임시
+        String token = UUID.randomUUID().toString();
+        String verificationUrl = "http://localhost:9900/verifyLink?token=" + token;
+>>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
         
         //Null처리
         String str = (etc == null || etc.length() < 1) ? "" : etc;
@@ -111,13 +131,21 @@ public class EmailService {
     	// null을 검색하면 문제 다른 유저 것도 검색될 수 있어서 null 체크로 방지
     	if(code == null) throw new IllegalArgumentException("받은 링크가 null입니다.");
     	
+    	// 저장된 코드 찾기
     	Optional<PermissionRequestEntity> resultEntity = 
     			permissionRequestRepository.findByRequestLinkCode(code);
     	
     	resultEntity.orElseThrow(() -> new Exception("링크가 같은 것을 DB에서 찾지 못했습니다."));
     	
-    	// 존재하면 update
-    	resultEntity.get().setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus.ACCEPTED);	
+    	// 3분 이내인지 체크
+    	boolean isTimeLimit = checkInTimeLimit(resultEntity.get().getModifiedAt(), 3);
+    	resultEntity.get().setRequestLinkCode(null);	// 링크 초기화
+    	
+    	if(!isTimeLimit)
+    			throw new Exception("email 제한 시간을 넘겼습니다. 코드가 유효하지 않습니다. 코드를 다시 보내주세요.");
+    	
+    	// 코드 받은 사람이 있고, 제한 시간 안에 들어왔다면 update
+    	resultEntity.get().setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus.ACCEPTED);
     }
 
     public static String generateVerificationCode() {
@@ -144,6 +172,17 @@ public class EmailService {
     			.alias(dto.getAlias())
     			.build();
     	return permissionRequestRepository.save(_entity);
+    }
+    
+    public boolean checkInTimeLimit(LocalDateTime time, long limitTime)
+    {
+    	// 제한 시간 안이면 true, 제한시간 오버됐으면 false
+    	boolean result = false;
+    	if(Duration.between(time, LocalDateTime.now()).toMinutes() <= limitTime) result = true;
+    	else result = false;
+    	
+    	return result;
+    	
     }
 }
 

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.service.MemberService;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

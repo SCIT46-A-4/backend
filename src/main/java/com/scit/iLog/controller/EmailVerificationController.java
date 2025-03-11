@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scit.iLog.domain.permition.PermissionRequestEntity;
 import com.scit.iLog.dto.member.MemberDetailsDTO;
 import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
@@ -90,7 +91,20 @@ public class EmailVerificationController
 						return ResponseEntity.badRequest().body(response);
 					}
 			}
+<<<<<<< HEAD
 		
+=======
+
+		/*
+		 *     		String to, 이메일
+		    		String guardianName, 보호자이름
+		    		Long childId, 아이고유번호
+		    		Long requesterId, 요청ID
+		    		String _alias, 호칭
+		    		String inviteeEmail, 보내는이메일
+		    		String etc	기타
+		 */
+>>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
 		@PostMapping("/send-invite-link")
 		@ResponseBody
 		public boolean sendEmailInviteLink(
@@ -101,20 +115,16 @@ public class EmailVerificationController
 			{
 				try
 					{ 
-					/*
-					 *     		String to, 이메일
-					    		String guardianName, 보호자이름
-					    		Long childId, 아이고유번호
-					    		Long requesterId, 요청ID
-					    		String _alias, 호칭
-					    		String inviteeEmail, 보내는이메일
-					    		String etc	기타
-					 */
+
 					MemberDetailsDTO memberDto = memberService.getMemberDetailsById(memberId);
 					childService.findBasicInfoById(childId);
+<<<<<<< HEAD
 					
 
+=======
+>>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
 
+<<<<<<< HEAD
 						emailService.sendAuthInviteEmail(
 								memberDto.email(),
 								memberDto.name(),
@@ -123,6 +133,12 @@ public class EmailVerificationController
 								alias,
 								inviteeEmail,
 								"" );
+=======
+					PermissionRequestEntity permissionEntt = emailService.sendAuthInviteEmail
+							(memberDto.email(), memberDto.name(), childId,
+							 memberId, alias, inviteeEmail, "");
+					
+>>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
 						return true;
 					} 
 				catch (Exception e)
@@ -134,6 +150,7 @@ public class EmailVerificationController
 		@GetMapping("/verifyLink")
 		public ResponseEntity<String> verifyEmail(@RequestParam String token) throws Exception 
 			{
+				log.info("받은 token: " + token);
 				emailService.findInviteCodeAndUpdate(token);
 
 		        return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
