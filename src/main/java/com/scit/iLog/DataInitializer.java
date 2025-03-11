@@ -1,10 +1,30 @@
 package com.scit.iLog;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.scit.iLog.domain.GuideEntity;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.child.*;
+import com.scit.iLog.domain.child.ChildBackGroundEntity;
+import com.scit.iLog.domain.child.ChildDiaryEntity;
+import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.child.ChildRecordEntity;
+import com.scit.iLog.domain.child.FamilyBackGround;
+import com.scit.iLog.domain.child.FamilyBackGroundEntity;
+import com.scit.iLog.domain.child.Gender;
 import com.scit.iLog.domain.claim.ClaimAnswerEntity;
 import com.scit.iLog.domain.claim.ClaimEntity;
 import com.scit.iLog.domain.claim.ClaimType;
@@ -14,18 +34,36 @@ import com.scit.iLog.domain.member.MemberRole;
 import com.scit.iLog.domain.mentalsurvey.MentalSurveyResponseEntity;
 import com.scit.iLog.domain.mentalsurvey.QuestionResponse;
 import com.scit.iLog.domain.mentalsurvey.SectionResponse;
-import com.scit.iLog.domain.sentimentalAnalysis.*;
-import com.scit.iLog.repository.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultNoteEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisSatisfactionEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTargetTypeEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisTypeEntity;
+import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
+import com.scit.iLog.domain.sentimentalAnalysis.WeatherEntity;
+import com.scit.iLog.repository.AnalysisResultNoteRepository;
+import com.scit.iLog.repository.AnalysisResultRepository;
+import com.scit.iLog.repository.AnalysisSatisfactionRepository;
+import com.scit.iLog.repository.AnalysisTargetRepository;
+import com.scit.iLog.repository.AnalysisTargetTypeRepository;
+import com.scit.iLog.repository.AnalysisTypeRepository;
+import com.scit.iLog.repository.ChildBackGroundRepository;
+import com.scit.iLog.repository.ChildDiaryRepository;
+import com.scit.iLog.repository.ChildHealthCheckRepository;
+import com.scit.iLog.repository.ChildRecordRepository;
+import com.scit.iLog.repository.ChildRepository;
+import com.scit.iLog.repository.ClaimAnswerRepository;
+import com.scit.iLog.repository.ClaimRepository;
+import com.scit.iLog.repository.FamilyBackgroundRepository;
+import com.scit.iLog.repository.GuideRepository;
+import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.repository.MentalSurveyResponseRepository;
+import com.scit.iLog.repository.RelationShipRepository;
+import com.scit.iLog.service.EmailService;
 
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import lombok.RequiredArgsConstructor;
 
 @Profile("dev")
 @Component
@@ -50,6 +88,7 @@ public class DataInitializer implements CommandLineRunner {
     private final AnalysisTypeRepository analysisTypeRepository;
     private final AnalysisTargetTypeRepository analysisTargetTypeRepository;
     private final ChildBackGroundRepository childBackGroundRepository;
+    private final EmailService emailService; //이도훈 이메일 전송 테스트
 
     @Transactional
     @Override
@@ -362,7 +401,6 @@ public class DataInitializer implements CommandLineRunner {
                         util패키지의 FamilyBackGroundSerializer클래스 생성함.
                        */
         CreateFamilyBackgrounds();
-
     }
 
     private void CreateMentalSurveyResponses() {

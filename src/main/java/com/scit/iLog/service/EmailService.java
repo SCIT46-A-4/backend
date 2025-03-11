@@ -36,41 +36,61 @@ public class EmailService {
      */
     public void sendVerificationEmail(String to, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("ilog@ilog.com");  // 발신자 주소
+//        message.setFrom("ilog@ilog.com");  // 발신자 주소
+        message.setFrom("aaaTesT255@gmail.com");
         message.setTo(to);
         message.setSubject("이메일 인증 코드");
+        
         message.setText("안녕하세요,\n\n귀하의 인증 코드는: " + code + "\n\n감사합니다.");
+        
+        log.info("이메일 전송 시도: to={}, code={}", to, code);
         mailSender.send(message);
+        log.info("이메일 전송 완료: to={}", to);
     }
     
     /**
      * 권한 링크를 보내주는 함수
      * to		   : 이메일
-     * guardionName: 보호자 이름
+     * guardianName: 보호자 이름
      * childName   : 아이이름
      * option	   : 비고, 추가란
      * **/
-    public void sendAuthInviteEmail(String to, String guardionName, Long childId, 
-    								Long requesterId, String _alias, String inviteeEmail,
-    								String etc)
+    // void에서 PermissionRequestEntity로 변경
+    public PermissionRequestEntity  sendAuthInviteEmail(
+    		String to,
+    		String guardianName,
+    		Long childId, 
+    		Long requesterId,
+    		String _alias,
+    		String inviteeEmail,
+    		String etc	)
     {
+    	Optional<MemberEntity> requesterEntity = memberRepository.findById(requesterId);
+    	inviteeEmail = requesterEntity.get().getEmail();
     	// DB에 저장하는 로직 필요
         SimpleMailMessage message = new SimpleMailMessage();
-        String str = etc.length() < 1? "" : etc;
+//        String str = etc.length() < 1? "" : etc;
+        String str = (etc == null || etc.length() < 1) ? "" : etc; //임시
         String token = UUID.randomUUID().toString();
         String verificationUrl = "http://localhost:8080/verifyLink?token=" + token;
         
-        message.setFrom("ilog@ilog.com");  // 발신자 주소
+//        message.setFrom("ilog@ilog.com");  // 발신자 주소
+        message.setFrom(inviteeEmail);  // 발신자 주소
         message.setTo(to);
-        message.setSubject(guardionName +"로부터" + " 권한 초대 링크입니다.");
+        message.setSubject(guardianName + "로부터" + " 권한 초대 링크입니다.");
         message.setText("안녕하세요,\n\n"
         				+ "인증 링크: \n" 
         				+ verificationUrl + "\n"
         				+ str);
-        mailSender.send(message);
         
+        log.info("생성된 토큰: {}", token);
+        log.info("생성된 인증 URL: {}", verificationUrl);
+        System.out.println("===========================================");
+        System.out.println("1");
+        mailSender.send(message);
+        System.out.println("===========================================");
+        System.out.println("2");        
         // DB에 해당 사항을 하나 만들어서 save 하는 로직 필요.
-		
         PermissionRequestDTO permissionRequestDto = 
         		PermissionRequestDTO.builder()
         		.alias(_alias)
@@ -82,10 +102,15 @@ public class EmailService {
         		.requestCodeLink(token)
         		.build();
         
-    	Optional<MemberEntity> requesterEntity  	 = memberRepository.findById(permissionRequestDto.getRequesterId());	// 요청보낸사람
-    	Optional<MemberEntity> inviteeEntity = memberRepository.findById(permissionRequestDto.getInviteeId());		// 초대받은사람
-    	childRepository .findById(permissionRequestDto.getChildId());
+        System.out.println("===========================================");
+        System.out.println("3");  
+//        Optional<MemberEntity> requesterEntity = memberRepository.findById(permissionRequestDto.getRequesterId());	// 요청보낸사람
+        Optional<MemberEntity> inviteeEntity = memberRepository.findById(permissionRequestDto.getInviteeId());		// 초대받은사람
+        childRepository .findById(permissionRequestDto.getChildId());
+        System.out.println("===========================================");
+        System.out.println("4");  
         
+        return savePermissionEntity(permissionRequestDto);
     }
     
     // 초대 받은 사람이 링크 클릭시, 이것이 db에 있는지 확인하고 업데이트 하는 로직
@@ -109,7 +134,8 @@ public class EmailService {
         return String.valueOf(code);
     }
     
-    public void savePermissionEntity(PermissionRequestDTO dto)
+ // void에서 PermissionRequestEntity로 변경
+    public PermissionRequestEntity  savePermissionEntity(PermissionRequestDTO dto)
     {
     	Optional<MemberEntity> requesterEntity = memberRepository.findById(dto.getRequesterId());  // 요청보낸사람
     	Optional<MemberEntity> inviteeEntity   = memberRepository.findById(dto.getInviteeId());	// 초대받은사람
@@ -125,6 +151,7 @@ public class EmailService {
     			.requestLinkCode(dto.getRequestCodeLink())
     			.alias(dto.getAlias())
     			.build();
+    	return permissionRequestRepository.save(_entity);
     }
 }
 

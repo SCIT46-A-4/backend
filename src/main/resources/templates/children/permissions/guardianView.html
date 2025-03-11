@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>권한 관리 페이지 (부모) - iLog</title>
+    <script src="/js/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <style>
         :root {
@@ -87,7 +88,7 @@
         }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+/*         document.addEventListener('DOMContentLoaded', function () {
             // 권한 삭제 버튼 이벤트
             document.querySelectorAll('.button.is-pink').forEach(button => {
                 button.addEventListener('click', function () {
@@ -107,6 +108,43 @@
                 // TODO: 초대 링크 생성 API 호출
                 alert('초대 링크가 생성되었습니다. 클립보드에 복사되었습니다.');
             });
+        }) */
+        $(document).ready(function () {
+            $('.send-email-button').on('click', function () {
+            	const alias = $('input[name="alias"]').val();
+                const inviteeEmail = $('input[name="inviteeEmail"]').val();
+                const childId = $('input[name="childId"]').val();
+                const memberId = $('input[name="memberId"]').val();
+                
+                // 필수 입력값 검증
+                if (!alias || !inviteeEmail) {
+                    alert('모든 필드를 입력해 주세요.');
+                    return;
+                }
+
+                $.ajax({
+//                    url: '/send-verification-code',  // 백엔드 API 엔드포인트
+					url: '/send-invite-link',
+                    method: 'POST',
+                    data: {
+                        childId: childId,
+                        memberId: memberId,
+                        alias: alias,
+                        inviteeEmail: inviteeEmail
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('인증 코드가 전송되었습니다.');
+                        } else {
+                            alert(response.message || '이메일 전송에 실패했습니다.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('에러 발생:', error);
+                        alert('서버와의 통신 중 오류가 발생했습니다.');
+                    }
+                });
+            });
         });
     </script>
 </head>
@@ -114,16 +152,20 @@
 <body>
     <div class="container">
         <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (부모)</h1>
+        
+            <!-- 동적 값(childId, memberId)은 서버에서 채워지거나 자바스크립트로 설정 -->
+		<input type="hidden" name="childId" th:value="${childId}">
+		<input type="hidden" name="memberId" th:value="${memberId}">
 
-        <button class="permission-header">
+        <div class="permission-header">
             <div class="buttons">
                 <!-- <button class="button is-mint">피아노 선생님</button> -->
-                <input type="text" class="input" name="postCallName" placeholder="호칭을 입력하세요.">
+                <input type="text" class="input" name="alias" placeholder="호칭을 입력하세요.">
                 <!-- <button class="button is-mint">정보열람 권한을 보낼 선생님 이메일(전화번호 등)을 입력해서 초대하기</button> -->
-                <input type="text" class="input" name="postEmail" placeholder="정보열람 권한을 보낼 선생님 이메일을 입력하세요.">
+                <input type="email" class="input" name="inviteeEmail" placeholder="정보열람 권한을 보낼 선생님 이메일을 입력하세요.">
             </div>
-            <button class="button is-light">초대링크 보내기</button>
-        </button>
+            <button class="button is-light send-email-button">초대링크 보내기</button>
+        </div>
 
         <div class="status-box">
             <div class="columns">
