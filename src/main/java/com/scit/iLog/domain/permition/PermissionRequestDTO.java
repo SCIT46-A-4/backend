@@ -1,8 +1,8 @@
 package com.scit.iLog.domain.permition;
 
+import java.time.LocalDateTime;
+
 import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.child.ChildEntity;
-import com.scit.iLog.domain.member.MemberEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,4 +25,5 @@ public class PermissionRequestDTO
         private PermissionRequestStatus permissionRequestStatus;
         private String requestCodeLink;
         private String alias;		//호칭
+        LocalDateTime approvalDate; // 승인완료된 시간
 }

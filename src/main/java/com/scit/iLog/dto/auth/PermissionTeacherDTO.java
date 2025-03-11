@@ -10,13 +10,15 @@ import lombok.Builder;
 
 @Builder
 public record PermissionTeacherDTO(
-        Long id,
+
+        Long id,                // id
         String alias,
-        String guardianName,
-        String inviteeName,
-        String childName,
-        RelationType relation,
-        PermissionRequestStatus permissionRequestStatus,
-        LocalDateTime approvalDate
+        String guardianName,    // 보호자 이름
+        String inviteeName,     // 초대된 사람 이름
+        String childName,       // 아이이름
+        RelationType relation,        // 관계
+        PermissionRequestStatus permissionRequestStatus, // 현재 상태
+        LocalDateTime approvalDate // 승인완료된 시간
+
 ) {
 }

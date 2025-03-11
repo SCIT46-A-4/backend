@@ -2,10 +2,12 @@ package com.scit.iLog.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,6 +22,7 @@ import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.permition.PermissionRequestDTO;
 import com.scit.iLog.domain.permition.PermissionRequestEntity;
 import com.scit.iLog.domain.permition.PermissionRequestStatus;
+import com.scit.iLog.dto.auth.PermissionTeacherDTO;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.PermissionRequestRepository;
@@ -44,6 +47,7 @@ public class EmailService {
      */
     public void sendVerificationEmail(String to, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
+
 //        message.setFrom("ilog@ilog.com");  // 발신자 주소
         message.setFrom("aaaTesT255@gmail.com");
         message.setTo(to);
@@ -70,7 +74,7 @@ public class EmailService {
     		Long childId, 
     		Long requesterId,
     		String _alias,
-    		String inviteeEmail,
+    		String inviteeEmail, // 사용자가 뷰에서 입력한 이메일 (수신자)
     		String etc) 
     {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -78,14 +82,17 @@ public class EmailService {
         String str = (etc == null || etc.length() < 1) ? "" : etc;
         String token = UUID.randomUUID().toString();
         String verificationUrl = "http://localhost:9900/verifyLink?token=" + token;
-        
-        message.setFrom(to);  // 발신자 주소
+        message.setFrom("aaaTesT255@gmail.com");  // 발신자 주소
         message.setTo(inviteeEmail);
         message.setSubject(guardianName + "로부터" + " 권한 초대 링크입니다.");
         message.setText("안녕하세요,\n\n"
         				+ "인증 링크: \n" 
         				+ verificationUrl + "\n"
         				+ str);
+        
+//		message.setFrom("aaaTesT255@gmail.com");
+//		message.setTo(to);
+//		message.setSubject("이메일 인증 코드");
         
         log.info("생성된 토큰: {}", token);
         log.info("생성된 인증 URL: {}", verificationUrl);
@@ -133,7 +140,7 @@ public class EmailService {
     	resultEntity.get().setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus.ACCEPTED);
     	saveRelationShipEntity(resultEntity.get());
     }
-
+    
     public static String generateVerificationCode() {
         ThreadLocalRandom current = ThreadLocalRandom.current();
         int code = 100000 + current.nextInt(900000); // 100000 ~ 999999
@@ -186,30 +193,48 @@ public class EmailService {
     	return result;
     	
     }
-    
-    public List<PermissionRequestDTO> findPermissionRequestDTOList(Long memberId, Long childId) {
-    	Optional<PermissionRequestEntity> requesterEntity   = permissionRequestRepository.findByRequesterIdAndChildId(memberId, childId);
-    	
-    	PermissionRequestDTO toDto = 
-    			PermissionRequestDTO.builder()
-    			.requesterId(requesterEntity.get().getRequester().getId())
-    			.inviteeId(requesterEntity.get().getRequester().getId())
-    			.childId(requesterEntity.get().getChild().getId())
-    			.relationType(requesterEntity.get().getRelationType())
-    			.permissionStatus(requesterEntity.get().getPermissionStatus())
-    			.requestLinkCode(dto.getRequestCodeLink())
-    			.alias(dto.getAlias())
-    			.build();
-    	return toDto;
-    	/*
-        private Long requesterId;	//보낸 멤버 ID
-        private Long inviteeId;		//받은 멤버 ID
-        private Long childId;
-        private RelationType relationType;
-        private PermissionRequestStatus permissionRequestStatus;
-        private String requestCodeLink;
-        private String alias;		//호칭
-    	 * */
-    }
-}
 
+    //부모용
+    public List<PermissionRequestDTO> findPermissionRequestDTOList(Long memberId, Long childId) {
+    	
+    	List<PermissionRequestEntity> requesterEntity = permissionRequestRepository.findByRequesterIdAndChildId(memberId, childId);
+    	
+    	List<PermissionRequestDTO> dtoList = requesterEntity.stream().map(entity -> 
+        	PermissionRequestDTO.builder()
+            	.id(entity.getId())
+            	.requesterId(entity.getRequester().getId())
+    			.inviteeId(entity.getInvitee().getId())  // 초대받은 사람이 없을 수도 있음
+    			.childId(entity.getChild().getId())
+    			.relationType(entity.getRelationType())
+    			.permissionRequestStatus(entity.getPermissionStatus())
+    			.requestCodeLink(entity.getRequestLinkCode())
+    			.alias(entity.getAlias())
+    			.approvalDate(entity.getModifiedAt())
+    			.build()).collect(Collectors.toList());
+    	
+    	return dtoList;
+    }
+
+		public List<PermissionTeacherDTO> findAllByPermissionEntity(Long requesterId)
+        {
+            // 25/3/11 jun : requester 기준으로 db 찾아서 반환하는 함수 교사용
+            List<PermissionRequestEntity> list = permissionRequestRepository.findAllByRequesterId(requesterId);
+            List<PermissionTeacherDTO> dtoList = new ArrayList<>(); // teacherView에 보낼 DTO List 생성
+
+            for(var _entity : list)
+            {
+                PermissionTeacherDTO _dto = PermissionTeacherDTO.builder()
+                    .id(_entity.getId())          
+                    .guardianName(_entity.getRequester().getName())
+                    .inviteeName(_entity.getInvitee().getName())
+                    .childName(_entity.getChild().getName())
+                    .relation(_entity.getRelationType().getTypeNameKr())
+                    .permissionRequestStatus(_entity.getPermissionStatus())
+                    .approvalDate(_entity.getModifiedAt())
+                    .build();
+                dtoList.add(_dto);
+                }
+
+				return dtoList;
+			}
+	}

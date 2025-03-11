@@ -1,5 +1,6 @@
 package com.scit.iLog.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,7 @@ public interface PermissionRequestRepository extends JpaRepository<PermissionReq
 	{
 	  Optional<PermissionRequestEntity> findByRequestLinkCode(String requestLinkCode);
 
-	Optional<PermissionRequestEntity> findByRequesterIdAndChildId(Long memberId, Long childId);
+	  List<PermissionRequestEntity> findByRequesterIdAndChildId(Long memberId, Long childId);
 
+	  List<PermissionRequestEntity> findAllByRequesterId(Long requesterId);
 	}
