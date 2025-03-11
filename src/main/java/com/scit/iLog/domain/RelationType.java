@@ -7,7 +7,8 @@ public enum RelationType {
     PARENT("부모"),
     TEACHER("교사"),
     CARER("보육자"),
-    GUARDIAN("보호자");
+    GUARDIAN("보호자"),
+    ADMIN("관리자");
 
     private final String typeNameKr;
 

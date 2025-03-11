@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<html
-        lang="ko"
-        xmlns:th="http://thymeleaf.org"
->
+<html lang="ko" xmlns:th="http://thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title>회원 상세 정보 - iLog</title>
@@ -10,6 +7,7 @@
     <script src="/js/sweetalert2.js"></script>
     <script>
       $(document).ready(function () {
+        var deleteAllChildren;
         $('#btn-quit').click(function () {
           Swal.fire({
             title: '정말 탈퇴하시겠습니까?',
@@ -24,6 +22,9 @@
             if (result.isConfirmed) {
               $.ajax({
                 url: '/members/quit',
+                data: {
+                  deleteAllChildren: deleteAllChildren,
+                },
                 type: 'DELETE',
                 success: function () {
                   Swal.fire({
@@ -44,6 +45,11 @@
               });
             }
           });
+        });
+
+        $('#deleteChildrenCheckBox').on('change', function (e) {
+          //체크되었으면 true, 체크 해제되었으면 false
+          deleteAllChildren = e.target.checked;
         });
       });
     </script>
@@ -134,6 +140,15 @@
               <p class="control">
                 <a class="button is-light" id="btn-quit"> 탈퇴하기 </a>
               </p>
+              <!-- 등록한 아동과 관련된 정보를 모두 삭제하시겠습니까? 선택을 위한 체크박스 입력을 받아야함. -->
+              <div>
+                <input
+                  id="deleteChildrenCheckBox"
+                  type="checkbox"
+                  name="deleteAllChildren"
+                />
+                등록한 아동과 관련된 정보를 모두 삭제하시겠습니까?
+              </div>
             </div>
           </div>
         </div>

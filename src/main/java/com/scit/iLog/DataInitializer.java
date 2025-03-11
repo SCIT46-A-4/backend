@@ -71,6 +71,7 @@ public class DataInitializer implements CommandLineRunner {
                 .password(passwordEncoder.encode("ADMIN123!"))
                 .email("admin@example.com")
                 .role(MemberRole.ADMIN)
+                .relationType(RelationType.ADMIN)
                 .personalInformationCollectionAndUsageAgreement(false)
                 .build();
         memberRepository.save(admin);
@@ -142,6 +143,7 @@ public class DataInitializer implements CommandLineRunner {
                         .originalProfileImgName(null)
                         .savedProfileImgName(null)
                         .gender(Gender.WOMAN)
+                        .callName("혈연")
                         .build();
                 childRepository.save(girl);
 
