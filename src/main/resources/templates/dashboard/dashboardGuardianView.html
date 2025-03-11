@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<html
-        lang="ko"
-        xmlns:th="http://www.thymeleaf.org"
->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title>보호자 대시보드 - iLog</title>
@@ -103,6 +100,9 @@
           document.getElementById(
             'childDetailLink'
           ).href = `/children/${childId}/basicInfo`;
+          document.getElementById(
+            'childRecordListLink'
+          ).href = `/children/${childId}/recordList`;
         }
 
         // 감정 분석 추이 차트 렌더링
@@ -274,7 +274,7 @@
           },
           series: [
             {
-              name: '값 변화',
+              name: '심리 설문 총계',
               data: seriesData.map((d) => [d[0], d[1]]),
               marker: {
                 enabled: true,
@@ -515,6 +515,13 @@
                           class="button is-fullwidth is-info is-light mb-2"
                         >
                           우리 아이 상세 보기
+                        </button>
+                      </a>
+                      <a id="childRecordListLink">
+                        <button
+                          class="button is-fullwidth is-info is-light mb-2"
+                        >
+                          성장 정보 목록 보기
                         </button>
                       </a>
                       <a href="/children/new">

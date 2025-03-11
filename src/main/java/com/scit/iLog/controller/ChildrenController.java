@@ -3,7 +3,6 @@ package com.scit.iLog.controller;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.child.*;
-import com.scit.iLog.exception.ChildNotFoundException;
 import com.scit.iLog.service.analysis.AnalysisService;
 import com.scit.iLog.service.child.ChildRecordService;
 import com.scit.iLog.service.child.ChildService;
@@ -155,10 +154,10 @@ public class ChildrenController {
 	 */
 	@ResponseBody
 	@PostMapping("/{childId}/records/new")
-	public ChildRecordResponseDTO handlePostChildRecordInsert(    //String을 ChildRecordResponseDTO로 변경
-																  @PathVariable("childId") Long childId,
-																  @AuthenticationPrincipal MemberDetails memberDetails,
-																  @ModelAttribute ChildRecordInsertDTO childRecordInsertDTO
+	public ChildRecordResponseDTO handlePostChildRecordInsert(
+			@PathVariable("childId") Long childId,
+			@AuthenticationPrincipal MemberDetails memberDetails,
+			@ModelAttribute ChildRecordInsertDTO childRecordInsertDTO
 	) {
 		// 아동 신체 정보 저장
 		Long childRecordId = childRecordService.saveChildRecord(childId, memberDetails.getId(), childRecordInsertDTO);

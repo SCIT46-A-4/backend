@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  console.log("✅ Document loaded");
+  console.log('✅ Document loaded');
 
   // Initialize variables to track the original form values
   let originalFormData = {};
@@ -15,24 +15,26 @@ $(document).ready(function () {
   // Get the existing image path
   const checkPathElem = document.getElementById('myHealthCheckImageSrc');
   const checkPath = checkPathElem ? checkPathElem.value : '';
-/*  const checkPath = document.getElementById('myHealthCheckImageSrc').value;*/
-  const existingImagePath = checkPath ? 'http://localhost:9900/healthCheckImages/' + checkPath : null;
+  /*  const checkPath = document.getElementById('myHealthCheckImageSrc').value;*/
+  const existingImagePath = checkPath
+    ? 'http://localhost:9900/healthCheckImages' + checkPath
+    : null;
   originalImagePath = existingImagePath;
-  console.log("📌 Existing image path:", existingImagePath);
+  console.log('📌 Existing image path:', existingImagePath);
 
   // Initialize FilePond
-  const pond = FilePond.create(document.querySelector(".filepond"), {
+  const pond = FilePond.create(document.querySelector('.filepond'), {
     labelIdle: `드래그 앤 드롭 또는 <span class="filepond--label-action">파일 선택</span>`,
     allowMultiple: false,
-    maxFileSize: '30MB',
-    acceptedFileTypes: ["image/*"],
+    maxFileSize: '50MB',
+    acceptedFileTypes: ['image/*'],
     imagePreviewHeight: 200,
-    imageCropAspectRatio: "1:1",
+    imageCropAspectRatio: '1:1',
     imageResizeTargetWidth: 200,
     imageResizeTargetHeight: 200,
-    stylePanelLayout: "compact circle",
-    styleLoadIndicatorPosition: "center bottom",
-    styleButtonRemoveItemPosition: "center bottom",
+    stylePanelLayout: 'compact circle',
+    styleLoadIndicatorPosition: 'center bottom',
+    styleButtonRemoveItemPosition: 'center bottom',
     instantUpload: false,
     allowReplace: true, // Allow image replacement
   });
@@ -43,8 +45,8 @@ $(document).ready(function () {
       type: 'local',
       source: existingImagePath,
       options: {
-        type: 'local'
-      }
+        type: 'local',
+      },
     });
   }
 
@@ -58,9 +60,9 @@ $(document).ready(function () {
       weight: $("input[name='weight']").val(),
       leftEye: $("input[name='leftEye']").val(),
       rightEye: $("input[name='rightEye']").val(),
-      note: $("textarea[name='note']").val()
+      note: $("textarea[name='note']").val(),
     };
-    console.log("📌 Original form values stored:", originalFormData);
+    console.log('📌 Original form values stored:', originalFormData);
   }
 
   // Function to check if form data has changed
@@ -78,11 +80,11 @@ $(document).ready(function () {
 
     // Check if image has changed
     const files = pond.getFiles();
-	
-	// 원래 이미지가 있었는데, 지금은 파일이 없으면 삭제된 것으로 판단
-	if (originalImagePath && files.length === 0) {
-	    return true;
-	}
+
+    // 원래 이미지가 있었는데, 지금은 파일이 없으면 삭제된 것으로 판단
+    if (originalImagePath && files.length === 0) {
+      return true;
+    }
     //지금 새로운 파일이 업로드 된 상태인지 아닌지를 확인하는 것
     if (files.length > 0 && files[0].source instanceof File) {
       return true;
@@ -92,24 +94,24 @@ $(document).ready(function () {
   }
 
   // Form submission handler
-  $("#childRecordForm").on("submit", function (event) {
+  $('#childRecordForm').on('submit', function (event) {
     event.preventDefault();
-    console.log("📌 Form submission event triggered");
+    console.log('📌 Form submission event triggered');
 
     // Check if any data has changed
     if (!hasFormDataChanged()) {
-		Swal.fire({
-		    title: "변경된 내용이 없습니다.",
-		    icon: "info",
-		    confirmButtonText: "확인",
-		  });
-		  return;
+      Swal.fire({
+        title: '변경된 내용이 없습니다.',
+        icon: 'info',
+        confirmButtonText: '확인',
+      });
+      return;
     }
 
     // Get form identifiers
-    const childId = $(this).attr("data-child-id");
-    const recordId = $(this).attr("data-record-id");
-    console.log("📌 Child ID:", childId, "Record ID:", recordId);
+    const childId = $(this).attr('data-child-id');
+    const recordId = $(this).attr('data-record-id');
+    console.log('📌 Child ID:', childId, 'Record ID:', recordId);
 
     // Create and populate FormData
     const formData = createFormData();
@@ -123,20 +125,20 @@ $(document).ready(function () {
     const formData = new FormData();
 
     // Add form field values
-    formData.append("height", $("input[name='height']").val());
-    formData.append("weight", $("input[name='weight']").val());
-    formData.append("leftEye", $("input[name='leftEye']").val());
-    formData.append("rightEye", $("input[name='rightEye']").val());
-    formData.append("note", $("textarea[name='note']").val());
+    formData.append('height', $("input[name='height']").val());
+    formData.append('weight', $("input[name='weight']").val());
+    formData.append('leftEye', $("input[name='leftEye']").val());
+    formData.append('rightEye', $("input[name='rightEye']").val());
+    formData.append('note', $("textarea[name='note']").val());
 
     // Check if a new file was added
     const files = pond.getFiles();
     if (files.length > 0 && files[0].source instanceof File) {
-      formData.append("healthCheckImg", files[0].file);
-      formData.append("fileName", files[0].file.name);
-      console.log("📌 New file added:", files[0].file.name);
+      formData.append('healthCheckImg', files[0].file);
+      formData.append('fileName', files[0].file.name);
+      console.log('📌 New file added:', files[0].file.name);
     } else {
-      console.log("📌 Keeping existing image (no file transfer)");
+      console.log('📌 Keeping existing image (no file transfer)');
     }
 
     return formData;
@@ -146,24 +148,27 @@ $(document).ready(function () {
   function submitFormData(childId, recordId, formData) {
     $.ajax({
       url: `/children/${childId}/records/${recordId}/edit`,
-      type: "POST",
+      type: 'POST',
       data: formData,
       contentType: false,
       processData: false,
       success: function (response) {
-        console.log("✅ Server response:", response);
+        console.log('✅ Server response:', response);
         if (response.success) {
-          console.log("✅ Update successful! Redirecting to:", response.redirectUrl);
+          console.log(
+            '✅ Update successful! Redirecting to:',
+            response.redirectUrl
+          );
           window.location.href = response.redirectUrl;
         } else {
-          console.error("❌ Update failed");
-          alert("수정에 실패했습니다. 다시 시도해 주세요.");
+          console.error('❌ Update failed');
+          alert('수정에 실패했습니다. 다시 시도해 주세요.');
         }
       },
       error: function (xhr) {
-        console.error("❌ AJAX error:", xhr.responseText);
-        alert("수정 중 오류가 발생했습니다. 다시 시도해 주세요.");
-      }
+        console.error('❌ AJAX error:', xhr.responseText);
+        alert('수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      },
     });
   }
 });

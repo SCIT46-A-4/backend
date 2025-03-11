@@ -166,8 +166,10 @@ public class MentalSurveyController {
 		 */
 		@ResponseBody
 		@PostMapping("/{calanderNum}/GetScores")
-		public List<MentalSurveyResponseChartDTO> getMentalScores(@PathVariable(name="childId") Long childId,
-																  @PathVariable(name="calanderNum", required = false) Long calendarNum)
+		public List<MentalSurveyResponseChartDTO> getMentalScores(
+				@PathVariable(name="childId") Long childId,
+				@PathVariable(name="calanderNum", required = false) Long calendarNum
+		)
 		{
 			// 주간(7), 월간(30), 반개월간(180) 구분
 			calendarNum = (calendarNum == null)? 7 : calendarNum;
