@@ -73,4 +73,6 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     	this.permissionStatus = status;
     	this.requestLinkCode = null;
     }
+    
+    public void setRequestLinkCode(String str) {requestLinkCode = str;}
 }
