@@ -124,6 +124,7 @@ public class AuthController {
 		return "children/permissions/guardianView";
 	}
 	
+	
 	@GetMapping("/permissionTeacher/{memberId}")
 	public String handleGetPermissionTeacher() {
 		

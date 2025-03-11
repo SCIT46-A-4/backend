@@ -6,6 +6,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.child.ChildEntity;
@@ -64,31 +65,10 @@ public class EmailService {
     		Long childId, 
     		Long requesterId,
     		String _alias,
-<<<<<<< HEAD
-    		String inviteeEmail, // 사용자가 뷰에서 입력한 이메일
-    		String etc	)
-=======
     		String inviteeEmail,
-    		String etc)
->>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
+    		String etc) 
     {
-<<<<<<< HEAD
-=======
-    	Optional<MemberEntity> requesterEntity = memberRepository.findById(requesterId);
-    	inviteeEmail = requesterEntity.get().getEmail();
-    	
->>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
-    	// DB에 저장하는 로직 필요
         SimpleMailMessage message = new SimpleMailMessage();
-<<<<<<< HEAD
-        //String str = etc.length() < 1? "" : etc;
-=======
-//        String str = etc.length() < 1? "" : etc;
-        String str = (etc == null || etc.length() < 1) ? "" : etc; //임시
-        String token = UUID.randomUUID().toString();
-        String verificationUrl = "http://localhost:9900/verifyLink?token=" + token;
->>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
-        
         //Null처리
         String str = (etc == null || etc.length() < 1) ? "" : etc;
         String token = UUID.randomUUID().toString();
@@ -126,6 +106,7 @@ public class EmailService {
     }
     
     // 초대 받은 사람이 링크 클릭시, 이것이 db에 있는지 확인하고 업데이트 하는 로직
+    @Transactional
     public void findInviteCodeAndUpdate(String code) throws Exception
     {
     	// null을 검색하면 문제 다른 유저 것도 검색될 수 있어서 null 체크로 방지

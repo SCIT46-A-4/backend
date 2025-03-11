@@ -1,7 +1,5 @@
 package com.scit.iLog.domain.permition;
 
-import java.time.LocalDateTime;
-
 import com.scit.iLog.domain.BaseTimeEntity;
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.child.ChildEntity;
@@ -18,14 +16,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "permission_request")
 @Builder
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PermissionRequestEntity extends BaseTimeEntity {
 
     @Id
