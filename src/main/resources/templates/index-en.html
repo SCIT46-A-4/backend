@@ -52,6 +52,11 @@
     .h-100 {
         min-height: 200px;
     }
+    #logo {
+		    width: 70px;
+		    height: auto;
+		    max-height: 80px;
+		}
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -94,7 +99,7 @@
 <nav class="navbar is-white" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <a class="navbar-item" href="/">
-      <span class="has-text-primary-custom is-size-4 has-text-weight-bold">iLog</span>
+      <img id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="iLog 로고"/>
     </a>
     <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
       <span aria-hidden="true"></span>
@@ -105,7 +110,6 @@
   <div id="navbarBasic" class="navbar-menu">
     <div class="navbar-end">
       <a class="navbar-item" href="#features">Features</a>
-      <a class="navbar-item" href="#about">About</a>
       <a class="navbar-item" th:href="@{/claims/new}">Contact</a>
       <div class="navbar-item">
         <div class="buttons">
@@ -115,6 +119,16 @@
           </a>
         </div>
       </div>
+      <!-- Language Switch Dropdown -->
+      <div class="navbar-item">
+		<div class="select is-small">
+			<select id="languageSelect" onchange="changeLanguage(this.value)">
+				<option value="kr">한국어</option>
+				<option value="en" selected>English</option>
+				<option value="jp">日本語</option>
+			</select>
+		</div>
+	  </div>
     </div>
   </div>
 </nav>
@@ -136,7 +150,7 @@
             >
               <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'Go to Dashboard' : 'Get Started'">Get Started</strong>
             </a>
-            <a class="button is-white is-outlined is-large has-text-black">Learn More</a>
+            <a class="button is-white is-outlined is-large has-text-black" href="#features">Learn More</a>
           </div>
         </div>
       </div>
@@ -236,18 +250,6 @@
         <p>Email: support@ilog.com</p>
         <p>Phone: 1234-5678</p>
         <p>Hours: Weekdays 09:00-18:00</p>
-      </div>
-    </div>
-    <!-- Language Switch Dropdown -->
-    <div class="columns">
-      <div class="column is-12 has-text-centered">
-        <div class="select is-small">
-          <select id="languageSelect" onchange="changeLanguage(this.value)">
-            <option value="en" selected>English</option>
-            <option value="kr">한국어</option>
-            <option value="jp">日本語</option>
-          </select>
-        </div>
       </div>
     </div>
   </div>

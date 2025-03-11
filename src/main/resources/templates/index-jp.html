@@ -52,6 +52,11 @@
         .h-100 {
             min-height: 200px;
         }
+        #logo {
+		    width: 70px;
+		    height: auto;
+		    max-height: 80px;
+		}
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -94,7 +99,7 @@
 <nav class="navbar is-white" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="/">
-            <span class="has-text-primary-custom is-size-4 has-text-weight-bold">iLog</span>
+            <img id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="iLog 로고"/>
         </a>
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
             <span aria-hidden="true"></span>
@@ -105,7 +110,6 @@
     <div id="navbarBasic" class="navbar-menu">
         <div class="navbar-end">
             <a class="navbar-item" href="#features">機能</a>
-            <a class="navbar-item" href="#about">紹介</a>
             <a class="navbar-item" th:href="@{/claims/new}">お問い合わせ</a>
             <div class="navbar-item">
                 <div class="buttons">
@@ -113,6 +117,16 @@
                        th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
                         <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'ダッシュボードへ' : '利用する'">利用する</strong>
                     </a>
+                </div>
+            </div>
+            <!-- 言語切替ドロップダウン -->
+            <div class="navbar-item">
+                <div class="select is-small">
+                    <select id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="kr">한국어</option>
+                        <option value="en">English</option>
+                        <option value="jp"selected>日本語</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -135,7 +149,7 @@
                            th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
                             <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'ダッシュボードへ' : '利用する'">利用する</strong>
                         </a>
-                        <a class="button is-white is-outlined is-large has-text-black">もっと詳しく</a>
+                        <a class="button is-white is-outlined is-large has-text-black" href="#features">もっと詳しく</a>
                     </div>
                 </div>
             </div>
@@ -234,18 +248,6 @@
                 <p>メール: support@ilog.com</p>
                 <p>電話: 1234-5678</p>
                 <p>営業時間: 平日 09:00-18:00</p>
-            </div>
-        </div>
-        <!-- 言語切替ドロップダウン -->
-        <div class="columns">
-            <div class="column is-12 has-text-centered">
-                <div class="select is-small">
-                    <select id="languageSelect" onchange="changeLanguage(this.value)">
-                        <option value="jp" selected>日本語</option>
-                        <option value="kr">한국어</option>
-                        <option value="en">English</option>
-                    </select>
-                </div>
             </div>
         </div>
     </div>

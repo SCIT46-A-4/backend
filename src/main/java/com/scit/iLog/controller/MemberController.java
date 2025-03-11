@@ -47,6 +47,9 @@ public class MemberController {
 
         return "/member/memberDetailsView";
     }
+    
+    
+    
 
     /*
         M-1
