@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.scit.iLog.domain.permition.PermissionRequestDTO;
-import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.domain.permition.PermissionRequestDTO;
+import com.scit.iLog.domain.permition.PermissionRequestStatus;
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
+import com.scit.iLog.service.child.ChildService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
 	private final MemberService memberService;
 	private final EmailService emailService; 
+	private final ChildService childService;
 	/**
 	 * 회원가입 화면 요청
 	 * 로그인 화면(/auth/signInView.html)에서 GetMapping을 통해
@@ -126,28 +129,30 @@ public class AuthController {
 			Model model) throws Exception 
 	{
 		// memberId를 이용해서 사용자가 요청한 repository 조회
-		MemberEntity user = memberService.findById(memberId).orElseThrow(() -> new Exception("멤버가 존재하지 않습니다"));
-<<<<<<< HEAD
+		MemberEntity member = memberService.findById(memberId).orElseThrow(() -> new Exception("멤버가 존재하지 않습니다"));
 		
-//		List<PermissionRequestDTO> list = emailService.findPermissionRequestDTOList(memberId, childId);
-//		model.addAttribute("list", list);
-//		return "children/permissions/guardianView"; 이도훈 작성
+		ChildEntity child = childService.findById(childId).orElseThrow(() -> new Exception("멤버가 존재하지 않습니다"));
+		
+		List<PermissionRequestDTO> list = emailService.findPermissionRequestDTOList(memberId);
+		
+	    // 송신중
+	    long pendingCount = list.stream()
+	                            .filter(dto -> dto.getPermissionRequestStatus() == PermissionRequestStatus.PENDING)
+	                            .count();
+	    
+	    // 승인 완료
+	    long acceptedCount = list.stream()
+	                             .filter(dto -> dto.getPermissionRequestStatus() == PermissionRequestStatus.ACCEPTED)
+	                             .count();
+	    
+		
+		model.addAttribute("child", child);
+		model.addAttribute("member", member);
+		model.addAttribute("list", list);
+	    model.addAttribute("pendingCount", pendingCount);
+	    model.addAttribute("acceptedCount", acceptedCount);
 
-		switch (user.getRelationType()) 
-		{
-			case GUARDIAN:
-				return "children/permissions/guardianView";
-			case TEACHER:
-				model.addAttribute("list", emailService.findAllByPermissionEntity(memberId));
-				return "children/permissions/teacherView";
-			default:
-				break;
-		}
-		
-		throw new Exception("사용자의 역할군에 알맞는 리턴 매핑을 찾지 못했습니다.");
-=======
 		return "children/permissions/guardianView";
->>>>>>> branch 'dev_JunseongCreateAuth_' of https://github.com/SCIT46-A-4/backend.git
 	}
 	
 	

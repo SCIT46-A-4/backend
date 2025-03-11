@@ -195,9 +195,10 @@ public class EmailService {
     }
 
     //부모용
-    public List<PermissionRequestDTO> findPermissionRequestDTOList(Long memberId, Long childId) {
+    @Transactional
+    public List<PermissionRequestDTO> findPermissionRequestDTOList(Long memberId) {
     	
-    	List<PermissionRequestEntity> requesterEntity = permissionRequestRepository.findByRequesterIdAndChildId(memberId, childId);
+    	List<PermissionRequestEntity> requesterEntity = permissionRequestRepository.findAllByRequesterId(memberId);
     	
     	List<PermissionRequestDTO> dtoList = requesterEntity.stream().map(entity -> 
         	PermissionRequestDTO.builder()
@@ -205,6 +206,7 @@ public class EmailService {
             	.requesterId(entity.getRequester().getId())
     			.inviteeId(entity.getInvitee().getId())  // 초대받은 사람이 없을 수도 있음
     			.childId(entity.getChild().getId())
+    			.childName(entity.getChild().getName())
     			.relationType(entity.getRelationType())
     			.permissionRequestStatus(entity.getPermissionStatus())
     			.requestCodeLink(entity.getRequestLinkCode())
@@ -214,8 +216,8 @@ public class EmailService {
     	
     	return dtoList;
     }
-
-		public List<PermissionTeacherDTO> findAllByPermissionEntity(Long requesterId)
+    	@Transactional
+    	public List<PermissionTeacherDTO> findAllByPermissionEntity(Long requesterId)
         {
             // 25/3/11 jun : requester 기준으로 db 찾아서 반환하는 함수 교사용
             List<PermissionRequestEntity> list = permissionRequestRepository.findAllByRequesterId(requesterId);
@@ -228,7 +230,7 @@ public class EmailService {
                     .guardianName(_entity.getRequester().getName())
                     .inviteeName(_entity.getInvitee().getName())
                     .childName(_entity.getChild().getName())
-                    .relation(_entity.getRelationType().getTypeNameKr())
+                    .relation(_entity.getRelationType())
                     .permissionRequestStatus(_entity.getPermissionStatus())
                     .approvalDate(_entity.getModifiedAt())
                     .build();

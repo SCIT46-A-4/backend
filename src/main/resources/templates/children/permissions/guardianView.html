@@ -168,10 +168,12 @@
 
         <div class="status-box">
             <div class="columns">
-                <div class="column">
-                    <p>조대중: 1명</p>
-                    <p>승인 완료: 5건</p>
-                </div>
+				<div class="column">
+				    <!-- "송신중" 상태 건수를 출력 -->
+				    <p th:text="'송신중: ' + ${pendingCount} + '건'">송신중: 0건</p> 
+				    <!-- 승인 완료 건수 출력 -->
+				    <p th:text="'승인 완료: ' + ${acceptedCount} + '건'">승인 완료: 0건</p> 
+				</div>
                 <div class="column has-text-right">
                     <button class="button is-mint">피아노 선생님</button>
                     <button class="button is-mint">초대 취소</button>
@@ -192,14 +194,16 @@
                     </tr>
                 </thead>
             <tbody>
-                <tr th:each="permission : ${list}" th:data-id="${permission.id}">
-                <td th:text="${permission.guardianName}">보호자 이름</td>
+		<tr th:each="permission : ${list}"
+		    	th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permition.PermissionRequestStatus).PENDING}"
+		    	th:data-id="${permission.id}">
+                <td th:text="${permission.alias}">선생 호칭</td>
                 <td th:text="${permission.childName}">내 자녀 이름</td>
                 <td th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}">승인한 날짜</td>
-                <td th:text="${permission.relation}">자녀와의 관계</td>
-            <td>
-                <button class="button is-small is-pink delete-button">권한 삭제</button>
-            </td>
+                <td th:text="${permission.relationType.typeNameKr}">자녀와의 관계</td>
+	            <td>
+	                <button class="button is-small is-pink delete-button">권한 삭제</button>
+	            </td>
         </tr>
 </tbody>
             </table>

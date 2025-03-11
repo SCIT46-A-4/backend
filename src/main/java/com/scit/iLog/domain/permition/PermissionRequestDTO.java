@@ -21,6 +21,7 @@ public class PermissionRequestDTO
         private Long requesterId;	//보낸 멤버 ID
         private Long inviteeId;		//받은 멤버 ID
         private Long childId;
+        private String childName;       // 아이이름
         private RelationType relationType;
         private PermissionRequestStatus permissionRequestStatus;
         private String requestCodeLink;

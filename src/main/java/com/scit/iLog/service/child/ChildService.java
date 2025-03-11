@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.scit.iLog.config.WebConfig.CHILD_PROFILE_REQUEST_ROOT_PATH;
@@ -353,4 +354,9 @@ public class ChildService {
                                 .build();
         }
         //김은진 끝 -----------------------------------------------------------------
+
+        //2025-03-11 이도훈 작성
+		public Optional<ChildEntity> findById(Long childId) {
+			return childRepository.findById(childId);
+		}
 }
