@@ -116,9 +116,16 @@
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/dashboard">
-          <span>대시보드로 가기</span>
+      <!-- 로고 + dashboard 바로가기 -->
+      <div class="logo">
+        <a th:href="@{/dashboard}">
+          <img
+                  src="../../static/images/wilog.png"
+                  th:src="@{/images/wilog.png}"
+                  alt="로고"
+                  class="image"
+                  style="width: 100px; height: auto"
+          />
         </a>
       </div>
     </nav>

@@ -101,6 +101,18 @@
 </head>
 <body>
 <section class="section">
+    <!-- 로고 + dashboard 바로가기 -->
+    <div class="logo">
+        <a th:href="@{/dashboard}">
+            <img
+                    src="../../static/images/wilog.png"
+                    th:src="@{/images/wilog.png}"
+                    alt="로고"
+                    class="image"
+                    style="width: 100px; height: auto"
+            />
+        </a>
+    </div>
     <div class="container">
         <div class="has-text-centered">
             <h1 class="title is-3">이용안내</h1>
