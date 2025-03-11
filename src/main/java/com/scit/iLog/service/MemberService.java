@@ -41,7 +41,7 @@ public class MemberService {
 						.password(passwordEncoder.encode(signUpDTO.userPwd()))
 						.email(signUpDTO.userEmail())
 						.name(signUpDTO.userName())
-						.relationType(RelationType.valueOf(signUpDTO.relationType()))
+						.relationType(signUpDTO.relationType())
 						.role(MemberRole.USER)
 						.personalInformationCollectionAndUsageAgreement(
 								signUpDTO.personalInformationCollectionAndUsageAgreement())
