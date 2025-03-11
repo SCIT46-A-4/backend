@@ -11,6 +11,10 @@ import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.nio.file.OpenOption;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,4 +112,9 @@ public class MemberService {
 		if (member.getEmail().equals(email)) return;
 		member.setEmail(email);
 	}
+
+    public Optional<MemberEntity> findById(Long memberId) {
+        
+		return memberRepository.findById(memberId);
+    }
 }
