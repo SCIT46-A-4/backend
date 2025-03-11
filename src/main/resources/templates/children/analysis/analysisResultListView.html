@@ -303,13 +303,15 @@
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
+      <!-- 로고 + dashboard 바로가기 -->
+      <div class="logo">
+        <a th:href="@{/dashboard}">
           <img
-            id="logo"
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="iLog 로고"
+                  src="../../static/images/wilog.png"
+                  th:src="@{/images/wilog.png}"
+                  alt="로고"
+                  class="image"
+                  style="width: 100px; height: auto"
           />
         </a>
       </div>
@@ -322,20 +324,6 @@
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-light" href="/claims"><span>고객센터</span></a>
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" th:href="@{/dashboard}"
-              ><span>대시보드로 가기</span></a
-            >
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/auth/logout">
-              <span>로그아웃</span>
-            </a>
           </div>
         </div>
       </div>
