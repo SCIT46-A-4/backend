@@ -199,6 +199,7 @@
 
   <div id="approved-list" class="tab-content">
     <div class="table-container">
+      <h2 class="title is-4 mb-4"> 승인된 리스트 </h2>
       <table class="table is-fullwidth">
         <thead>
         <tr>
@@ -211,7 +212,11 @@
         </tr>
         </thead>
         <tbody>
-          <h2 class="title is-4 mb-4"> 승인된 리스트 </h2>
+          
+          <th:block th:if="${#list.size() < 1}">
+            <h2 class="title is-4 mb-4"> 승인된 사람이 존재하지 않습니다. </h2>
+          </th:block>          
+
           <tr th:each="permission : ${list}" th:data-id="${permission.id}">
                   <td td th:text="${permission.guardianName}">보호자 이름</td>
                   <td th:text="${permission.childName}">내 자녀 이름</td>
