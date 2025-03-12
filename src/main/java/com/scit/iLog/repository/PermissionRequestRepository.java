@@ -14,4 +14,6 @@ public interface PermissionRequestRepository extends JpaRepository<PermissionReq
 	  Optional<PermissionRequestEntity> findByRequestLinkCode(String requestLinkCode);
 
 	  List<PermissionRequestEntity> findAllByRequesterId(Long requesterId);
+
+	  List<PermissionRequestEntity> findAllByInviteeId(Long inviteeId);
 	}
