@@ -32,4 +32,27 @@ public class MainController {
 		}
 		return "index";
     }
+    
+    
+    /**
+     * 개인정보처리방침 페이지 이동
+     * @return privacyPolicy.html
+     */
+    @GetMapping("/privacy")
+    public String handleGetPrivacyPolicy() {
+        return "privacyPolicy";
+    }
+    
+    
+    /**
+     * 이용약관 페이지 이동
+     * @return termsOfService.html
+     */
+    @GetMapping("/terms")
+    public String handleGetTermsOfService() {
+        return "termsOfService";
+    }
+    
+   
+    
 }

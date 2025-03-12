@@ -63,7 +63,9 @@ public class SecurityConfig {
                                 "/verify-code",
                                 "/js/**",
                                 "/css/**",
-                                "/images/**"
+                                "/images/**",
+                                "/privacy",
+                                "/terms"
                                 )
                         .permitAll()
                         .requestMatchers("/dashboard/guardian").access(
