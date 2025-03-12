@@ -40,7 +40,7 @@ public class MainController {
      */
     @GetMapping("/privacy")
     public String handleGetPrivacyPolicy() {
-        return "privacyPolicy";
+        return "privacyPolicy"; 
     }
     
     
