@@ -126,28 +126,35 @@ public class AuthController {
 		
 	}
 	
+	/**
+	 * 2025-03-10~12 이도훈
+	 * 부모용
+	 * @param memberId
+	 * @param childId
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping("/permissionGuardian/{memberId}/{childId}")
 	public String handleGetPermissionGuardian(
 			@PathVariable(name="memberId") Long memberId,
 			@PathVariable(name="childId") Long childId,
 			Model model) throws Exception 
 	{
-		// memberId를 이용해서 사용자가 요청한 repository 조회
-		MemberEntity member = memberService.findById(memberId).orElseThrow(() -> new Exception("멤버가 존재하지 않습니다"));
+		// memberId를 이용해서 해당 ID의 멤버가 있는지 조회 후 갖고 옴
+		MemberEntity member = memberService.findById(memberId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다"));
+		// childId를 이용해서 해당 ID의 자식이 있는지 조회 후 갖고 옴
+		ChildEntity child = childService.findById(childId).orElseThrow(() -> new Exception("자식이 존재하지 않습니다"));
 		
-		ChildEntity child = childService.findById(childId).orElseThrow(() -> new Exception("멤버가 존재하지 않습니다"));
-		
+		// memberId를 이용해서 List로 Dto의 객체를 생성
 		List<PermissionRequestDTO> list = emailService.findPermissionRequestDTOList(memberId);
 		
 	    // 송신중
-	    long pendingCount = list.stream()
-	                            .filter(dto -> dto.getPermissionRequestStatus() == PermissionRequestStatus.PENDING)
-	                            .count();
-	    
+	    long pendingCount = list.stream().filter(dto -> 
+	                            	dto.getPermissionRequestStatus() == PermissionRequestStatus.PENDING).count();
 	    // 승인 완료
-	    long acceptedCount = list.stream()
-	                             .filter(dto -> dto.getPermissionRequestStatus() == PermissionRequestStatus.ACCEPTED)
-	                             .count();
+	    long acceptedCount = list.stream().filter(dto -> 
+	    							dto.getPermissionRequestStatus() == PermissionRequestStatus.ACCEPTED).count();
 	    
 		
 		model.addAttribute("child", child);
@@ -159,12 +166,18 @@ public class AuthController {
 		return "children/permissions/guardianView";
 	}
 	
-	
+	/**
+	 * 2025-03-10~12 정준성
+	 * 교사용
+	 * @param memberId
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping("/permissionTeacher/{memberId}")
-	public String handleGetPermissionTeacher(
-			@PathVariable(name = "memberId") Long memberId,
-			Model model) throws Exception 
+	public String handleGetPermissionTeacher(@PathVariable(name = "memberId") Long memberId, Model model) throws Exception 
 	{
+		//PENDING상태의 객체들의 정보와 ACCEPT상태의 객체들을 저장하기 위한 List
 		List<PermissionTeacherDTO> waitRequestList = new ArrayList<>();
 		List<PermissionTeacherDTO> permissionList = new ArrayList<>();
 		
@@ -172,26 +185,24 @@ public class AuthController {
 		model.addAttribute("permissionList", permissionList);
 		model.addAttribute("waitRequestList", waitRequestList);
 		
-		System.out.println("========================");
-		System.out.println(permissionList);
-		System.out.println("========================");
-		System.out.println(waitRequestList);
-		System.out.println("========================");
-		
 		return "children/permissions/teacherView";
 	}
 
 	
-	
-	@DeleteMapping("/permissionTeacher/delete/{entityId}")
+	/**
+	 * 2025-03-10~12
+	 * 삭제 메서드(부모, 교사 공용)
+	 * @param permissionId
+	 * @return
+	 */
+	@DeleteMapping("/permission/delete/{permissionId}")
 	@ResponseBody
-	public boolean deletePermissionTable(@PathVariable(name = "entityId") Long id)
+	public boolean deletePermissionTable(@PathVariable(name = "permissionId") Long permissionId)
 	{
-		boolean result = emailService.deletePermissionTable(id);
+		boolean result = emailService.deletePermissionTable(permissionId);
 
 		if(!result) return false;
 		
 		return true;
 	}
-	
 }

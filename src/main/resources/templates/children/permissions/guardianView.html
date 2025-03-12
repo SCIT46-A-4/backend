@@ -88,27 +88,6 @@
         }
     </style>
     <script>
-        /*         document.addEventListener('DOMContentLoaded', function () {
-                    // 권한 삭제 버튼 이벤트
-                    document.querySelectorAll('.button.is-pink').forEach(button => {
-                        button.addEventListener('click', function () {
-                            if (confirm('정말 이 권한을 삭제하시겠습니까?')) {
-                                // TODO: 권한 삭제 API 호출
-                                const row = this.closest('tr');
-                                row.style.opacity = '0.5';
-                                setTimeout(() => {
-                                    row.remove();
-                                }, 500);
-                            }
-                        });
-                    });
-        
-                    // 초대 링크 생성 버튼 이벤트
-                    document.querySelector('.permission-header .button.is-light').addEventListener('click', function () {
-                        // TODO: 초대 링크 생성 API 호출
-                        alert('초대 링크가 생성되었습니다. 클립보드에 복사되었습니다.');
-                    });
-                }) */
         $(document).ready(function () {
             $('.send-email-button').on('click', function () {
                 const alias = $('input[name="alias"]').val();
@@ -144,6 +123,48 @@
                     }
                 });
             });
+            
+            // 삭제 버튼 이벤트
+            $(document).on('click', '.delete-button', function () {
+                const permissionId = $(this).data('id'); // 데이터 ID 가져오기
+
+                if (confirm('이 항목을 삭제하시겠습니까?')) {
+                    // 삭제 요청 AJAX 호출
+                    deletePermission(permissionId, $(this)); // 삭제 후 해당 행 제거
+                }
+            });
+            
+         // 삭제 요청을 처리하는 AJAX 함수
+            function deletePermission(permissionId, button) {
+                $.ajax({
+                    url: `/auth/permission/delete/${permissionId}`,
+                    type: 'DELETE',
+                    success: function (response) {
+                        if (response) {
+                            // 삭제된 항목의 행을 DOM에서 제거
+                            button.closest('tr').remove();
+                            alert('삭제 완료되었습니다.');
+                            updateCounts();  // 카운트 업데이트
+                        } else {
+                            alert('삭제에 실패했습니다.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('삭제 요청 중 오류 발생:', error);
+                        alert('서버와의 통신 중 오류가 발생했습니다.');
+                    }
+                });
+            }
+         
+            // 승인 요청과 승인 완료 상태 카운트 업데이트
+            function updateCounts() {
+                const requestCount = $('#request-list tbody tr').length;
+                const approvedCount = $('#approved-list tbody tr').length;
+
+                $('.status-box p:first-child').text(`승인 요청: ${requestCount}건`);
+                $('.status-box p:last-child').text(`승인 완료: ${approvedCount}건`);
+            }
+            
         });
     </script>
 </head>
@@ -201,7 +222,7 @@
                         <td th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}">승인한 날짜</td>
                         <td th:text="${permission.relationType.typeNameKr}">자녀와의 관계</td>
                         <td>
-                            <button class="button is-small is-pink delete-button">권한 삭제</button>
+                            <button class="button is-small is-pink delete-button" th:data-id="${permission.id}">권한 삭제</button>
                         </td>
                     </tr>
                 </tbody>

@@ -2,11 +2,11 @@ package com.scit.iLog.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -48,8 +48,8 @@ public class EmailService {
     public void sendVerificationEmail(String to, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
 
-        //        message.setFrom("ilog@ilog.com");  // 발신자 주소
-        message.setFrom("aaaTesT255@gmail.com");
+//        message.setFrom("ilog@ilog.com");  // 발신자 주소
+        message.setFrom("aaaTesT255@gmail.com"); // 이도훈 email
         message.setTo(to);
         message.setSubject("이메일 인증 코드");
 
@@ -83,7 +83,7 @@ public class EmailService {
         String str = (etc == null || etc.length() < 1) ? "" : etc;
         String token = UUID.randomUUID().toString();
         String verificationUrl = "http://localhost:9900/verifyLink?token=" + token;
-        message.setFrom("aaaTesT255@gmail.com"); // 발신자 주소
+        message.setFrom("aaaTesT255@gmail.com"); // 발신자 주소 이도훈email
         message.setTo(inviteeEmail);
         message.setSubject(guardianName + "로부터" + " 권한 초대 링크입니다.");
         message.setText("안녕하세요,\n\n"
@@ -91,21 +91,11 @@ public class EmailService {
                 + verificationUrl + "\n"
                 + str);
 
-        //		message.setFrom("aaaTesT255@gmail.com");
-        //		message.setTo(to);
-        //		message.setSubject("이메일 인증 코드");
-
         log.info("생성된 토큰: {}", token);
         log.info("생성된 인증 URL: {}", verificationUrl);
         mailSender.send(message);
         
-        System.out.println("==================");
-        System.out.println(inviteeEmail);
-        
         Long inviteeId = memberRepository.findByEmail(inviteeEmail);
-        
-        System.out.println("==================");
-        System.out.println(inviteeId);
         
         if(inviteeId == null) {
             throw new Exception("초대받을 회원이 존재하지 않습니다.");
@@ -124,11 +114,12 @@ public class EmailService {
 
         Optional<MemberEntity> requesterEntity = memberRepository.findById(permissionRequestDto.getRequesterId()); // 요청보낸사람
         Optional<MemberEntity> inviteeEntity = memberRepository.findById(permissionRequestDto.getInviteeId()); // 초대받은사람
+        
         childRepository.findById(permissionRequestDto.getChildId());
 
         return savePermissionEntity(permissionRequestDto);
     }
-
+    
     // 초대 받은 사람이 링크 클릭시, 이것이 db에 있는지 확인하고 업데이트 하는 로직
     @Transactional
     public void findInviteCodeAndUpdate(String code) throws Exception {
@@ -138,7 +129,6 @@ public class EmailService {
 
         // 저장된 코드 찾기
         Optional<PermissionRequestEntity> resultEntity = permissionRequestRepository.findByRequestLinkCode(code);
-
         resultEntity.orElseThrow(() -> new Exception("링크가 같은 것을 DB에서 찾지 못했습니다."));
 
         // 3분 이내인지 체크
@@ -152,7 +142,8 @@ public class EmailService {
         resultEntity.get().setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus.ACCEPTED);
         saveRelationShipEntity(resultEntity.get());
     }
-
+    
+    //UUID생성 메서드
     public static String generateVerificationCode() {
         ThreadLocalRandom current = ThreadLocalRandom.current();
         int code = 100000 + current.nextInt(900000); // 100000 ~ 999999
@@ -190,7 +181,7 @@ public class EmailService {
                 .build();
         return relationShipRepository.save(_entity);
     }
-
+    // 이메일 유효기간
     public boolean checkInTimeLimit(LocalDateTime time, long limitTime) {
         // 제한 시간 안이면 true, 제한시간 오버됐으면 false
         boolean result = false;
@@ -203,38 +194,69 @@ public class EmailService {
 
     }
 
-    //부모용
+    /**
+     * 2025-03-10~12 이도훈
+     * 부모용
+     * @param memberId
+     * @return
+     */
     @Transactional
     public List<PermissionRequestDTO> findPermissionRequestDTOList(Long memberId) {
 
         List<PermissionRequestEntity> requesterEntity = permissionRequestRepository.findAllByRequesterId(memberId);
 
-        List<PermissionRequestDTO> dtoList = requesterEntity.stream().map(entity -> PermissionRequestDTO.builder()
-                .id(entity.getId())
-                .requesterId(entity.getRequester().getId())
-                .inviteeId(entity.getInvitee().getId()) //초대받은 사람.
-                .childId(entity.getChild().getId())
-                .childName(entity.getChild().getName())
-                .relationType(entity.getRelationType())
-                .permissionRequestStatus(entity.getPermissionStatus())
-                .requestCodeLink(entity.getRequestLinkCode())
-                .alias(entity.getAlias())
-                .approvalDate(entity.getModifiedAt())
-                .build()).collect(Collectors.toList());
-
+//        List<PermissionRequestDTO> dtoList = requesterEntity.stream().map(entity -> PermissionRequestDTO.builder()
+//                .id(entity.getId())
+//                .requesterId(entity.getRequester().getId())
+//                .inviteeId(entity.getInvitee().getId()) //초대받은 사람.
+//                .childId(entity.getChild().getId())
+//                .childName(entity.getChild().getName())
+//                .relationType(entity.getRelationType())
+//                .permissionRequestStatus(entity.getPermissionStatus())
+//                .requestCodeLink(entity.getRequestLinkCode())
+//                .alias(entity.getAlias())
+//                .approvalDate(entity.getModifiedAt())
+//                .build()).collect(Collectors.toList());
+        //PermissionRequestDTO를 List에 담기 위해 변환 전 빈 List객체 생성.
+        List<PermissionRequestDTO> dtoList = new ArrayList<>();
+        //PermissionRequestEntity를 Dto로 변환 후 추가
+        for (PermissionRequestEntity entity : requesterEntity) {
+            dtoList.add(PermissionRequestDTO.builder()
+                    .id(entity.getId())
+                    .requesterId(entity.getRequester().getId())
+                    .inviteeId(entity.getInvitee().getId())
+                    .childId(entity.getChild().getId())
+                    .childName(entity.getChild().getName())
+                    .relationType(entity.getRelationType())
+                    .permissionRequestStatus(entity.getPermissionStatus())
+                    .requestCodeLink(entity.getRequestLinkCode())
+                    .alias(entity.getAlias())
+                    .approvalDate(entity.getModifiedAt())
+                    .build());
+        }
+        //Dto가 추가 된 List객체 반환
         return dtoList;
     }
-
+    
+    /**
+     * 2025-03-10~12 정준성
+     * 교사용
+     * @param inviteeId
+     * @param _waitRequestList
+     * @param _permissionList
+     */
     @Transactional
-    public void findAllByPermissionEntity(Long inviteeId, List<PermissionTeacherDTO> _waitRequestList,
-                                        List<PermissionTeacherDTO> _permissionList) 
+    public void findAllByPermissionEntity(
+    		Long inviteeId,
+    		List<PermissionTeacherDTO> _waitRequestList,
+    		List<PermissionTeacherDTO> _permissionList) 
     {
         // 25/3/11 jun : requester 기준으로 db 찾아서 반환하는 함수 교사용
         List<PermissionRequestEntity> list = permissionRequestRepository.findAllByInviteeId(inviteeId);
 
         for (var _entity : list) 
         {
-            // accept 상태라면 permissionList에 넣기
+            // accept 상태라면 permissionList에 넣기 아니라면 pending
             if (_entity.getPermissionStatus().equals(PermissionRequestStatus.ACCEPTED) )
                 _permissionList.add(entityToPermissionTeacherDTO(_entity));
             else
@@ -242,7 +264,12 @@ public class EmailService {
         }
     }
 
-    
+    /**
+     * 2025-03-10~12 정준성
+     * 교사용
+     * @param _entity
+     * @return
+     */
     @Transactional
     private PermissionTeacherDTO entityToPermissionTeacherDTO(PermissionRequestEntity _entity) {
         return PermissionTeacherDTO.builder()
@@ -259,16 +286,27 @@ public class EmailService {
 
     // 나중에 옮겨야 할 함수
     // permission table의 record 삭제 함수
-    public boolean deletePermissionTable(Long id) 
+    /**
+	 * 2025-03-10~12
+	 * 삭제 메서드(부모, 교사 공용)
+     * @param permissionId
+     * @return
+     */
+    public boolean deletePermissionTable(Long permissionId) 
     {
-        boolean isPermission = permissionRequestRepository.existsById(id);
+        boolean isPermission = permissionRequestRepository.existsById(permissionId);
+        if(!isPermission) return false;
 
-        if(isPermission == false) return false;
-
-        Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository.findById(id);
-        permissionRequestRepository.delete(permissionEntity.get());
-
-        
+        Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository.findById(permissionId);
+        if (permissionEntity.isPresent()) {
+            // 삭제 전, 관련된 relationshipId를 변수로 저장할 수 있음 (예시)
+            Long relationshipId = permissionEntity.get().getInvitee().getId();
+            
+            permissionRequestRepository.delete(permissionEntity.get());
+            
+            relationShipRepository.deleteById(relationshipId);
+            
+        }
         return true;
     }
 }
