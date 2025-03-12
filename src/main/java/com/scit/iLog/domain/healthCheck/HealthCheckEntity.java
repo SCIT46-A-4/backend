@@ -27,7 +27,7 @@ public class HealthCheckEntity extends BaseTimeEntity {
     private ChildEntity child;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id")
     private MemberEntity member;
 
     @OneToOne(fetch = LAZY)

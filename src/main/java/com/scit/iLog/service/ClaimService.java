@@ -1,5 +1,6 @@
 package com.scit.iLog.service;
 
+import com.scit.iLog.exception.MemberNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ import com.scit.iLog.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
  * **2024-03-05 ~ 2024-03-09 전제환**
@@ -191,4 +194,11 @@ public class ClaimService {
 		log.info("✅ [서비스] 답변 저장 완료 - 답변 ID: {}", answer.getId());
 	}
 
+	@Transactional
+	public void deleteClaimsAndAnswersOf(Long memberId) {
+		MemberEntity member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new MemberNotFoundException(memberId));
+		List<ClaimEntity> allByAuthor = claimRepository.findAllByAuthor(member);
+		claimRepository.deleteAll(allByAuthor);
+	}
 }

@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final MemberRepository memberRepository;
-
     private final LoginSuccessHandler loginSuccessHandler;
 	private final LoginFailureHandler loginFailureHandler;
 
@@ -171,21 +169,25 @@ public class SecurityConfig {
 
         @Override
         public boolean isAccountNonExpired() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isAccountNonExpired();
         }
 
         @Override
         public boolean isAccountNonLocked() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isAccountNonLocked();
         }
 
         @Override
         public boolean isCredentialsNonExpired() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isCredentialsNonExpired();
         }
 
         @Override
         public boolean isEnabled() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isEnabled();
         }
     }

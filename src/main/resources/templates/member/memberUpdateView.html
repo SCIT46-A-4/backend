@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<html
-        lang="ko"
-        xmlns:th="http://thymeleaf.org"
->
+<html lang="ko" xmlns:th="http://thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title>회원 정보 수정 - iLog</title>
@@ -67,6 +64,22 @@
             }
             event.target.submit();
           });
+
+        userPwdInput.addEventListener('keyup', function () {
+          $.ajax({
+            url: '/members/password/validate',
+            data: { password: userPwdInput.value },
+            type: 'POST',
+            success: function (isDuplicated) {
+              if (isDuplicated) {
+                Swal.fire('비밀번호는 이전 비밀번호와 다르게 입력해주세요.');
+              }
+            },
+            error: function () {
+              Swal.fire('비밀번호 중복 검사에 실패했습니다.');
+            },
+          });
+        });
 
         userPwdInput.addEventListener('input', function () {
           validator.revalidateField(userPwdInput);

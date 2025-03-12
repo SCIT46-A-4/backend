@@ -1,19 +1,21 @@
 package com.scit.iLog.service;
 
-import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.dto.member.MemberDashboardProfileDTO;
 import com.scit.iLog.dto.member.MemberDetailsDTO;
 import com.scit.iLog.dto.member.MemberUpdateDTO;
-import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Slf4j
@@ -22,6 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final RelationShipRepository relationShipRepository;
+	private final ChildDiaryRepository childDiaryRepository;
+	private final AnalysisTargetRepository analysisTargetRepository;
+	private final GuideRepository guideRepository;
+	private final ChildHealthCheckRepository childHealthCheckRepository;
 
 	/**
 	 * 2025-02-17~20 이도훈
@@ -82,14 +89,16 @@ public class MemberService {
 	}
 
 	@Transactional
-	public void deleteMember(Long memberId) {
-		memberRepository.deleteById(memberId);
+	public void inValidateMember(Long memberId) {
+		// 1. 삭제할 MemberEntity를 조회 (없으면 예외 발생)
+		MemberEntity member = findById(memberId);
+
+		member.setRole(MemberRole.LEAVED);
 	}
 
 	@Transactional(readOnly = true)
 	public MemberDetailsDTO getMemberDetailsById(Long memberId) {
-		MemberEntity member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));
+		MemberEntity member = findById(memberId);
 		return MemberDetailsDTO.builder()
 				.signInId(member.getSignInId())
 				.email(member.getEmail())
@@ -99,13 +108,40 @@ public class MemberService {
 				.build();
 	}
 
-	@Transactional
-	public void updateMember(Long memberId, String email, String newPassword) {
+	private MemberEntity findById(Long memberId) {
 		MemberEntity member = memberRepository.findById(memberId)
 				.orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));
+		return member;
+	}
+
+	@Transactional
+	public void updateMember(Long memberId, String email, String newPassword) {
+		MemberEntity member = findById(memberId);
 		member.setPassword(passwordEncoder.encode(newPassword));
 
 		if (member.getEmail().equals(email)) return;
 		member.setEmail(email);
+	}
+
+	@Transactional
+	public void deleteMemberWithRelationShips(Long memberId) {
+		MemberEntity member = findById(memberId);
+		List<RelationShipEntity> relationships = member.getRelationShips();
+		if (relationships != null && !relationships.isEmpty()) {
+			relationships.forEach(relationShip -> relationShip.setMember(null));
+			relationShipRepository.deleteAll(relationships);
+		}
+
+		memberRepository.delete(member);
+	}
+
+	@Transactional
+	public void deleteMemberById(Long memberId) {
+		memberRepository.deleteById(memberId);
+	}
+
+	public boolean isDuplicatedPassword(Long memberId, String password) {
+		MemberEntity member = findById(memberId);
+		return passwordEncoder.matches(password, member.getPassword());
 	}
 }

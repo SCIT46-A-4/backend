@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MainController {
 	/**
 	 * "기본/메인 페이지"를 보여주는 뷰를 반환하는 핸들러
-	 * @return index.html 뷰 페이지
 	 *
+	 * @return index.html 뷰 페이지
+	 * <p>
 	 * L-1
 	 */
-    @GetMapping({"","/"})
-    public String handleGetIndex(
+	@GetMapping({"", "/"})
+	public String handleGetIndex(
 			@RequestParam(value = "lang", required = false) String lang
 	) {
 		if (StringUtils.hasText(lang) && lang.equals("en")) {
@@ -31,5 +32,20 @@ public class MainController {
 			return "index-jp";
 		}
 		return "index";
-    }
+	}
+
+	@GetMapping("/terms")
+	public String handleGetTerms() {
+		return "terms";
+	}
+
+	@GetMapping("/privacy")
+	public String handleGetPrivacy() {
+		return "/privacy";
+	}
+
+	@GetMapping("/youth-policy")
+	public String handleGetYouthPolicy() {
+		return "/youth-policy";
+	}
 }
