@@ -1,21 +1,25 @@
 package com.scit.iLog.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.permition.PermissionRequestDTO;
 import com.scit.iLog.domain.permition.PermissionRequestStatus;
+import com.scit.iLog.dto.auth.PermissionTeacherDTO;
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
@@ -159,10 +163,25 @@ public class AuthController {
 	@GetMapping("/permissionTeacher/{memberId}")
 	public String handleGetPermissionTeacher(@PathVariable(name = "memberId") Long memberId, Model model) throws Exception 
 	{
-		model.addAttribute("list", emailService.findAllByPermissionEntity(memberId));
-
+		List<PermissionTeacherDTO> waitRequestList = new ArrayList<>();
+		List<PermissionTeacherDTO> permissionList = new ArrayList<>();
+		
+		emailService.findAllByPermissionEntity(memberId, waitRequestList, permissionList);
+		model.addAttribute("permissionList", permissionList);
+		model.addAttribute("waitRequestList", waitRequestList);
 		
 		return "children/permissions/teacherView";
+	}
+
+	@DeleteMapping("/permissionTeacher/delete/{entityId}")
+	@ResponseBody
+	public boolean deletePermissionTable(@PathVariable(name = "entityId") Long id)
+	{
+		boolean result = emailService.deletePermissionTable(id);
+
+		if(!result) return false;
+		
+		return true;
 	}
 	
 }
