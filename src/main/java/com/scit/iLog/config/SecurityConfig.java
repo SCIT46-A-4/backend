@@ -59,6 +59,9 @@ public class SecurityConfig {
                                 "/claims",
                                 "/send-verification-code",
                                 "/verify-code",
+                                "/terms",
+                                "/privacy",
+                                "/youth-policy",
                                 "/js/**",
                                 "/css/**",
                                 "/images/**"
