@@ -16,6 +16,7 @@ import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.permition.PermissionRequestDTO;
 import com.scit.iLog.domain.permition.PermissionRequestStatus;
+import com.scit.iLog.dto.auth.PermissionTeacherDTO;
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
@@ -157,9 +158,12 @@ public class AuthController {
 	
 	
 	@GetMapping("/permissionTeacher/{memberId}")
-	public String handleGetPermissionTeacher(@PathVariable(name = "memberId") Long memberId, Model model) throws Exception 
+	public String handleGetPermissionTeacher(
+			@PathVariable(name = "memberId") Long memberId,
+			Model model) throws Exception 
 	{
-		model.addAttribute("list", emailService.findAllByPermissionEntity(memberId));
+		List<PermissionTeacherDTO> list = emailService.findAllByPermissionEntity(memberId);
+		model.addAttribute("list", list);
 
 		
 		return "children/permissions/teacherView";

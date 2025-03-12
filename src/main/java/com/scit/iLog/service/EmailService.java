@@ -228,10 +228,9 @@ public class EmailService {
                 PermissionTeacherDTO _dto = PermissionTeacherDTO.builder()
                     .id(_entity.getId())          
                     .guardianName(_entity.getRequester().getName())
-                    .inviteeName(_entity.getInvitee().getName())
                     .childName(_entity.getChild().getName())
                     .relation(_entity.getRelationType())
-                    .permissionRequestStatus(_entity.getPermissionStatus())
+                    .birthDate(_entity.getChild().getBirthDate())
                     .approvalDate(_entity.getModifiedAt())
                     .build();
                 dtoList.add(_dto);
