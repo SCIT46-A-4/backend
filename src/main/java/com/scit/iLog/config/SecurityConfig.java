@@ -52,6 +52,8 @@ public class SecurityConfig {
                                 "/",
                                 "/auth/signIn",
                                 "/auth/signUp",
+                                "/auth/idFind",   // 아이디 찾기 허용
+                                "/auth/pwFind",   // 비밀번호 찾기 허용
                                 // 2025-02-17~20 이도훈 추가
                                 "/auth/checkSignInIdExists",
                                 "/auth/idPwFind",
@@ -97,6 +99,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
         );
+        
         return http.build();
     }
 
