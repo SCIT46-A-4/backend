@@ -2,11 +2,20 @@ package com.scit.iLog.controller;
 
 import com.scit.iLog.dto.member.MemberUpdateDTO;
 import com.scit.iLog.dto.member.MemberUpdateRequestDTO;
+import com.scit.iLog.service.ClaimService;
 import com.scit.iLog.service.MemberService;
+import com.scit.iLog.service.analysis.AnalysisService;
+import com.scit.iLog.service.child.ChildDiaryService;
+import com.scit.iLog.service.child.ChildRecordService;
 import com.scit.iLog.service.child.RelationShipService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +31,10 @@ import static com.scit.iLog.config.SecurityConfig.*;
 public class MemberController {
     private final MemberService memberService;
     private final RelationShipService relationShipService;
+    private final ClaimService claimService;
+    private final ChildDiaryService childDiaryService;
+    private final AnalysisService analysisService;
+    private final ChildRecordService childRecordService;
 
     /*
         M-1
@@ -54,17 +67,49 @@ public class MemberController {
     /*
         M-1
      */
-    @DeleteMapping("/quit")
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/quit/v1")
     public boolean handleDeleteMember(
+            HttpServletRequest request,
             Authentication authentication,
-            @PathVariable("memberId") Long memberId,
-            @RequestParam("deleteAllChildren") boolean deleteAllChildren
+            @RequestParam(value = "deleteAllChildren", required = false) boolean deleteAllChildren
     ) {
         if (!authentication.isAuthenticated()) return false;
-        if (deleteAllChildren) {
-            relationShipService.deleteAllRelationShipOf(memberId);
+        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
+        memberService.inValidateMember(memberDetails.getId());
+        SecurityContextHolder.clearContext();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
         }
-        memberService.deleteMember(memberId);
+        return true;
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/quit/v2")
+    public boolean handleDeleteMemberV2(
+            HttpServletRequest request,
+            Authentication authentication,
+            @RequestParam(value = "deleteAllChildren", required = false) boolean deleteAllChildren
+    ) {
+        if (!authentication.isAuthenticated()) return false;
+        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
+        if (deleteAllChildren) {
+            claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
+            relationShipService.deleteAllChildrenOf(memberDetails.getId());
+        } else {
+            claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
+            childDiaryService.inValidateByMember(memberDetails.getId());
+            analysisService.inValidateByMember(memberDetails.getId());
+            childRecordService.inValidateByMember(memberDetails.getId());
+            memberService.deleteMemberWithRelationShips(memberDetails.getId());
+        }
+
+        SecurityContextHolder.clearContext();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
         return true;
     }
 
@@ -81,6 +126,14 @@ public class MemberController {
         MemberUpdateDTO memberUpdateDTO = memberService.getMemberUpdateDataById(memberDetails.getId());
         model.addAttribute("memberDetails", memberUpdateDTO);
         return "/member/memberUpdateView";
+    }
+
+    @PostMapping("/password/validate")
+    public boolean handlePostPasswordReset(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @RequestParam("password") String password
+    ) {
+        return memberService.isDuplicatedPassword(memberDetails.getId(), password);
     }
 
     /*

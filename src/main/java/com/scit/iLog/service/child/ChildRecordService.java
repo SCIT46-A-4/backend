@@ -5,6 +5,7 @@ import com.scit.iLog.domain.child.ChildRecordEntity;
 import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.dto.child.*;
+import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.ChildHealthCheckRepository;
 import com.scit.iLog.repository.ChildRecordRepository;
 import com.scit.iLog.repository.ChildRepository;
@@ -253,5 +254,13 @@ public class ChildRecordService {
 				.savedFileName(newSavedFileName)
 				.build());
 		childRecord.setHealthCheck(healthCheck);
+	}
+
+	@Transactional
+	public void inValidateByMember(Long memberId) {
+		MemberEntity member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new MemberNotFoundException(memberId));
+		healthCheckRepository.findAllByMember(member)
+				.forEach(healthCheck -> healthCheck.setMember(null));
 	}
 }

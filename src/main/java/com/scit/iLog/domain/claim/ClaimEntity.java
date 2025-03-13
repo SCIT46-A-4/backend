@@ -36,10 +36,9 @@ public class ClaimEntity extends BaseTimeEntity {
     @Column(name = "type", nullable = false)
     private ClaimType type;
 
-    @OneToMany(mappedBy = "claim", fetch = LAZY)
+    @OneToMany(mappedBy = "claim", fetch = LAZY, cascade = CascadeType.REMOVE)
     private List<ClaimAnswerEntity> answers;
     
-    // ✅ 편의 메서드 추가 (양방향 연관관계 설정)
     public void addAnswer(ClaimAnswerEntity answer) {
         this.answers.add(answer);
         answer.setClaim(this);

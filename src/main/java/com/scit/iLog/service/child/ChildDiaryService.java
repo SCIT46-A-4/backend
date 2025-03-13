@@ -96,4 +96,12 @@ public class ChildDiaryService {
                         .build()
         ).getId();
     }
+
+    @Transactional
+    public void inValidateByMember(Long memberId) {
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        childDiaryRepository.findAllByAuthor(member)
+                .forEach(childDiary -> childDiary.setAuthor(null));
+    }
 }

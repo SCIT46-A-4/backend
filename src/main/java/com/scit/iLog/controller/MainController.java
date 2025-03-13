@@ -20,8 +20,8 @@ public class MainController {
 	 *
 	 * L-1
 	 */
-    @GetMapping({"","/"})
-    public String handleGetIndex(
+	@GetMapping({"", "/"})
+	public String handleGetIndex(
 			@RequestParam(value = "lang", required = false) String lang
 	) {
 		if (StringUtils.hasText(lang) && lang.equals("en")) {
@@ -31,19 +31,23 @@ public class MainController {
 			return "index-jp";
 		}
 		return "index";
-    }
-    
-    
+	}
+
+	@GetMapping("/youth-policy")
+	public String handleGetYouthPolicy() {
+		return "/youth-policy";
+	}
+
     /**
      * 개인정보처리방침 페이지 이동
      * @return privacyPolicy.html
      */
     @GetMapping("/privacy")
     public String handleGetPrivacyPolicy() {
-        return "privacyPolicy"; 
+        return "privacyPolicy";
     }
-    
-    
+
+
     /**
      * 이용약관 페이지 이동
      * @return termsOfService.html
@@ -52,7 +56,4 @@ public class MainController {
     public String handleGetTermsOfService() {
         return "termsOfService";
     }
-    
-   
-    
 }

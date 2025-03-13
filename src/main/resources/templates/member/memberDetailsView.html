@@ -21,18 +21,29 @@
           }).then((result) => {
             if (result.isConfirmed) {
               $.ajax({
-                url: '/members/quit',
+                url: '/members/quit/v2',
                 data: {
                   deleteAllChildren: deleteAllChildren,
                 },
-                type: 'DELETE',
-                success: function () {
-                  Swal.fire({
-                    title: '탈퇴되었습니다.',
-                    text: '이용해 주셔서 감사합니다.',
-                    icon: 'success',
-                  });
-                  location.href = '/';
+                type: 'POST',
+                success: function (res) {
+                  if (res) {
+                    Swal.fire({
+                      title: '서비스 이용이 종료 되었습니다.',
+                      text: '이용해 주셔서 감사합니다.',
+                      icon: 'success',
+                    });
+                    setTimeout(() => {
+                      location.href = '/';
+                    }, 3000);
+                  } else {
+                    Swal.fire({
+                      title: '회원 탈퇴에 실패했습니다.',
+                      text: '운영팀에 문의해주세요',
+                      icon: 'info',
+                      footer: '<a href="/claims">문의하기</a>',
+                    });
+                  }
                 },
                 error: function () {
                   Swal.fire({
@@ -180,7 +191,7 @@
                 </a>
               </p>
               <p class="control">
-                <a class="button is-light" id="btn-quit"> 탈퇴하기 </a>
+                <button class="button is-light" id="btn-quit">탈퇴하기</button>
               </p>
               <!-- 등록한 아동과 관련된 정보를 모두 삭제하시겠습니까? 선택을 위한 체크박스 입력을 받아야함. -->
               <div>

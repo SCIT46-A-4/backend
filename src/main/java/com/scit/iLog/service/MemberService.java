@@ -1,5 +1,6 @@
 package com.scit.iLog.service;
 
+import com.scit.iLog.domain.RelationShipEntity;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,11 +19,14 @@ import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.dto.member.MemberDashboardProfileDTO;
 import com.scit.iLog.dto.member.MemberDetailsDTO;
 import com.scit.iLog.dto.member.MemberUpdateDTO;
+import com.scit.iLog.repository.*;
 import com.scit.iLog.repository.MemberRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 
 @Slf4j
@@ -36,6 +40,11 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final RelationShipRepository relationShipRepository;
+	private final ChildDiaryRepository childDiaryRepository;
+	private final AnalysisTargetRepository analysisTargetRepository;
+	private final GuideRepository guideRepository;
+	private final ChildHealthCheckRepository childHealthCheckRepository;
 
 	/**
 	 * 2025-02-17~20 이도훈
@@ -55,7 +64,7 @@ public class MemberService {
 						.password(passwordEncoder.encode(signUpDTO.userPwd()))
 						.email(signUpDTO.userEmail())
 						.name(signUpDTO.userName())
-						.relationType(RelationType.valueOf(signUpDTO.relationType()))
+						.relationType(signUpDTO.relationType())
 						.role(MemberRole.USER)
 						.personalInformationCollectionAndUsageAgreement(
 								signUpDTO.personalInformationCollectionAndUsageAgreement())
@@ -96,14 +105,16 @@ public class MemberService {
 	}
 
 	@Transactional
-	public void deleteMember(Long memberId) {
-		memberRepository.deleteById(memberId);
+	public void inValidateMember(Long memberId) {
+		// 1. 삭제할 MemberEntity를 조회 (없으면 예외 발생)
+		MemberEntity member = findById(memberId);
+
+		member.setRole(MemberRole.LEAVED);
 	}
 
 	@Transactional(readOnly = true)
 	public MemberDetailsDTO getMemberDetailsById(Long memberId) {
-		MemberEntity member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));
+		MemberEntity member = findById(memberId);
 		return MemberDetailsDTO.builder()
 				.signInId(member.getSignInId())
 				.email(member.getEmail())
@@ -113,22 +124,49 @@ public class MemberService {
 				.build();
 	}
 
-	@Transactional
-	public void updateMember(Long memberId, String email, String newPassword) {
+	private MemberEntity findById(Long memberId) {
 		MemberEntity member = memberRepository.findById(memberId)
 				.orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));
+		return member;
+	}
+
+	@Transactional
+	public void updateMember(Long memberId, String email, String newPassword) {
+		MemberEntity member = findById(memberId);
 		member.setPassword(passwordEncoder.encode(newPassword));
 
 		if (member.getEmail().equals(email)) return;
 		member.setEmail(email);
 	}
 
+	@Transactional
+	public void deleteMemberWithRelationShips(Long memberId) {
+		MemberEntity member = findById(memberId);
+		List<RelationShipEntity> relationships = member.getRelationShips();
+		if (relationships != null && !relationships.isEmpty()) {
+			relationships.forEach(relationShip -> relationShip.setMember(null));
+			relationShipRepository.deleteAll(relationships);
+		}
+
+		memberRepository.delete(member);
+	}
+
+	@Transactional
+	public void deleteMemberById(Long memberId) {
+		memberRepository.deleteById(memberId);
+	}
+
+	public boolean isDuplicatedPassword(Long memberId, String password) {
+		MemberEntity member = findById(memberId);
+		return passwordEncoder.matches(password, member.getPassword());
+	}
+
     /**
      * 2025-03-11~12
-     * 
-     * ✅ 이메일을 통해 아이디 찾기  
+     *
+     * ✅ 이메일을 통해 아이디 찾기
      * 사용자가 입력한 이메일로 등록된 계정을 찾고, 해당 계정의 아이디를 반환합니다.
-     * 
+     *
      * @param email - 사용자가 입력한 이메일
      * @return 찾은 회원의 아이디 (signInId)
      * @throws MemberNotFoundException - 이메일로 등록된 계정이 없을 경우 예외 발생
@@ -137,16 +175,16 @@ public class MemberService {
 	public String getSignInIdByEmail(String email) {
 		MemberEntity member = memberRepository.findByEmail(email)
 				.orElseThrow(() -> new MemberNotFoundException(email));
-		
+
 		return member.getSignInId();
     }
 
     /**
      * 2025-03-11~12
-     * 
-     * ✅ 아이디와 이메일이 일치하는지 확인  
+     *
+     * ✅ 아이디와 이메일이 일치하는지 확인
      * 사용자가 입력한 아이디와 이메일이 실제로 같은 계정인지 확인합니다.
-     * 
+     *
      * @param email - 사용자가 입력한 이메일
      * @param signInId - 사용자가 입력한 아이디
      * @return 일치하면 true, 일치하지 않으면 false 반환
@@ -161,10 +199,10 @@ public class MemberService {
 
     /**
      * 2025-03-11~12 전제환
-     * 
-     * ✅ 비밀번호 초기화 및 임시 비밀번호 발급  
+     *
+     * ✅ 비밀번호 초기화 및 임시 비밀번호 발급
      * 사용자가 입력한 아이디를 확인한 후, 새로운 임시 비밀번호를 생성하고 저장합니다.
-     * 
+     *
      * @param signInId - 사용자가 입력한 아이디
      * @return 새롭게 생성된 임시 비밀번호
      * @throws MemberNotFoundException - 아이디로 등록된 계정이 없을 경우 예외 발생
@@ -181,20 +219,20 @@ public class MemberService {
 		// 임시 비밀번호 반환 (사용자가 이메일에서 확인 가능)
 		return newPassword;
 	}
-	
+
     /**
      * 2025-03-11~12 전제환
-     * 
-     * ✅ 5~12자의 랜덤 비밀번호 생성  
+     *
+     * ✅ 5~12자의 랜덤 비밀번호 생성
      * - 영문 대문자, 소문자, 숫자, 특수문자를 포함해야 함
      * - 최소 5자 ~ 최대 12자 길이의 비밀번호를 랜덤으로 생성
-     * 
+     *
      * @return 조건을 충족하는 랜덤한 비밀번호 문자열
      */
 	private String generateRandomPassword() {
 	    SecureRandom random = new SecureRandom();
 	    String allCharacters = UPPERCASE + LOWERCASE + DIGITS + SPECIAL_CHARACTERS;
-	    
+
 	    // 5~12 길이 랜덤 선택
 	    int passwordLength = random.nextInt(8) + 5;
 
@@ -217,10 +255,10 @@ public class MemberService {
 
     /**
      * 2025-03-11~12 전제환
-     * 
-     * ✅ 문자열을 랜덤으로 섞는 메서드  
+     *
+     * ✅ 문자열을 랜덤으로 섞는 메서드
      * 비밀번호 생성 시, 필수 문자가 포함된 상태에서 전체 문자열의 순서를 랜덤으로 변경하여 보안성을 높입니다.
-     * 
+     *
      * @param input - 랜덤 비밀번호 (초기 순서)
      * @return 섞인 상태의 비밀번호 문자열
      */

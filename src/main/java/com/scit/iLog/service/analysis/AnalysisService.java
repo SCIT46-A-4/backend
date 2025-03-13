@@ -9,6 +9,7 @@ import com.scit.iLog.dto.analysis.ai.AIAnalysisResponseForWritingDTO;
 import com.scit.iLog.dto.analysis.weather.WeatherData;
 import com.scit.iLog.dto.analysis.weather.WeatherResponse;
 import com.scit.iLog.dto.child.ChildRecordExtraction;
+import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -156,5 +157,14 @@ public class AnalysisService {
 
     public ChildRecordExtraction getExtractChildRecordData(MultipartFile healthCheckImg) {
         return new FakeAnalysisClient.FakeChildRecordExtraction();
+    }
+
+    @Transactional
+    public void inValidateByMember(Long memberId) {
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        analysisTargetRepository.findAllByUploadedBy(member)
+                .forEach(analysisTarget ->
+                        analysisTarget.setUploadedBy(null));
     }
 }

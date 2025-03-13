@@ -6,7 +6,6 @@ import lombok.Builder;
 public record MemberUpdateDTO(
         String name,
         String signInId,
-        String userPwd,
         String email,
         String relationType,
         boolean personalInformationCollectionAndUsageAgreement
