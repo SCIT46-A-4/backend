@@ -351,7 +351,8 @@
 
         // 문서 로드 후 목록의 첫 번째 학생 자동 선택
         var $firstStudent = $('.student-item').first();
-        if ($firstStudent.length) {
+        if ($firstStudent.length) 
+        {
           $firstStudent.trigger('click');
         }
       });
@@ -431,15 +432,18 @@
       // 도넛 차트 업데이트 함수 (감정 분석 결과)
       function updatePieChart(data) {
         console.log('📊 감정 차트 데이터:', data);
+        const chartContainer = document.getElementById("progressChart");
         if (!Array.isArray(data) || data.length === 0) {
           console.warn('⚠ 감정 데이터 없음. 기본 데이터로 초기화');
+          
           data = [
-            { name: '기쁨', y: 30 },
-            { name: '슬픔', y: 20 },
-            { name: '분노', y: 25 },
-            { name: '놀람', y: 25 },
+//             { name: '기쁨', y: 30 },
+//             { name: '슬픔', y: 20 },
+//             { name: '분노', y: 25 },
+//             { name: '놀람', y: 25 },
           ];
-        } else {
+        } 
+        else {
           const emotionColorMap = {
             기쁨: '#FFD700', // 골드(따뜻한 느낌)
             슬픔: '#4169E1', // 로열블루(깊은 슬픔)
@@ -471,9 +475,12 @@
             type: 'pie',
             custom: {},
             events: {
-              render() {
+              render() 
+              {
                 const chart = this,
-                  series = chart.series[0];
+                series = chart.series[0];
+                
+                const chartContainer = document.getElementById("progressChart"); 
 
                 // 가장 큰 감정 비율을 찾기
                 let maxPoint = series.data.reduce(
@@ -486,7 +493,26 @@
                   ? `${maxPoint.name}<br/><strong>${maxPoint.y.toFixed(
                       0
                     )}%</strong>`
-                  : '총 감정 분석<br/><strong>100%</strong>';
+                  : '분석할 데이터가<br/><strong>없습니다.</strong>';
+                  
+                  // 데이터가 없을 때 div에 '데이터가 없습니다' 띄우는 코드
+                  if(!maxPoint) 
+                	  {
+                	      Highcharts.charts.forEach( (chart) => 
+                	    	  {
+                	          if (chart && chart.renderTo.id === "progressChart") 
+                	        	  {
+                	            	chart.destroy();
+                	          	   }
+                	    	  }
+                	    	  )
+                	    	  
+                	    	chartContainer.innerHTML = `<div id="progressChart" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+                	    		  <strong style="font-size: 18px; color: #666;">데이터가 없습니다.</strong>
+                	    		</div>`;
+                	    	      
+                	    	 return;
+                	  }
 
                 // 기존 레이블이 있으면 업데이트, 없으면 새로 생성
                 let customLabel = chart.options.chart.custom.label;
@@ -592,7 +618,8 @@
       }
 
       // 정렬(select) 변경 시 페이지 이동 함수
-      function changeSort(sortOption) {
+      function changeSort(sortOption) 
+      {
         window.location.href = `/dashboard/teacher?sortOption=${sortOption}`;
       }
 
