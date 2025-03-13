@@ -15,6 +15,7 @@ import com.scit.iLog.domain.mentalsurvey.MentalSurveyResponseEntity;
 import com.scit.iLog.domain.mentalsurvey.QuestionResponse;
 import com.scit.iLog.domain.mentalsurvey.SectionResponse;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
+import com.scit.iLog.exception.FamilyBackgroundNotFoundException;
 import com.scit.iLog.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -362,8 +363,7 @@ public class DataInitializer implements CommandLineRunner {
                         createFamilyBackgrounds 메서드 호출 (가정환경 enum타입의 데이터 생성)
                         util패키지의 FamilyBackGroundSerializer클래스 생성함.
                        */
-        CreateFamilyBackgrounds();
-
+        createFamilyBackgrounds();
     }
 
     private void CreateMentalSurveyResponses() {
@@ -414,7 +414,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     // 이 메서드를 DataInitializer의 run 메서드 끝부분에 추가하여 호출하세요.
-    private void CreateFamilyBackgrounds() {
+    private void createFamilyBackgrounds() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         // childId 1~20 까지 각 아동별로 1~3개의 랜덤 가정환경을 생성
@@ -436,16 +436,13 @@ public class DataInitializer implements CommandLineRunner {
 
             // 선택한 가정환경을 DB에 저장
             for (FamilyBackGround background : selectedBackgrounds) {
-                FamilyBackGroundEntity backgroundEntity = FamilyBackGroundEntity.builder()
-                        .familyBackGround(background)
-                        .build();
-                backgroundEntity.setFamilyBackGround(background);
-                familyBackgroundRepository.save(backgroundEntity);
+                FamilyBackGroundEntity familyBackGround = familyBackgroundRepository.findByFamilyBackGround(background)
+                        .orElseThrow(() -> new FamilyBackgroundNotFoundException());
 
                 // 아동과 가정환경 간 연결 관계 생성
                 ChildBackGroundEntity childBackGround = ChildBackGroundEntity.builder()
                         .child(child)
-                        .familyBackGround(backgroundEntity)
+                        .familyBackGround(familyBackGround)
                         .build();
 
                 childBackGroundRepository.save(childBackGround);
@@ -454,6 +451,4 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println("✅ 아동별 가정환경 데이터 초기화 완료");
     }
-
-
 }
