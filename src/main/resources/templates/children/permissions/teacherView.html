@@ -194,7 +194,7 @@
               <td th:text="${#temporals.format(wait.birthDate, 'yyyy/MM/dd')}">생년월일</td>
               <td th:text="${wait.guardianName}">보호자 이름</td>
               <td th:text="${#temporals.format(wait.approvalDate, 'yyyy년 MM월 dd일')}">승인 요청 날짜</td>
-              <td th:text="${wait.relation.typeNameKr}">자녀와의 관계</td>
+              <td th:text="${wait.requesterRelationType.typeNameKr}">자녀와의 관계</td>
               <td>
                 <button class="button is-small is-pink delete-button" th:data-id="${wait.id}">요청 삭제</button>
               </td>
@@ -229,7 +229,7 @@
               <td th:text="${#temporals.format(permission.birthDate, 'yyyy/MM/dd')}">생년월일</td>
               <td th:text="${permission.guardianName}">보호자 이름</td>
               <td th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}">승인한 날짜</td>
-              <td th:text="${permission.relation.typeNameKr}">자녀와의 관계</td>
+              <td th:text="${permission.requesterRelationType.typeNameKr}">자녀와의 관계</td>
               <td>
                 <button class="button is-small is-pink delete-button" th:data-id="${permission.id}">권한 삭제</button>
               </td>

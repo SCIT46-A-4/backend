@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.permition.PermissionRequestEntity;
 
 @Repository
@@ -16,4 +18,10 @@ public interface PermissionRequestRepository extends JpaRepository<PermissionReq
 	  List<PermissionRequestEntity> findAllByRequesterId(Long requesterId);
 
 	  List<PermissionRequestEntity> findAllByInviteeId(Long inviteeId);
+
+
+
+		Optional<PermissionRequestEntity> findByidAndChildAndAlias(Long permissionId, Optional<ChildEntity> child,
+				String alias);
+
 	}

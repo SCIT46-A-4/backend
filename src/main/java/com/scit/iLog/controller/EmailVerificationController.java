@@ -5,13 +5,14 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.scit.iLog.domain.permition.PermissionRequestEntity;
 import com.scit.iLog.dto.member.MemberDetailsDTO;
 import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
@@ -91,7 +92,7 @@ public class EmailVerificationController
 						return ResponseEntity.badRequest().body(response);
 					}
 			}
-
+		
 		@PostMapping("/send-invite-link")
 		@ResponseBody
 		public boolean sendEmailInviteLink(
@@ -121,7 +122,39 @@ public class EmailVerificationController
 						throw new Exception("메세지 보내는 도중 문제가 발생했습니다.");
 					}
 			}
+		
+			/**
+			 * 2025-03-10~13 이도훈
+			 * @param permissionId
+			 * @param childId
+			 * @param alias
+			 * @return
+			 * @throws Exception
+			 */
+			@DeleteMapping("/cancel-invite-link/{permissionId}/{childId}/{alias}")
+			@ResponseBody
+			public boolean cancelEmailInviteLink(
+					@PathVariable(name = "permissionId") Long permissionId,
+					@PathVariable(name = "childId") Long childId,
+					@PathVariable(name = "alias") String alias) throws Exception
+			{
+			    try {
+			    	
+			        // 서비스에서 취소 요청을 처리하는 메서드 호출
+			        boolean result = emailService.cancelEmailInviteLink(permissionId, childId,  alias);
 
+			        if (!result) {
+			            return false; // 취소 실패 시 false 반환
+			        }
+
+			        return true; // 취소 성공 시 true 반환
+			        
+			    } catch (Exception e) {
+			        throw new Exception("취소 처리 도중 문제가 발생했습니다.");
+			    }
+		}
+		
+		
 		@GetMapping("/verifyLink")
 		public ResponseEntity<String> verifyEmail(@RequestParam(name = "token") String token) throws Exception 
 			{

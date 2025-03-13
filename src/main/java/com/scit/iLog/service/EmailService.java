@@ -107,7 +107,7 @@ public class EmailService {
                 .childId(childId)
                 .requesterId(requesterId)
                 .inviteeId(inviteeId)
-                .relationType(RelationType.TEACHER)
+                .requesterRelationType(RelationType.TEACHER)
                 .permissionRequestStatus(PermissionRequestStatus.PENDING)
                 .requestCodeLink(token)
                 .build();
@@ -160,7 +160,7 @@ public class EmailService {
                 .requester(requesterEntity.get())
                 .child(childEntity.get())
                 .invitee(inviteeEntity.get())
-                .relationType(dto.getRelationType())
+                .relationType(dto.getRequesterRelationType())
                 .permissionStatus(dto.getPermissionRequestStatus())
                 .requestLinkCode(dto.getRequestCodeLink())
                 .alias(dto.getAlias())
@@ -204,19 +204,7 @@ public class EmailService {
     public List<PermissionRequestDTO> findPermissionRequestDTOList(Long memberId) {
 
         List<PermissionRequestEntity> requesterEntity = permissionRequestRepository.findAllByRequesterId(memberId);
-
-//        List<PermissionRequestDTO> dtoList = requesterEntity.stream().map(entity -> PermissionRequestDTO.builder()
-//                .id(entity.getId())
-//                .requesterId(entity.getRequester().getId())
-//                .inviteeId(entity.getInvitee().getId()) //초대받은 사람.
-//                .childId(entity.getChild().getId())
-//                .childName(entity.getChild().getName())
-//                .relationType(entity.getRelationType())
-//                .permissionRequestStatus(entity.getPermissionStatus())
-//                .requestCodeLink(entity.getRequestLinkCode())
-//                .alias(entity.getAlias())
-//                .approvalDate(entity.getModifiedAt())
-//                .build()).collect(Collectors.toList());
+        
         //PermissionRequestDTO를 List에 담기 위해 변환 전 빈 List객체 생성.
         List<PermissionRequestDTO> dtoList = new ArrayList<>();
         //PermissionRequestEntity를 Dto로 변환 후 추가
@@ -227,7 +215,8 @@ public class EmailService {
                     .inviteeId(entity.getInvitee().getId())
                     .childId(entity.getChild().getId())
                     .childName(entity.getChild().getName())
-                    .relationType(entity.getRelationType())
+                    .requesterRelationType(entity.getRequester().getRelationType())
+                    .inviteeRelationType(entity.getRelationType())
                     .permissionRequestStatus(entity.getPermissionStatus())
                     .requestCodeLink(entity.getRequestLinkCode())
                     .alias(entity.getAlias())
@@ -276,13 +265,12 @@ public class EmailService {
                 .id(_entity.getId())
                 .guardianName(_entity.getRequester().getName())
                 .childName(_entity.getChild().getName())
-                .relation(_entity.getRelationType())
                 .approvalDate(_entity.getModifiedAt())
                 .birthDate(_entity.getChild().getBirthDate())
-                .relation(_entity.getRelationType())
+                .requesterRelationType(_entity.getRequester().getRelationType())
+                .inviteeRelationType(_entity.getRelationType())
                 .build();
     }
-
 
     // 나중에 옮겨야 할 함수
     // permission table의 record 삭제 함수
@@ -309,4 +297,25 @@ public class EmailService {
         }
         return true;
     }
+
+    @Transactional
+	public boolean cancelEmailInviteLink(
+			Long permissionId,
+			Long childId, 
+			String alias) {
+    	
+    	Optional<ChildEntity> child = childRepository.findById(childId);
+    	
+	    Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository
+	            .findByidAndChildAndAlias(permissionId, child, alias);
+
+	    if (!permissionEntity.isPresent()) {
+	        return false; // 해당하는 요청이 없다면 삭제하지 않음
+	    }
+	    
+	    // Permission 요청 삭제
+	    permissionRequestRepository.delete(permissionEntity.get());
+
+	    return true; // 삭제 성공 시 true 반환
+	}
 }
