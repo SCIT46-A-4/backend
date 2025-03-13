@@ -50,6 +50,8 @@ public class SecurityConfig {
                                 "/",
                                 "/auth/signIn",
                                 "/auth/signUp",
+                                "/auth/idFind",   // 아이디 찾기 허용
+                                "/auth/pwFind",   // 비밀번호 찾기 허용
                                 // 2025-02-17~20 이도훈 추가
                                 "/auth/checkSignInIdExists",
                                 "/auth/idPwFind",
@@ -62,7 +64,9 @@ public class SecurityConfig {
                                 "/youth-policy",
                                 "/js/**",
                                 "/css/**",
-                                "/images/**"
+                                "/images/**",
+                                "/privacy",
+                                "/terms"
                                 )
                         .permitAll()
                         .requestMatchers("/dashboard/guardian").access(
@@ -98,6 +102,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
         );
+        
         return http.build();
     }
 
@@ -116,21 +121,21 @@ public class SecurityConfig {
     @Bean
     UserDetailsService userDetailsService() {
         return (signInId) -> {
-        	//signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
-        	MemberEntity member = memberRepository
+            //signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
+            MemberEntity member = memberRepository
                     .findBySignInId(signInId)
                     //사용자가 존재하지 않으면 커스텀 예외(WrongSignInIdException)를 발생시킴.
                     .orElseThrow(() -> new WrongSignInIdException(String.format("회원 조회 실패 아이디 : %s", signInId)));
             //사용자가 존재할 경우, MemberDetails 객체 생성 및 반환
             return MemberDetails.builder()
-                            .id(member.getId())
-                            .name(member.getName())
-                            .signInId(member.getSignInId())
-                            .password(member.getPassword())
-                            .email(member.getEmail())
-                            .relationType(member.getRelationType())
-                            .role(member.getRole())
-                            .build();
+                    .id(member.getId())
+                    .name(member.getName())
+                    .signInId(member.getSignInId())
+                    .password(member.getPassword())
+                    .email(member.getEmail())
+                    .relationType(member.getRelationType())
+                    .role(member.getRole())
+                    .build();
         };
     }
 

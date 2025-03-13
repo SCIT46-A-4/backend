@@ -104,6 +104,12 @@
       #verificationCode {
         width: 100%;
       }
+      .custom-swal-text {
+        font-size: 2rem !important;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+    }
     </style>
 
     <script>
@@ -243,7 +249,12 @@
               validator.revalidateField(signInIdInput);
             },
             error: function () {
-              Swal.fire('서버 오류 발생. 다시 시도해주세요.');
+            	Swal.fire({
+            		  html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
+            		  customClass: {
+            			  htmlContainer: 'custom-swal-text'
+          			}
+                  });
             },
           });
         });
@@ -263,13 +274,28 @@
             success: function (response) {
               console.log(response);
               if (response.success) {
-                Swal.fire('인증 번호가 발송되었습니다. 이메일을 확인해주세요.');
+            	  Swal.fire({
+                      html: '<p class="custom-swal-text">인증 번호가 발송되었습니다.<br>이메일을 확인해주세요.</p>',
+                      customClass: {
+                    	  htmlContainer: 'custom-swal-text'
+          			}
+                  });
               } else {
-                Swal.fire('인증 번호 발송에 실패했습니다. 다시 시도해주세요.');
+            	  Swal.fire({
+            		  html: '<p class="custom-swal-text">인증 번호 발송에 실패했습니다.<br>다시 시도해주세요.</p>',
+            		  customClass: {
+            			  htmlContainer: 'custom-swal-text'
+          			}
+                  });
               }
             },
             error: function () {
-              Swal.fire('서버 오류 발생. 다시 시도해주세요.');
+            	Swal.fire({
+          		  html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
+          		customClass: {
+          			htmlContainer: 'custom-swal-text'
+    			}
+                });
             },
           });
         });
@@ -291,11 +317,21 @@
                 emailVerifiedIcon.style.color = 'green';
                 $('#saveChangesBtn').prop('disabled', false);
               } else {
-                Swal.fire('인증 번호가 올바르지 않습니다. 다시 시도해주세요.');
+            	  Swal.fire({
+              		  html: '<p class="custom-swal-text">인증 번호가 올바르지 않습니다.<br>다시 시도해주세요.</p>',
+              		customClass: {
+              			htmlContainer: 'custom-swal-text'
+        			}
+                    });
               }
             },
             error: function () {
-              Swal.fire('서버 오류 발생. 다시 시도해주세요.');
+            	Swal.fire({
+            		  html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
+            		  customClass: {
+            			  htmlContainer: 'custom-swal-text'
+            			}
+                  });
             },
           });
         });

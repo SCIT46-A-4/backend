@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MainController {
 	/**
 	 * "기본/메인 페이지"를 보여주는 뷰를 반환하는 핸들러
-	 *
 	 * @return index.html 뷰 페이지
-	 * <p>
+	 *
 	 * L-1
 	 */
 	@GetMapping({"", "/"})
@@ -34,18 +33,27 @@ public class MainController {
 		return "index";
 	}
 
-	@GetMapping("/terms")
-	public String handleGetTerms() {
-		return "terms";
-	}
-
-	@GetMapping("/privacy")
-	public String handleGetPrivacy() {
-		return "/privacy";
-	}
-
 	@GetMapping("/youth-policy")
 	public String handleGetYouthPolicy() {
 		return "/youth-policy";
 	}
+
+    /**
+     * 개인정보처리방침 페이지 이동
+     * @return privacyPolicy.html
+     */
+    @GetMapping("/privacy")
+    public String handleGetPrivacyPolicy() {
+        return "privacyPolicy";
+    }
+
+
+    /**
+     * 이용약관 페이지 이동
+     * @return termsOfService.html
+     */
+    @GetMapping("/terms")
+    public String handleGetTermsOfService() {
+        return "termsOfService";
+    }
 }

@@ -144,9 +144,9 @@
 
       /* 프로필 이미지 스타일 */
       .profile-image {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
+        width: 150px !important;
+        height: 150px !important;
+        object-fit: cover !important;
         border-radius: 50%;
       }
 
@@ -646,7 +646,9 @@
             <a class="button is-light" th:href="@{/guides}">이용안내</a>
             <!-- 고객센터 페이지 이동 버튼 -->
             <a class="button is-light" th:href="@{/claims}">고객 센터</a>
-            <!-- 사용자 정보 표시 및 프로필 페이지 이동 버튼 -->
+              <!-- 로그아웃 버튼 -->
+              <a class="button is-light" th:href="@{/auth/logout}">로그아웃</a>
+              <!-- 사용자 정보 표시 및 프로필 페이지 이동 버튼 -->
             <a class="button is-light" th:href="@{/members/myDetails}">
               <span class="icon"><i class="fas fa-user"></i></span>
               <span
@@ -662,21 +664,17 @@
     <section class="section">
       <div class="container is-fluid">
         <div class="columns">
-          <!-- 왼쪽 컬럼 (아동 리스트) -->
-          <div class="column is-3 left-column">
-            <!-- 연도 선택 드롭다운 -->
-            <div class="field">
-              <div class="control">
-                <!-- <select id="yearSelector">
-                  <option value="">연도 선택</option>
-                  <option
-                    th:each="year : ${years}"
-                    th:text="${year} + '년'"
-                    th:value="${year}"
-                  ></option>
-                </select> -->
-              </div>
-            </div>
+            <!-- 왼쪽 컬럼 (아동 리스트) -->
+            <div class="column is-3 left-column">
+                <!-- 연도 선택 드롭다운 -->
+                <!--                    <div class="field">-->
+                <!--                        <div class="control">-->
+                <!--                            <select id="yearSelector">-->
+                <!--                                <option value="">연도 선택</option>-->
+                <!--                                <option th:each="year : ${years}" th:text="${year} + '년'" th:value="${year}"></option>-->
+                <!--                            </select>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
 
             <!-- 총 아동 수 표시 -->
             <div style="display: flex; justify-content: flex-end; width: 100%">
@@ -807,83 +805,87 @@
                 </div>
               </div>
 
-              <!-- 가족관계 및 특이사항 카드 -->
-              <div class="column is-4">
-                <div
-                  class="card"
-                  style="
+                <!-- 가정환경 및 특이사항 카드 -->
+                <div class="column is-4">
+                    <div
+                            class="card"
+                            style="
                     height: 310px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                   "
-                >
-                  <div class="card-content has-text-centered">
-                    <!-- 가족관계 -->
-                    <div class="content has-text-centered is-medium">
-                      <p
-                        class="mb-1"
-                        style="font-size: 1.25rem; font-weight: bold"
-                      >
-                        <strong>가정환경</strong>
-                      </p>
-                      <p
-                        id="studentFamilyBackground"
-                        class="profile-familyBackGrounds"
-                        style="
+                    >
+                        <div class="card-content has-text-centered">
+                            <!-- 가정환경 -->
+                            <div class="content has-text-centered is-medium">
+                                <p
+                                        class="mb-1"
+                                        style="font-size: 1.25rem; font-weight: bold"
+                                >
+                                    <strong>가정환경</strong>
+                                </p>
+                                <p
+                                        id="studentFamilyBackground"
+                                        class="profile-familyBackGrounds"
+                                        style="
                           font-weight: normal;
                           font-size: 1.1rem;
                           margin-bottom: 1.5rem;
                         "
-                      >
-                        -
-                      </p>
+                                >
+                                    -
+                                </p>
+                            </div>
+                            <!-- 특이사항 -->
+                            <div class="content has-text-centered is-medium">
+                                <p
+                                        class="mb-1"
+                                        style="font-size: 1.25rem; font-weight: bold"
+                                >
+                                    <strong>특이사항</strong>
+                                </p>
+                                <p
+                                        id="studentNote"
+                                        class="profile-note"
+                                        style="font-weight: normal; font-size: 1.1rem"
+                                >
+                                    -
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <!-- 특이사항 -->
-                    <div class="content has-text-centered is-medium">
-                      <p
-                        class="mb-1"
-                        style="font-size: 1.25rem; font-weight: bold"
-                      >
-                        <strong>특이사항</strong>
-                      </p>
-                      <p
-                        id="studentNote"
-                        class="profile-note"
-                        style="font-weight: normal; font-size: 1.1rem"
-                      >
-                        -
-                      </p>
-                    </div>
-                  </div>
                 </div>
-              </div>
 
-              <!-- 바로가기 버튼들 -->
-              <div class="column">
-                <div class="columns is-multiline">
-                  <div class="column is-12">
-                    <button class="button is-fullwidth is-info is-light">
-                      최근 설문 결과 보기
-                    </button>
-                  </div>
-                  <div class="column is-12">
-                    <button class="button is-fullwidth is-success is-light">
-                      최근 분석 결과 보기
-                    </button>
-                  </div>
-                  <div class="column is-12">
-                    <button class="button is-fullwidth is-warning is-light">
-                      체크리스트 작성하기
-                    </button>
-                  </div>
-                  <div class="column is-12">
-                    <button class="button is-fullwidth is-danger is-light">
-                      감정 분석하기
-                    </button>
-                  </div>
+                <!-- 바로가기 버튼들 -->
+                <div class="column">
+                    <div class="columns is-multiline">
+                        <div class="column is-12">
+                            <button id="surveyButton" class="button is-fullwidth is-info is-light"
+                                    onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/responses/stats'">
+                                최근 설문 결과 보기
+                            </button>
+                        </div>
+                        <div class="column is-12">
+                            <button class="button is-fullwidth is-success is-light"
+                                    onclick="location.href='/children/' + getSelectedChildId() + '/analysis/resultList'">
+                                최근 분석 결과 보기
+                            </button>
+                        </div>
+                        <div class="column is-12">
+                            <button class="button is-fullwidth is-warning is-light"
+                                    onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/selects'">
+                                체크리스트 작성하기
+                            </button>
+                        </div>
+                        <div class="column is-12">
+                            <button class="button is-fullwidth is-danger is-light"
+                                    onclick="location.href='/children/' + getSelectedChildId() + '/analysis/new'">
+                                감정 분석하기
+                            </button>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
 
             <div class="columns">

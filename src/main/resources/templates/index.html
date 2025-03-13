@@ -1,345 +1,309 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html
+        lang="en"
+        xmlns:th="http://thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iLog - 아동 발달 추적 서비스</title>
-    <link
-      rel="stylesheet"
-      href="../static/css/bulma.min.css"
-      th:href="@{/css/bulma.min.css}"
-    />
-    <link
-      rel="stylesheet"
-      href="../static/css/customColors.css"
-      th:href="@{/css/customColors.css}"
-    />
-    <script
-      src="../static/js/jquery-3.6.0.min.js"
-      th:href="@{/js/jquery-3.6.0.min.js}"
-    ></script>
-    <script
-      defer
-      src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
-    ></script>
+    <link rel="stylesheet" href="../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
+    <link rel="stylesheet" href="../static/css/customColors.css" th:href="@{/css/customColors.css}">
+    <script src="../static/js/jquery-3.6.0.min.js" th:href="@{/js/jquery-3.6.0.min.js}"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
     <style>
-      :root {
-        --primary-color: #fdf5bf;
-        --secondary-color: #bee6d9;
-      }
+        :root {
+            --primary-color: #FDF5BF;
+            --secondary-color: #BEE6D9;
+        }
 
-      .has-text-primary-custom {
-        color: var(--primary-color) !important;
-      }
+        .has-text-primary-custom {
+            color: var(--primary-color) !important;
+        }
 
-      .has-background-primary-custom {
-        background-color: var(--primary-color) !important;
-      }
+        .has-background-primary-custom {
+            background-color: var(--primary-color) !important;
+        }
 
-      .button.is-primary-custom {
-        background-color: var(--primary-color);
-        color: white;
-      }
+        .button.is-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+        }
 
-      .button.is-primary-custom:hover {
-        background-color: var(--secondary-color);
-      }
+        .button.is-primary-custom:hover {
+            background-color: var(--secondary-color);
+        }
 
-      .feature-icon {
-        font-size: 3rem;
-        color: var(--primary-color);
-      }
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
 
-      .hero.is-primary-custom {
-        background: linear-gradient(
-          135deg,
-          var(--primary-color),
-          var(--secondary-color)
-        );
-        color: white;
-      }
+        .hero.is-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
 
-      .floating-shapes {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: 0;
-      }
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
 
-      .shape {
-        position: absolute;
-        opacity: 0.1;
-      }
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+        }
 
-      .hero-content {
-        position: relative;
-        z-index: 1;
-      }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
 
-      .h-100 {
-        min-height: 200px;
-      }
+        .h-100 {
+            min-height: 200px;
+        }
+        
+        #logo {
+		    width: 70px;
+		    height: auto;
+		    max-height: 80px;
+		}       
     </style>
     <script>
-      // 네비게이션 바 토글
-      document.addEventListener('DOMContentLoaded', () => {
-        const $navbarBurgers = Array.prototype.slice.call(
-          document.querySelectorAll('.navbar-burger'),
-          0
-        );
-        if ($navbarBurgers.length > 0) {
-          $navbarBurgers.forEach((el) => {
-            el.addEventListener('click', () => {
-              const target = el.dataset.target;
-              const $target = document.getElementById(target);
-              el.classList.toggle('is-active');
-              $target.classList.toggle('is-active');
-            });
-          });
+        // 네비게이션 바 토글
+        document.addEventListener('DOMContentLoaded', () => {
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            if ($navbarBurgers.length > 0) {
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
+                });
+            }
+
+            // 떠다니는 도형 추가
+            const shapes = ['■', '●', '▲', '★'];
+            const colors = ['#FF9F43', '#FFC085', '#FFD700', '#FFA07A'];
+            const floatingShapes = document.querySelector('.floating-shapes');
+
+            for (let i = 0; i < 20; i++) {
+                const shape = document.createElement('div');
+                shape.className = 'shape';
+                shape.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                shape.style.color = colors[Math.floor(Math.random() * colors.length)];
+                shape.style.left = Math.random() * 100 + '%';
+                shape.style.top = Math.random() * 100 + '%';
+                shape.style.fontSize = (Math.random() * 30 + 10) + 'px';
+                shape.style.transform = `rotate(${Math.random() * 360}deg)`;
+                floatingShapes.appendChild(shape);
+            }
+        });
+
+        function changeLanguage(lang) {
+            // 언어 전환 로직 예시
+            // 예를 들어, 서버의 언어 전환 API로 리다이렉트하거나, 쿠키/세션에 언어 값을 저장하는 로직을 추가
+            window.location.href = '/?lang=' + lang;
         }
-
-        // 떠다니는 도형 추가
-        const shapes = ['■', '●', '▲', '★'];
-        const colors = ['#FF9F43', '#FFC085', '#FFD700', '#FFA07A'];
-        const floatingShapes = document.querySelector('.floating-shapes');
-
-        for (let i = 0; i < 20; i++) {
-          const shape = document.createElement('div');
-          shape.className = 'shape';
-          shape.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-          shape.style.color = colors[Math.floor(Math.random() * colors.length)];
-          shape.style.left = Math.random() * 100 + '%';
-          shape.style.top = Math.random() * 100 + '%';
-          shape.style.fontSize = Math.random() * 30 + 10 + 'px';
-          shape.style.transform = `rotate(${Math.random() * 360}deg)`;
-          floatingShapes.appendChild(shape);
-        }
-      });
-
-      function changeLanguage(lang) {
-        // 언어 전환 로직 예시
-        // 예를 들어, 서버의 언어 전환 API로 리다이렉트하거나, 쿠키/세션에 언어 값을 저장하는 로직을 추가
-        window.location.href = '/?lang=' + lang;
-      }
     </script>
-  </head>
-  <body>
-    <!-- Navigation -->
-    <nav class="navbar is-white" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
+</head>
+<body>  
+<!-- Navigation -->
+<nav class="navbar is-white" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
         <a class="navbar-item" href="/">
-          <span class="has-text-primary-custom is-size-4 has-text-weight-bold"
-            >iLog</span
-          >
+        	<img id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="iLog 로고"/>
         </a>
 
-        <a
-          role="button"
-          class="navbar-burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarBasic"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
         </a>
-      </div>
+    </div>
 
-      <div id="navbarBasic" class="navbar-menu">
+    <div id="navbarBasic" class="navbar-menu">
         <div class="navbar-end">
-          <a class="navbar-item" href="#features">주요기능</a>
-          <!-- <a class="navbar-item" href="#about">소개</a> -->
-          <a class="navbar-item" th:href="@{/claims/new}"> 문의하기 </a>
-          <div class="navbar-item">
-            <div class="buttons">
-              <a
-                class="button is-primary-custom has-text-black"
-                th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-              >
-                <strong
-                  th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'"
-                >
-                  이용하기
-                </strong>
-              </a>
+            <a class="navbar-item" href="#features">주요기능</a>
+            <a class="navbar-item" th:href="@{/claims/new}">
+                문의하기
+            </a>
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a
+                            class="button is-primary-custom has-text-black"
+                            th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
+                    >
+                        <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'">
+                            이용하기
+                        </strong>
+                    </a>
+                </div>
             </div>
-          </div>
+            <!-- 언어선택 selectbox -->
+            <div class="navbar-item">
+                <div class="select is-small">
+                    <select id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="kr" selected>한국어</option>
+                        <option value="en">English</option>
+                        <option value="jp">日本語</option>
+                    </select>
+                </div>
+            </div>
         </div>
-      </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- Hero Section -->
-    <section class="hero is-primary-custom is-medium">
-      <div class="floating-shapes">
+<!-- Hero Section -->
+<section class="hero is-primary-custom is-medium">
+    <div class="floating-shapes">
         <!-- Decorative shapes will be added by JavaScript -->
-      </div>
-      <div class="hero-body">
+    </div>
+    <div class="hero-body">
         <div class="container hero-content">
-          <div class="columns is-centered">
-            <div class="column is-8 has-text-centered">
-              <h1 class="title is-1 mb-6">AI와 함께하는 우리 아이 성장일기</h1>
-              <p class="subtitle is-4 mb-6">
-                감정 분석부터 성장 기록까지, 소중한 우리 아이의 모든 순간
-              </p>
-              <div class="buttons is-centered">
-                <a
-                  class="button is-white is-large"
-                  th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-                >
-                  <strong
-                    th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'"
-                    >이용하기</strong
-                  >
-                </a>
-                <a class="button is-white is-outlined is-large has-text-black">
-                  더 알아보기
-                </a>
-              </div>
+            <div class="columns is-centered">
+                <div class="column is-8 has-text-centered">
+                    <h1 class="title is-1 mb-6">
+                        AI와 함께하는 우리 아이 성장일기
+                    </h1>
+                    <p class="subtitle is-4 mb-6">
+                        감정 분석부터 성장 기록까지, 소중한 우리 아이의 모든 순간
+                    </p>
+                    <div class="buttons is-centered">
+                        <a
+                                class="button is-white is-large"
+                                th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
+                        >
+                            <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'">이용하기</strong>
+                        </a>
+                        <a class="button is-white is-outlined is-large has-text-black" href="#features">
+                            더 알아보기
+                        </a>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Features Section -->
-    <section class="section" id="features">
-      <div class="container">
+<!-- Features Section -->
+<section class="section" id="features">
+    <div class="container">
         <h2 class="title is-2 has-text-centered mb-6">주요 기능</h2>
         <div class="columns is-multiline">
-          <div class="column is-one-third">
-            <div class="box has-text-centered h-100">
-              <span class="icon feature-icon mb-4">
-                <i class="fas fa-robot"></i>
-              </span>
-              <h3 class="title is-4">AI 감정 분석</h3>
-              <p>
-                아이의 일기와 그림을 AI로 분석하여 감정 상태를 파악하고 맞춤
-                솔루션을 제안해드려요.
-              </p>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                        <span class="icon feature-icon mb-4">
+                            <i class="fas fa-robot"></i>
+                        </span>
+                    <h3 class="title is-4">AI 감정 분석</h3>
+                    <p>아이의 일기와 그림을 AI로 분석하여 감정 상태를 파악하고 맞춤 솔루션을 제안해드려요.</p>
+                </div>
             </div>
-          </div>
-          <div class="column is-one-third">
-            <div class="box has-text-centered h-100">
-              <span class="icon feature-icon mb-4">
-                <i class="fas fa-heart"></i>
-              </span>
-              <h3 class="title is-4">심리 설문</h3>
-              <p>
-                정기적인 심리 설문으로 아이의 마음 상태를 체계적으로 관리해요.
-              </p>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                        <span class="icon feature-icon mb-4">
+                            <i class="fas fa-heart"></i>
+                        </span>
+                    <h3 class="title is-4">심리 설문</h3>
+                    <p>정기적인 심리 설문으로 아이의 마음 상태를 체계적으로 관리해요.</p>
+                </div>
             </div>
-          </div>
-          <div class="column is-one-third">
-            <div class="box has-text-centered h-100">
-              <span class="icon feature-icon mb-4">
-                <i class="fas fa-child"></i>
-              </span>
-              <h3 class="title is-4">성장 기록</h3>
-              <p>
-                키, 몸무게부터 건강 검진까지 우리 아이의 성장 정보를 한눈에
-                확인해요.
-              </p>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                        <span class="icon feature-icon mb-4">
+                            <i class="fas fa-child"></i>
+                        </span>
+                    <h3 class="title is-4">성장 기록</h3>
+                    <p>키, 몸무게부터 건강 검진까지 우리 아이의 성장 정보를 한눈에 확인해요.</p>
+                </div>
             </div>
-          </div>
-          <div class="column is-one-third">
-            <div class="box has-text-centered h-100">
-              <span class="icon feature-icon mb-4">
-                <i class="fas fa-chart-line"></i>
-              </span>
-              <h3 class="title is-4">통계 및 이력</h3>
-              <p>
-                아이의 성장 과정을 그래프로 한눈에 보고 변화를 확인할 수 있어요.
-              </p>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                        <span class="icon feature-icon mb-4">
+                            <i class="fas fa-chart-line"></i>
+                        </span>
+                    <h3 class="title is-4">통계 및 이력</h3>
+                    <p>아이의 성장 과정을 그래프로 한눈에 보고 변화를 확인할 수 있어요.</p>
+                </div>
             </div>
-          </div>
-          <div class="column is-one-third">
-            <div class="box has-text-centered h-100">
-              <span class="icon feature-icon mb-4">
-                <i class="fas fa-users"></i>
-              </span>
-              <h3 class="title is-4">정보 공유</h3>
-              <p>선생님, 전문가와 아이의 성장 정보를 안전하게 공유해요.</p>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                        <span class="icon feature-icon mb-4">
+                            <i class="fas fa-users"></i>
+                        </span>
+                    <h3 class="title is-4">정보 공유</h3>
+                    <p>선생님, 전문가와 아이의 성장 정보를 안전하게 공유해요.</p>
+                </div>
             </div>
-          </div>
-          <div class="column is-one-third">
-            <div class="box has-text-centered h-100">
-              <span class="icon feature-icon mb-4">
-                <i class="fas fa-lock"></i>
-              </span>
-              <h3 class="title is-4">권한 관리</h3>
-              <p>
-                아이의 정보를 안전하게 보호하고 공유 권한을 세밀하게 관리해요.
-              </p>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                        <span class="icon feature-icon mb-4">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    <h3 class="title is-4">권한 관리</h3>
+                    <p>아이의 정보를 안전하게 보호하고 공유 권한을 세밀하게 관리해요.</p>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </section>
+    </div>
+</section>
 
-    <!-- CTA Section -->
-    <section class="section has-background-light">
-      <div class="container">
+<!-- CTA Section -->
+<section class="section has-background-light">
+    <div class="container">
         <div class="columns is-centered">
-          <div class="column is-8 has-text-centered">
-            <h2 class="title is-2 mb-6">지금 시작해보세요</h2>
-            <p class="subtitle is-5 mb-6">
-              우리 아이의 특별한 순간을 더 특별하게 기록하세요
-            </p>
-            <a
-              class="button is-primary-custom is-large has-text-black"
-              th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-            >
-              <strong
-                th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '무료로 시작하기'"
-                >무료로 시작하기</strong
-              >
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+            <div class="column is-8 has-text-centered">
+                <h2 class="title is-2 mb-6">지금 시작해보세요</h2>
+                <p class="subtitle is-5 mb-6">
+                    우리 아이의 특별한 순간을 더 특별하게 기록하세요
+                </p>
+                <a
+                        class="button is-primary-custom is-large has-text-black"
+                        th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
+                >
+                    <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '무료로 시작하기'">무료로 시작하기</strong>
+                </a>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="container">
-        <div class="columns">
-          <div class="column is-4">
-            <h3 class="title is-4 has-text-primary-custom">iLog</h3>
-            <p>아이의 성장을 더 특별하게 기록하세요</p>
-          </div>
-          <div class="column is-4">
-            <h3 class="title is-5">바로가기</h3>
-            <ul>
-              <li><a href="/guides">이용안내</a></li>
-              <li><a href="/claims">고객센터</a></li>
-              <li><a href="/privacy">개인정보처리방침</a></li>
-              <li><a href="/terms">이용약관</a></li>
-            </ul>
-          </div>
-          <div class="column is-4">
-            <h3 class="title is-5">
-              <a th:href="@{/claims/new}"> 문의하기 </a>
-            </h3>
-            <p>이메일: support@ilog.com</p>
-            <p>전화: 1234-5678</p>
-            <p>운영시간: 평일 09:00-18:00</p>
-          </div>
-        </div>
-        <!-- 언어 전환 드롭다운 추가 -->
-        <div class="columns">
-          <div class="column is-12 has-text-centered">
-            <div class="select is-small">
-              <select id="languageSelect" onchange="changeLanguage(this.value)">
-                <option value="kr" selected>한국어</option>
-                <option value="en">English</option>
-                <option value="jp">日本語</option>
-              </select>
             </div>
-          </div>
         </div>
-      </div>
-    </footer>
-  </body>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-4">
+                <h3 class="title is-4 has-text-primary-custom">iLog</h3>
+                <p>아이의 성장을 더 특별하게 기록하세요</p>
+            </div>
+            <div class="column is-4">
+                <h3 class="title is-5">바로가기</h3>
+                <ul>
+                    <li><a th:href="@{/guides}">이용안내</a></li>
+                    <li><a th:href="@{/claims}">고객센터</a></li>
+                    <li><a th:href="@{/privacy}">개인정보처리방침</a></li>
+                    <li><a th:href="@{/terms}">이용약관</a></li>
+                </ul>
+            </div>
+            <div class="column is-4">
+                <h3 class="title is-5">
+                    <a th:href="@{/claims/new}">
+                        문의하기
+                    </a>
+                </h3>
+                <p>이메일: support@ilog.com</p>
+                <p>전화: 1234-5678</p>
+                <p>운영시간: 평일 09:00-18:00</p>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
 </html>

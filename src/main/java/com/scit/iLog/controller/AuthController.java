@@ -1,12 +1,22 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.dto.auth.SignUpDTO;
-import com.scit.iLog.service.MemberService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.scit.iLog.dto.auth.IdFindDTO;
+import com.scit.iLog.dto.auth.PwFindDTO;
+import com.scit.iLog.dto.auth.SignUpDTO;
+import com.scit.iLog.service.EmailService;
+import com.scit.iLog.service.MemberService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -18,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 	private final MemberService memberService;
+	private final EmailService emailService;
 
 	/**
 	 * 회원가입 화면 요청
@@ -95,5 +106,54 @@ public class AuthController {
 	) {
 		boolean isExists = memberService.checkSignInIdExists(signInId);
         return ResponseEntity.ok(isExists);  // ✅ 중복이면 true, 사용 가능하면 false 반환
+	}
+	
+    /**
+     * A-3 2025-03-11~12 전제환
+     * 
+     * ✅ 아이디 찾기 기능  
+     * 사용자가 입력한 이메일을 통해 가입된 아이디를 찾고, 해당 이메일로 아이디 정보를 전송합니다.
+     * 
+     * @param email - 사용자가 입력한 이메일
+     * @return IdFindDTO (성공 여부 반환)
+     */
+	@ResponseBody
+	@GetMapping("/idFind")
+	public IdFindDTO handleGetIdFind(@RequestParam("email") String email) {
+		
+			// 이메일을 통해 가입된 아이디 찾기
+	        String signInId = memberService.getSignInIdByEmail(email);
+	        
+	        // 찾은 아이디를 이메일로 전송
+	        emailService.sendIdFindEmail(email, signInId);
+
+	        return new IdFindDTO(true);
+	}
+
+    /**
+     * A-3 2025-03-11~12 전제환 
+     * 
+     * ✅ 비밀번호 찾기 기능  
+     * 사용자가 입력한 아이디와 이메일이 일치하는지 확인한 후, 임시 비밀번호를 발급하여 이메일로 전송합니다.
+     * 
+     * @param email - 사용자가 입력한 이메일
+     * @param signInId - 사용자가 입력한 아이디
+     * @return PwFindDTO (성공 여부 및 메시지 반환)
+     */
+	@ResponseBody
+	@GetMapping("/pwFind")
+	public PwFindDTO handleGetPwFind(@RequestParam("email") String email, @RequestParam("signInId") String signInId) {
+		
+		// 아이디와 이메일이 일치하는지 확인
+		boolean isValidEmail = memberService.checkMemberEmail(email, signInId);
+		if (isValidEmail) {
+			// 임시 비밀번호 발급
+			String newPwd = memberService.resetPassword(signInId);
+			// 새 비밀번호를 이메일로 전송
+			emailService.sendPwdFindEmail(email, newPwd);
+			
+			return new PwFindDTO(true, "임시 비밀번호가 성공적으로 발송되었습니다.");
+		}
+		return new PwFindDTO(false, "유효하지 않은 이메일입니다.");
 	}
 }

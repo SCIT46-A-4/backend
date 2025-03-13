@@ -115,51 +115,67 @@
 </head>
 
 <body>
-    <section class="section">
-        <div class="container">
-            <div class="has-text-centered">
-                <h1 class="title is-3">이용안내</h1>
-                <h2 class="title is-3 mb-5">무엇을 도와드릴까요?</h2>
-            </div>
-            <!-- 검색 창 -->
-            <div class="box">
-                <form id="searchForm">
-                    <div class="field is-grouped">
-                        <!-- 검색 기준 선택 -->
-                        <div class="control">
-                            <div class="select">
-                                <select name="searchItem" id="searchItem">
-                                    <option value="title">제목</option>
-                                    <option value="content">본문</option>
-                                </select>
-                            </div>
-                        </div>
-                        <!-- 검색어 입력 -->
-                        <div class="control is-expanded">
-                            <input class="input" type="text" name="searchWord" id="searchWord"
-                                placeholder="검색어를 입력하세요" />
-                        </div>
-                        <!-- 검색 버튼 -->
-                        <div class="control">
-                            <button type="button" class="button is-primary" id="searchBtn">
-                                <span class="icon"><i class="fas fa-search"></i></span>
-                            </button>
-                        </div>
-                        <!-- 초기화 버튼 -->
-                        <div class="control">
-                            <button type="button" class="button is-light" id="resetBtn">
-                                초기화
-                            </button>
+<section class="section">
+    <!-- 로고 + dashboard 바로가기 -->
+    <div class="logo">
+        <a th:href="@{/dashboard}">
+            <img
+                    src="../../static/images/wilog.png"
+                    th:src="@{/images/wilog.png}"
+                    alt="로고"
+                    class="image"
+                    style="width: 100px; height: auto"
+            />
+        </a>
+    </div>
+    <div class="container">
+        <div class="has-text-centered">
+            <h1 class="title is-3">이용안내</h1>
+            <h2 class="title is-3">무엇을 도와드릴까요?</h2>
+        </div>
+        <!-- 검색 창 -->
+        <div class="box">
+            <form id="searchForm">
+                <div class="field is-grouped">
+                    <!-- 검색 기준 선택 -->
+                    <div class="control">
+                        <div class="select">
+                            <select name="searchItem" id="searchItem">
+                                <option value="title">제목</option>
+                                <option value="content">본문</option>
+                            </select>
                         </div>
                     </div>
-                </form>
-            </div>
-            <!-- 검색 결과 리스트 -->
-            <div id="searchResults">
-                <!-- AJAX로 결과가 추가될 공간 -->
-            </div>
+                    <!-- 검색어 입력 -->
+                    <div class="control is-expanded">
+                        <input
+                                class="input"
+                                type="text"
+                                name="searchWord"
+                                id="searchWord"
+                                placeholder="검색어를 입력하세요"
+                        />
+                    </div>
+                    <!-- 검색 버튼 -->
+                    <div class="control">
+                        <button type="button" class="button is-primary" id="searchBtn">
+                            <span class="icon"><i class="fas fa-search"></i></span>
+                        </button>
+                    </div>
+                    <!-- 초기화 버튼 -->
+                    <div class="control">
+                        <button type="button" class="button is-light" id="resetBtn">
+                            초기화
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </section>
+        <!-- 검색 결과 리스트 -->
+        <div id="searchResults">
+            <!-- AJAX로 결과가 추가될 공간 -->
+        </div>
+    </div>
+</section>
 </body>
-
 </html>
