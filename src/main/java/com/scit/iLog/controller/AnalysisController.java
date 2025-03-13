@@ -181,11 +181,12 @@ public class AnalysisController {
         AI-3
      */
     @ResponseBody
-    @DeleteMapping("/results/{analysisResultId}")
+    @DeleteMapping("/{analysisTargetId}/results/{analysisResultId}")
     public boolean handleDeleteAnalysisResult(
+            @PathVariable("analysisTargetId") Long analysisTargetId,
             @PathVariable("analysisResultId") Long analysisResultId
     ) {
-        return analysisResultService.deleteAnalysisResult(analysisResultId);
+        return analysisResultService.deleteAnalysisResult(analysisTargetId);
     }
 
     /*

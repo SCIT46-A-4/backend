@@ -128,7 +128,7 @@
         var mapOptions = {
           // 초기 위치: 자기위치로 바꿔야함
           center: new naver.maps.LatLng(position.latitude, position.longitude),
-          zoom: 10,
+          zoom: 30,
         };
         var map = new naver.maps.Map('naverMap', mapOptions);
         map.setCursor('crosshair');
@@ -267,6 +267,7 @@
               Swal.fire('분석 유형을 선택해주세요.');
               return;
             }
+
             //자바스크립트로 formData를 생성한후 ajax로 보내기
             const formData = new FormData();
             let pondInstance = FilePond.find(
@@ -279,7 +280,10 @@
               console.log('📌 파일 추가 완료:', files[0].file.name);
             } else {
               console.warn('❌ 파일이 업로드되지 않음');
+              Swal.fire('파일을 업로드해주세요!');
+              return;
             }
+
             formData.append(
               'targetDate',
               document.getElementById('analysisDatetime').value
@@ -328,19 +332,24 @@
                 } else {
                   // ❌ 실패 시 에러 메시지 출력
                   console.error('❌ 업로드 실패: 서버에서 success=false 응답');
-                  alert('업로드에 실패했습니다. 다시 시도해 주세요.');
+                  Swal.fire('업로드에 실패했습니다. 다시 시도해 주세요.');
                 }
               },
               error: function (xhr, status, error) {
                 console.error('❌ AJAX 오류:', xhr.responseText);
-                alert('업로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                Swal.fire('업로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
               },
             });
           });
       });
 
       window.navermap_authFailure = function () {
-        Swal.fire('지도 API 인증에 실패했습니다.');
+        Swal.fire(
+          '지도 API 인증에 실패했습니다. 네트워크 연결을 확인해주세요.'
+        );
+        setTimeout(() => {
+          window.history.back();
+        }, 1000);
       };
 
       function getChildIdFromUrl() {
@@ -360,11 +369,11 @@
       <div class="logo">
         <a th:href="@{/dashboard}">
           <img
-                  src="../../static/images/wilog.png"
-                  th:src="@{/images/wilog.png}"
-                  alt="로고"
-                  class="image"
-                  style="width: 100px; height: auto"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="로고"
+            class="image"
+            style="width: 100px; height: auto"
           />
         </a>
       </div>

@@ -1,7 +1,7 @@
 /* 푸터 스타일 */
 footer {
-  background-color: var(--footer-bg);
-  color: var(--footer-text);
+  background-color: var(--primary-color);
+  color: black;
   padding: 2rem 1.5rem;
   border-top: 5px solid var(--secondary-color);
 }

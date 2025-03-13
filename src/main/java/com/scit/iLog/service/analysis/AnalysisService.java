@@ -38,8 +38,6 @@ public class AnalysisService {
     private final AnalysisTargetRepository analysisTargetRepository;
     private final MemberRepository memberRepository;
     private final ChildRepository childRepository;
-    private final AnalysisResultNoteRepository analysisResultNoteRepository;
-    private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
     private final AnalysisTypeRepository analysisTypeRepository;
 
     @Transactional
@@ -89,6 +87,10 @@ public class AnalysisService {
                 .weather(analysisTarget.getWeather().getWeatherDesc())
                 .companion(analysisTarget.getCompanion())
                 .supplement(analysisTarget.getSupplement())
+                .analysisTypes(
+                        analysisTarget.getAnalysisTargetTypes().stream()
+                                .map(analysisTargetType ->
+                                        analysisTargetType.getAnalysisType().getType()).toList())
                 .extractedText(analysisTarget.getAnalyzedText())
                 .emotionScore(analysisResult.getEmotionScore())
                 .emotionDescription(analysisResult.getEmotionType().getKoreanName())
