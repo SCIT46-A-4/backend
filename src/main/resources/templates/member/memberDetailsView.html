@@ -11,7 +11,7 @@
         $('#btn-quit').click(function () {
           Swal.fire({
             title: '정말 탈퇴하시겠습니까?',
-            text: '탈퇴하시면 복구할 수 없습니다.',
+            text: '탈퇴하시면 등록하신 아동 정보가 모두 삭제됩니다.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -87,11 +87,11 @@
       }
 
       /* 2025-03-11 / 김은진 */
-      .title{
+      .title {
         text-align: center;
         color: black;
       }
-      .button-group{
+      .button-group {
         display: flex;
         width: 100%;
         flex-direction: row;
@@ -99,18 +99,17 @@
         gap: 10px;
         margin-top: 20px;
       }
-      .box{
+      .box {
         display: inline-block;
       }
-      .columns.is-centered{
+      .columns.is-centered {
         flex-direction: column;
       }
-      .column.is-half{
+      .column.is-half {
         display: flex;
         justify-content: center;
         width: 100%;
       }
-
     </style>
   </head>
   <body>
@@ -119,11 +118,11 @@
       <div class="logo">
         <a th:href="@{/dashboard}">
           <img
-                  src="../../static/images/wilog.png"
-                  th:src="@{/images/wilog.png}"
-                  alt="로고"
-                  class="image"
-                  style="width: 100px; height: auto"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="로고"
+            class="image"
+            style="width: 100px; height: auto"
           />
         </a>
       </div>
@@ -175,33 +174,21 @@
                 </tbody>
               </table>
             </div>
-
-            </div>
-<!--            <div class="field is-grouped is-grouped-centered">-->
-            <div class="button-container">
-              <div class="button-group">
+          </div>
+          <!--            <div class="field is-grouped is-grouped-centered">-->
+          <div class="button-container">
+            <div class="button-group">
               <p class="control">
                 <a class="button is-primary" th:href="@{/members/edit}">
                   정보 수정
                 </a>
               </p>
               <p class="control">
-                <a class="button is-light" href="/auth/logout">
-                  로그아웃
-                </a>
+                <a class="button is-light" href="/auth/logout"> 로그아웃 </a>
               </p>
               <p class="control">
                 <button class="button is-light" id="btn-quit">탈퇴하기</button>
               </p>
-              <!-- 등록한 아동과 관련된 정보를 모두 삭제하시겠습니까? 선택을 위한 체크박스 입력을 받아야함. -->
-              <div>
-                <input
-                  id="deleteChildrenCheckBox"
-                  type="checkbox"
-                  name="deleteAllChildren"
-                />
-                등록한 아동과 관련된 정보를 모두 삭제하시겠습니까?
-              </div>
             </div>
           </div>
         </div>

@@ -1,0 +1,68 @@
+/* 푸터 스타일 */
+footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  padding: 2rem 1.5rem;
+  border-top: 5px solid var(--secondary-color);
+}
+footer .logo-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+footer .footer-logo {
+  height: 40px;
+  margin-right: 1rem;
+}
+footer .footer-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+footer .footer-links a {
+  color: var(--footer-text);
+  margin-right: 1.5rem;
+  transition: color 0.3s;
+}
+footer .footer-links a:hover {
+  color: #3273dc;
+}
+footer .social-icons {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+footer .social-icons a {
+  color: var(--footer-text);
+  margin-right: 1rem;
+  transition: color 0.3s;
+}
+footer .social-icons a:hover {
+  color: #3273dc;
+}
+footer .footer-bottom {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+  font-size: 0.9rem;
+}
+footer .contact-info {
+  margin-top: 1rem;
+}
+footer .contact-info p {
+  margin-bottom: 0.5rem;
+}
+@media screen and (max-width: 768px) {
+  .content-container {
+    padding: 1rem;
+  }
+  .chart-container {
+    padding: 1rem;
+  }
+  footer .columns {
+    display: block;
+  }
+  footer .column {
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+}
