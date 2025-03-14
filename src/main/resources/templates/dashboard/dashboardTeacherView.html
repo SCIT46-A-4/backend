@@ -14,8 +14,29 @@
   <script src="/js/accessibility.js"></script>
   <script src="/js/export-data.js"></script>
   <script src="/js/series-label.js"></script>
-
-
+  <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+<script>
+          Highcharts.setOptions({
+          lang: {
+            contextButtonTitle: '차트 메뉴',
+            downloadPNG: 'PNG 이미지 다운로드',
+            downloadJPEG: 'JPEG 이미지 다운로드',
+            downloadPDF: 'PDF 다운로드',
+            downloadSVG: 'SVG 다운로드',
+            printChart: '차트 인쇄',
+            viewFullscreen: '전체 화면 보기',
+            exitFullscreen: '전체 화면 닫기',
+            downloadCSV: 'CSV 다운로드',
+            downloadXLS: '엑셀 다운로드',
+            openInCloud: 'Highcharts 클라우드에서 열기',
+          },
+          exporting: {
+            enabled: true,
+            fallbackToExportServer: false, // 서버 없이 내보내기
+            libURL: 'https://code.highcharts.com/modules/', // 필요한 라이브러리 경로 설정
+          },
+        });
+</script>
 <style>
     /* 네비게이션 바 스타일 */
     .navbar {
