@@ -3,6 +3,9 @@ package com.scit.iLog.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.scit.iLog.dto.auth.IdFindDTO;
+import com.scit.iLog.dto.auth.PwFindDTO;
+import com.scit.iLog.service.EmailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,8 +24,8 @@ import com.scit.iLog.domain.permition.PermissionRequestDTO;
 import com.scit.iLog.domain.permition.PermissionRequestStatus;
 import com.scit.iLog.dto.auth.PermissionTeacherDTO;
 import com.scit.iLog.dto.auth.SignUpDTO;
-import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
+
 import com.scit.iLog.service.child.ChildService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/auth")
 public class AuthController {
 	private final MemberService memberService;
-	private final EmailService emailService; 
+	private final EmailService emailService;
 	private final ChildService childService;
 	/**
 	 * 회원가입 화면 요청
@@ -117,15 +120,64 @@ public class AuthController {
 		boolean isExists = memberService.checkSignInIdExists(signInId);
         return ResponseEntity.ok(isExists);  // ✅ 중복이면 true, 사용 가능하면 false 반환
 	}
-	
+
+    /**
+     * A-3 2025-03-11~12 전제환
+     *
+     * ✅ 아이디 찾기 기능
+     * 사용자가 입력한 이메일을 통해 가입된 아이디를 찾고, 해당 이메일로 아이디 정보를 전송합니다.
+     *
+     * @param email - 사용자가 입력한 이메일
+     * @return IdFindDTO (성공 여부 반환)
+     */
+	@ResponseBody
+	@GetMapping("/idFind")
+	public IdFindDTO handleGetIdFind(@RequestParam("email") String email) {
+
+			// 이메일을 통해 가입된 아이디 찾기
+	        String signInId = memberService.getSignInIdByEmail(email);
+
+	        // 찾은 아이디를 이메일로 전송
+	        emailService.sendIdFindEmail(email, signInId);
+
+	        return new IdFindDTO(true);
+	}
+
+    /**
+     * A-3 2025-03-11~12 전제환
+     *
+     * ✅ 비밀번호 찾기 기능
+     * 사용자가 입력한 아이디와 이메일이 일치하는지 확인한 후, 임시 비밀번호를 발급하여 이메일로 전송합니다.
+     *
+     * @param email - 사용자가 입력한 이메일
+     * @param signInId - 사용자가 입력한 아이디
+     * @return PwFindDTO (성공 여부 및 메시지 반환)
+     */
+	@ResponseBody
+	@GetMapping("/pwFind")
+	public PwFindDTO handleGetPwFind(@RequestParam("email") String email, @RequestParam("signInId") String signInId) {
+
+		// 아이디와 이메일이 일치하는지 확인
+		boolean isValidEmail = memberService.checkMemberEmail(email, signInId);
+		if (isValidEmail) {
+			// 임시 비밀번호 발급
+			String newPwd = memberService.resetPassword(signInId);
+			// 새 비밀번호를 이메일로 전송
+			emailService.sendPwdFindEmail(email, newPwd);
+
+			return new PwFindDTO(true, "임시 비밀번호가 성공적으로 발송되었습니다.");
+		}
+		return new PwFindDTO(false, "유효하지 않은 이메일입니다.");
+	}
+
 	@GetMapping("/parentsView")
 	public String getAuthPage()
 	{
-		
+
 		return "/children/permissions/guardianView";
-		
+
 	}
-	
+
 	/**
 	 * 2025-03-10~12 이도훈
 	 * 부모용
@@ -139,24 +191,24 @@ public class AuthController {
 	public String handleGetPermissionGuardian(
 			@PathVariable(name="memberId") Long memberId,
 			@PathVariable(name="childId") Long childId,
-			Model model) throws Exception 
+			Model model) throws Exception
 	{
 		// memberId를 이용해서 해당 ID의 멤버가 있는지 조회 후 갖고 옴
-		MemberEntity member = memberService.findById(memberId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다"));
+		MemberEntity member = memberService.findById(memberId);
 		// childId를 이용해서 해당 ID의 자식이 있는지 조회 후 갖고 옴
 		ChildEntity child = childService.findById(childId).orElseThrow(() -> new Exception("자식이 존재하지 않습니다"));
-		
+
 		// memberId를 이용해서 List로 Dto의 객체를 생성
 		List<PermissionRequestDTO> list = emailService.findPermissionRequestDTOList(memberId);
-		
+
 	    // 송신중
-	    long pendingCount = list.stream().filter(dto -> 
+	    long pendingCount = list.stream().filter(dto ->
 	                            	dto.getPermissionRequestStatus() == PermissionRequestStatus.PENDING).count();
 	    // 승인 완료
-	    long acceptedCount = list.stream().filter(dto -> 
+	    long acceptedCount = list.stream().filter(dto ->
 	    							dto.getPermissionRequestStatus() == PermissionRequestStatus.ACCEPTED).count();
-	    
-		
+
+
 		model.addAttribute("child", child);
 		model.addAttribute("member", member);
 		model.addAttribute("list", list);
@@ -165,7 +217,7 @@ public class AuthController {
 
 		return "children/permissions/guardianView";
 	}
-	
+
 	/**
 	 * 2025-03-10~12 정준성
 	 * 교사용
@@ -175,20 +227,20 @@ public class AuthController {
 	 * @throws Exception
 	 */
 	@GetMapping("/permissionTeacher/{memberId}")
-	public String handleGetPermissionTeacher(@PathVariable(name = "memberId") Long memberId, Model model) throws Exception 
+	public String handleGetPermissionTeacher(@PathVariable(name = "memberId") Long memberId, Model model) throws Exception
 	{
 		//PENDING상태의 객체들의 정보와 ACCEPT상태의 객체들을 저장하기 위한 List
 		List<PermissionTeacherDTO> waitRequestList = new ArrayList<>();
 		List<PermissionTeacherDTO> permissionList = new ArrayList<>();
-		
+
 		emailService.findAllByPermissionEntity(memberId, waitRequestList, permissionList);
 		model.addAttribute("permissionList", permissionList);
 		model.addAttribute("waitRequestList", waitRequestList);
-		
+
 		return "children/permissions/teacherView";
 	}
 
-	
+
 	/**
 	 * 2025-03-10~12
 	 * 삭제 메서드(부모, 교사 공용)
@@ -202,7 +254,7 @@ public class AuthController {
 		boolean result = emailService.deletePermissionTable(permissionId);
 
 		if(!result) return false;
-		
+
 		return true;
 	}
 }

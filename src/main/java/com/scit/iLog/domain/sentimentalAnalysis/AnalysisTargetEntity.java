@@ -35,7 +35,7 @@ public class AnalysisTargetEntity extends BaseTimeEntity {
     private MemberEntity uploadedBy;
 
     @Builder.Default
-    @OneToMany(mappedBy = "analysisTarget")
+    @OneToMany(mappedBy = "analysisTarget", cascade = CascadeType.ALL)
     private List<AnalysisTargetTypeEntity> analysisTargetTypes = new ArrayList<>();
 
     @Column(name = "original_target_file_name", length = 200)
@@ -59,7 +59,7 @@ public class AnalysisTargetEntity extends BaseTimeEntity {
     @Column(name = "analyzed_text")
     private String analyzedText;
 
-    @OneToOne(mappedBy = "analysisTarget", fetch = LAZY)
+    @OneToOne(mappedBy = "analysisTarget", fetch = LAZY, cascade = CascadeType.REMOVE)
     private AnalysisResultEntity analysisResult;
 
     @Column(name = "locationName")

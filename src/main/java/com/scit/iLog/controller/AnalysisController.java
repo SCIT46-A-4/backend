@@ -3,6 +3,7 @@ package com.scit.iLog.controller;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.analysis.*;
+import com.scit.iLog.exception.AnalysisResultNotFoundException;
 import com.scit.iLog.service.analysis.AnalysisResultService;
 import com.scit.iLog.service.analysis.AnalysisService;
 import com.scit.iLog.service.child.ChildService;
@@ -180,11 +181,12 @@ public class AnalysisController {
         AI-3
      */
     @ResponseBody
-    @DeleteMapping("/results/{analysisResultId}")
+    @DeleteMapping("/{analysisTargetId}/results/{analysisResultId}")
     public boolean handleDeleteAnalysisResult(
+            @PathVariable("analysisTargetId") Long analysisTargetId,
             @PathVariable("analysisResultId") Long analysisResultId
     ) {
-        return analysisResultService.deleteAnalysisResult(analysisResultId);
+        return analysisResultService.deleteAnalysisResult(analysisTargetId);
     }
 
     /*

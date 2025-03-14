@@ -28,9 +28,6 @@ public class ClaimAnswerEntity extends BaseTimeEntity {
     @JoinColumn(name = "claim_id", nullable = false)
     private ClaimEntity claim;
 
-    @Column(name = "title", nullable = false, length = 100)
-    private String title;
-
     @Column(name = "content", nullable = false, length = 1000)
     private String content;
 }

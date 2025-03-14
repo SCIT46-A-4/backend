@@ -27,6 +27,11 @@
       href="../../static/css/customColors.css"
       th:href="@{/css/customColors.css}"
     />
+    <link
+      rel="stylesheet"
+      href="../../static/css/footer.css"
+      th:href="@{/css/footer.css}"
+    />
     <style>
       body {
         background-color: var(--primary);
@@ -134,7 +139,7 @@
         var mapOptions = {
           // 초기 위치: 자기위치로 바꿔야함
           center: new naver.maps.LatLng(position.latitude, position.longitude),
-          zoom: 10,
+          zoom: 30,
         };
 
         var map = new naver.maps.Map('naverMap', mapOptions);
@@ -181,19 +186,15 @@
 
       $(document).ready(function () {
         // 초기값 저장
-        var weatherJsonString;
-        const originalTitle = $('#titleInput').val();
-        const originalDatetime = $('#analysisDatetime').val();
-        const originalLatitude = $('#latitude').val();
-        const originalLongitude = $('#longitude').val();
-        const originalCompanion = $('#companionInput').val();
-        const originalSupplement = $('#supplementTextarea').val();
-        const originalExtractedText =
-          $('#extractedText') && $('#extractedText').length
-            ? $('#extractedText').val()
-            : '';
-        const originalMemo = $('#analysisMemo').val();
-        const originalSatisfaction = $('#satisfactionScore').val();
+        var originalDatetime = $('#analysisDatetime').val();
+        var originalLocationName = $('#locationName').val();
+        var originalCompanion = $('#companionInput').val();
+        var originalSupplement = $('#supplementTextarea').val();
+        var originalExtractedText = $('#extractedText').length
+          ? $('#extractedText').val()
+          : null;
+        var originalMemo = $('#analysisMemo').val();
+        var originalSatisfaction = $('#satisfactionScore').val();
 
         // 제목 필드 변경 감지
         $('#titleInput').on('input', function () {
@@ -227,16 +228,15 @@
             currentExtractedText = $('#extractedText').val();
           }
 
-          // 원래 값은 페이지 로드 시 저장된 변수 originalDatetime, originalLocationName, etc.
-          // 조건 1: 날짜나 위치가 변경되었고, 날씨가 조회된 경우
-          const dateOrLocationChanged =
-            currentDatetime !== originalDatetime ||
-            currentLocation !== originalLocationName;
-          const weatherRetrieved =
+          // 원래 값들 (페이지 로드시 저장한 값)
+          const isDateChanged = currentDatetime !== originalDatetime;
+          const isLocationChanged = currentLocation !== originalLocationName;
+          const dateOrLocationChanged = isDateChanged || isLocationChanged;
+          const isWeatherRetrieved =
             typeof weatherJsonString !== 'undefined' &&
             weatherJsonString !== null &&
             weatherJsonString.trim() !== '';
-          const condition1 = dateOrLocationChanged && weatherRetrieved;
+          const condition1 = dateOrLocationChanged && isWeatherRetrieved;
 
           // 조건 2: 동행자가 변경된 경우
           const condition2 = currentCompanion !== originalCompanion;
@@ -244,9 +244,9 @@
           // 조건 3: 보충설명이 변경된 경우
           const condition3 = currentSupplement !== originalSupplement;
 
-          // 조건 4: 추출된 텍스트가 있을 경우 변경된 경우 (없으면 무시)
+          // 조건 4: 추출된 텍스트가 있을 경우 변경된 경우 (원래 추출 텍스트가 없으면 이 조건은 무시)
           let condition4 = false;
-          if ($('#extractedText').length) {
+          if (originalExtractedText) {
             condition4 = currentExtractedText !== originalExtractedText;
           }
 
@@ -445,10 +445,11 @@
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: '삭제할게요',
+            cancelButtonText: '아니요',
           }).then((result) => {
             if (result.isConfirmed) {
               $.ajax({
-                url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/delete`,
+                url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}`,
                 method: 'DELETE',
                 success: function (res) {
                   Swal.fire({
@@ -457,7 +458,7 @@
                     icon: 'success',
                   });
                   // 목록 페이지로 이동
-                  window.location.href = `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/resultList`;
+                  window.location.href = `${analysisUrl}/resultList`;
                 },
                 error: function (err) {
                   Swal.fire('삭제 중 오류가 발생했습니다.');
@@ -491,13 +492,15 @@
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
+      <!-- 로고 + dashboard 바로가기 -->
+      <div class="logo">
+        <a th:href="@{/dashboard}">
           <img
-            id="logo"
             src="../../static/images/wilog.png"
             th:src="@{/images/wilog.png}"
-            alt="iLog 로고"
+            alt="로고"
+            class="image"
+            style="width: 100px; height: auto"
           />
         </a>
       </div>
@@ -510,22 +513,6 @@
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-light" href="/claims"><span>고객센터</span></a>
-          </div>
-        </div>
-        <a class="navbar-item" th:href="@{/dashboard}">
-          <span>대시보드로 가기</span>
-        </a>
-        <a
-          class="navbar-item"
-          th:href="@{children/{childId}/analysis/resultList(childId=${analysisResultDetails.childId})}"
-        >
-          <span>감정분석결과 목록보기</span>
-        </a>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/auth/logout">
-              <span>로그아웃</span>
-            </a>
           </div>
         </div>
       </div>
@@ -559,6 +546,24 @@
         <button class="button is-info ajax-save-btn" id="saveTitleBtn" disabled>
           제목 저장
         </button>
+      </div>
+
+      <!-- 분석 유형 표시 -->
+      <div class="field">
+        <label class="label">분석 유형</label>
+        <div class="control">
+          <th:block th:each="type : ${analysisResultDetails.analysisTypes}">
+            <label class="checkbox">
+              <input
+                type="checkbox"
+                disabled="disabled"
+                checked="checked"
+                th:value="${type.name()}"
+              />
+              <span th:text="${type.krName}"></span>
+            </label>
+          </th:block>
+        </div>
       </div>
 
       <div class="separator"></div>
@@ -797,7 +802,66 @@
         <div class="control">
           <button class="button is-danger" id="deleteBtn">삭제하기</button>
         </div>
+        <div class="control">
+          <a
+            th:href="@{/children/{childId}/analysis/resultList(childId=${analysisResultDetails.childId})}"
+          >
+            <button class="button is-success">감정분석결과 목록보기</button>
+          </a>
+        </div>
       </div>
     </div>
+
+    <!-- 공통 footer -->
+    <footer>
+      <div class="container">
+        <div class="columns">
+          <div class="column is-4">
+            <div class="logo-container">
+              <img
+                class="footer-logo"
+                src="../../static/images/wilog.png"
+                th:src="@{/images/wilog.png}"
+                alt="iLog 로고"
+              />
+              <span class="footer-title">iLog</span>
+            </div>
+            <p>
+              아이의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을
+              돕는 서비스입니다.
+            </p>
+          </div>
+          <div class="column is-4"></div>
+          <div class="column is-4">
+            <h3 class="title is-5">연락처</h3>
+            <div class="contact-info">
+              <p>
+                <i class="fas fa-map-marker-alt"></i> 서울특별시 강남구 테헤란로
+                123
+              </p>
+              <p><i class="fas fa-phone"></i> 02-123-4567</p>
+              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
+              <p>
+                <i class="fas fa-clock"></i> 평일 09:00 - 18:00 (공휴일 제외)
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="columns">
+            <div class="column is-8">
+              <p>
+                <a href="/terms">이용약관</a> |
+                <a href="/privacy">개인정보처리방침</a> |
+                <a href="/youth-policy">청소년보호정책</a>
+              </p>
+            </div>
+            <div class="column is-4 has-text-right">
+              <p>&copy; 2025 iLog. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

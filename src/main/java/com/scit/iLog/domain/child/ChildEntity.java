@@ -31,9 +31,6 @@ public class ChildEntity extends BaseTimeEntity {
     @Column(name = "birth_date")
     private LocalDateTime birthDate;
 
-    /*
-     * @TODO embedded 엔티티로 바꿔야함
-     */
     @Column(name = "birth_location")
     private String birthLocation;
 
@@ -80,8 +77,14 @@ public class ChildEntity extends BaseTimeEntity {
 
     public void replaceAllChildBackGrounds(List<ChildBackGroundEntity> newBackGrounds) {
         if (newBackGrounds != null) {
+            for (ChildBackGroundEntity old : this.childBackGrounds) {
+                old.setChild(null);
+            }
             this.childBackGrounds.clear();
-            newBackGrounds.forEach(bg -> bg.setChild(this));
+
+            for (ChildBackGroundEntity bg : newBackGrounds) {
+                bg.setChild(this);
+            }
             this.childBackGrounds.addAll(newBackGrounds);
         }
     }

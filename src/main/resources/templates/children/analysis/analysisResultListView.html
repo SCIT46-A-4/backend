@@ -55,6 +55,13 @@
       .delete-button:hover {
         background-color: #e8e8e8;
       }
+
+      .card {
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
     </style>
     <script
       th:src="@{/js/jquery-3.7.1.min.js}"
@@ -62,6 +69,52 @@
     ></script>
     <script th:src="@{/js/sweetalert2.js}"></script>
     <script>
+      var analysisUrl = `/children/${getChildIdFromUrl()}/analysis`;
+      function deleteItem(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const analysisResultId = event.target.getAttribute(
+          'data-analysisResultId'
+        );
+        const analysisTargetId = event.target.getAttribute(
+          'data-analysisTargetId'
+        );
+        Swal.fire({
+          title: '정말 삭제하시겠어요?',
+          text: '복원할 수 없습니다!',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: '삭제할게요',
+          cancelButtonText: '아니요',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: `${analysisUrl}/${analysisTargetId}/results/${analysisResultId}`,
+              method: 'DELETE',
+              success: function (res) {
+                if (res) {
+                  Swal.fire({
+                    title: '삭제되었습니다!',
+                    text: '성공적으로 삭제되었습니다.',
+                    icon: 'success',
+                  });
+                  setTimeout(() => {
+                    window.location.href = `${analysisUrl}/resultList`;
+                  }, 1000);
+                } else {
+                  Swal.fire('삭제 중 오류가 발생했습니다.');
+                }
+              },
+              error: function (err) {
+                Swal.fire('삭제 중 오류가 발생했습니다.');
+              },
+            });
+          }
+        });
+      }
+
       document.addEventListener('DOMContentLoaded', function () {
         const viewType = document.getElementById('viewType');
         const gridView = document.getElementById('gridView');
@@ -78,33 +131,6 @@
         });
 
         getPagedAnalysisResultList(1);
-
-        // Delete button handler
-        document.querySelectorAll('.delete-button').forEach((button) => {
-          button.addEventListener('click', function (e) {
-            if (Swal.fire('정말 삭제하시겠습니까?')) {
-              // Handle delete action
-              // ajax로 삭제 요청
-              const button = this;
-              const analysisResultId = button.dataset.analysisResultId;
-              $.ajax({
-                url: `/children/${getChildIdFromURL()}/analysis/results/${analysisResultId}`,
-                type: 'DELETE',
-                success: function (isSuccess) {
-                  if (isSuccess) {
-                    Swal.fire('삭제되었습니다.');
-                    // 삭제 요청이 성공하면 아래 코드 실행
-                    const card = button.closest('.column, tr');
-                    card.remove();
-                  }
-                },
-                error: function (error) {
-                  Swal.fire(error);
-                },
-              });
-            }
-          });
-        });
 
         // Pagination handler
         document.querySelectorAll('.pagination-link').forEach((link) => {
@@ -171,9 +197,11 @@
               }/results/${
                 item.analysisResultId
               }/details"><button class="card-footer-item">상세보기</button></a>
-                    <button data-analysisResultId=${
-                      item.analysisResultId
-                    } class="delete-button card-footer-item">삭제</button>
+                    <button data-analysisTargetId="${
+                      item.analysisTargetId
+                    }" data-analysisResultId="${
+                item.analysisResultId
+              }" class="delete-button card-footer-item" onclick="deleteItem(event)">삭제</button>
                   </footer>
                 </div>
               `;
@@ -185,14 +213,33 @@
             listTableBody.innerHTML = '';
             content.forEach((item) => {
               const row = document.createElement('tr');
+              const icons = item.analysisTypes
+                .map((analysisType) => {
+                  if (analysisType === 'WRITING') {
+                    return '📖';
+                  } else if (analysisType === 'DRAWING') {
+                    return '🖼️';
+                  } else if (analysisType === 'PHOTO') {
+                    return '📸';
+                  }
+                })
+                .join(', ');
               row.innerHTML = `
+                <td>${item.analysisResultId}</td>
                 <td>${new Date(item.createdAt).toLocaleDateString()}</td>
                 <td>${new Date(item.analysisDate).toLocaleDateString()}</td>
-                <td>${item.analysisResultTitle}</td>
+                <td><a href="/children/${getChildIdFromUrl()}/analysis/${
+                item.analysisTargetId
+              }/results/${item.analysisResultId}/details">${
+                item.analysisResultTitle
+              }</a></td>
+                <td>${icons}</td>
                 <td class="has-text-right">
-                  <button data-analysisResultId="${
-                    item.analysisResultId
-                  }" class="delete-button button is-danger is-small">삭제</button>
+                  <button data-analysisTargetId="${
+                    item.analysisTargetId
+                  }" data-analysisResultId="${
+                item.analysisResultId
+              }" class="delete-button button is-danger is-small" onclick="deleteItem(event)">삭제</button>
                 </td>
               `;
               listTableBody.appendChild(row);
@@ -200,31 +247,6 @@
 
             // 페이징 인터페이스 업데이트
             updatePagination(pageNumber, totalPages);
-
-            // Delete button handler
-            document.querySelectorAll('.delete-button').forEach((button) => {
-              button.addEventListener('click', function (e) {
-                if (Swal.fire('정말 삭제하시겠습니까?')) {
-                  const button = this;
-                  const analysisResultId = button.dataset.analysisResultId;
-                  $.ajax({
-                    url: `/children/${getChildIdFromUrl()}/analysis/results/${analysisResultId}`,
-                    type: 'DELETE',
-                    success: function (isSuccess) {
-                      if (isSuccess) {
-                        Swal.fire('삭제되었습니다.');
-                        // 삭제 요청이 성공하면 아래 코드 실행
-                        const card = button.closest('.column, tr');
-                        card.remove();
-                      }
-                    },
-                    error: function (error) {
-                      Swal.fire(error);
-                    },
-                  });
-                }
-              });
-            });
           },
           error: function (error) {
             console.error(error);
@@ -303,13 +325,15 @@
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
+      <!-- 로고 + dashboard 바로가기 -->
+      <div class="logo">
+        <a th:href="@{/dashboard}">
           <img
-            id="logo"
             src="../../static/images/wilog.png"
             th:src="@{/images/wilog.png}"
-            alt="iLog 로고"
+            alt="로고"
+            class="image"
+            style="width: 100px; height: auto"
           />
         </a>
       </div>
@@ -322,20 +346,6 @@
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-light" href="/claims"><span>고객센터</span></a>
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" th:href="@{/dashboard}"
-              ><span>대시보드로 가기</span></a
-            >
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/auth/logout">
-              <span>로그아웃</span>
-            </a>
           </div>
         </div>
       </div>
@@ -397,17 +407,21 @@
           <table id="listTable" class="table is-fullwidth">
             <thead>
               <tr>
+                <th>번호</th>
                 <th>등록 일시</th>
                 <th>분석 일시</th>
                 <th>제목</th>
+                <th>분석 유형</th>
                 <th></th>
               </tr>
             </thead>
             <tbody id="listTableBody">
               <tr th:each="i : ${#numbers.sequence(1, 5)}">
+                <td>1</td>
                 <td>2025.01.24</td>
                 <td>2025.01.24</td>
                 <td>사용자가 입력한 제목</td>
+                <td>분석 유형</td>
                 <td class="has-text-right">
                   <button class="delete-button">삭제</button>
                 </td>

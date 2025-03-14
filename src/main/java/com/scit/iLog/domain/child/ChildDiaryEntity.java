@@ -25,7 +25,7 @@ public class ChildDiaryEntity extends BaseTimeEntity {
     private ChildEntity child;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id")
     private MemberEntity author;
 
     @Column(name = "title")

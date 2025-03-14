@@ -25,13 +25,13 @@ public class MemberEntity extends BaseTimeEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", length = 100)
     private String name;
 
-    @Column(name = "sign_in_id", nullable = false, length = 100, unique = true)
+    @Column(name = "sign_in_id", length = 100, unique = true)
     private String signInId;
 
-    @Column(name = "password", nullable = false, length = 65)
+    @Column(name = "password", length = 65)
     private String password;
 
     @Enumerated(EnumType.STRING)

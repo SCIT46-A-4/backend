@@ -65,6 +65,12 @@
         .h-100 {
             min-height: 200px;
         }
+        
+        #logo {
+		    width: 70px;
+		    height: auto;
+		    max-height: 80px;
+		}       
     </style>
     <script>
         // 네비게이션 바 토글
@@ -106,12 +112,12 @@
         }
     </script>
 </head>
-<body>
+<body>  
 <!-- Navigation -->
 <nav class="navbar is-white" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="/">
-            <span class="has-text-primary-custom is-size-4 has-text-weight-bold">iLog</span>
+        	<img id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="iLog 로고"/>
         </a>
 
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
@@ -124,7 +130,6 @@
     <div id="navbarBasic" class="navbar-menu">
         <div class="navbar-end">
             <a class="navbar-item" href="#features">주요기능</a>
-            <a class="navbar-item" href="#about">소개</a>
             <a class="navbar-item" th:href="@{/claims/new}">
                 문의하기
             </a>
@@ -138,6 +143,16 @@
                             이용하기
                         </strong>
                     </a>
+                </div>
+            </div>
+            <!-- 언어선택 selectbox -->
+            <div class="navbar-item">
+                <div class="select is-small">
+                    <select id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="kr" selected>한국어</option>
+                        <option value="en">English</option>
+                        <option value="jp">日本語</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -166,7 +181,7 @@
                         >
                             <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'">이용하기</strong>
                         </a>
-                        <a class="button is-white is-outlined is-large has-text-black">
+                        <a class="button is-white is-outlined is-large has-text-black" href="#features">
                             더 알아보기
                         </a>
                     </div>
@@ -271,10 +286,10 @@
             <div class="column is-4">
                 <h3 class="title is-5">바로가기</h3>
                 <ul>
-                    <li><a href="/guides">이용안내</a></li>
-                    <li><a href="/claims">고객센터</a></li>
-                    <li><a href="/privacy">개인정보처리방침</a></li>
-                    <li><a href="/terms">이용약관</a></li>
+                    <li><a th:href="@{/guides}">이용안내</a></li>
+                    <li><a th:href="@{/claims}">고객센터</a></li>
+                    <li><a th:href="@{/privacy}">개인정보처리방침</a></li>
+                    <li><a th:href="@{/terms}">이용약관</a></li>
                 </ul>
             </div>
             <div class="column is-4">
@@ -286,18 +301,6 @@
                 <p>이메일: support@ilog.com</p>
                 <p>전화: 1234-5678</p>
                 <p>운영시간: 평일 09:00-18:00</p>
-            </div>
-        </div>
-        <!-- 언어 전환 드롭다운 추가 -->
-        <div class="columns">
-            <div class="column is-12 has-text-centered">
-                <div class="select is-small">
-                    <select id="languageSelect" onchange="changeLanguage(this.value)">
-                        <option value="kr" selected>한국어</option>
-                        <option value="en">English</option>
-                        <option value="jp">日本語</option>
-                    </select>
-                </div>
             </div>
         </div>
     </div>

@@ -9,6 +9,7 @@ import com.scit.iLog.dto.analysis.ai.AIAnalysisResponseForWritingDTO;
 import com.scit.iLog.dto.analysis.weather.WeatherData;
 import com.scit.iLog.dto.analysis.weather.WeatherResponse;
 import com.scit.iLog.dto.child.ChildRecordExtraction;
+import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +38,6 @@ public class AnalysisService {
     private final AnalysisTargetRepository analysisTargetRepository;
     private final MemberRepository memberRepository;
     private final ChildRepository childRepository;
-    private final AnalysisResultNoteRepository analysisResultNoteRepository;
-    private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
     private final AnalysisTypeRepository analysisTypeRepository;
 
     @Transactional
@@ -88,6 +87,10 @@ public class AnalysisService {
                 .weather(analysisTarget.getWeather().getWeatherDesc())
                 .companion(analysisTarget.getCompanion())
                 .supplement(analysisTarget.getSupplement())
+                .analysisTypes(
+                        analysisTarget.getAnalysisTargetTypes().stream()
+                                .map(analysisTargetType ->
+                                        analysisTargetType.getAnalysisType().getType()).toList())
                 .extractedText(analysisTarget.getAnalyzedText())
                 .emotionScore(analysisResult.getEmotionScore())
                 .emotionDescription(analysisResult.getEmotionType().getKoreanName())
@@ -156,5 +159,14 @@ public class AnalysisService {
 
     public ChildRecordExtraction getExtractChildRecordData(MultipartFile healthCheckImg) {
         return new FakeAnalysisClient.FakeChildRecordExtraction();
+    }
+
+    @Transactional
+    public void inValidateByMember(Long memberId) {
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        analysisTargetRepository.findAllByUploadedBy(member)
+                .forEach(analysisTarget ->
+                        analysisTarget.setUploadedBy(null));
     }
 }

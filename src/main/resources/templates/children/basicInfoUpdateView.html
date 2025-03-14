@@ -139,6 +139,10 @@
       border-radius: 50%;
       background-color: #f1f1f1;
     }
+
+    .filepond--file-action-button.filepond--action-process-item {
+      display: none !important;
+    }
   </style>
 
   <script>
@@ -336,7 +340,7 @@
               console.error('에러 메시지 파싱 실패:', e);
             }
 
-            alert(errorMessage);
+            Swal.fire(errorMessage);
           }
         });
     });

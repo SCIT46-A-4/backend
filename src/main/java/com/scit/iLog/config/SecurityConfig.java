@@ -1,16 +1,12 @@
 package com.scit.iLog.config;
 
-import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.exception.WrongSignInIdException;
-import com.scit.iLog.repository.MemberRepository;
-import com.scit.iLog.util.LoginFailureHandler;
-import com.scit.iLog.util.LoginSuccessHandler;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
+import static org.springframework.security.authorization.AuthorizationManagers.allOf;
+import static org.springframework.security.authorization.AuthorizationManagers.anyOf;
+
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,12 +19,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.Collection;
-import java.util.List;
+import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.domain.member.MemberRole;
+import com.scit.iLog.exception.WrongSignInIdException;
+import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.util.LoginFailureHandler;
+import com.scit.iLog.util.LoginSuccessHandler;
 
-import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
-import static org.springframework.security.authorization.AuthorizationManagers.allOf;
-import static org.springframework.security.authorization.AuthorizationManagers.anyOf;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
@@ -36,7 +38,6 @@ import static org.springframework.security.authorization.AuthorizationManagers.a
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final MemberRepository memberRepository;
-
     private final LoginSuccessHandler loginSuccessHandler;
 	private final LoginFailureHandler loginFailureHandler;
 
@@ -49,6 +50,8 @@ public class SecurityConfig {
                                 "/",
                                 "/auth/signIn",
                                 "/auth/signUp",
+                                "/auth/idFind",   // 아이디 찾기 허용
+                                "/auth/pwFind",   // 비밀번호 찾기 허용
                                 // 2025-02-17~20 이도훈 추가
                                 "/auth/checkSignInIdExists",
                                 "/auth/idPwFind",
@@ -56,9 +59,14 @@ public class SecurityConfig {
                                 "/claims",
                                 "/send-verification-code",
                                 "/verify-code",
+                                "/terms",
+                                "/privacy",
+                                "/youth-policy",
                                 "/js/**",
                                 "/css/**",
-                                "/images/**"
+                                "/images/**",
+                                "/privacy",
+                                "/terms"
                                 )
                         .permitAll()
                         .requestMatchers("/dashboard/guardian").access(
@@ -94,6 +102,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
         );
+        
         return http.build();
     }
 
@@ -112,21 +121,21 @@ public class SecurityConfig {
     @Bean
     UserDetailsService userDetailsService() {
         return (signInId) -> {
-        	//signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
-        	MemberEntity member = memberRepository
+            //signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
+            MemberEntity member = memberRepository
                     .findBySignInId(signInId)
                     //사용자가 존재하지 않으면 커스텀 예외(WrongSignInIdException)를 발생시킴.
                     .orElseThrow(() -> new WrongSignInIdException(String.format("회원 조회 실패 아이디 : %s", signInId)));
             //사용자가 존재할 경우, MemberDetails 객체 생성 및 반환
             return MemberDetails.builder()
-                            .id(member.getId())
-                            .name(member.getName())
-                            .signInId(member.getSignInId())
-                            .password(member.getPassword())
-                            .email(member.getEmail())
-                            .relationType(member.getRelationType())
-                            .role(member.getRole())
-                            .build();
+                    .id(member.getId())
+                    .name(member.getName())
+                    .signInId(member.getSignInId())
+                    .password(member.getPassword())
+                    .email(member.getEmail())
+                    .relationType(member.getRelationType())
+                    .role(member.getRole())
+                    .build();
         };
     }
 
@@ -165,21 +174,25 @@ public class SecurityConfig {
 
         @Override
         public boolean isAccountNonExpired() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isAccountNonExpired();
         }
 
         @Override
         public boolean isAccountNonLocked() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isAccountNonLocked();
         }
 
         @Override
         public boolean isCredentialsNonExpired() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isCredentialsNonExpired();
         }
 
         @Override
         public boolean isEnabled() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isEnabled();
         }
     }

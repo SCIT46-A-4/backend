@@ -1,19 +1,29 @@
 package com.scit.iLog.controller;
 
+import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.dto.member.MemberUpdateDTO;
 import com.scit.iLog.dto.member.MemberUpdateRequestDTO;
+import com.scit.iLog.service.ClaimService;
 import com.scit.iLog.service.MemberService;
+import com.scit.iLog.service.analysis.AnalysisService;
+import com.scit.iLog.service.child.ChildDiaryService;
+import com.scit.iLog.service.child.ChildRecordService;
 import com.scit.iLog.service.child.RelationShipService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static com.scit.iLog.config.SecurityConfig.MemberDetails;
+import static com.scit.iLog.config.SecurityConfig.*;
 
 @Slf4j
 @Controller
@@ -22,6 +32,10 @@ import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 public class MemberController {
     private final MemberService memberService;
     private final RelationShipService relationShipService;
+    private final ClaimService claimService;
+    private final ChildDiaryService childDiaryService;
+    private final AnalysisService analysisService;
+    private final ChildRecordService childRecordService;
 
     /*
         M-1
@@ -31,30 +45,69 @@ public class MemberController {
         변경후: /members/myDetails
      */
     @GetMapping("/myDetails")
-    public String handleGetMyDetails(
+    public String handleGetMyPage(
             Authentication authentication,
             Model model
     ) {
         if (!authentication.isAuthenticated()) return "redirect:/";
-        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
-        model.addAttribute("memberDetails",memberService.getMemberDetailsById(memberDetails.getId()));
+
+        try {
+            MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
+            model.addAttribute("memberDetails", memberService.getMemberDetailsById(memberDetails.getId()));
+        } catch (Exception e) {
+            log.error("회원 정보 조회 중 오류 발생: {}", e.getMessage());
+            model.addAttribute("errorMessage", "회원 정보를 불러오는 중 문제가 발생했습니다.");
+        }
+
         return "/member/memberDetailsView";
     }
+    
+    
+    
 
     /*
         M-1
      */
-    @DeleteMapping("/quit")
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/quit/v1")
     public boolean handleDeleteMember(
+            HttpServletRequest request,
             Authentication authentication,
-            @PathVariable("memberId") Long memberId,
-            @RequestParam("deleteAllChildren") boolean deleteAllChildren
+            @RequestParam(value = "deleteAllChildren", required = false) boolean deleteAllChildren
     ) {
         if (!authentication.isAuthenticated()) return false;
-        if (deleteAllChildren) {
-            relationShipService.deleteAllRelationShipOf(memberId);
+        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
+        memberService.inValidateMember(memberDetails.getId());
+        SecurityContextHolder.clearContext();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
         }
-        memberService.deleteMember(memberId);
+        return true;
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/quit/v2")
+    public boolean handleDeleteMemberV2(
+            HttpServletRequest request,
+            Authentication authentication
+    ) {
+        if (!authentication.isAuthenticated()) return false;
+        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
+
+        if (memberDetails.getRelationType() == RelationType.GUARDIAN) {
+            claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
+            relationShipService.deleteAllChildrenOf(memberDetails.getId());
+        } else if (memberDetails.getRelationType() == RelationType.TEACHER) {
+            memberService.deleteMemberWithRelationShips(memberDetails.getId());
+            claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
+        }
+
+        SecurityContextHolder.clearContext();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
         return true;
     }
 
@@ -71,6 +124,15 @@ public class MemberController {
         MemberUpdateDTO memberUpdateDTO = memberService.getMemberUpdateDataById(memberDetails.getId());
         model.addAttribute("memberDetails", memberUpdateDTO);
         return "/member/memberUpdateView";
+    }
+
+    @ResponseBody
+    @PostMapping("/password/validate")
+    public boolean handlePostPasswordReset(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @RequestParam("password") String password
+    ) {
+        return memberService.isDuplicatedPassword(memberDetails.getId(), password);
     }
 
     /*
