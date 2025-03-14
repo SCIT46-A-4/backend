@@ -1,244 +1,244 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>권한 관리 페이지 (교사) - iLog</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <script src="/js/jquery-3.7.1.min.js"></script>
   <style>
     :root {
-        --background-yellow: #FFF8DC;
-        --button-mint: #98D8D8;
-        --button-pink: #FFB6C1;
-        --text-dark: #333333;
+      --background-yellow: #FFF8DC;
+      --button-mint: #98D8D8;
+      --button-pink: #FFB6C1;
+      --text-dark: #333333;
     }
 
     body {
-        background-color: var(--background-yellow);
-        min-height: 100vh;
-        padding: 2rem;
+      background-color: var(--background-yellow);
+      min-height: 100vh;
+      padding: 2rem;
     }
 
     .container {
-        max-width: 1200px;
-        margin: 0 auto;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .status-box {
-        background-color: #f5f5f5;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
     }
 
     .table-container {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .table {
-        width: 100%;
+      width: 100%;
     }
 
     .table th {
-        background-color: var(--button-mint);
-        color: var(--text-dark);
+      background-color: var(--button-mint);
+      color: var(--text-dark);
     }
 
     .button.is-mint {
-        background-color: var(--button-mint);
-        color: var(--text-dark);
-        border: none;
+      background-color: var(--button-mint);
+      color: var(--text-dark);
+      border: none;
     }
 
     .button.is-pink {
-        background-color: var(--button-pink);
-        color: var(--text-dark);
-        border: none;
+      background-color: var(--button-pink);
+      color: var(--text-dark);
+      border: none;
     }
 
     .tabs:not(:last-child) {
-        margin-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
     }
 
     .tab-content {
-        display: none;
+      display: none;
     }
 
     .tab-content.is-active {
-        display: block;
+      display: block;
     }
   </style>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 탭 전환 기능
-        const tabs = document.querySelectorAll('.tabs li');
-        const tabContents = document.querySelectorAll('.tab-content');
+    document.addEventListener('DOMContentLoaded', function () {
+      // 탭 전환 기능
+      const tabs = document.querySelectorAll('.tabs li');
+      const tabContents = document.querySelectorAll('.tab-content');
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // 탭 활성화
-                tabs.forEach(t => t.classList.remove('is-active'));
-                tab.classList.add('is-active');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // 탭 활성화
+          tabs.forEach(t => t.classList.remove('is-active'));
+          tab.classList.add('is-active');
 
-                // 탭 콘텐츠 활성화
-                const tabId = tab.getAttribute('data-tab');
-                tabContents.forEach(content => {
-                    content.classList.remove('is-active');
-                    if (content.id === tabId) {
-                        content.classList.add('is-active');
-                    }
-                });
-            });
+          // 탭 콘텐츠 활성화
+          const tabId = tab.getAttribute('data-tab');
+          tabContents.forEach(content => {
+            content.classList.remove('is-active');
+            if (content.id === tabId) {
+              content.classList.add('is-active');
+            }
+          });
         });
+      });
 
-        // 승인 버튼 이벤트
-        document.querySelectorAll('.button.is-mint').forEach(button => {
-            button.addEventListener('click', function() {
-                if (confirm('이 요청을 승인하시겠습니까?')) {
-                    // TODO: 승인 API 호출
-                    const row = this.closest('tr');
-                    row.style.backgroundColor = '#e6fffa';
-                    setTimeout(() => {
-                        row.remove();
-                        // 승인 완료 카운트 업데이트
-                        updateCounts();
-                    }, 500);
-                }
-            });
+      // 승인 버튼 이벤트
+      document.querySelectorAll('.button.is-mint').forEach(button => {
+        button.addEventListener('click', function () {
+          if (confirm('이 요청을 승인하시겠습니까?')) {
+            // TODO: 승인 API 호출
+            const row = this.closest('tr');
+            row.style.backgroundColor = '#e6fffa';
+            setTimeout(() => {
+              row.remove();
+              // 승인 완료 카운트 업데이트
+              updateCounts();
+            }, 500);
+          }
         });
-
-        // 거절/삭제 버튼 이벤트
-        document.querySelectorAll('.button.is-pink').forEach(button => {
-            button.addEventListener('click', function() {
-                const action = this.textContent.trim() === '거절' ? '거절' : '삭제';
-                if (confirm(`이 요청을 ${action}하시겠습니까?`)) {
-                    // TODO: 거절/삭제 API 호출
-                    const row = this.closest('tr');
-                    row.style.backgroundColor = '#ffebef';
-                    setTimeout(() => {
-                        row.remove();
-                        // 카운트 업데이트
-                        updateCounts();
-                    }, 500);
-                }
-            });
+      });
+      // 삭제 버튼 이벤트
+      document.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', function () {
+          const permissionId = this.getAttribute('data-id');
+          if (confirm("이 항목을 삭제하시겠습니까?")) {
+            // AJAX 삭제 요청 (아래 4번에서 구현)
+            deletePermission(permissionId);
+          }
         });
+      });
 
-        // 카운트 업데이트 함수
-        function updateCounts() {
-            const requestCount = document.querySelector('#request-list tbody').children.length;
-            const approvedCount = document.querySelector('#approved-list tbody').children.length;
+      function deletePermission(permissionId) {
+        $.ajax({
+          url: `/auth/permission/delete/${permissionId}`,
+          type: 'DELETE',
+          success: function (response = true) {
+            // 삭제 성공 시 페이지 리로드
+            window.location.reload();
+          },
+          error: function (xhr, status, error) {
+            console.error("삭제 요청 중 오류 발생:", error);
+            alert("삭제에 실패했습니다.");
+          }
+        });
+      }
 
-            document.querySelector('.status-box p:first-child').textContent = `승인 요청: ${requestCount}건`;
-            document.querySelector('.status-box p:last-child').textContent = `승인 완료: ${approvedCount}건`;
-        }
+
+
+      // 카운트 업데이트 함수
+      function updateCounts() {
+        const requestCount = document.querySelector('#request-list tbody').children.length;
+        const approvedCount = document.querySelector('#approved-list tbody').children.length;
+
+        document.querySelector('.status-box p:first-child').textContent = `승인 요청: ${requestCount}건`;
+        document.querySelector('.status-box p:last-child').textContent = `승인 완료: ${approvedCount}건`;
+      }
     });
   </script>
 </head>
-<body>
-<div class="container">
-  <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (교사)</h1>
 
-  <div class="status-box">
-    <div class="columns">
-      <div class="column">
-        <p>승인 요청: 2건</p>
-        <p>승인 완료: 3건</p>
+<body>
+  <div class="container">
+    <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (교사)</h1>
+
+    <div class="status-box">
+      <div class="columns">
+        <div class="column">
+          <p th:text="'승인 대기: ' + ${waitRequestList.size()} + '건'"></p>
+          <p th:text="'승인 완료: ' + ${permissionList.size()} + '건'"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <ul>
+        <li class="is-active" data-tab="request-list"><a>승인 대기 리스트</a></li>
+        <li data-tab="approved-list"><a>승인된 리스트</a></li>
+      </ul>
+    </div>
+
+    <div id="request-list" class="tab-content is-active">
+      <div class="table-container">
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>아동 이름</th>
+              <th>생년월일</th>
+              <th>보호자 이름</th>
+              <th>승인된 날짜</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:if="${#lists.isEmpty(waitRequestList)}">
+              <td> 승인 대기가 존재하지 않습니다.</td>
+            </tr>
+
+            <tr th:each="wait : ${waitRequestList}" th:data-id="${wait.id}">
+              <td th:text="${wait.childName}">자녀 이름</td>
+              <td th:text="${#temporals.format(wait.birthDate, 'yyyy/MM/dd')}">생년월일</td>
+              <td th:text="${wait.guardianName}">보호자 이름</td>
+              <td th:text="${#temporals.format(wait.approvalDate, 'yyyy년 MM월 dd일')}">승인 요청 날짜</td>
+              <td th:text="${wait.requesterRelationType.typeNameKr}">자녀와의 관계</td>
+              <td>
+                <button class="button is-small is-pink delete-button" th:data-id="${wait.id}">요청 삭제</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="approved-list" class="tab-content">
+      <div class="table-container">
+        <h2 class="title is-4 mb-4"> 승인된 리스트 </h2>
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>아동 이름</th>
+              <th>생년월일</th>
+              <th>보호자 이름</th>
+              <th>승인된 날짜</th>
+              <th>아동과의 관계</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <td th:if="${#lists.isEmpty(permissionList)}"> 승인된 사람이 존재하지 않습니다.</td>
+            </tr>
+
+            <tr th:each="permission : ${permissionList}" th:data-id="${permission.id}">
+              <td th:text="${permission.childName}">내 자녀 이름</td>
+              <td th:text="${#temporals.format(permission.birthDate, 'yyyy/MM/dd')}">생년월일</td>
+              <td th:text="${permission.guardianName}">보호자 이름</td>
+              <td th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}">승인한 날짜</td>
+              <td th:text="${permission.requesterRelationType.typeNameKr}">자녀와의 관계</td>
+              <td>
+                <button class="button is-small is-pink delete-button" th:data-id="${permission.id}">권한 삭제</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-
-  <div class="tabs">
-    <ul>
-      <li class="is-active" data-tab="request-list"><a>승인 요청 리스트</a></li>
-      <li data-tab="approved-list"><a>승인된 리스트</a></li>
-    </ul>
-  </div>
-
-  <div id="request-list" class="tab-content is-active">
-    <div class="table-container">
-      <table class="table is-fullwidth">
-        <thead>
-        <tr>
-          <th>아동 이름</th>
-          <th>생년월일</th>
-          <th>보호자 이름</th>
-          <th>승인된 날짜</th>
-          <th>관리</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>김승현</td>
-          <td>2020.10.20</td>
-          <td>박나래</td>
-          <td>2024년 12월 20일</td>
-          <td>
-            <button class="button is-small is-mint">승인</button>
-            <button class="button is-small is-pink">거절</button>
-          </td>
-        </tr>
-        <tr>
-          <td>김수현</td>
-          <td>2020.10.20</td>
-          <td>박나래</td>
-          <td>2024년 12월 20일</td>
-          <td>
-            <button class="button is-small is-mint">승인</button>
-            <button class="button is-small is-pink">거절</button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="approved-list" class="tab-content">
-    <div class="table-container">
-      <table class="table is-fullwidth">
-        <thead>
-        <tr>
-          <th>아동 이름</th>
-          <th>생년월일</th>
-          <th>보호자 이름</th>
-          <th>승인된 날짜</th>
-          <th>아동과의 관계</th>
-          <th>관리</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>박규리</td>
-          <td>2020.12.01</td>
-          <td>박진호</td>
-          <td>2024년 12월 20일</td>
-          <td>부</td>
-          <td><button class="button is-small is-pink">아동 삭제</button></td>
-        </tr>
-        <tr>
-          <td>이채연</td>
-          <td>2020.07.20</td>
-          <td>전지현</td>
-          <td>2024년 12월 20일</td>
-          <td>모</td>
-          <td><button class="button is-small is-pink">아동 삭제</button></td>
-        </tr>
-        <tr>
-          <td>김우주</td>
-          <td>2020.03.12</td>
-          <td>카리나</td>
-          <td>2024년 12월 20일</td>
-          <td>모</td>
-          <td><button class="button is-small is-pink">아동 삭제</button></td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
 </body>
+
 </html>

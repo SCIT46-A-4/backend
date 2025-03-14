@@ -124,7 +124,7 @@ public class MemberService {
 				.build();
 	}
 
-	private MemberEntity findById(Long memberId) {
+	public MemberEntity findById(Long memberId) {
 		MemberEntity member = memberRepository.findById(memberId)
 				.orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));
 		return member;

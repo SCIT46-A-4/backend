@@ -286,6 +286,9 @@
             updateChildLinks(childId);
             // 대시보드 업데이트 함수 호출 (이미 구현되어 있다면)
             updateDashboard(childId);
+
+            // 권한 부여 페이지 링크 childId동적 변경
+          updatePermissionLink(childId);
           });
         }
       });
@@ -304,6 +307,17 @@
           'analysisResultListLink'
         ).href = `/children/${childId}/analysis/resultList`;
       }
+
+      // 2025-03-12 이도훈 새로 추가: 아이 권한 요청 관리 링크 업데이트 함수
+    function updatePermissionLink(childId) {
+      // hidden input에서 memberId 값 갖고 옴.
+      const memberId = document.querySelector('input[name="memberId"]').value;
+
+      const permissionLink = document.getElementById("permissionLink");
+      if (permissionLink) {
+        permissionLink.href = `/auth/permissionGuardian/${memberId}/${childId}`;
+      }
+    }
 
       function getRandomColor() {
         // 0부터 16777215(=0xFFFFFF) 사이의 랜덤 정수를 생성하고, 16진수 문자열로 변환
@@ -646,10 +660,10 @@
                           th:value="${child.childId}"
                           th:text="${child.name}"
                           th:id="|child-${child.childId}|"
-                          th:attr="data-birthDate=${child.birthDate}, 
-                          data-profileImgSrc=${child.profileImgSrc}, 
-                          data-birthLocation=${child.birthLocation}, 
-                          data-gender=${child.gender}, 
+                          th:attr="data-birthDate=${child.birthDate},
+                          data-profileImgSrc=${child.profileImgSrc},
+                          data-birthLocation=${child.birthLocation},
+                          data-gender=${child.gender},
                           data-callName=${child.callName}"
                         ></option>
                       </th:block>
@@ -730,6 +744,15 @@
                         분석 결과목록 바로가기
                       </button>
                     </a>
+                      <!-- childId, memberId -->
+                      <input type="hidden" name="childId" th:value="${childProfiles.childProfiles[0].childId}">
+                      <input type="hidden" name="memberId" th:value="${memberId}">
+                      <div style="text-align: center; margin-top: 1rem;"> <!-- , childId=${childId}) -->
+                          <a id="permissionLink" class="button is-light"
+                             th:href="@{/auth/permissionGuardian/{memberId}/{childId}(memberId=${memberId}, childId=${childProfiles.childProfiles[0].childId})}">
+                              아이 권한 요청 관리
+                          </a>
+                      </div>
                   </div>
                 </div>
               </div>
