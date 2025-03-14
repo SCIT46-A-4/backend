@@ -43,29 +43,28 @@ public class MentalSurveyService {
         );
     }
 
-    public MentalSurveyDetailsDTO getMetalSurveyDetails(String mentalSurveyId) {
-        MentalSurveyEntity mentalSurvey = mentalSurveyRepository.findById(mentalSurveyId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("MentalSurvey 조회 실패: %s", mentalSurveyId)));
-        return new MentalSurveyDetailsDTO(
-                mentalSurvey.getId(),
-                mentalSurvey.getTitle(),
-                mentalSurvey.getType(),
-                mentalSurvey.getDescription(),
-                mentalSurvey.getSections().stream()
-                        .map(mentalSurveySection ->
-                                new MentalSurveySectionDetailsDTO(
-                                        mentalSurveySection.getTitle(),
-                                        mentalSurveySection.getQuestions().stream()
-                                                .map(mentalSurveyQuestion ->
-                                                        new MentalSurveyQuestionDetailsDTO(
-                                                                mentalSurveyQuestion.getItem(),
-                                                                mentalSurveyQuestion.getExample()))
-                                                .toList()
-                                ))
-                        .toList(),
-                mentalSurvey.getCreatedAt()
-        );
-    }
+        public MentalSurveyDetailsDTO getMetalSurveyDetails(String mentalSurveyId) {
+                MentalSurveyEntity mentalSurvey = mentalSurveyRepository.findById(mentalSurveyId)
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                String.format("MentalSurvey 조회 실패: %s", mentalSurveyId)));
+                return new MentalSurveyDetailsDTO(
+                                mentalSurvey.getId(),
+                                mentalSurvey.getTitle(),
+                                mentalSurvey.getDescription(),
+                                mentalSurvey.getType(), // 2025-03-13 / 김은진 추가
+                                mentalSurvey.getSections().stream()
+                                                .map(mentalSurveySection -> new MentalSurveySectionDetailsDTO(
+                                                                mentalSurveySection.getTitle(),
+                                                                mentalSurveySection.getQuestions().stream()
+                                                                                .map(mentalSurveyQuestion -> new MentalSurveyQuestionDetailsDTO(
+                                                                                                mentalSurveyQuestion
+                                                                                                                .getItem(),
+                                                                                                mentalSurveyQuestion
+                                                                                                                .getExample()))
+                                                                                .toList()))
+                                                .toList(),
+                                mentalSurvey.getCreatedAt());
+        }
 
     @Transactional
     public String saveMentalSurveyResponse(
@@ -175,17 +174,17 @@ public class MentalSurveyService {
         }
     }
 
-    public List<MentalSurveySelectInfoDTO> getMentalSurveySelectInfo(Long childId) {
-         return mentalSurveyRepository.findAll()
-                 .stream()
-                 .map(mentalSurvey ->
-                         new MentalSurveySelectInfoDTO(
-                                 mentalSurvey.getTitle(),
-                                 mentalSurvey.getDescription(),
-                                 String.format("/children/%d/mentalSurveys/%s/responses/new", childId, mentalSurvey.getId())
-                         ))
-                 .toList();
-    }
+        public List<MentalSurveySelectInfoDTO> getMentalSurveySelectInfo(Long childId) {
+                return mentalSurveyRepository.findAll()
+                                .stream()
+                                .map(mentalSurvey -> new MentalSurveySelectInfoDTO(
+                                                mentalSurvey.getTitle(),
+                                                mentalSurvey.getDescription(),
+                                                String.format("/children/%d/mentalSurveys/%s/responses/new", childId,
+                                                                mentalSurvey.getId()),
+                                                mentalSurvey.getType())) // 2025-03-13 / 김은진 추가
+                                .toList();
+        }
 
     // 시작>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // ------------------------ MentalSurveyResponse 25/3/5 준성 작업 -----------------------

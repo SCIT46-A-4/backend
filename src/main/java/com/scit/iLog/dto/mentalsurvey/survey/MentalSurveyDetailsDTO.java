@@ -8,9 +8,9 @@ import java.util.List;
 public record MentalSurveyDetailsDTO(
         String id,
         String title,
-        RelationType relationType,
         String description,
-        List<MentalSurveySectionDetailsDTO>sections,
+        RelationType type, // 2025-03-13 / 김은진 추가
+        List<MentalSurveySectionDetailsDTO> sections,
         LocalDateTime createdAt
 ) {
 }
