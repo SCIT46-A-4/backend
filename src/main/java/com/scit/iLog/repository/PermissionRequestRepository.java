@@ -9,17 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PermissionRequestRepository extends JpaRepository<PermissionRequestEntity, Long>
-	{
-	  Optional<PermissionRequestEntity> findByRequestLinkCode(String requestLinkCode);
+public interface PermissionRequestRepository extends JpaRepository<PermissionRequestEntity, Long> {
+    Optional<PermissionRequestEntity> findByRequestLinkCode(String requestLinkCode);
 
-	  List<PermissionRequestEntity> findAllByRequesterId(Long requesterId);
+    List<PermissionRequestEntity> findAllByRequesterId(Long requesterId);
 
-	  List<PermissionRequestEntity> findAllByInviteeId(Long inviteeId);
-
+    List<PermissionRequestEntity> findAllByInviteeId(Long inviteeId);
 
 
-		Optional<PermissionRequestEntity> findByidAndChildAndAlias(Long permissionId, Optional<ChildEntity> child,
-				String alias);
+    Optional<PermissionRequestEntity> findByidAndChildAndAlias(Long permissionId, Optional<ChildEntity> child,
+                                                               String alias);
 
-	}
+}

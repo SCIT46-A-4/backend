@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface ClaimRepository extends JpaRepository<ClaimEntity, Long> {
     Page<ClaimEntity> findByAuthor(MemberEntity author, Pageable pageable);
+
     List<ClaimEntity> findAllByAuthor(MemberEntity author);
 }

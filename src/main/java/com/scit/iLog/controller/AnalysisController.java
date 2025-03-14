@@ -118,7 +118,7 @@ public class AnalysisController {
             @PathVariable("analysisResultId") Long analysisResultId,
             Model model
     ) {
-        AnalysisResultDetailsDTO analysisResultDetails =  analysisService.getAnalysisResultDetails(analysisTargetId);
+        AnalysisResultDetailsDTO analysisResultDetails = analysisService.getAnalysisResultDetails(analysisTargetId);
         model.addAttribute("analysisResultDetails", analysisResultDetails);
         return "children/analysis/analysisResultDetailsView";
     }

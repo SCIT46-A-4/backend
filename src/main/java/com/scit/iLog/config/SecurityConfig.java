@@ -37,7 +37,7 @@ import static org.springframework.security.authorization.AuthorizationManagers.a
 public class SecurityConfig {
     private final MemberRepository memberRepository;
     private final LoginSuccessHandler loginSuccessHandler;
-	private final LoginFailureHandler loginFailureHandler;
+    private final LoginFailureHandler loginFailureHandler;
 
     @Bean
     SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
@@ -65,7 +65,7 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/privacy",
                                 "/terms"
-                                )
+                        )
                         .permitAll()
                         .requestMatchers("/dashboard/guardian").access(
                                 anyOf(allOf(hasRole("USER"), hasRole("GUARDIAN")), hasRole("ADMIN"))
@@ -81,15 +81,15 @@ public class SecurityConfig {
         );
 
         http.formLogin(formAuth ->
-                formAuth
-                        .loginPage("/auth/signIn")
-                        .loginProcessingUrl("/auth/signIn/proc")
-                        // 2025-02-17~20 이도훈 추가
-                        .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
-                        // 2025-02-17~20 이도훈 추가
-                        .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
-                        .usernameParameter("signInId")
-                        .passwordParameter("userPwd")
+                        formAuth
+                                .loginPage("/auth/signIn")
+                                .loginProcessingUrl("/auth/signIn/proc")
+                                // 2025-02-17~20 이도훈 추가
+                                .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
+                                // 2025-02-17~20 이도훈 추가
+                                .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
+                                .usernameParameter("signInId")
+                                .passwordParameter("userPwd")
 //                        .defaultSuccessUrl("/")
 //                        .failureUrl("/member/login?error=true") //핸들러를 등록하면 필요없음
         );
@@ -100,7 +100,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
         );
-        
+
         return http.build();
     }
 
@@ -111,9 +111,11 @@ public class SecurityConfig {
 
 
     //로그인 시 검증
+
     /**
      * 2025-02-17~20 이도훈
      * 커스텀 예외처리 추가.
+     *
      * @return
      */
     @Bean
@@ -153,8 +155,8 @@ public class SecurityConfig {
         public Collection<? extends GrantedAuthority> getAuthorities() {
             return this.role == MemberRole.USER ?
                     List.of(
-                        new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())),
-                        new SimpleGrantedAuthority("ROLE_".concat(this.relationType.toString()))) :
+                            new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())),
+                            new SimpleGrantedAuthority("ROLE_".concat(this.relationType.toString()))) :
                     List.of(new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())));
         }
 

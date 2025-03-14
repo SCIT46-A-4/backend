@@ -354,7 +354,7 @@ public class DataInitializer implements CommandLineRunner {
                 .relationType(RelationType.TEACHER)
                 .build();
         relationShipRepository.save(teacherChildRelation);
-        
+
         //이도훈 이메일 인증 테스트 교사 계정 추가 dad에서 아이 추가 후 이 계정으로 메일 발신.
         MemberEntity LeeDoHun = MemberEntity.builder()
                 .signInId("aaaaa")

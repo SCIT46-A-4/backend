@@ -46,7 +46,8 @@ public class AnalysisService {
     public Long getAnalysisResult(Long analysisTargetId) {
         AnalysisTargetEntity analysisTarget = findAnalysisTargetById(analysisTargetId);
         AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
-        if (StringUtils.hasText(aiAnalysisResponse.extractedText())) analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
+        if (StringUtils.hasText(aiAnalysisResponse.extractedText()))
+            analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
 
         AnalysisResultEntity analysisResult = AnalysisResultEntity.builder()
                 .title("Analysis-".concat(UUID.randomUUID().toString()))
@@ -99,9 +100,9 @@ public class AnalysisService {
                 .analysisResult(analysisResult.getAnalysisResultText())
                 .suggestedSolution(analysisResult.getSuggestedSolution())
                 .analysisResultNote(
-                        new AnalysisResultNoteDetailsViewDTO(analysisResult.getAnalysisResultNote().getId(),analysisResult.getAnalysisResultNote().getContent()))
+                        new AnalysisResultNoteDetailsViewDTO(analysisResult.getAnalysisResultNote().getId(), analysisResult.getAnalysisResultNote().getContent()))
                 .analysisResultSatisfaction(
-                        new AnalysisResultSatisfactionDetailsViewDTO(analysisResult.getSatisfaction().getId(),analysisResult.getSatisfaction().getSatisfactionScore()))
+                        new AnalysisResultSatisfactionDetailsViewDTO(analysisResult.getSatisfaction().getId(), analysisResult.getSatisfaction().getSatisfactionScore()))
                 .build();
     }
 

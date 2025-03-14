@@ -20,11 +20,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(
-    		HttpServletRequest request,
-    		HttpServletResponse response,
+            HttpServletRequest request,
+            HttpServletResponse response,
             Authentication authentication
-            ) throws IOException {
-    	
+    ) throws IOException {
+
         /* Principal이 MemberDetails 타입인지 검증
          * authentication.getPrincipal()은 로그인한 사용자의 인증 정보를 반환합니다.
          * 일반적으로 UserDetails를 구현한 객체(예: MemberDetails)가 반환됩니다.
@@ -37,8 +37,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             response.sendRedirect("/login?error=unauthorized");
             return;
         }
-        
-		 // 사용자 타입에 따라 리다이렉트 URL 결정
+
+        // 사용자 타입에 따라 리다이렉트 URL 결정
         String redirectUrl = (memberDetails.getRelationType() == RelationType.GUARDIAN)
                 ? "/dashboard/guardian"
                 : "/dashboard/teacher";

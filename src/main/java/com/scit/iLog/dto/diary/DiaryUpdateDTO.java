@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 */
 @Builder
 public record DiaryUpdateDTO(
-		Long id,
-		String title,
-	    String content,
-		LocalDateTime createdAt
+        Long id,
+        String title,
+        String content,
+        LocalDateTime createdAt
 ) {
 }

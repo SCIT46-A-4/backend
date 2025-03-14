@@ -17,5 +17,6 @@ public record WeatherData(
         double wind_speed,
         int wind_deg,
         List<WeatherDetail> weather
-) {}
+) {
+}
 

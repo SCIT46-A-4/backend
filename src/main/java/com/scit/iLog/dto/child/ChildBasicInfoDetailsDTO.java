@@ -24,7 +24,7 @@ public class ChildBasicInfoDetailsDTO extends BaseTimeDTO {
     private Gender gender;
     private String profileImgSrcUri;
     private String callName;
-    
+
     //이도훈 추가, util패키지의 FamilyBackGroundSerializer클래스 추가
     @JsonSerialize(using = FamilyBackGroundSerializer.class)
     private List<FamilyBackGround> familyBackGrounds;

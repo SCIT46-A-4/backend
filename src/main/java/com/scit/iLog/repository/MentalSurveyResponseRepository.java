@@ -22,7 +22,8 @@ public interface MentalSurveyResponseRepository extends MongoRepository<MentalSu
 
     List<MentalSurveyResponseEntity> findAllByCreatedAtBetweenOrderByCreatedAtAsc(LocalDateTime startDate, LocalDateTime endDate);
 
-    List<MentalSurveyResponseEntity> findAllByChildIdAndCreatedAtBetween(Long childId, LocalDateTime startDate, LocalDateTime endDate,Sort sort);
+    List<MentalSurveyResponseEntity> findAllByChildIdAndCreatedAtBetween(Long childId, LocalDateTime startDate, LocalDateTime endDate, Sort sort);
+
     List<MentalSurveyResponseEntity> findAllByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Sort sort);
-    
+
 }

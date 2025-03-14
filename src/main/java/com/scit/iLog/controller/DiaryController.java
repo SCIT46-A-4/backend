@@ -21,45 +21,47 @@ import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 @RequestMapping("/children/{childId}/diaries")
 @RequiredArgsConstructor
 public class DiaryController {
-	private final ChildDiaryService childDiaryService;
+    private final ChildDiaryService childDiaryService;
 
     // 일기장 목록 페이지 요청 | 25/2/6 준성: 파라미터 Long id, Pageable 추가
     // 25/2/7 은진 : 주석 추가
+
     /**
      * 특정 아이의 일기장 목록 페이지 요청을 처리하는 컨트롤러 메서드.
      * 클라이언트(사용자)가 "/diaries" URL로 GET 요청을 보낼 경우 호출되며,
      * 요청 시 특정 아이의 ID와 페이징 정보를 함께 전달받는다.
-     *
+     * <p>
      * 특정 아이의 일기 목록을 페이징 처리하여 조회 :
      * Page<ChildDiaryEntity> _page = childDiaryService.getChildDiaries(id, pageable);
-     *
+     * <p>
      * 조회된 일기 목록을 모델에 추가하여 뷰에서 사용할 수 있도록 함 :
      * model.addAttribute("list", _page);
-     * 
-     * @param id 조회할 아이의 고유 iD
+     *
+     * @param id       조회할 아이의 고유 iD
      * @param pageable 페이징 처리를 위한 pageable 객체
      *                 아래 코드에서는
      *                 기본적으로 첫 번째 페이지(page=0)와
      *                 10개의 항목(size=10)을 반환
-     * @param model 뷰에 데이터를 전달하기 위한 Model 객체
+     * @param model    뷰에 데이터를 전달하기 위한 Model 객체
      * @return "/children/diaries/diaryListView" 뷰 이름(일기 목록 화면 표시)
-     *
+     * <p>
      * CD-1
      */
     @GetMapping("/diaryList")
     public String handleGetSelectAllDiaryList(
             @RequestParam Long id,
-            @PageableDefault(page=0, size=10) Pageable pageable,
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
             Model model
     ) {
-    	Page<ChildDiaryEntity> childDiaryPage = childDiaryService.getChildDiaries(id, pageable);
-    	model.addAttribute("list", childDiaryPage);
+        Page<ChildDiaryEntity> childDiaryPage = childDiaryService.getChildDiaries(id, pageable);
+        model.addAttribute("list", childDiaryPage);
         return "children/diaries/diaryListView";
     }
 
     //일기장 수정 페이지 html작성과 로직
     //일기장 쓰기 페이지
     //25/2/7 은진 : 주석 추가
+
     /**
      * 일기장 작성 페이지 요청을 처리하는 컨트롤러 메서드.
      * 클라이언트(사용자)가 "/diaries/new" URL(버튼)로 GET요청을 보낼 경우 호출되며,
@@ -103,28 +105,27 @@ public class DiaryController {
      * 2025-02-10 이도훈
      * ChildDiaryEntity의 diary_id를 값으로 갖고
      * 수정을 할 페이지를 조회 요청을 하는 메서드.
+     *
      * @param diaryId
      * @param model
-     * @return
-     *
-     * CD-4
+     * @return CD-4
      */
     @GetMapping("/{diaryId}/edit")
     public String handleGetDiaryUpdateView(
-    		@RequestParam("diaryId") Long diaryId,
-    		Model model
+            @RequestParam("diaryId") Long diaryId,
+            Model model
     ) {
-    	DiaryUpdateDTO diary = childDiaryService.findDiaryUpdateInfoById(diaryId);
-    	model.addAttribute("diary", diary);
-    	return "children/diaries/diaryUpdateView";
+        DiaryUpdateDTO diary = childDiaryService.findDiaryUpdateInfoById(diaryId);
+        model.addAttribute("diary", diary);
+        return "children/diaries/diaryUpdateView";
     }
 
     /**
      * 2025-02-10 이도훈
      * 수정 페이지에서 작업한 수정 내용 처리를 요청하는 메서드
+     *
      * @param diaryUpdateDTO
-     * @return
-     * CD-4
+     * @return CD-4
      */
     @PostMapping("/diaryList/{diaryId}/edit")
     public String handleUpdateDiaryUpdateView(
@@ -133,9 +134,9 @@ public class DiaryController {
              */
             @PathVariable("childId") Long childId,
             @PathVariable("diaryId") Long diaryId,
-    		@ModelAttribute DiaryUpdateRequestDTO diaryUpdateDTO
+            @ModelAttribute DiaryUpdateRequestDTO diaryUpdateDTO
     ) {
-    	childDiaryService.updateDiary(diaryId, diaryUpdateDTO);
-    	return String.format("redirect:/children/%d/diaries/%d/details",childId,diaryId);
+        childDiaryService.updateDiary(diaryId, diaryUpdateDTO);
+        return String.format("redirect:/children/%d/diaries/%d/details", childId, diaryId);
     }
 }

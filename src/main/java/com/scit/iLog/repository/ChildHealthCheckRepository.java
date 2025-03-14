@@ -12,10 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface ChildHealthCheckRepository extends JpaRepository<HealthCheckEntity, Long> {
-		// 페이징 기능 추가 (offset, limit 적용)
-		Page<HealthCheckEntity> findAll(Pageable pageable);
+    // 페이징 기능 추가 (offset, limit 적용)
+    Page<HealthCheckEntity> findAll(Pageable pageable);
 
-		Optional<HealthCheckEntity> findByChildRecordId(Long childRecordId);
+    Optional<HealthCheckEntity> findByChildRecordId(Long childRecordId);
 
-		List<HealthCheckEntity> findAllByMember(MemberEntity member);
+    List<HealthCheckEntity> findAllByMember(MemberEntity member);
 }

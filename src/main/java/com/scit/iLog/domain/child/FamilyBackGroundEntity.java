@@ -12,17 +12,15 @@ import java.util.List;
 @Table(name = "family_background")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FamilyBackGroundEntity extends BaseTimeEntity {
+    @OneToMany(mappedBy = "familyBackGround", fetch = FetchType.LAZY)
+    public List<ChildBackGroundEntity> childBackGround;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "family_background_id")
     private Long id;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "family_background")
     private FamilyBackGround familyBackGround;
-
-    @OneToMany(mappedBy = "familyBackGround", fetch = FetchType.LAZY)
-    public List<ChildBackGroundEntity> childBackGround;
 
     //이도훈 추가
     @Builder // 👈 추가

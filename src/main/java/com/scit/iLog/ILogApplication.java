@@ -12,8 +12,8 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 @SpringBootApplication
 public class ILogApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ILogApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ILogApplication.class, args);
+    }
 
 }

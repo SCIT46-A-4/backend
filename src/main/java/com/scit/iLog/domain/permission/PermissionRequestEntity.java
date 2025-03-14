@@ -50,18 +50,17 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     // 기타 필요하다면 초대코드, 만료일시, 메시지 등
     @Column(name = "request_link_code")
     private String requestLinkCode;
-    
+
     // 그럼 저기에 있는 사람의 별칭은 어떻게 세팅할 것인가?
     @Column(name = "alias")
     private String alias;
-    
-    public void setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus status)
-    {
-    	// 스태이터스 변경 로직, 변경이 되는 순간 코드는 초기화한다.
-    	this.permissionStatus = status;
-    	this.requestLinkCode = null;
+
+    public void setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus status) {
+        // 스태이터스 변경 로직, 변경이 되는 순간 코드는 초기화한다.
+        this.permissionStatus = status;
+        this.requestLinkCode = null;
     }
-    
+
     public void setRequestLinkCode(String requestLinkCode) {
         this.requestLinkCode = requestLinkCode;
     }
