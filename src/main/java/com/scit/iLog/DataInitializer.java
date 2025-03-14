@@ -131,7 +131,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println(fullName + ": SignInId: " + signInId);
 
             // 각 mom마다 2명의 자녀 생성
-            for (int j = 0; j < 2; j++) {
+            for (int j = 0; j < 4; j++) {
                 // 2. Child 엔티티 생성 (랜덤 이름, 생년월일, 출생지 등)
                 String childName = "Baby " + firstNames[random.nextInt(firstNames.length)] + " " + lastNames[random.nextInt(lastNames.length)];
                 String birthLocation = locations[random.nextInt(locations.length)];
