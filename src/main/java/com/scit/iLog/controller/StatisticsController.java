@@ -1,21 +1,14 @@
 package com.scit.iLog.controller;
 
-import java.time.LocalDateTime;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.scit.iLog.domain.PeriodType;
 import com.scit.iLog.dto.stats.ChildEmotionStatsDTO;
 import com.scit.iLog.dto.stats.ChildPhysicalStatsDTO;
 import com.scit.iLog.service.StatisticsService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 /**
  *

@@ -1,18 +1,8 @@
 package com.scit.iLog.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.function.Function;
 import com.scit.iLog.domain.PeriodType;
 import com.scit.iLog.domain.sentimentalAnalysis.AnalysisResultEntity;
 import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
-import com.scit.iLog.dto.analysis.AnalysisResult;
 import com.scit.iLog.dto.stats.ChildEmotionStatPointDataDTO;
 import com.scit.iLog.dto.stats.ChildEmotionStatsDTO;
 import com.scit.iLog.dto.stats.ChildPhysicalStatPointDataDTO;
@@ -20,8 +10,14 @@ import com.scit.iLog.dto.stats.ChildPhysicalStatsDTO;
 import com.scit.iLog.repository.AnalysisResultRepository;
 import com.scit.iLog.repository.ChildRecordRepository;
 import com.scit.iLog.util.DateTimeUtil;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

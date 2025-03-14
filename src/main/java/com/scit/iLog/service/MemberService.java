@@ -1,32 +1,26 @@
 package com.scit.iLog.service;
 
 import com.scit.iLog.domain.RelationShipEntity;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
-import com.scit.iLog.exception.MemberNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.dto.member.MemberDashboardProfileDTO;
 import com.scit.iLog.dto.member.MemberDetailsDTO;
 import com.scit.iLog.dto.member.MemberUpdateDTO;
+import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.*;
-import com.scit.iLog.repository.MemberRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 
 @Slf4j

@@ -1,12 +1,10 @@
 package com.scit.iLog.controller;
 
 import com.scit.iLog.dto.mentalsurvey.ChildMentalStatsDTO;
-import com.scit.iLog.dto.mentalsurvey.ChildNameDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseChartDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseDetailsDTO;
 import com.scit.iLog.dto.mentalsurvey.response.MentalSurveyResponseInsertDTO;
 import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyDetailsDTO;
-import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveyListDTO;
 import com.scit.iLog.dto.mentalsurvey.survey.MentalSurveySelectInfoDTO;
 import com.scit.iLog.service.MentalSurveyService;
 import com.scit.iLog.service.child.ChildService;

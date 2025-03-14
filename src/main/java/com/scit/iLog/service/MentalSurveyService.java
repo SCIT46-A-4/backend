@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.data.domain.Sort.Order.*;
+import static org.springframework.data.domain.Sort.Order.asc;
 
 @Slf4j
 @Service

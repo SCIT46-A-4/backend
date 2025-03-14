@@ -5,7 +5,6 @@ import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
 import com.scit.iLog.service.child.ChildService;
 import jakarta.servlet.http.HttpSession;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

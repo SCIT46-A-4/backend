@@ -1,7 +1,10 @@
 package com.scit.iLog.service.analysis;
 
 import com.scit.iLog.domain.sentimentalAnalysis.*;
-import com.scit.iLog.dto.analysis.*;
+import com.scit.iLog.dto.analysis.AnalysisResultListItemDTO;
+import com.scit.iLog.dto.analysis.ChildEmotionRatioDataDTO;
+import com.scit.iLog.dto.analysis.ChildEmotionRatioStatPointDataDTO;
+import com.scit.iLog.dto.analysis.ReAnalyzeRequestDTO;
 import com.scit.iLog.dto.analysis.ai.AIAnalysisResponseDTO;
 import com.scit.iLog.dto.analysis.weather.WeatherData;
 import com.scit.iLog.dto.analysis.weather.WeatherResponse;
@@ -24,7 +27,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.scit.iLog.config.WebConfig.ANALYSIS_FILES_REQUEST_ROOT_PATH;

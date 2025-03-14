@@ -3,7 +3,6 @@ package com.scit.iLog.controller;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.child.*;
-import com.scit.iLog.exception.ChildNotFoundException;
 import com.scit.iLog.service.analysis.AnalysisService;
 import com.scit.iLog.service.child.ChildRecordService;
 import com.scit.iLog.service.child.ChildService;

@@ -1,11 +1,10 @@
 package com.scit.iLog.repository;
 
+import com.scit.iLog.domain.claim.ClaimEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.scit.iLog.domain.claim.ClaimEntity;
-import com.scit.iLog.domain.member.MemberEntity;
 
 import java.util.List;
 

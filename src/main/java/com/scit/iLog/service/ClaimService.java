@@ -1,11 +1,5 @@
 package com.scit.iLog.service;
 
-import com.scit.iLog.exception.MemberNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.scit.iLog.domain.claim.ClaimAnswerEntity;
 import com.scit.iLog.domain.claim.ClaimEntity;
 import com.scit.iLog.domain.claim.ClaimType;
@@ -15,13 +9,17 @@ import com.scit.iLog.dto.claims.ClaimAnswerDTO;
 import com.scit.iLog.dto.claims.ClaimDetailsDTO;
 import com.scit.iLog.dto.claims.ClaimListViewDTO;
 import com.scit.iLog.dto.claims.ClaimsInsertDTO;
+import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.ClaimAnswerRepository;
 import com.scit.iLog.repository.ClaimRepository;
 import com.scit.iLog.repository.MemberRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

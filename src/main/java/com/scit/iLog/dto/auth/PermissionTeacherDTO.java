@@ -1,10 +1,9 @@
 package com.scit.iLog.dto.auth;
 
-import java.time.LocalDateTime;
-
 import com.scit.iLog.domain.RelationType;
-
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 
 @Builder
 public record PermissionTeacherDTO(

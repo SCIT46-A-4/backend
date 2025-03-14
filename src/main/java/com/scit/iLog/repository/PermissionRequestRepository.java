@@ -1,13 +1,12 @@
 package com.scit.iLog.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.permission.PermissionRequestEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.scit.iLog.domain.child.ChildEntity;
-import com.scit.iLog.domain.permission.PermissionRequestEntity;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PermissionRequestRepository extends JpaRepository<PermissionRequestEntity, Long>

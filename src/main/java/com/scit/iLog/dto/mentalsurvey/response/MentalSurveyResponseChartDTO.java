@@ -1,8 +1,8 @@
 package com.scit.iLog.dto.mentalsurvey.response;
 
-	import java.time.LocalDateTime;
-
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 
 	@Builder
 	public record MentalSurveyResponseChartDTO(

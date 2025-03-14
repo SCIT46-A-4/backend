@@ -1,11 +1,10 @@
 package com.scit.iLog.dto.claims;
 
+import com.scit.iLog.domain.claim.ClaimType;
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.scit.iLog.domain.claim.ClaimType;
-
-import lombok.Builder;
 
 @Builder
 public record ClaimDetailsDTO(
