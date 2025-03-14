@@ -664,17 +664,16 @@
           <!--                    </div>-->
 
           <!-- 총 아동 수 표시 -->
-          <div style="display: flex; justify-content: flex-end; width: 100%">
-            <p class="subtitle is-size-6">
-              총 <strong th:text="${#lists.size(childId)}">0</strong>명
-            </p>
-          </div>
+          <!-- <hr />
+          <div style="float: left; justify-content: flex-start; width: 100%">
 
-          <hr />
-
+          </div> -->
           <!-- 정렬 옵션 선택 -->
           <div class="field has-text-right">
-            <div class="select is-small">
+            <div class="subtitle is-size-6" style="float: left;">
+              총 <strong th:text="${#lists.size(childId)}">0</strong>명
+            </div>
+            <div class="select is-small" style="float: right;">
               <select id="sortOption" onchange="changeSort(this.value)">
                 <option value="NAME" th:selected="${currentSort.name() == 'NAME'}">
                   이름순
