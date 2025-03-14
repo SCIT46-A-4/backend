@@ -272,7 +272,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="permission : ${list}"
-                        th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permition.PermissionRequestStatus).PENDING}"
+                        th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
                         th:data-id="${permission.id}">
                         <td th:text="${permission.alias}">선생 호칭</td>
                         <td th:text="${permission.childName}">내 자녀 이름</td>

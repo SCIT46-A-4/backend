@@ -152,17 +152,6 @@ public class MentalSurveyController {
 		return "children/mentalSurvey/mentalSurveySelectView";
 	}
 
-	/*
-		S-X 설문 결과를 목록으로 보여주는 페이지
-	 */
-	@GetMapping("/surveyList")
-	public String handleGetMentalSurveyListView(Model model) {
-		MentalSurveyListDTO mentalSurveys = mentalSurveyService.getAllMentalSurveys();
-		model.addAttribute("mentalSurveys", mentalSurveys);
-		return "children/mentalSurvey/mentalSurveyListView";
-	}
-
-	// 시작 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		/**
 		 * v1.x.x-10
 		 * D-2 25/3/5 준성 MentalSurveyResponse 작업
@@ -188,7 +177,4 @@ public class MentalSurveyController {
 
 			return mentalSurveyResponseChartDTOList;
 		}
-
-		// 끝 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 }

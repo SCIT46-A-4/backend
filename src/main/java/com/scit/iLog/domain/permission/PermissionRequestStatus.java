@@ -1,4 +1,4 @@
-package com.scit.iLog.domain.permition;
+package com.scit.iLog.domain.permission;
 
 import lombok.Getter;
 
@@ -7,11 +7,11 @@ public enum PermissionRequestStatus
 	{
 		PENDING("송신중"), ACCEPTED("수락됨"), EXPIRED("파기");
 		
-		private final String permitionStatus;
+		private final String permissionStatus;
 		
 		PermissionRequestStatus(String permission)
 		{
-			this.permitionStatus = permission;
+			this.permissionStatus = permission;
 		}
 
 	}

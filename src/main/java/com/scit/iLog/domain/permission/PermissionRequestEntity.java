@@ -1,4 +1,4 @@
-package com.scit.iLog.domain.permition;
+package com.scit.iLog.domain.permission;
 
 import com.scit.iLog.domain.BaseTimeEntity;
 import com.scit.iLog.domain.RelationType;
@@ -22,32 +22,33 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
-@Table(name = "permission_request")
 @Builder
 @Getter
 @AllArgsConstructor
+@Table(name = "permission_request")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PermissionRequestEntity extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // 권한요청을 “누가(보내는 사람)” 했는지
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "requester_id")
     private MemberEntity requester;
 
     // 권한요청을 “누가(받는 사람)” 수락/거절할 것인지
     // 이미 가입된 사용자이면 MemberEntity 참조,
     // 미가입자이면 이메일/전화번호만 저장하는 식으로도 설계 가능
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "invitee_id")
     private MemberEntity invitee;
 
     // 어떤 아동에 대한 권한인지
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "child_id")
     private ChildEntity child;
 
@@ -76,5 +77,7 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     	this.requestLinkCode = null;
     }
     
-    public void setRequestLinkCode(String str) {requestLinkCode = str;}
+    public void setRequestLinkCode(String requestLinkCode) {
+        this.requestLinkCode = requestLinkCode;
+    }
 }

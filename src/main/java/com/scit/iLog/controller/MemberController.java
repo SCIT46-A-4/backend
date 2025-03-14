@@ -101,6 +101,7 @@ public class MemberController {
         } else if (memberDetails.getRelationType() == RelationType.TEACHER) {
             memberService.deleteMemberWithRelationShips(memberDetails.getId());
             claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
+
         }
 
         SecurityContextHolder.clearContext();

@@ -96,11 +96,8 @@ public boolean sendEmailInviteLink(
         @RequestParam(name = "childId") Long childId,
         @RequestParam(name = "memberId") Long memberId,
         @RequestParam(name = "alias") String alias,
-        @RequestParam(name = "inviteeEmail") String inviteeEmail) throws Exception
+        @RequestParam(name = "inviteeEmail") String inviteeEmail)
 {
-    try
-    {
-
         MemberDetailsDTO memberDto = memberService.getMemberDetailsById(memberId);
         childService.findBasicInfoById(childId);
 
@@ -113,11 +110,6 @@ public boolean sendEmailInviteLink(
                 inviteeEmail,
                 "" );
         return true;
-    }
-    catch (Exception e)
-    {
-        throw new Exception("메세지 보내는 도중 문제가 발생했습니다.");
-    }
 }
 
 /**

@@ -5,9 +5,9 @@ import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.permition.PermissionRequestDTO;
-import com.scit.iLog.domain.permition.PermissionRequestEntity;
-import com.scit.iLog.domain.permition.PermissionRequestStatus;
+import com.scit.iLog.dto.auth.PermissionRequestDTO;
+import com.scit.iLog.domain.permission.PermissionRequestEntity;
+import com.scit.iLog.domain.permission.PermissionRequestStatus;
 import com.scit.iLog.dto.auth.PermissionTeacherDTO;
 import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.ChildRepository;
@@ -70,7 +70,7 @@ public class EmailService {
             Long requesterId,
             String _alias,
             String inviteeEmail, // 사용자가 뷰에서 입력한 이메일 (수신자)
-            String etc) throws Exception {
+            String etc) {
         SimpleMailMessage message = new SimpleMailMessage();
         //Null처리
         String str = (etc == null || etc.length() < 1) ? "" : etc;
@@ -90,10 +90,6 @@ public class EmailService {
 
         Long inviteeId = memberRepository.findByEmail(inviteeEmail)
                 .orElseThrow(() -> new MemberNotFoundException(inviteeEmail)).getId();
-
-        if(inviteeId == null) {
-            throw new Exception("초대받을 회원이 존재하지 않습니다.");
-        }
 
         // DB에 해당 사항을 하나 만들어서 save 하는 로직 필요.
         PermissionRequestDTO permissionRequestDto = PermissionRequestDTO.builder()

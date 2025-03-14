@@ -356,7 +356,8 @@ public class ChildService {
         //김은진 끝 -----------------------------------------------------------------
 
         //2025-03-11 이도훈 작성
-		public Optional<ChildEntity> findById(Long childId) {
-			return childRepository.findById(childId);
+		public ChildEntity findById(Long childId) {
+			return childRepository.findById(childId)
+                    .orElseThrow(() -> new ChildNotFoundException(childId));
 		}
 }

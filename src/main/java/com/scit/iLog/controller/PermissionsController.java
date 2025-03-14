@@ -14,11 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 public class PermissionsController {
 
     @GetMapping({"", "/"})
-    public String handleGetPermissionsRequestView(
-    		) {
+    public String handleGetPermissionsRequestView() {
         return "/children/permissions/childPermissionRequestView";
     }
-
-
 }
 

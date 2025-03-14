@@ -1,9 +1,10 @@
-package com.scit.iLog.domain.permition;
+package com.scit.iLog.dto.auth;
 
 import java.time.LocalDateTime;
 
 import com.scit.iLog.domain.RelationType;
 
+import com.scit.iLog.domain.permission.PermissionRequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

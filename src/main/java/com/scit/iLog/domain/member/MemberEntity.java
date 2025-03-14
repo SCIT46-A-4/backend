@@ -3,6 +3,7 @@ package com.scit.iLog.domain.member;
 import com.scit.iLog.domain.BaseTimeEntity;
 import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.permission.PermissionRequestEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,6 +48,10 @@ public class MemberEntity extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<RelationShipEntity> relationShips = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "requester", cascade = CascadeType.REMOVE)
+    private List<PermissionRequestEntity> permissionRequests = new ArrayList<>();
     
     //2025-02-17~20 이도훈 개인정보 수집 이용 동의
     @Column(name="personal_information_collection_and_usage_agreement", nullable = false)

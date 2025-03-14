@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.permition.PermissionRequestDTO;
-import com.scit.iLog.domain.permition.PermissionRequestStatus;
+import com.scit.iLog.dto.auth.PermissionRequestDTO;
+import com.scit.iLog.domain.permission.PermissionRequestStatus;
 import com.scit.iLog.dto.auth.PermissionTeacherDTO;
 import com.scit.iLog.dto.auth.SignUpDTO;
 import com.scit.iLog.service.MemberService;
@@ -191,12 +191,13 @@ public class AuthController {
 	public String handleGetPermissionGuardian(
 			@PathVariable(name="memberId") Long memberId,
 			@PathVariable(name="childId") Long childId,
-			Model model) throws Exception
+			Model model
+	)
 	{
 		// memberId를 이용해서 해당 ID의 멤버가 있는지 조회 후 갖고 옴
 		MemberEntity member = memberService.findById(memberId);
 		// childId를 이용해서 해당 ID의 자식이 있는지 조회 후 갖고 옴
-		ChildEntity child = childService.findById(childId).orElseThrow(() -> new Exception("자식이 존재하지 않습니다"));
+		ChildEntity child = childService.findById(childId);
 
 		// memberId를 이용해서 List로 Dto의 객체를 생성
 		List<PermissionRequestDTO> list = emailService.findPermissionRequestDTOList(memberId);

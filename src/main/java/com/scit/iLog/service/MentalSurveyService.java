@@ -49,6 +49,7 @@ public class MentalSurveyService {
         return new MentalSurveyDetailsDTO(
                 mentalSurvey.getId(),
                 mentalSurvey.getTitle(),
+                mentalSurvey.getType(),
                 mentalSurvey.getDescription(),
                 mentalSurvey.getSections().stream()
                         .map(mentalSurveySection ->
