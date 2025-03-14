@@ -303,10 +303,9 @@ public class ChildrenController {
 			@PathVariable("childId") Long childId,
 			@PathVariable("childRecordId") Long childRecordId,
 			@AuthenticationPrincipal MemberDetails memberDetails,
-			@ModelAttribute("formData") ChildRecordUpdateRequestDTO childRecordUpdateRequestDTO
+			@ModelAttribute ChildRecordUpdateRequestDTO childRecordUpdateRequestDTO
 	) {
 		childRecordService.updateChildRecord(childId, memberDetails.getId(), childRecordId, childRecordUpdateRequestDTO);
-
 		return new ChildRecordUpdateResponseDTO(true, String.format("/children/%d/records/%d", childId, childRecordId));
 	}
 }

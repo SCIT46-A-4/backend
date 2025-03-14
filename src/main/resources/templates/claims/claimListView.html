@@ -1,142 +1,226 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>고객 센터 페이지</title>
 
     <!-- Bulma CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link
+      rel="stylesheet"
+      href="../../static/css/bulma.min.css"
+      th:href="@{/css/bulma.min.css}"
+    />
     <!-- customColors -->
-    <link rel="stylesheet" th:href="@{/css/customColors.css}" />
+    <link
+      rel="stylesheet"
+      href="../../static/css/customColors.css"
+      th:href="@{/css/customColors.css}"
+    />
 
     <!-- jQuery -->
     <script src="/js/jquery-3.7.1.min.js"></script>
 
     <style>
-        /* ✅ 배경색 적용 */
-        html {
-            background-color: var(--primary);
-            /* #FDF5BF */
-        }
+      /* ✅ 배경색 적용 */
+      html {
+        background-color: var(--primary);
+        /* #FDF5BF */
+      }
 
-        .custom-container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
+      #logo {
+        width: 100px;
+        height: auto;
+      }
 
-        /* ✅ 기존 스타일 유지, 색상은 customColors.css 활용 */
-        .claim-box {
-            background-color: var(--secondary);
-            /* ✅ customColors.css의 변수 사용 */
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s;
-        }
+      .custom-container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        flex-direction: column;
+      }
 
-        /* ✅ 호버 효과 */
-        .claim-box:hover {
-            transform: scale(1.02);
-            box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.15);
-        }
+      .claim-list {
+        min-height: 60vh;
+      }
 
-        .write-btn {
-            text-align: right;
-            margin-bottom: 10px;
-        }
+      /* ✅ 기존 스타일 유지, 색상은 customColors.css 활용 */
+      .claim-box {
+        background-color: var(--secondary);
+        /* ✅ customColors.css의 변수 사용 */
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+      }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: red;
-            margin-bottom: 20px;
-        }
+      /* ✅ 호버 효과 */
+      .claim-box:hover {
+        transform: scale(1.02);
+        box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.15);
+      }
 
-        .claim-box .columns {
-            align-items: center;
-            text-align: left;
-        }
+      .write-btn {
+        text-align: right;
+        margin-bottom: 10px;
+      }
 
-        .claim-box .column {
-            font-weight: bold;
-        }
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: red;
+        margin-bottom: 20px;
+      }
 
-        /* 중앙 정렬 */
-        .text-center {
-            text-align: center;
-        }
+      .claim-box .columns {
+        align-items: center;
+        text-align: left;
+      }
 
-        /* 오른쪽 정렬 */
-        .text-right {
-            text-align: right;
-        }
+      .claim-box .column {
+        font-weight: bold;
+      }
+
+      /* 중앙 정렬 */
+      .text-center {
+        text-align: center;
+      }
+
+      /* 오른쪽 정렬 */
+      .text-right {
+        text-align: right;
+      }
+
+      #noClaimContainer {
+        padding: 20px;
+        background-color: var(--primary);
+        color: black;
+        font-weight: bold;
+        min-height: 60vh;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img
+          id="logo"
+          src="../../static/images/wilog.png"
+          th:src="@{/images/wilog.png}"
+          alt="iLog 로고"
+        />
+      </a>
+    </div>
     <section class="section">
-        <div class="container custom-container">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="/"> <img id="logo" src="../../static/images/wilog.png"
-                        th:src="@{/images/wilog.png}" alt="iLog 로고" />
-                </a>
-            </div>
+      <div class="container custom-container">
+        <h2 class="title is-4">내 문의 목록 페이지</h2>
 
-            <h2 class="title is-4">내 문의 목록 페이지</h2>
-
-            <div class="write-btn">
-                <a th:href="@{/claims/new}" class="button is-light">문의 하기</a>
-            </div>
-
-            <div class="claim-list">
-                <div th:each="claim : ${claimsPage.content}" class="box claim-box is-secondary"
-                    th:attr="onclick=|location.href='/claims/${claim.claimId}'|">
-                    <div class="columns is-vcentered">
-                        <!-- 문의 유형 + 제목 -->
-                        <div class="column is-9">
-                            <span class="has-text-weight-bold" th:text="'[' + ${claim.type} + ']'">[이용방법]</span> <span
-                                class="ml-2" th:text="${claim.title}">문의 제목</span>
-                        </div>
-
-                        <!-- 등록 날짜 -->
-                        <div class="column is-3 text-right">
-                            <!-- ✅ 답변이 1개 이상이면 체크 아이콘 표시 -->
-                            <span th:if="${claim.hasAnswers()}" class="icon">
-                                ✅ <!-- ✅ 이모지 또는 FontAwesome 아이콘 사용 가능 -->
-                            </span>
-                            <span th:text="${#temporals.format(claim.createdDate, 'yyyy-MM-dd')}">2025-01-24</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 페이지네이션 -->
-            <nav class="pagination is-centered mt-5">
-                <a class="pagination-previous" th:href="@{|/claims/claimsList?page=0|}"
-                    th:classappend="${currentPage == 0} ? 'is-disabled'">≪ 처음</a> <a class="pagination-previous"
-                    th:href="@{|/claims/claimsList?page=${currentPage - 1}|}"
-                    th:classappend="${currentPage == 0} ? 'is-disabled'">＜ 이전</a>
-
-                <ul class="pagination-list">
-                    <li th:each="pageIndex : ${#numbers.sequence(0, totalPages - 1)}">
-                        <a class="pagination-link" th:href="@{|/claims/claimsList?page=${pageIndex}|}"
-                            th:text="${pageIndex + 1}" th:classappend="${currentPage == pageIndex} ? 'is-current'"></a>
-                    </li>
-                </ul>
-
-                <a class="pagination-next" th:href="@{|/claims/claimsList?page=${currentPage + 1}|}"
-                    th:classappend="${currentPage == totalPages - 1} ? 'is-disabled'">다음
-                    ＞</a> <a class="pagination-next" th:href="@{|/claims/claimsList?page=${totalPages - 1}|}"
-                    th:classappend="${currentPage == totalPages - 1} ? 'is-disabled'">끝
-                    ≫</a>
-            </nav>
+        <div class="write-btn">
+          <a th:href="@{/claims/new}" class="button is-light">문의 하기</a>
         </div>
-    </section>
-</body>
 
+        <!-- claim이 없을 경우 -->
+        <div
+          th:if="${claimsPage.empty}"
+          id="noClaimContainer"
+          class="box claim-box is-secondary"
+        >
+          <h1>문의 내역이 없습니다.</h1>
+        </div>
+        <th:block th:unless="${claimsPage.empty}">
+          <div class="claim-list">
+            <!-- claim이 있을 경우 -->
+            <div
+              th:each="claim : ${claimsPage.content}"
+              class="box claim-box is-secondary"
+              th:attr="onclick=|location.href='/claims/${claim.claimId}'|"
+            >
+              <div class="columns is-vcentered">
+                <!-- 문의 유형 + 제목 -->
+                <div class="column is-9">
+                  <span
+                    class="has-text-weight-bold"
+                    th:text="'[' + ${claim.type} + ']'"
+                    >[이용방법]</span
+                  >
+                  <span class="ml-2" th:text="${claim.title}">문의 제목</span>
+                </div>
+
+                <!-- 등록 날짜 -->
+                <div class="column is-3 text-right">
+                  <!-- ✅ 답변이 1개 이상이면 체크 아이콘 표시 -->
+                  <span th:if="${claim.hasAnswers()}" class="icon">
+                    ✅
+                    <!-- ✅ 이모지 또는 FontAwesome 아이콘 사용 가능 -->
+                  </span>
+                  <span
+                    th:text="${#temporals.format(claim.createdDate, 'yyyy-MM-dd')}"
+                    >2025-01-24</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </th:block>
+
+        <!-- 페이지네이션 -->
+        <nav class="pagination is-centered mt-5">
+          <a
+            class="pagination-previous"
+            th:href="@{|/claims/claimsList?page=0|}"
+            th:classappend="${currentPage == 0} ? 'is-disabled'"
+            >≪ 처음</a
+          >
+          <a
+            class="pagination-previous"
+            th:href="@{|/claims/claimsList?page=${currentPage - 1}|}"
+            th:classappend="${currentPage == 0} ? 'is-disabled'"
+            >＜ 이전</a
+          >
+
+          <ul class="pagination-list">
+            <th:block th:if="${claimsPage.empty}">
+              <li>
+                <a
+                  class="pagination-link is-current"
+                  aria-label="Page 1"
+                  aria-current="page"
+                  >1</a
+                >
+              </li>
+            </th:block>
+            <th:block th:unless="${claimsPage.empty}">
+              <li th:each="pageIndex : ${#numbers.sequence(0, totalPages - 1)}">
+                <a
+                  class="pagination-link"
+                  th:href="@{|/claims/claimsList?page=${pageIndex}|}"
+                  th:text="${pageIndex + 1}"
+                  th:classappend="${currentPage == pageIndex} ? 'is-current'"
+                ></a>
+              </li>
+            </th:block>
+          </ul>
+
+          <a
+            class="pagination-next"
+            th:href="@{|/claims/claimsList?page=${currentPage + 1}|}"
+            th:classappend="${currentPage == totalPages - 1} ? 'is-disabled'"
+            >다음 ＞</a
+          >
+          <a
+            class="pagination-next"
+            th:href="@{|/claims/claimsList?page=${totalPages - 1}|}"
+            th:classappend="${currentPage == totalPages - 1} ? 'is-disabled'"
+            >끝 ≫</a
+          >
+        </nav>
+      </div>
+    </section>
+  </body>
 </html>

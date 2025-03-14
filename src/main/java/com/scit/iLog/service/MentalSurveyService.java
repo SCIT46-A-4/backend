@@ -168,7 +168,7 @@ public class MentalSurveyService {
                                     .date(mentalSurveyResponse.getCreatedAt())
                                     .label(mentalSurveyResponse.getSurveyTitle())
                                     .resultScore(mentalSurveyResponse.getTotalLikertScore())
-                                    .detailUrl(String.format("/children/%d/metalSurveys/responses/%s/details", childId, mentalSurveyResponse.getId()))
+                                    .detailUrl(String.format("/children/%d/mentalSurveys/responses/%s/details", childId, mentalSurveyResponse.getId()))
                                     .build()).toList();
             return new ChildMentalStatsDTO(surveyResponseStatPointData);
         }

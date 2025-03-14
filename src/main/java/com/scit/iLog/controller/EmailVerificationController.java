@@ -2,10 +2,12 @@ package com.scit.iLog.controller;
 
 import com.scit.iLog.service.EmailService;
 import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -74,6 +76,13 @@ public class EmailVerificationController {
             response.put("message", "인증 번호가 올바르지 않습니다.");
             return ResponseEntity.badRequest().body(response);
         }
+    }
+
+    @GetMapping("/checkDuplicatedEmail")
+    public boolean handleGetCheckDuplicatedEmail(
+            @RequestParam("email") String email
+    ) {
+        return emailService.checkDuplicatedEmail(email);
     }
 }
 

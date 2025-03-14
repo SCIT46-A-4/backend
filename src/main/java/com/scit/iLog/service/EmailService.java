@@ -1,5 +1,7 @@
 package com.scit.iLog.service;
 
+import com.scit.iLog.exception.MemberNotFoundException;
+import com.scit.iLog.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,6 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class EmailService {
     private final JavaMailSender mailSender;
+    private final MemberRepository memberRepository;
 
     /**
      * 인증번호를 포함한 이메일을 전송합니다.
@@ -48,7 +51,7 @@ public class EmailService {
         message.setFrom("helper@ilog.com");  // 발신자 주소
         message.setTo(to);
         message.setSubject("이메일 인증 코드");
-        message.setText("안녕하세요,\n\n귀하의 아이디는: " + id + "\n\n감사합니다.");
+        message.setText("안녕하세요, 회원님, \n\n귀하의 아이디는: 「 " + id + "」 입니다. \n\n감사합니다.");
         mailSender.send(message);
     }
 
@@ -66,8 +69,12 @@ public class EmailService {
         message.setFrom("helper@ilog.com");  // 발신자 주소
         message.setTo(to);
         message.setSubject("이메일 인증 코드");
-        message.setText("안녕하세요,\n\n귀하의 비밀번호는: " + newPwd + "\n\n감사합니다.");
+        message.setText("안녕하세요, 회원님, \n\n귀하의 비밀번호는: 「" + newPwd + "」 입니다. \n\n감사합니다.");
         mailSender.send(message);
+    }
+
+    public boolean checkDuplicatedEmail(String email) {
+        return memberRepository.existsByEmail(email);
     }
 }
 

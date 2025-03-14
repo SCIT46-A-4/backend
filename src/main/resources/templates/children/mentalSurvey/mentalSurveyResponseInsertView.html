@@ -90,12 +90,15 @@
             type: 'POST',
             data: JSON.stringify(data),
             contentType: 'application/json; charset=utf-8',
-            success: function (response) {
+            success: function (sucessUrl) {
               Swal.fire('설문 응답이 제출되었습니다.');
-              window.location.href =
-                '/children/' +
-                getChildIdFromURL() +
-                '/mentalSurveys/responses/stats';
+              setTimeout(() => {
+                // window.location.href =
+                //   '/children/' +
+                //   getChildIdFromURL() +
+                //   '/mentalSurveys/responses/stats';
+                window.location.href = sucessUrl;
+              }, 1000);
             },
             error: function (xhr, status, error) {
               Swal.fire('설문 제출에 실패하였습니다.');
@@ -120,11 +123,11 @@
       <div class="logo">
         <a th:href="@{/dashboard}">
           <img
-                  src="../../static/images/wilog.png"
-                  th:src="@{/images/wilog.png}"
-                  alt="로고"
-                  class="image"
-                  style="width: 100px; height: auto"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="로고"
+            class="image"
+            style="width: 100px; height: auto"
           />
         </a>
       </div>

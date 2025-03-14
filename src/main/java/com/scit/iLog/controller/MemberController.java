@@ -126,6 +126,7 @@ public class MemberController {
         return "/member/memberUpdateView";
     }
 
+    @ResponseBody
     @PostMapping("/password/validate")
     public boolean handlePostPasswordReset(
             @AuthenticationPrincipal MemberDetails memberDetails,

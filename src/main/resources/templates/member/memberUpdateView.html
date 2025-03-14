@@ -65,20 +65,25 @@
             event.target.submit();
           });
 
-        userPwdInput.addEventListener('keyup', function () {
-          $.ajax({
-            url: '/members/password/validate',
-            data: { password: userPwdInput.value },
-            type: 'POST',
-            success: function (isDuplicated) {
-              if (isDuplicated) {
-                Swal.fire('비밀번호는 이전 비밀번호와 다르게 입력해주세요.');
-              }
-            },
-            error: function () {
-              Swal.fire('비밀번호 중복 검사에 실패했습니다.');
-            },
-          });
+        var debounceTimer;
+
+        userPwdInput.addEventListener('keyup', function (e) {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => {
+            $.ajax({
+              url: '/members/password/validate',
+              data: { password: e.target.value },
+              type: 'POST',
+              success: function (isDuplicated) {
+                if (isDuplicated) {
+                  Swal.fire('비밀번호는 이전 비밀번호와 다르게 입력해주세요.');
+                }
+              },
+              error: function () {
+                Swal.fire('비밀번호 중복 검사에 실패했습니다.');
+              },
+            });
+          }, 1000);
         });
 
         userPwdInput.addEventListener('input', function () {

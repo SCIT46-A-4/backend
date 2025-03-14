@@ -4,10 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>심리 설문 통계 보기 - iLog</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
-    />
+    <link rel="stylesheet" href="/css/bulma.min.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -16,6 +13,7 @@
     <script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
     <style>
       :root {
         --primary-color: #fdf5bf;
@@ -172,6 +170,27 @@
       }
 
       document.addEventListener('DOMContentLoaded', function () {
+        Highcharts.setOptions({
+          lang: {
+            contextButtonTitle: '차트 메뉴',
+            downloadPNG: 'PNG 이미지 다운로드',
+            downloadJPEG: 'JPEG 이미지 다운로드',
+            downloadPDF: 'PDF 다운로드',
+            downloadSVG: 'SVG 다운로드',
+            printChart: '차트 인쇄',
+            viewFullscreen: '전체 화면 보기',
+            exitFullscreen: '전체 화면 닫기',
+            downloadCSV: 'CSV 다운로드',
+            downloadXLS: '엑셀 다운로드',
+            openInCloud: 'Highcharts 클라우드에서 열기',
+          },
+          exporting: {
+            enabled: true,
+            fallbackToExportServer: false, // 서버 없이 내보내기
+            libURL: 'https://code.highcharts.com/modules/', // 필요한 라이브러리 경로 설정
+          },
+        });
+
         // 데이터 로딩 시 로딩 인디케이터 표시
         document.getElementById('chart-container').innerHTML =
           '<div class="loading-indicator"><div class="spinner"></div><div style="margin-top: 15px; font-size: 18px;">데이터를 불러오는 중입니다...</div></div>';
@@ -414,7 +433,8 @@
     <div class="content-container">
       <div class="container">
         <h1 class="page-title title is-3">
-          <span id="child-name">아동</span>의 심리 설문 통계
+          <span th:text="${childName}" id="child-name">아동</span>의 심리 설문
+          통계
         </h1>
 
         <div class="box">
@@ -425,10 +445,10 @@
             </a> -->
             <a
               class="button is-primary"
-              th:href="@{/children/{childId}/mentalSurveys/selects(childId=${#request.getAttribute('childId')})}"
+              th:href="@{/children/{childId}/mentalSurveys/selects(childId=${childId})}"
             >
               <span class="icon"><i class="fas fa-plus"></i></span>
-              <span>새 설문 작성</span>
+              <span>새 설문 작성하기</span>
             </a>
           </div>
 
@@ -447,6 +467,7 @@
     </div>
 
     <!-- 푸터 -->
+    <!-- 공통 footer -->
     <footer>
       <div class="container">
         <div class="columns">
@@ -464,22 +485,8 @@
               아이의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을
               돕는 서비스입니다.
             </p>
-            <!-- <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-youtube"></i></a>
-            </div> -->
           </div>
-          <div class="column is-4">
-            <!-- <h3 class="title is-5">바로가기</h3>
-            <div class="footer-links">
-              <p><a href="/about">서비스 소개</a></p>
-              <p><a href="/guides">이용 안내</a></p>
-              <p><a href="/faq">자주 묻는 질문</a></p>
-              <p><a href="/claims">고객센터</a></p>
-            </div> -->
-          </div>
+          <div class="column is-4"></div>
           <div class="column is-4">
             <h3 class="title is-5">연락처</h3>
             <div class="contact-info">
@@ -496,11 +503,13 @@
           </div>
         </div>
         <div class="footer-bottom">
-          <div class="columns">
-            <div class="column is-8">
+          <div class="columns is-vcentered">
+            <div class="column is-4"></div>
+            <!-- 왼쪽 공백 -->
+            <div class="column is-4 has-text-centered">
               <p>
                 <a href="/terms">이용약관</a> |
-                <a href="/privacy">개인정보처리방침</a> |
+                <a href="/privacy"><strong>개인정보처리방침</strong></a> |
                 <a href="/youth-policy">청소년보호정책</a>
               </p>
             </div>

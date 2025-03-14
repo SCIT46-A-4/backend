@@ -126,7 +126,7 @@
             },
             dataType: 'json',
             success: function (emotionRatioData) {
-              renderEmotionRatioChart(emotionRatioData);
+              renderEmotionRatioChart(childId, emotionRatioData);
             },
             error: function (xhr, status, error) {
               console.error(
@@ -222,9 +222,17 @@
         }
 
         // 감정 통계 차트 렌더링
-        function renderEmotionRatioChart(data) {
+        function renderEmotionRatioChart(childId, data) {
           // data 예시: [ { name: '인지발달', y: 30, color: '#BEE6D9' }, ... ]
-
+          // seriesData가 없거나 길이가 0인 경우 메시지와 버튼 표시.
+          if (!data.seriesData || data.seriesData.length === 0) {
+            document.getElementById('childEmotionScorePieChart').innerHTML =
+              '<div style="text-align: center; margin-top: 50px;">' +
+              '<h1 style="font-size: 36px; color: #FDF5BF;">최근 감정 분석 결과가 없습니다.</h1>' +
+              `<button id="newMentalSurveyBtn" onclick="location.href='/children/${childId}/analysis/new'">감정 분석하기</button>` +
+              '</div>';
+            return;
+          }
           const emotionData = data.seriesData.map((statPointData) => ({
             name: statPointData.label,
             y: statPointData.emotionRatio,
