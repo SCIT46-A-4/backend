@@ -147,7 +147,6 @@ public class MemberService {
 			relationships.forEach(relationShip -> relationShip.setMember(null));
 			relationShipRepository.deleteAll(relationships);
 		}
-
 		memberRepository.delete(member);
 	}
 

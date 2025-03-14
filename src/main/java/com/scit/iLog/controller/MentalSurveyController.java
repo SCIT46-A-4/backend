@@ -45,7 +45,13 @@ public class MentalSurveyController {
 	 * 통계 요청은 모두 StatisticsController에서 처리힙니다.
 	 */
 	@GetMapping("/responses/stats")
-	public String handleGetSurveysListPage() {
+	public String handleGetSurveysListPage(
+			@PathVariable("childId") Long childId,
+			Model model
+	) {
+		String childName = childService.getChildNameById(childId);
+		model.addAttribute("childId", childId);
+		model.addAttribute("childName", childName);
 		return "children/mentalSurvey/mentalSurveyStatsView";
 	}
 

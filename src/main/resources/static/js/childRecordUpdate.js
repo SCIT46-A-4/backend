@@ -135,7 +135,7 @@ $(document).ready(function () {
     const files = pond.getFiles();
     if (files.length > 0 && files[0].source instanceof File) {
       formData.append('healthCheckImg', files[0].file);
-      formData.append('fileName', files[0].file.name);
+      // formData.append('fileName', files[0].file.name);
       console.log('📌 New file added:', files[0].file.name);
     } else {
       console.log('📌 Keeping existing image (no file transfer)');

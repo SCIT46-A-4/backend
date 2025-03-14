@@ -37,6 +37,7 @@ public class AnalysisResultService {
 	private final WeatherService weatherService;
 	private final AnalysisClient fakeAnalysisClient;
 
+	@Transactional(readOnly = true)
 	private AnalysisResultEntity findAnalysisResultById(Long analysisResultId) {
         return analysisResultRepository.findById(analysisResultId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("AnalysisResult 조회 실패: %d", analysisResultId)));
@@ -44,9 +45,9 @@ public class AnalysisResultService {
 
 	// 분석 결과 삭제
 	@Transactional
-	public boolean deleteAnalysisResult(Long analysisResultId) {
-		if (analysisResultRepository.existsById(analysisResultId)) {
-			analysisResultRepository.deleteById(analysisResultId);
+	public boolean deleteAnalysisResult(Long analysisTargetId) {
+		if (analysisTargetRepository.existsById(analysisTargetId)) {
+			analysisTargetRepository.deleteById(analysisTargetId);
 			return true;
 		}
 		return false;
@@ -61,6 +62,9 @@ public class AnalysisResultService {
 								.analysisResultId(analysisTarget.getAnalysisResult().getId())
 								.analysisResultTitle(analysisTarget.getAnalysisResult().getAnalysisResultText())
 								.analysisDate(analysisTarget.getRegisterDate())
+								.analysisTypes(analysisTarget.getAnalysisTargetTypes().stream()
+										.map(analysisTargetType -> analysisTargetType.getAnalysisType().getType())
+										.toList())
 								.createdAt(analysisTarget.getAnalysisResult().getCreatedAt())
 								.analysisTargetFileSrcUri(
 										ANALYSIS_FILES_REQUEST_ROOT_PATH.concat(

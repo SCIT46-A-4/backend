@@ -199,6 +199,7 @@ public class DataInitializer implements CommandLineRunner {
                     mentalSurveyResponseRepository.save(mentalSurveyResponse);
                 }
 
+                List<AnalysisType> analysisTypeList = new ArrayList<>(Arrays.stream(AnalysisType.values()).toList());
                 // 각 자녀마다 40개의 AnalysisTarget 및 연관 데이터 생성
                 for (int k = 0; k < 20; k++) {
                     // 3. AnalysisTarget 엔티티 생성
@@ -213,8 +214,11 @@ public class DataInitializer implements CommandLineRunner {
                             .build();
                     analysisTargetRepository.save(analysisTarget);
 
+                    Collections.shuffle(analysisTypeList);
+                    List<AnalysisType> analysisTypesSubList = analysisTypeList.subList(0, 3);
                     List<AnalysisTargetTypeEntity> analysisTargetTypes = analysisTypeRepository.findAll()
                             .stream()
+                            .filter(analysisType -> analysisTypesSubList.contains(analysisType.getType()))
                             .map(analysisType -> AnalysisTargetTypeEntity.builder()
                                     .analysisTarget(analysisTarget)
                                     .analysisType(analysisType)
@@ -251,7 +255,7 @@ public class DataInitializer implements CommandLineRunner {
                             .content("This is a note on the analysis result " + random.nextInt(1000))
                             .build();
                     AnalysisSatisfactionEntity analysisSatisfaction = AnalysisSatisfactionEntity.builder()
-                            .satisfactionScore(1 + random.nextInt(10))
+                            .satisfactionScore(random.nextInt(5))
                             .analysisResult(analysisResult)
                             .build();
                     analysisResultNoteRepository.save(analysisResultNote);
