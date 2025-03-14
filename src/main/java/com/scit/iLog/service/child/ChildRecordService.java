@@ -1,19 +1,10 @@
 package com.scit.iLog.service.child;
 
-import com.scit.iLog.domain.child.ChildEntity;
-import com.scit.iLog.domain.child.ChildRecordEntity;
-import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
-import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.dto.child.*;
-import com.scit.iLog.exception.MemberNotFoundException;
-import com.scit.iLog.repository.ChildHealthCheckRepository;
-import com.scit.iLog.repository.ChildRecordRepository;
-import com.scit.iLog.repository.ChildRepository;
-import com.scit.iLog.repository.MemberRepository;
-import com.scit.iLog.util.FileManager;
-import com.scit.iLog.util.FilePathUtil;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import static com.scit.iLog.config.WebConfig.HEALTHCHECK_IMAGES_REQUEST_ROOT_PATH;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,10 +12,29 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.time.Instant;
+import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.child.ChildRecordEntity;
+import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
+import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.dto.child.ChildRecordDetailsDTO;
+import com.scit.iLog.dto.child.ChildRecordInsertDTO;
+import com.scit.iLog.dto.child.ChildRecordListItemDTO;
+import com.scit.iLog.dto.child.ChildRecordUpdateRequestDTO;
+import com.scit.iLog.dto.child.ChildRecordUpdateViewDTO;
+import com.scit.iLog.dto.child.HealthCheckImageDTO;
+import com.scit.iLog.exception.MemberNotFoundException;
+import com.scit.iLog.repository.ChildHealthCheckRepository;
+import com.scit.iLog.repository.ChildRecordRepository;
+import com.scit.iLog.repository.ChildRepository;
+import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.util.FileManager;
+import com.scit.iLog.util.FilePathUtil;
 
-import static com.scit.iLog.config.WebConfig.HEALTHCHECK_IMAGES_REQUEST_ROOT_PATH;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChildRecordService {
@@ -71,6 +81,7 @@ public class ChildRecordService {
 	@Transactional(readOnly = true)
 	public ChildRecordDetailsDTO findDetailsById(Long childRecordId) {
 		ChildRecordEntity childRecord = findChildRecordById(childRecordId);
+
 		return ChildRecordDetailsDTO.builder()
 				.childRecordId(childRecord.getId())
 				.weight(childRecord.getWeight())
@@ -97,7 +108,13 @@ public class ChildRecordService {
 	 * 아이 신체 정보를 저장하는 메서드
 	 */
 	@Transactional
-	public Long saveChildRecord(Long childId, Long memberId, ChildRecordInsertDTO childRecordInsertDTO) {
+	public Long saveChildRecord(Long childId, Long memberId, ChildRecordInsertDTO childRecordInsertDTO) {	
+		
+		log.info("✅ saveChildRecord 실행됨 - childId: {}, memberId: {}", childId, memberId);
+		log.info("📌 입력 데이터 - height: {}, weight: {}, leftEye: {}, rightEye: {}, note: {}, registerDate: {}",
+		        childRecordInsertDTO.height(), childRecordInsertDTO.weight(),
+		        childRecordInsertDTO.leftEye(), childRecordInsertDTO.rightEye(),
+		        childRecordInsertDTO.note(), childRecordInsertDTO.registerDate());
 
 		// 아이 정보 조회
 		ChildEntity child = childRepository.findById(childId)
@@ -106,30 +123,43 @@ public class ChildRecordService {
 		// 멤버 (등록한 사람) 정보 조회
 		MemberEntity member = memberRepository.findById(memberId)
 				.orElseThrow(() -> new EntityNotFoundException(String.format("Member 조회 실패: %d", memberId)));
-
+		
+	    // ✅ `null` 체크 후 값 설정
+	    Double leftEye = childRecordInsertDTO.leftEye() != null ? childRecordInsertDTO.leftEye() : null;
+	    Double rightEye = childRecordInsertDTO.rightEye() != null ? childRecordInsertDTO.rightEye() : null;
+	    String note = childRecordInsertDTO.note() != null ? childRecordInsertDTO.note() : "";
+	    LocalDateTime registerDate = childRecordInsertDTO.registerDate() != null ? childRecordInsertDTO.registerDate() : LocalDateTime.now();
+	    
 		// DTO 데이터를 Entity로 변환 후 저장
 		ChildRecordEntity childRecord = ChildRecordEntity.builder()
-				.child(child)
-				.height(childRecordInsertDTO.height())
-				.weight(childRecordInsertDTO.weight())
-				.leftEye(childRecordInsertDTO.leftEye())
-				.rightEye(childRecordInsertDTO.rightEye())
-				.note(childRecordInsertDTO.note())
-				.registerDate(childRecordInsertDTO.registerDate())
-				.build();
+	            .child(child)
+	            .height(childRecordInsertDTO.height())
+	            .weight(childRecordInsertDTO.weight())
+	            .leftEye(leftEye)  // ✅ null 허용
+	            .rightEye(rightEye) // ✅ null 허용
+	            .note(note)  // ✅ null이면 빈 문자열로 저장
+	            .registerDate(registerDate)  // ✅ null이면 현재 시간 저장
+	            .build();
 
 		// 신체 정보 저장
 		ChildRecordEntity savedChildRecord = childRecordRepository.save(childRecord);
+		log.info("✅ ChildRecord 저장 완료 - ID: {}", savedChildRecord.getId());
 
-        if (ObjectUtils.isEmpty(childRecordInsertDTO.healthCheckImg()) ||childRecordInsertDTO.healthCheckImg().isEmpty()) return savedChildRecord.getId();
+	    // ✅ 파일이 없을 경우 그대로 리턴
+	    if (ObjectUtils.isEmpty(childRecordInsertDTO.healthCheckImg()) || childRecordInsertDTO.healthCheckImg().isEmpty()) {
+	    	log.info("📌 파일 업로드 없음 - 신체 기록 저장 완료");
+	        return savedChildRecord.getId();
+	    }
 
         String savedFileName = FileManager
                 .getSavedFileName(StringUtils.hasText(childRecordInsertDTO.healthCheckImg().getOriginalFilename())
                         ? childRecordInsertDTO.healthCheckImg().getOriginalFilename()
                         : Instant.now().toString().concat(".jpeg"));
 
+        
         fileManager.saveFile(childRecordInsertDTO.healthCheckImg(), filePathUtil.childHealthCheckImgUploadPath(), savedFileName);
-
+        log.info("✅ 파일 저장 완료 - 파일명: {}", savedFileName);
+        
         HealthCheckEntity healthCheck = HealthCheckEntity.builder()
                 .child(child)
                 .member(member)
@@ -139,6 +169,7 @@ public class ChildRecordService {
                 .build();
 
         healthCheckRepository.save(healthCheck);
+        log.info("✅ HealthCheck 저장 완료");
 
 		return savedChildRecord.getId();
 	}
@@ -264,3 +295,4 @@ public class ChildRecordService {
 				.forEach(healthCheck -> healthCheck.setMember(null));
 	}
 }
+

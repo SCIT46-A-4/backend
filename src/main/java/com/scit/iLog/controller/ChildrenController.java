@@ -160,10 +160,12 @@ public class ChildrenController {
 			@AuthenticationPrincipal MemberDetails memberDetails,
 			@ModelAttribute ChildRecordInsertDTO childRecordInsertDTO
 	) {
-		// 아동 신체 정보 저장
-		Long childRecordId = childRecordService.saveChildRecord(childId, memberDetails.getId(), childRecordInsertDTO);
-		// 업로드 완료 후 클라이언트에서 리다이렉트
-		return new ChildRecordResponseDTO(true, String.format("/children/%d/records/%d", childId, childRecordId));
+	        
+	        // ✅ 서비스 메서드 호출
+	        Long childRecordId = childRecordService.saveChildRecord(childId, memberDetails.getId(), childRecordInsertDTO);
+	        
+	        return new ChildRecordResponseDTO(true, String.format("/children/%d/records/%d", childId, childRecordId));
+
 	}
 
 	/*
@@ -194,9 +196,14 @@ public class ChildrenController {
 			@PathVariable("childId") Long childId,
 			Model model
 	) {
+
 		ChildRecordDetailsDTO childRecordDetailsDTO = childRecordService.findDetailsById(recordId);
+		
+		System.out.println("childRecordDetailsDTO: "+childRecordDetailsDTO.childRecordId());
+
 		model.addAttribute("childId", childId);
 		model.addAttribute("childRecord", childRecordDetailsDTO);
+
 		return "children/records/childRecordDetailsView";
 	}
 
