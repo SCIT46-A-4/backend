@@ -1,0 +1,36 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // 기본 제출 동작 방지
+
+            // 폼 데이터 수집
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // AJAX 요청
+            fetch('/mental-survey/response/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('서버 응답 오류');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    // 성공 시 상세 페이지로 이동
+                    window.location.href = `/mental-survey/response/${result.id}/details`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('설문 제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+                });
+        });
+    });
+</script>
