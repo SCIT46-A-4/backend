@@ -199,10 +199,10 @@ public class AuthController {
 	@ResponseBody
 	public boolean deletePermissionTable(@PathVariable(name = "permissionId") Long permissionId)
 	{
-		boolean result = emailService.deletePermissionTable(permissionId);
-
-		if(!result) return false;
+//		boolean result = emailService.deletePermissionTable(permissionId);
+//
+//		if(!result) return false;
 		
-		return true;
+		return emailService.deletePermissionTable(permissionId);
 	}
 }

@@ -1,18 +1,20 @@
 package com.scit.iLog.util;
 
-import com.scit.iLog.exception.WrongSignInIdException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.net.URLEncoder;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.net.URLEncoder;
+import com.scit.iLog.exception.WrongSignInIdException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 2025-02-17~20 이도훈 LoginFailureHandler클래스 생성
@@ -21,6 +23,7 @@ import java.net.URLEncoder;
 @Slf4j
 public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
+	
     public void onAuthenticationFailure(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -28,6 +31,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
             ) throws IOException, ServletException {
     	
     	String errorMessage = "로그인에 실패했습니다. 관리자에게 문의하세요.";
+    	
     
     	 // 1️⃣ InternalAuthenticationServiceException`이면 내부 원인을 확인
     	/* InternalAuthenticationServiceException이란?

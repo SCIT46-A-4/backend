@@ -82,7 +82,8 @@ public class EmailService {
         //Null처리
         String str = (etc == null || etc.length() < 1) ? "" : etc;
         String token = UUID.randomUUID().toString();
-        String verificationUrl = "http://localhost:9900/verifyLink?token=" + token;
+        String targetUrl = "/auth/permission"; //리디렉트할 페이지 엔드포인트
+        String verificationUrl = "http://localhost:9900/verifyLink?token=" + token + "&targetUrl=" + targetUrl;
         message.setFrom("aaaTesT255@gmail.com"); // 발신자 주소 이도훈email
         message.setTo(inviteeEmail);
         message.setSubject(guardianName + "로부터" + " 권한 초대 링크입니다.");
@@ -122,15 +123,17 @@ public class EmailService {
     
     // 초대 받은 사람이 링크 클릭시, 이것이 db에 있는지 확인하고 업데이트 하는 로직
     @Transactional
-    public void findInviteCodeAndUpdate(String code) throws Exception {
+    public MemberEntity findInviteCodeAndUpdate(String code) throws Exception {
         // null을 검색하면 문제 다른 유저 것도 검색될 수 있어서 null 체크로 방지
         if (code == null)
             throw new IllegalArgumentException("받은 링크가 null입니다.");
 
+         
         // 저장된 코드 찾기
         Optional<PermissionRequestEntity> resultEntity = permissionRequestRepository.findByRequestLinkCode(code);
         resultEntity.orElseThrow(() -> new Exception("링크가 같은 것을 DB에서 찾지 못했습니다."));
 
+        
         // 3분 이내인지 체크
         boolean isTimeLimit = checkInTimeLimit(resultEntity.get().getModifiedAt(), 3);
         resultEntity.get().setRequestLinkCode(null); // 링크 초기화
@@ -141,6 +144,8 @@ public class EmailService {
         // 코드 받은 사람이 있고, 제한 시간 안에 들어왔다면 update
         resultEntity.get().setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus.ACCEPTED);
         saveRelationShipEntity(resultEntity.get());
+        
+        return resultEntity.get().getInvitee();
     }
     
     //UUID생성 메서드
@@ -282,20 +287,46 @@ public class EmailService {
      */
     public boolean deletePermissionTable(Long permissionId) 
     {
+//        boolean isPermission = permissionRequestRepository.existsById(permissionId);
+//        if(!isPermission) return false;
+//
+//        Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository.findById(permissionId);
+//        if (permissionEntity.isPresent()) {
+//            // 삭제 전, 관련된 relationshipId를 변수로 저장할 수 있음 (예시)
+//            Long relationshipId = permissionEntity.get().getInvitee().getId();
+//            
+//            permissionRequestRepository.delete(permissionEntity.get());
+//            
+//            relationShipRepository.deleteById(relationshipId);
+//            
+//        }
+//        return true;
+        
+        
         boolean isPermission = permissionRequestRepository.existsById(permissionId);
         if(!isPermission) return false;
 
-        Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository.findById(permissionId);
-        if (permissionEntity.isPresent()) {
-            // 삭제 전, 관련된 relationshipId를 변수로 저장할 수 있음 (예시)
-            Long relationshipId = permissionEntity.get().getInvitee().getId();
+        Optional<PermissionRequestEntity> permissionEntityOpt = permissionRequestRepository.findById(permissionId);
+
+        
+        if (permissionEntityOpt.isPresent()) {
+            PermissionRequestEntity permissionEntity = permissionEntityOpt.get();
             
-            permissionRequestRepository.delete(permissionEntity.get());
+            Long inviteeId = permissionEntity.getInvitee().getId(); // 초대받은 사람(교사)의 ID
+            Long childId = permissionEntity.getChild().getId(); // 아이의 ID
             
-            relationShipRepository.deleteById(relationshipId);
-            
+            // 교사의 관계만 삭제 (부모와 아이의 관계는 유지)
+            Optional<RelationShipEntity> relationOpt = relationShipRepository.findByMemberIdAndChildId(inviteeId, childId);
+            relationOpt.ifPresent(relationShipRepository::delete);
+
+            // 삭제된 권한 요청도 제거
+            permissionRequestRepository.delete(permissionEntity);
+
+            return true;
         }
-        return true;
+        return false;
+        
+        
     }
 
     @Transactional

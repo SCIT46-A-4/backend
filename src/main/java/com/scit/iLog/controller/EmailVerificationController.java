@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.dto.member.MemberDetailsDTO;
 import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
 import com.scit.iLog.service.child.ChildService;
+import com.scit.iLog.util.CustomRequestCache;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,7 @@ public class EmailVerificationController
 		private final EmailService emailService;
 		private final MemberService memberService;
 		private final ChildService childService;
+		private final CustomRequestCache requestCache;
 		
 
 		/**
@@ -154,13 +158,16 @@ public class EmailVerificationController
 			    }
 		}
 		
-		
-		@GetMapping("/verifyLink")
-		public ResponseEntity<String> verifyEmail(@RequestParam(name = "token") String token) throws Exception 
-			{
-				log.info("받은 token: " + token);
-				emailService.findInviteCodeAndUpdate(token);
-
-		        return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
-			}
+		// 로그인을 하지 않은 상태로 이메일을 통해 링크 클릭시 
+		// 스프링 시큐리티에 걸려 로그인 페이지로 이동과 요청 받은 URL저장.
+		// 로그인 하면 저장된 URL로 이동(return). 위치 LoginSuccessHandler
+			@GetMapping("/verifyLink")
+			public void verifyEmail(@RequestParam(name = "token") String token, HttpServletResponse response) throws Exception 
+				{
+					log.info("받은 token: " + token);
+					MemberEntity teacher = emailService.findInviteCodeAndUpdate(token);
+					
+					
+					response.sendRedirect("/auth/permissionTeacher/" + teacher.getId() + "?success=true");
+				}
 	}
