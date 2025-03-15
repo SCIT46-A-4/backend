@@ -3,9 +3,11 @@ package com.scit.iLog.service.analysis;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
-import com.scit.iLog.dto.analysis.*;
+import com.scit.iLog.dto.analysis.AnalysisResultDetailsDTO;
+import com.scit.iLog.dto.analysis.AnalysisResultNoteDetailsViewDTO;
+import com.scit.iLog.dto.analysis.AnalysisResultSatisfactionDetailsViewDTO;
+import com.scit.iLog.dto.analysis.AnalysisTargetInsertDTO;
 import com.scit.iLog.dto.analysis.ai.AIAnalysisResponseDTO;
-import com.scit.iLog.dto.analysis.ai.AIAnalysisResponseForWritingDTO;
 import com.scit.iLog.dto.analysis.weather.WeatherData;
 import com.scit.iLog.dto.analysis.weather.WeatherResponse;
 import com.scit.iLog.dto.child.ChildRecordExtraction;
@@ -44,7 +46,8 @@ public class AnalysisService {
     public Long getAnalysisResult(Long analysisTargetId) {
         AnalysisTargetEntity analysisTarget = findAnalysisTargetById(analysisTargetId);
         AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
-        if (StringUtils.hasText(aiAnalysisResponse.extractedText())) analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
+        if (StringUtils.hasText(aiAnalysisResponse.extractedText()))
+            analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
 
         AnalysisResultEntity analysisResult = AnalysisResultEntity.builder()
                 .title("Analysis-".concat(UUID.randomUUID().toString()))
@@ -97,9 +100,9 @@ public class AnalysisService {
                 .analysisResult(analysisResult.getAnalysisResultText())
                 .suggestedSolution(analysisResult.getSuggestedSolution())
                 .analysisResultNote(
-                        new AnalysisResultNoteDetailsViewDTO(analysisResult.getAnalysisResultNote().getId(),analysisResult.getAnalysisResultNote().getContent()))
+                        new AnalysisResultNoteDetailsViewDTO(analysisResult.getAnalysisResultNote().getId(), analysisResult.getAnalysisResultNote().getContent()))
                 .analysisResultSatisfaction(
-                        new AnalysisResultSatisfactionDetailsViewDTO(analysisResult.getSatisfaction().getId(),analysisResult.getSatisfaction().getSatisfactionScore()))
+                        new AnalysisResultSatisfactionDetailsViewDTO(analysisResult.getSatisfaction().getId(), analysisResult.getSatisfaction().getSatisfactionScore()))
                 .build();
     }
 

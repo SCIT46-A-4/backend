@@ -3,7 +3,6 @@ package com.scit.iLog.controller;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.analysis.*;
-import com.scit.iLog.exception.AnalysisResultNotFoundException;
 import com.scit.iLog.service.analysis.AnalysisResultService;
 import com.scit.iLog.service.analysis.AnalysisService;
 import com.scit.iLog.service.child.ChildService;
@@ -18,7 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
@@ -120,7 +118,7 @@ public class AnalysisController {
             @PathVariable("analysisResultId") Long analysisResultId,
             Model model
     ) {
-        AnalysisResultDetailsDTO analysisResultDetails =  analysisService.getAnalysisResultDetails(analysisTargetId);
+        AnalysisResultDetailsDTO analysisResultDetails = analysisService.getAnalysisResultDetails(analysisTargetId);
         model.addAttribute("analysisResultDetails", analysisResultDetails);
         return "children/analysis/analysisResultDetailsView";
     }

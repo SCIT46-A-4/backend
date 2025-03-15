@@ -5,4 +5,5 @@ public record WeatherDetail(
         String main,
         String description,
         String icon
-) {}
+) {
+}

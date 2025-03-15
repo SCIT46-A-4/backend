@@ -1,7 +1,6 @@
 package com.scit.iLog.dto.analysis;
 
 import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
-import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

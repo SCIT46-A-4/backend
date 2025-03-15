@@ -5,9 +5,9 @@ import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.permition.PermissionRequestDTO;
-import com.scit.iLog.domain.permition.PermissionRequestEntity;
-import com.scit.iLog.domain.permition.PermissionRequestStatus;
+import com.scit.iLog.domain.permission.PermissionRequestEntity;
+import com.scit.iLog.domain.permission.PermissionRequestStatus;
+import com.scit.iLog.dto.auth.PermissionRequestDTO;
 import com.scit.iLog.dto.auth.PermissionTeacherDTO;
 import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.ChildRepository;
@@ -39,9 +39,16 @@ public class EmailService {
     private final ChildRepository childRepository;
     private final RelationShipRepository relationShipRepository;
 
+    public static String generateVerificationCode() {
+        ThreadLocalRandom current = ThreadLocalRandom.current();
+        int code = 100000 + current.nextInt(900000); // 100000 ~ 999999
+        return String.valueOf(code);
+    }
+
     /**
      * 인증번호를 포함한 이메일을 전송합니다.
-     * @param to 수신자 이메일 주소
+     *
+     * @param to   수신자 이메일 주소
      * @param code 인증번호
      */
     public void sendVerificationEmail(String to, String code) {
@@ -59,8 +66,9 @@ public class EmailService {
      * guardianName: 보호자 이름
      * childName   : 아이이름
      * option	   : 비고, 추가란
+     *
      * @throws Exception
-     * **/
+     **/
     // void에서 PermissionRequestEntity로 변경
     @Transactional
     public PermissionRequestEntity sendAuthInviteEmail(
@@ -70,7 +78,7 @@ public class EmailService {
             Long requesterId,
             String _alias,
             String inviteeEmail, // 사용자가 뷰에서 입력한 이메일 (수신자)
-            String etc) throws Exception {
+            String etc) {
         SimpleMailMessage message = new SimpleMailMessage();
         //Null처리
         String str = (etc == null || etc.length() < 1) ? "" : etc;
@@ -90,10 +98,6 @@ public class EmailService {
 
         Long inviteeId = memberRepository.findByEmail(inviteeEmail)
                 .orElseThrow(() -> new MemberNotFoundException(inviteeEmail)).getId();
-
-        if(inviteeId == null) {
-            throw new Exception("초대받을 회원이 존재하지 않습니다.");
-        }
 
         // DB에 해당 사항을 하나 만들어서 save 하는 로직 필요.
         PermissionRequestDTO permissionRequestDto = PermissionRequestDTO.builder()
@@ -123,7 +127,8 @@ public class EmailService {
 
         // 저장된 코드 찾기
         PermissionRequestEntity resultEntity = permissionRequestRepository.findByRequestLinkCode(code)
-                .orElseThrow(() -> new Exception("링크가 같은 것을 DB에서 찾지 못했습니다."));;
+                .orElseThrow(() -> new Exception("링크가 같은 것을 DB에서 찾지 못했습니다."));
+        ;
 
         // 3분 이내인지 체크
         boolean isTimeLimit = checkInTimeLimit(resultEntity.getModifiedAt(), 3);
@@ -137,15 +142,9 @@ public class EmailService {
         saveRelationShipEntity(resultEntity);
     }
 
-    public static String generateVerificationCode() {
-        ThreadLocalRandom current = ThreadLocalRandom.current();
-        int code = 100000 + current.nextInt(900000); // 100000 ~ 999999
-        return String.valueOf(code);
-    }
-
     /**
      * 2025-03-11~12
-     *
+     * <p>
      * ✅ 아이디 찾기 이메일 전송
      * 사용자가 입력한 이메일 주소로 해당 계정의 아이디를 전송합니다.
      *
@@ -163,11 +162,11 @@ public class EmailService {
 
     /**
      * 2025-03-11~12
-     *
+     * <p>
      * ✅ 임시 비밀번호 전송
      * 사용자의 요청에 따라 새로운 임시 비밀번호를 생성하여 이메일로 전송합니다.
      *
-     * @param to - 이메일을 받을 사용자 주소
+     * @param to     - 이메일을 받을 사용자 주소
      * @param newPwd - 새롭게 발급된 임시 비밀번호 (사용자는 로그인 후 변경 필요)
      */
     public void sendPwdFindEmail(String to, String newPwd) {
@@ -214,6 +213,7 @@ public class EmailService {
                 .build();
         return relationShipRepository.save(_entity);
     }
+
     // 이메일 유효기간
     public boolean checkInTimeLimit(LocalDateTime time, long limitTime) {
         // 제한 시간 안이면 true, 제한시간 오버됐으면 false
@@ -230,6 +230,7 @@ public class EmailService {
     /**
      * 2025-03-10~12 이도훈
      * 부모용
+     *
      * @param memberId
      * @return
      */
@@ -263,23 +264,22 @@ public class EmailService {
     /**
      * 2025-03-10~12 정준성
      * 교사용
+     *
      * @param inviteeId
      * @param _waitRequestList
      * @param _permissionList
      */
     @Transactional
     public void findAllByPermissionEntity(
-    		Long inviteeId,
-    		List<PermissionTeacherDTO> _waitRequestList,
-    		List<PermissionTeacherDTO> _permissionList)
-    {
+            Long inviteeId,
+            List<PermissionTeacherDTO> _waitRequestList,
+            List<PermissionTeacherDTO> _permissionList) {
         // 25/3/11 jun : requester 기준으로 db 찾아서 반환하는 함수 교사용
         List<PermissionRequestEntity> list = permissionRequestRepository.findAllByInviteeId(inviteeId);
 
-        for (var _entity : list)
-        {
+        for (var _entity : list) {
             // accept 상태라면 permissionList에 넣기 아니라면 pending
-            if (_entity.getPermissionStatus().equals(PermissionRequestStatus.ACCEPTED) )
+            if (_entity.getPermissionStatus().equals(PermissionRequestStatus.ACCEPTED))
                 _permissionList.add(entityToPermissionTeacherDTO(_entity));
             else
                 _waitRequestList.add(entityToPermissionTeacherDTO(_entity));
@@ -289,6 +289,7 @@ public class EmailService {
     /**
      * 2025-03-10~12 정준성
      * 교사용
+     *
      * @param _entity
      * @return
      */
@@ -307,16 +308,17 @@ public class EmailService {
 
     // 나중에 옮겨야 할 함수
     // permission table의 record 삭제 함수
+
     /**
-	 * 2025-03-10~12
-	 * 삭제 메서드(부모, 교사 공용)
+     * 2025-03-10~12
+     * 삭제 메서드(부모, 교사 공용)
+     *
      * @param permissionId
      * @return
      */
-    public boolean deletePermissionTable(Long permissionId)
-    {
+    public boolean deletePermissionTable(Long permissionId) {
         boolean isPermission = permissionRequestRepository.existsById(permissionId);
-        if(!isPermission) return false;
+        if (!isPermission) return false;
 
         Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository.findById(permissionId);
         if (permissionEntity.isPresent()) {
@@ -332,23 +334,23 @@ public class EmailService {
     }
 
     @Transactional
-	public boolean cancelEmailInviteLink(
-			Long permissionId,
-			Long childId,
-			String alias) {
+    public boolean cancelEmailInviteLink(
+            Long permissionId,
+            Long childId,
+            String alias) {
 
-    	Optional<ChildEntity> child = childRepository.findById(childId);
+        Optional<ChildEntity> child = childRepository.findById(childId);
 
-	    Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository
-	            .findByidAndChildAndAlias(permissionId, child, alias);
+        Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository
+                .findByidAndChildAndAlias(permissionId, child, alias);
 
-	    if (!permissionEntity.isPresent()) {
-	        return false; // 해당하는 요청이 없다면 삭제하지 않음
-	    }
+        if (!permissionEntity.isPresent()) {
+            return false; // 해당하는 요청이 없다면 삭제하지 않음
+        }
 
-	    // Permission 요청 삭제
-	    permissionRequestRepository.delete(permissionEntity.get());
+        // Permission 요청 삭제
+        permissionRequestRepository.delete(permissionEntity.get());
 
-	    return true; // 삭제 성공 시 true 반환
-	}
+        return true; // 삭제 성공 시 true 반환
+    }
 }

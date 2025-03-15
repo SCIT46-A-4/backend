@@ -23,7 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static com.scit.iLog.config.SecurityConfig.*;
+import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 
 @Slf4j
 @Controller
@@ -61,9 +61,7 @@ public class MemberController {
 
         return "/member/memberDetailsView";
     }
-    
-    
-    
+
 
     /*
         M-1
@@ -101,6 +99,7 @@ public class MemberController {
         } else if (memberDetails.getRelationType() == RelationType.TEACHER) {
             memberService.deleteMemberWithRelationShips(memberDetails.getId());
             claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
+
         }
 
         SecurityContextHolder.clearContext();

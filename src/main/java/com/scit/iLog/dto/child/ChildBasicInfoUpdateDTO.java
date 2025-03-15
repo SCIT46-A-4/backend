@@ -9,16 +9,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ChildBasicInfoUpdateDTO(
-                String name,
+        String name,
 //                @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") // 2025-02-28 / 김은진 / 날짜 형식 변환
-                LocalDate birthDate,
-                String birthLocation,
-                String note,
-                Gender gender,
-                // MultipartFile profileImg,
-                String callName,
-                List<FamilyBackGround> familyBackGrounds,
-                // 2025-02-28 / 김은진 / 이미지는 마지막에 위치하고 명시적으로 null 허용
-                @Nullable MultipartFile profileImg
+        LocalDate birthDate,
+        String birthLocation,
+        String note,
+        Gender gender,
+        // MultipartFile profileImg,
+        String callName,
+        List<FamilyBackGround> familyBackGrounds,
+        // 2025-02-28 / 김은진 / 이미지는 마지막에 위치하고 명시적으로 null 허용
+        @Nullable MultipartFile profileImg
 ) {
 }
