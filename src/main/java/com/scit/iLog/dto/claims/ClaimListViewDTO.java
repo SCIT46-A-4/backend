@@ -1,8 +1,8 @@
 package com.scit.iLog.dto.claims;
 
-import java.time.LocalDateTime;
-
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 
 /*
    이렇게 dto에는 반드시 dto만 포함해야합니다. - 호준

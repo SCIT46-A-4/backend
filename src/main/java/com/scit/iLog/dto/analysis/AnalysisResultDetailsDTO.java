@@ -1,9 +1,10 @@
 package com.scit.iLog.dto.analysis;
 
-import com.scit.iLog.domain.sentimentalAnalysis.EmotionType;
+import com.scit.iLog.domain.sentimentalAnalysis.AnalysisType;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 public record AnalysisResultDetailsDTO(
@@ -20,6 +21,7 @@ public record AnalysisResultDetailsDTO(
         String companion,                      // 함께 있었던 사람 (재분석 시 수정 가능)
         String supplement,                     // 데이터에 대한 보충 설명 (재분석 시 수정 가능)
         String extractedText,                  // 이미지에서 추출된 텍스트 (수정 가능)
+        List<AnalysisType> analysisTypes,
         double emotionScore,                   // 감정 점수 (읽기 전용)
         String emotionDescription,               // 감정 타입 (읽기 전용)
         String analysisResult,                 // 분석 결과 (읽기 전용)

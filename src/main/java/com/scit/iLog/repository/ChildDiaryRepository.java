@@ -9,10 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ChildDiaryRepository extends JpaRepository<ChildDiaryEntity, Long>
-	{
-		// 25/2/6 날짜 기준으로 정렬하고 일기장을 출력하는 페이징을 적용하는 메서드
-		Page<ChildDiaryEntity> findByChildOrderByCreatedAtDesc(ChildEntity child, Pageable page);
+public interface ChildDiaryRepository extends JpaRepository<ChildDiaryEntity, Long> {
+    // 25/2/6 날짜 기준으로 정렬하고 일기장을 출력하는 페이징을 적용하는 메서드
+    Page<ChildDiaryEntity> findByChildOrderByCreatedAtDesc(ChildEntity child, Pageable page);
 
-        List<ChildDiaryEntity> findAllByAuthor(MemberEntity member);
-    }
+    List<ChildDiaryEntity> findAllByAuthor(MemberEntity member);
+}

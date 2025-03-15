@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BaseTimeEntity {
     @CreatedDate
-    @Column(name = "created_at",updatable = false,nullable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     protected LocalDateTime createdAt;
 
     @LastModifiedDate

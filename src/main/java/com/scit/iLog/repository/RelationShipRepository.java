@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RelationShipRepository extends JpaRepository<RelationShipEntity, Long> {
     void deleteByMember(MemberEntity member);
@@ -15,4 +16,6 @@ public interface RelationShipRepository extends JpaRepository<RelationShipEntity
     List<RelationShipEntity> findAllByMemberId(@Param("memberId") Long memberId);
 
     void deleteAllByMember(MemberEntity member);
+
+	Optional<RelationShipEntity> findByMemberIdAndChildId(Long inviteeRelationId, Long childRelationId);
 }

@@ -9,8 +9,8 @@ public record ChildRecordDetailsDTO(
         Long childRecordId,
         double weight,
         double height,
-        double leftEye,
-        double rightEye,
+        Double leftEye,
+        Double rightEye,
         String note,
         LocalDateTime registerDate,
         HealthCheckImageDTO healthCheckImage

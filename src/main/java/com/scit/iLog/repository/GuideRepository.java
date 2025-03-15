@@ -10,10 +10,10 @@ import java.util.List;
 @Repository
 public interface GuideRepository extends JpaRepository<GuideEntity, Long> {
 
-	List<GuideEntity> findByContentContains(String content);
+    List<GuideEntity> findByContentContains(String content);
 
-	List<GuideEntity> findByTitleContains(String title);
-	
+    List<GuideEntity> findByTitleContains(String title);
+
     List<GuideEntity> findByContentContainingIgnoreCase(String content);
 
     List<GuideEntity> findByTitleContainingIgnoreCase(String title);

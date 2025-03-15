@@ -35,7 +35,7 @@ public class AnalysisTargetEntity extends BaseTimeEntity {
     private MemberEntity uploadedBy;
 
     @Builder.Default
-    @OneToMany(mappedBy = "analysisTarget", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "analysisTarget", cascade = CascadeType.ALL)
     private List<AnalysisTargetTypeEntity> analysisTargetTypes = new ArrayList<>();
 
     @Column(name = "original_target_file_name", length = 200)

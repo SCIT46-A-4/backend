@@ -435,11 +435,15 @@
     }
 
     .child-photo {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
+      /* width: 200px; */
+      /* height: 200px; */
       margin: 0 auto;
       display: block;
+      width: 100%;
+      height: 100%;
+      /* 2025-03-14 / 김은진 / 수정 */
+      object-fit: cover;
+      border-radius: 50%;
     }
 
     /* 통계 차트 컨테이너 높이 조정 */
@@ -636,7 +640,7 @@
                   <select id="childSelector">
                     <th:block th:each="child : ${childProfiles.childProfiles}">
                       <option th:value="${child.childId}" th:text="${child.name}" th:id="|child-${child.childId}|"
-                        th:attr="data-birthDate=${child.birthDate}, 
+                        th:attr="data-birthDate=${child.birthDate},
                           data-profileImgSrc=${child.profileImgSrc}, 
                           data-birthLocation=${child.birthLocation}, 
                           data-gender=${child.gender}, 
@@ -702,16 +706,16 @@
                       분석 결과목록 바로가기
                     </button>
                   </a>
-                  <a id="childDiaryLink" th:href="@{/children/{childId}/diaries/new}">
-                    <button class="button is-fullwidth is-info is-light mb-2">
-                      일기 작성하기
-                    </button>
-                  </a>
-                  <a id="childDiaryListLink" th:href="@{/children/{childId}/diaries/diaryList}">
-                    <button class="button is-fullwidth is-primary is-light">
-                      우링 아이 일기목록 바로가기
-                    </button>
-                  </a>
+                    <a id="childDiaryLink" th:href="@{/children/{childId}/diaries/new}">
+                        <button class="button is-fullwidth is-info is-light mb-2">
+                            일기 작성하기
+                        </button>
+                    </a>
+                    <a id="childDiaryListLink" th:href="@{/children/{childId}/diaries/diaryList}">
+                        <button class="button is-fullwidth is-primary is-light">
+                            우링 아이 일기목록 바로가기
+                        </button>
+                    </a>
                 </div>
               </div>
             </div>

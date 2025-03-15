@@ -1,12 +1,12 @@
 package com.scit.iLog.util;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.scit.iLog.domain.child.FamilyBackGround;
+
+import java.io.IOException;
+import java.util.List;
 
 public class FamilyBackGroundSerializer extends JsonSerializer<List<FamilyBackGround>> {
 

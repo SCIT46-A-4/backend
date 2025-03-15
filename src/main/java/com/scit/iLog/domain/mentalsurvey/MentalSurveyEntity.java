@@ -1,5 +1,6 @@
 package com.scit.iLog.domain.mentalsurvey;
 
+import com.scit.iLog.domain.RelationType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -20,6 +21,7 @@ public class MentalSurveyEntity {
     private String id;
     private String title;
     private String description;
+    private RelationType type;
     private List<MentalSurveySection> sections;
     @CreatedDate
     private LocalDateTime createdAt;
