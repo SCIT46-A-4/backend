@@ -1,8 +1,8 @@
 package com.scit.iLog.dto.diary;
 
-import lombok.Builder;
-
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 
 /*
 	2025-02-10 이도훈
@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public record DiaryUpdateDTO(
 		Long id,
+		Long childId,
 		String title,
 	    String content,
 		LocalDateTime createdAt

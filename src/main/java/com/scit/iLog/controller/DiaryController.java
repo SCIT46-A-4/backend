@@ -1,21 +1,28 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.domain.child.ChildDiaryEntity;
-import com.scit.iLog.dto.diary.ChildDiaryInsertDTO;
-import com.scit.iLog.dto.diary.DiaryDetailsDTO;
-import com.scit.iLog.dto.diary.DiaryUpdateDTO;
-import com.scit.iLog.dto.diary.DiaryUpdateRequestDTO;
-import com.scit.iLog.service.child.ChildDiaryService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import static com.scit.iLog.config.SecurityConfig.*;
+import com.scit.iLog.config.SecurityConfig.MemberDetails;
+import com.scit.iLog.domain.child.ChildDiaryEntity;
+import com.scit.iLog.dto.diary.ChildDiaryInsertDTO;
+import com.scit.iLog.dto.diary.DiaryDetailsDTO;
+import com.scit.iLog.dto.diary.DiaryUpdateDTO;
+import com.scit.iLog.dto.diary.DiaryUpdateRequestDTO;
+import com.scit.iLog.service.child.ChildDiaryService;
+
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/children/{childId}/diaries")
@@ -48,11 +55,12 @@ public class DiaryController {
      */
     @GetMapping("/diaryList")
     public String handleGetSelectAllDiaryList(
-            @RequestParam Long id,
+            @PathVariable(name="childId") Long childId,
             @PageableDefault(page=0, size=10) Pageable pageable,
             Model model
     ) {
-    	Page<ChildDiaryEntity> childDiaryPage = childDiaryService.getChildDiaries(id, pageable);
+    	Page<ChildDiaryEntity> childDiaryPage = childDiaryService.getChildDiaries(childId, pageable);
+    	
     	model.addAttribute("list", childDiaryPage);
         return "children/diaries/diaryListView";
     }
@@ -69,7 +77,8 @@ public class DiaryController {
      * CD-2
      */
     @GetMapping("/new")
-    public String handleGetDiaryInsertView() {
+    public String handleGetDiaryInsertView(@PathVariable("childId") Long childId, Model model) {
+    	model.addAttribute("childId", childId);
         return "children/diaries/diaryInsertView";
     }
 
@@ -111,11 +120,13 @@ public class DiaryController {
      */
     @GetMapping("/{diaryId}/edit")
     public String handleGetDiaryUpdateView(
-    		@RequestParam("diaryId") Long diaryId,
+    		@PathVariable("childId") Long childId,
+    		@PathVariable("diaryId") Long diaryId,
     		Model model
     ) {
     	DiaryUpdateDTO diary = childDiaryService.findDiaryUpdateInfoById(diaryId);
     	model.addAttribute("diary", diary);
+    	model.addAttribute("child", childId);
     	return "children/diaries/diaryUpdateView";
     }
 
@@ -137,5 +148,18 @@ public class DiaryController {
     ) {
     	childDiaryService.updateDiary(diaryId, diaryUpdateDTO);
     	return String.format("redirect:/children/%d/diaries/%d/details",childId,diaryId);
+    }
+    
+    @ResponseBody
+    @DeleteMapping("/{diaryId}")
+    //@PathVariable("diaryId") Long diaryId는 URL경로에 포함된 diaryId라는 변수를 파라미터로 받는다.
+    public String handleDeleteDiaryView(@PathVariable("diaryId") Long diaryId) {
+        if (!childDiaryService.existsDiary(diaryId)) {
+            return "fail"; // 존재하지 않는 경우
+        }
+        
+        DiaryDetailsDTO diaryDetailsDto = childDiaryService.findDiaryDetailsById(diaryId);
+        childDiaryService.deleteDiary(diaryId);
+        return String.format("/children/%d/diaries/diaryList", diaryDetailsDto.childId());
     }
 }

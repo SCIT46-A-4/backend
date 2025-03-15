@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Builder
 public record DiaryDetailsDTO(
         Long id,
+        Long childId,
         String title,
         String content,
         LocalDateTime createdAt

@@ -14,4 +14,5 @@ public interface ChildRepository extends JpaRepository<ChildEntity, Long> {
     List<ChildEntity> findAllByOrderByBirthDateAsc();
 
     List<ChildEntity> findAllByOrderByCreatedAtDesc();
+
 }
