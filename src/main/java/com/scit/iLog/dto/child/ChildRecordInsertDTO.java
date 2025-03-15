@@ -1,6 +1,7 @@
 package com.scit.iLog.dto.child;
 
 import lombok.Builder;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -9,8 +10,8 @@ import java.time.LocalDateTime;
 public record ChildRecordInsertDTO(
         double height,
         double weight,
-        double leftEye,
-        double rightEye,
+        Double leftEye,
+        Double rightEye,
         String note,
         LocalDateTime registerDate,
         MultipartFile healthCheckImg
