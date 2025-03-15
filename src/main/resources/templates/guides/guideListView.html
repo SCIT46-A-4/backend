@@ -13,6 +13,20 @@
     <!-- 폰트어썸 -->
     <script src="https://kit.fontawesome.com/def97ee41b.js" crossorigin="anonymous"></script>
 
+    <style>
+        /* ✅ 디테일뷰 배경색 적용 */
+        html {
+            background-color: var(--primary);
+            /* #FDF5BF */
+        }
+
+        /* ✅ 제목과 검색창 사이 간격 증가 */
+        .title.is-3 {
+            margin-bottom: 20px;
+            /* 기존보다 여유롭게 간격 조정 */
+        }
+    </style>
+
     <script>
         $(function () {
             init();
@@ -21,11 +35,11 @@
         });
 
         function init() {
-            $("#searchBtn").on("click", function(){
+            $("#searchBtn").on("click", function () {
                 performSearch(false);
             });
             // 초기화 버튼: 검색어를 지우고 기본 데이터를 로드
-            $("#resetBtn").on("click", function(){
+            $("#resetBtn").on("click", function () {
                 $("#searchWord").val("");
                 performSearch(true);
             });
@@ -99,8 +113,21 @@
         }
     </script>
 </head>
+
 <body>
 <section class="section">
+    <!-- 로고 + dashboard 바로가기 -->
+    <div class="logo">
+        <a th:href="@{/dashboard}">
+            <img
+                    src="../../static/images/wilog.png"
+                    th:src="@{/images/wilog.png}"
+                    alt="로고"
+                    class="image"
+                    style="width: 100px; height: auto"
+            />
+        </a>
+    </div>
     <div class="container">
         <div class="has-text-centered">
             <h1 class="title is-3">이용안내</h1>
@@ -151,5 +178,4 @@
     </div>
 </section>
 </body>
-
 </html>

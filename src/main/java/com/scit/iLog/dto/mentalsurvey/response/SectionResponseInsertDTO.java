@@ -4,6 +4,6 @@ import java.util.List;
 
 public record SectionResponseInsertDTO(
         String sectionTitle,
-        List<QuestionResponseInsertDTO>questionResponses
+        List<QuestionResponseInsertDTO> questionResponses
 ) {
 }

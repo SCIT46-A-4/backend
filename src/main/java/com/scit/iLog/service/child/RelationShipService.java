@@ -6,9 +6,9 @@ import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.RelationShipRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,21 +16,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RelationShipService {
     private final RelationShipRepository relationShipRepository;
-    private final MemberRepository memberRepository;
     private final ChildRepository childRepository;
+    private final MemberRepository memberRepository;
 
-    public void deleteAllRelationShipOf(Long memberId) {
-        MemberEntity member = memberRepository.findById(memberId)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(String.format("모든 아동 삭제시 회원 조회 실패: %d", memberId)));
+    @Transactional
+    public void deleteAllChildrenOf(Long memberId) {
         List<RelationShipEntity> relationShips = relationShipRepository.findAllByMemberId(memberId);
         List<ChildEntity> children = relationShips.stream()
-                .map(relationShip -> relationShip.getChild())
+                .map(RelationShipEntity::getChild)
                 .toList();
-        /*
-            @TODO child와 관련된 엔티티가 전부 잘 삭제 되는지 확인 필요
-         */
-        relationShipRepository.deleteByMember(member);
+        List<MemberEntity> members = relationShips.stream()
+                .map(RelationShipEntity::getMember)
+                .filter(member -> member.getId().longValue() == memberId)
+                .toList();
+        relationShipRepository.deleteAll(relationShips);
+        memberRepository.deleteAll(members);
         childRepository.deleteAll(children);
     }
 }

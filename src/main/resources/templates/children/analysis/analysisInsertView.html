@@ -1,530 +1,476 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
-    />
-    <title>분석 데이터 업로드 - iLog</title>
-    <!-- Bulma CSS -->
-    <link
-      rel="stylesheet"
-      th:href="@{/css/bulma.min.css}"
-      href="../../../static/css/bulma.min.css"
-    />
-    <!-- FilePond CSS -->
-    <link
-      th:href="@{/css/filepond.css}"
-      href="../../../static/css/filepond.css"
-      rel="stylesheet"
-    />
-    <!-- FilePond Image Preview CSS -->
-    <link
-      th:href="@{/css/filepond-plugin-image-preview.css}"
-      href="../../../static/css/filepond-plugin-image-preview.css"
-      rel="stylesheet"
-    />
-    <!-- customColors -->
-    <link
-      rel="stylesheet"
-      href="../../static/css/customColors.css"
-      th:href="@{/css/customColors.css}"
-    />
-    <style>
-      body {
-        background-color: var(--primary);
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-      }
-      #analysisInsertForm {
-        padding-bottom: 20px;
-      }
-      .title {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-      }
-      .filepond--root {
-        margin-bottom: 1rem;
-      }
-      #naverMap {
-        width: 100%;
-        height: 200px;
-        background-color: #f0f0f0;
-        margin-bottom: 1rem;
-      }
-      #naverMap:hover {
-        cursor: crosshair;
-      }
-      .analysis-types {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-      }
-      .analysis-types label {
-        flex: 1;
-        text-align: center;
-      }
-      #weatherBtn {
-        background-color: var(--secondary);
-      }
-      p#weatherInfo {
-        border: 2px solid black;
-        border-radius: 5px;
-        margin: 5px 0;
-        padding: 1rem;
-        font-weight: bold;
-      }
-      #submitBtn {
-        background-color: var(--third);
-      }
-    </style>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-    <!-- FilePond JS -->
-    <script src="/js/filepond/filepond.min.js"></script>
-    <script src="/js/filepond-plugin-file-validate-type.min.js"></script>
-    <script src="/js/filepond/filepond-plugin-file-validate-size.js"></script>
-    <script src="/js/filepond-plugin-image-preview.min.js"></script>
-    <script src="/js/filepond-plugin-image-exif-orientation.min.js"></script>
-    <script src="/js/filepond-plugin-image-resize.min.js"></script>
-    <script src="/js/filepond-plugin-image-transform.min.js"></script>
-    <script src="/js/filepond/filepond-plugin-image-edit.js"></script>
 
-    <script src="/js/sweetalert2.js"></script>
-    <script src="/js/just-validate.production.min.js"></script>
-    <!-- 네이버 지도 API (클라이언트 ID 필요) -->
-    <script
-      type="text/javascript"
-      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rjbh1smfnw&callback=onNaverMapLoad&submodules=geocoder"
-    ></script>
-    <script>
-      function getCurrentLocation() {
-        return new Promise((resolve, reject) => {
-          if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const { latitude, longitude } = position.coords;
-                resolve({ latitude, longitude });
-              },
-              (error) => {
-                reject(
-                  new Error(
-                    '위치 정보를 가져오는데 실패했습니다: ' + error.message
-                  )
-                );
-              }
-            );
-          } else {
-            reject(new Error('이 브라우저는 위치 정보를 지원하지 않습니다.'));
-          }
-        });
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+  <title>분석 데이터 업로드 - iLog</title>
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" th:href="@{/css/bulma.min.css}" href="../../../static/css/bulma.min.css" />
+  <!-- FilePond CSS -->
+  <link th:href="@{/css/filepond.css}" href="../../../static/css/filepond.css" rel="stylesheet" />
+  <!-- FilePond Image Preview CSS -->
+  <link th:href="@{/css/filepond-plugin-image-preview.css}" href="../../../static/css/filepond-plugin-image-preview.css"
+    rel="stylesheet" />
+  <!-- customColors -->
+  <link rel="stylesheet" href="../../static/css/customColors.css" th:href="@{/css/customColors.css}" />
+  <style>
+    body {
+      background-color: var(--primary);
+    }
 
-      // 네이버 지도 로딩 및 클릭 이벤트 처리
-      async function onNaverMapLoad() {
-        const position = await getCurrentLocation();
-        var mapOptions = {
-          // 초기 위치: 자기위치로 바꿔야함
-          center: new naver.maps.LatLng(position.latitude, position.longitude),
-          zoom: 10,
-        };
-        var map = new naver.maps.Map('naverMap', mapOptions);
-        map.setCursor('crosshair');
-        // 지도 클릭 시 좌표를 가져와 역지오코딩 수행
-        naver.maps.Event.addListener(map, 'click', function (e) {
-          var latlng = e.coord; // naver.maps.LatLng 객체
-          // hidden 필드에 위도, 경도 저장
-          document.getElementById('latitude').value = latlng.y;
-          document.getElementById('longitude').value = latlng.x;
-          // 역지오코딩을 통해 주소 가져오기
-          naver.maps.Service.reverseGeocode(
-            {
-              location: latlng,
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    #analysisInsertForm {
+      padding-bottom: 20px;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .filepond--root {
+      margin-bottom: 1rem;
+    }
+
+    #naverMap {
+      width: 100%;
+      height: 200px;
+      background-color: #f0f0f0;
+      margin-bottom: 1rem;
+    }
+
+    #naverMap:hover {
+      cursor: crosshair;
+    }
+
+    .analysis-types {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .analysis-types label {
+      flex: 1;
+      text-align: center;
+    }
+
+    #weatherBtn {
+      background-color: var(--secondary);
+    }
+
+    p#weatherInfo {
+      border: 2px solid black;
+      border-radius: 5px;
+      margin: 5px 0;
+      padding: 1rem;
+      font-weight: bold;
+    }
+
+    #submitBtn {
+      background-color: var(--third);
+    }
+  </style>
+  <script src="/js/jquery-3.7.1.min.js"></script>
+  <!-- FilePond JS -->
+  <script src="/js/filepond/filepond.min.js"></script>
+  <script src="/js/filepond-plugin-file-validate-type.min.js"></script>
+  <script src="/js/filepond/filepond-plugin-file-validate-size.js"></script>
+  <script src="/js/filepond-plugin-image-preview.min.js"></script>
+  <script src="/js/filepond-plugin-image-exif-orientation.min.js"></script>
+  <script src="/js/filepond-plugin-image-resize.min.js"></script>
+  <script src="/js/filepond-plugin-image-transform.min.js"></script>
+  <script src="/js/filepond/filepond-plugin-image-edit.js"></script>
+
+  <script src="/js/sweetalert2.js"></script>
+  <script src="/js/just-validate.production.min.js"></script>
+  <!-- 네이버 지도 API (클라이언트 ID 필요) -->
+  <script type="text/javascript"
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rjbh1smfnw&callback=onNaverMapLoad&submodules=geocoder"></script>
+  <script>
+    function getCurrentLocation() {
+      return new Promise((resolve, reject) => {
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              resolve({ latitude, longitude });
             },
-            function (status, response) {
-              if (status === naver.maps.Service.Status.OK) {
-                var items = response.result.items;
-                if (items.length > 0) {
-                  var address = items[0].address;
-                  // hidden 필드와 선택된 위치 표시 업데이트
-                  document.getElementById('locationName').value = address;
-                  document.getElementById('selectedLocation').innerText =
-                    address +
-                    ' (위도: ' +
-                    latlng.y +
-                    ', 경도: ' +
-                    latlng.x +
-                    ')';
-                }
-              } else {
-                Swal.fire('역지오코딩에 실패했습니다.');
-              }
+            (error) => {
+              reject(
+                new Error(
+                  '위치 정보를 가져오는데 실패했습니다: ' + error.message
+                )
+              );
             }
           );
-        });
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-        var weatherJsonString;
-        // Initialize FilePond: 단 한 장의 파일만 업로드
-        FilePond.registerPlugin(
-          FilePondPluginFileValidateSize,
-          FilePondPluginImagePreview,
-          FilePondPluginImageExifOrientation,
-          FilePondPluginFileValidateType
-        );
-        // 파일 입력 요소가 DOM에 존재하는지 확인 후 FilePond 초기화
-        const fileInput = document.querySelector('#fileInput');
-        if (fileInput) {
-          const pond = FilePond.create(fileInput);
         } else {
-          console.error('File input 요소(#fileInput)를 찾을 수 없습니다.');
+          reject(new Error('이 브라우저는 위치 정보를 지원하지 않습니다.'));
         }
-
-        // just-validate 설정 (파일 입력 셀렉터를 단순히 #fileInput으로 변경)
-        const validation = new JustValidate('#analysisInsertForm');
-        validation
-          .addField('#fileInput', [
-            {
-              rule: 'required',
-              errorMessage: '이미지를 업로드 해주세요.',
-            },
-          ])
-          .addField('input[type="datetime-local"]#analysisDatetime', [
-            {
-              rule: 'required',
-              errorMessage: '일시를 입력해주세요.',
-            },
-          ])
-          .addField('input[name="locationName"]#locationName', [
-            {
-              rule: 'required',
-              errorMessage: '분석 대상의 위치를 선택해주세요.',
-            },
-          ])
-          .addField('input[name="companion"]', [
-            {
-              rule: 'required',
-              errorMessage: '누구와 함께 있었는지 입력해주세요.',
-            },
-          ])
-          .addRequiredGroup(
-            '#analysis-types',
-            '분석 유형을 최소 한 개 이상 선택해주세요.'
-          );
-
-        // 날씨 조회하기 버튼 클릭 처리
-        document
-          .getElementById('weatherBtn')
-          .addEventListener('click', function () {
-            const datetimeInput =
-              document.getElementById('analysisDatetime').value;
-            const locationName = document.getElementById('locationName').value;
-            if (!datetimeInput || !locationName) {
-              Swal.fire('일시와 위치 정보를 먼저 입력해주세요.');
-              return;
-            }
-            // 예시: 날씨 API 호출 대신 더미 데이터 사용
-            //여기에서 날씨 API를 호출해서, 맑음, 흐림, 습도 등의 주요 정보만 보여주고,
-            //나머지 정보는 json.stringify로 hidden 필드에 저장
-            const lat = document.getElementById('latitude').value;
-            const lon = document.getElementById('longitude').value;
-            // const dt = Math.floor(new Date(datetimeInput).getTime() / 1000);
-            $.ajax({
-              url: '/weather',
-              method: 'GET',
-              data: {
-                lat: lat,
-                lon: lon,
-                dt: datetimeInput,
-              },
-              success: function (res) {
-                const weather = res.data[0].weather[0].description;
-                const temperature = res.data[0].temp;
-
-                // 날씨 정보 표시
-                document.getElementById('weatherInfo').textContent =
-                  '날씨: ' + weather + ', 온도: ' + temperature + '°C';
-                // 날씨 데이터를 hidden 필드에 저장
-                weatherJsonString = JSON.stringify(res);
-              },
-              error: function (err) {
-                Swal.fire('날씨 정보를 가져오는데 실패했습니다.');
-              },
-            });
-          });
-
-        document
-          .getElementById('submitBtn')
-          .addEventListener('click', function (e) {
-            e.preventDefault();
-            const analysisTypes = document.querySelectorAll(
-              'input[name="analysisTypes"]:checked'
-            );
-            if (analysisTypes.length === 0) {
-              Swal.fire('분석 유형을 선택해주세요.');
-              return;
-            }
-            //자바스크립트로 formData를 생성한후 ajax로 보내기
-            const formData = new FormData();
-            let pondInstance = FilePond.find(
-              document.querySelector('#fileInput')
-            );
-            let files = pondInstance.getFiles();
-
-            if (files.length > 0) {
-              formData.append('analysisTargetFile', files[0].file);
-              console.log('📌 파일 추가 완료:', files[0].file.name);
-            } else {
-              console.warn('❌ 파일이 업로드되지 않음');
-            }
-            formData.append(
-              'targetDate',
-              document.getElementById('analysisDatetime').value
-            );
-            formData.append(
-              'locationName',
-              document.getElementById('locationName').value
-            );
-            formData.append(
-              'latitude',
-              document.getElementById('latitude').value
-            );
-            formData.append(
-              'longitude',
-              document.getElementById('longitude').value
-            );
-            formData.append('weatherResponse', weatherJsonString);
-            formData.append(
-              'companion',
-              document.querySelector('input[name="companion"]').value || ''
-            );
-            formData.append(
-              'supplementaryComment',
-              document.querySelector('textarea[name="supplementaryComment"]')
-                .value || ''
-            );
-            analysisTypes.forEach((type) => {
-              formData.append('analysisTypes', type.value);
-            });
-
-            $.ajax({
-              url: `/children/${getChildIdFromUrl()}/analysis/new`, // 컨트롤러 URL
-              type: 'POST',
-              data: formData,
-              contentType: false,
-              processData: false,
-              dataType: 'json', // JSON 응답을 받도록 설정
-              success: function (response) {
-                if (response.success) {
-                  // ✅ 성공 시 리다이렉트
-                  console.log(
-                    '✅ 업로드 성공! 이동할 URL:',
-                    response.redirectUrl
-                  );
-                  window.location.href = response.redirectUrl;
-                } else {
-                  // ❌ 실패 시 에러 메시지 출력
-                  console.error('❌ 업로드 실패: 서버에서 success=false 응답');
-                  alert('업로드에 실패했습니다. 다시 시도해 주세요.');
-                }
-              },
-              error: function (xhr, status, error) {
-                console.error('❌ AJAX 오류:', xhr.responseText);
-                alert('업로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
-              },
-            });
-          });
       });
+    }
 
-      window.navermap_authFailure = function () {
-        Swal.fire('지도 API 인증에 실패했습니다.');
+    // 네이버 지도 로딩 및 클릭 이벤트 처리
+    async function onNaverMapLoad() {
+      const position = await getCurrentLocation();
+      var mapOptions = {
+        // 초기 위치: 자기위치로 바꿔야함
+        center: new naver.maps.LatLng(position.latitude, position.longitude),
+        zoom: 10,
       };
+      var map = new naver.maps.Map('naverMap', mapOptions);
+      map.setCursor('crosshair');
+      // 지도 클릭 시 좌표를 가져와 역지오코딩 수행
+      naver.maps.Event.addListener(map, 'click', function (e) {
+        var latlng = e.coord; // naver.maps.LatLng 객체
+        // hidden 필드에 위도, 경도 저장
+        document.getElementById('latitude').value = latlng.y;
+        document.getElementById('longitude').value = latlng.x;
+        // 역지오코딩을 통해 주소 가져오기
+        naver.maps.Service.reverseGeocode(
+          {
+            location: latlng,
+          },
+          function (status, response) {
+            if (status === naver.maps.Service.Status.OK) {
+              var items = response.result.items;
+              if (items.length > 0) {
+                var address = items[0].address;
+                // hidden 필드와 선택된 위치 표시 업데이트
+                document.getElementById('locationName').value = address;
+                document.getElementById('selectedLocation').innerText =
+                  address +
+                  ' (위도: ' +
+                  latlng.y +
+                  ', 경도: ' +
+                  latlng.x +
+                  ')';
+              }
+            } else {
+              Swal.fire('역지오코딩에 실패했습니다.');
+            }
+          }
+        );
+      });
+    }
 
-      function getChildIdFromUrl() {
-        // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
-        const pathParts = window.location.pathname.split('/');
-        // pathParts 예시: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
-        if (pathParts.length > 2 && pathParts[1] === 'children') {
-          return pathParts[2]; // 인덱스 2가 childId입니다.
-        }
-        return null;
+    document.addEventListener('DOMContentLoaded', function () {
+      var weatherJsonString;
+      // Initialize FilePond: 단 한 장의 파일만 업로드
+      FilePond.registerPlugin(
+        FilePondPluginFileValidateSize,
+        FilePondPluginImagePreview,
+        FilePondPluginImageExifOrientation,
+        FilePondPluginFileValidateType
+      );
+      // 파일 입력 요소가 DOM에 존재하는지 확인 후 FilePond 초기화
+      const fileInput = document.querySelector('#fileInput');
+      if (fileInput) {
+        const pond = FilePond.create(fileInput);
+      } else {
+        console.error('File input 요소(#fileInput)를 찾을 수 없습니다.');
       }
-    </script>
-  </head>
-  <body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-          <img
-            id="logo"
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="iLog 로고"
-          />
-        </a>
-      </div>
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" th:href="@{/dashboard}">
-              <span>대시보드로 가기</span>
-            </a>
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a
-              class="button is-light"
-              th:href="@{/children/{childId}/analysis/resultList(childId=${childId})}"
-            >
-              <span>감정분석결과 목록보기</span>
-            </a>
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/guides"><span>이용안내</span></a>
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/claims"><span>고객센터</span></a>
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/auth/logout">
-              <span>로그아웃</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </nav>
 
-    <div class="container">
-      <h1 class="title has-text-centered">
-        <span th:text="${childName}">000</span>
-        <br />그림, 사진 분석 페이지
-      </h1>
-      <form
-        id="analysisInsertForm"
-        th:action="@{/children/{childId}/analysis/new(childId=${childId})}"
-        method="post"
-        enctype="multipart/form-data"
-      >
-        <!-- FilePond 영역: 단 한 장의 파일 업로드 -->
-        <div class="box">
-          <input
-            id="fileInput"
-            type="file"
-            class="filepond"
-            name="analysisTargetFile"
-            data-allow-reorder="false"
-            data-max-file-size="50MB"
-            data-max-files="1"
-          />
-        </div>
+      // just-validate 설정 (파일 입력 셀렉터를 단순히 #fileInput으로 변경)
+      const validation = new JustValidate('#analysisInsertForm');
+      validation
+        .addField('#fileInput', [
+          {
+            rule: 'required',
+            errorMessage: '이미지를 업로드 해주세요.',
+          },
+        ])
+        .addField('input[type="datetime-local"]#analysisDatetime', [
+          {
+            rule: 'required',
+            errorMessage: '일시를 입력해주세요.',
+          },
+        ])
+        .addField('input[name="locationName"]#locationName', [
+          {
+            rule: 'required',
+            errorMessage: '분석 대상의 위치를 선택해주세요.',
+          },
+        ])
+        .addField('input[name="companion"]', [
+          {
+            rule: 'required',
+            errorMessage: '누구와 함께 있었는지 입력해주세요.',
+          },
+        ])
+        .addRequiredGroup(
+          '#analysis-types',
+          '분석 유형을 최소 한 개 이상 선택해주세요.'
+        );
 
-        <!-- 일시 입력 -->
-        <div class="field">
-          <label class="label">일시 입력</label>
-          <div class="control">
-            <input
-              name="targetDate"
-              id="analysisDatetime"
-              class="input"
-              type="datetime-local"
-              placeholder="2020-01-01T13:59"
-            />
-          </div>
-        </div>
+      // 날씨 조회하기 버튼 클릭 처리
+      document
+        .getElementById('weatherBtn')
+        .addEventListener('click', function () {
+          const datetimeInput =
+            document.getElementById('analysisDatetime').value;
+          const locationName = document.getElementById('locationName').value;
+          if (!datetimeInput || !locationName) {
+            Swal.fire('일시와 위치 정보를 먼저 입력해주세요.');
+            return;
+          }
+          // 예시: 날씨 API 호출 대신 더미 데이터 사용
+          //여기에서 날씨 API를 호출해서, 맑음, 흐림, 습도 등의 주요 정보만 보여주고,
+          //나머지 정보는 json.stringify로 hidden 필드에 저장
+          const lat = document.getElementById('latitude').value;
+          const lon = document.getElementById('longitude').value;
+          // const dt = Math.floor(new Date(datetimeInput).getTime() / 1000);
+          $.ajax({
+            url: '/weather',
+            method: 'GET',
+            data: {
+              lat: lat,
+              lon: lon,
+              dt: datetimeInput,
+            },
+            success: function (res) {
+              const weather = res.data[0].weather[0].description;
+              const temperature = res.data[0].temp;
 
-        <!-- 분석 대상의 위치 -->
-        <div class="field">
-          <label class="label">분석 대상의 위치</label>
-          <div id="naverMap"></div>
-          <!-- 선택된 위치 표시 -->
-          <p id="selectedLocation" style="font-weight: bold"></p>
-          <!-- hidden 필드: 위치 이름, 위도, 경도 -->
-          <input type="hidden" id="locationName" name="locationName" />
-          <input type="hidden" id="latitude" name="latitude" />
-          <input type="hidden" id="longitude" name="longitude" />
-        </div>
+              // 날씨 정보 표시
+              document.getElementById('weatherInfo').textContent =
+                '날씨: ' + weather + ', 온도: ' + temperature + '°C';
+              // 날씨 데이터를 hidden 필드에 저장
+              weatherJsonString = JSON.stringify(res);
+            },
+            error: function (err) {
+              Swal.fire('날씨 정보를 가져오는데 실패했습니다.');
+            },
+          });
+        });
 
-        <!-- 날씨 가져오기 -->
-        <div class="field">
-          <label class="label">날씨 가져오기</label>
-          <div class="control">
-            <button
-              type="button"
-              id="weatherBtn"
-              class="button is-info is-fullwidth"
-            >
-              해당 일시와 위치의 날씨 조회하기
-            </button>
-          </div>
-          <!-- 날씨 정보 표시 영역 -->
-          <p id="weatherInfo" style="margin-top: 0.5rem; font-weight: bold"></p>
-          <!-- hidden 필드: 날씨 데이터 저장 -->
-          <input type="hidden" id="weatherData" name="weatherResponse" />
-        </div>
+      document
+        .getElementById('submitBtn')
+        .addEventListener('click', function (e) {
+          e.preventDefault();
+          const analysisTypes = document.querySelectorAll(
+            'input[name="analysisTypes"]:checked'
+          );
+          if (analysisTypes.length === 0) {
+            Swal.fire('분석 유형을 선택해주세요.');
+            return;
+          }
+          //자바스크립트로 formData를 생성한후 ajax로 보내기
+          const formData = new FormData();
+          let pondInstance = FilePond.find(
+            document.querySelector('#fileInput')
+          );
+          let files = pondInstance.getFiles();
 
-        <!-- 누구와 함께 있었나요? -->
-        <div class="field">
-          <label class="label">누구와 함께 있었나요?</label>
-          <div class="control">
-            <input
-              class="input"
-              type="text"
-              name="companion"
-              placeholder="예: 엄마, 아빠, 친구"
-            />
-          </div>
-        </div>
+          if (files.length > 0) {
+            formData.append('analysisTargetFile', files[0].file);
+            console.log('📌 파일 추가 완료:', files[0].file.name);
+          } else {
+            console.warn('❌ 파일이 업로드되지 않음');
+          }
+          formData.append(
+            'targetDate',
+            document.getElementById('analysisDatetime').value
+          );
+          formData.append(
+            'locationName',
+            document.getElementById('locationName').value
+          );
+          formData.append(
+            'latitude',
+            document.getElementById('latitude').value
+          );
+          formData.append(
+            'longitude',
+            document.getElementById('longitude').value
+          );
+          formData.append('weatherResponse', weatherJsonString);
+          formData.append(
+            'companion',
+            document.querySelector('input[name="companion"]').value || ''
+          );
+          formData.append(
+            'supplementaryComment',
+            document.querySelector('textarea[name="supplementaryComment"]')
+              .value || ''
+          );
+          analysisTypes.forEach((type) => {
+            formData.append('analysisTypes', type.value);
+          });
 
-        <!-- 데이터 보충 설명 -->
-        <div class="field">
-          <label class="label">데이터에 대한 보충 설명을 작성해주세요</label>
-          <div class="control">
-            <textarea
-              class="textarea"
-              name="supplementaryComment"
-              placeholder="추가 설명을 입력하세요"
-            ></textarea>
-          </div>
-        </div>
+          $.ajax({
+            url: `/children/${getChildIdFromUrl()}/analysis/new`, // 컨트롤러 URL
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: 'json', // JSON 응답을 받도록 설정
+            success: function (response) {
+              if (response.success) {
+                // ✅ 성공 시 리다이렉트
+                console.log(
+                  '✅ 업로드 성공! 이동할 URL:',
+                  response.redirectUrl
+                );
+                window.location.href = response.redirectUrl;
+              } else {
+                // ❌ 실패 시 에러 메시지 출력
+                console.error('❌ 업로드 실패: 서버에서 success=false 응답');
+                alert('업로드에 실패했습니다. 다시 시도해 주세요.');
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error('❌ AJAX 오류:', xhr.responseText);
+              alert('업로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            },
+          });
+        });
+    });
 
-        <!-- 분석 유형 -->
-        <div class="field">
-          <label class="label">분석 유형</label>
-          <div id="analysis-types" class="control analysis-types">
-            <label class="checkbox">
-              <input type="checkbox" name="analysisTypes" value="WRITING" />
-              글 분석
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="analysisTypes" value="DRAWING" />
-              그림 분석
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="analysisTypes" value="PHOTO" />
-              표정 분석
-            </label>
-          </div>
-        </div>
+    window.navermap_authFailure = function () {
+      Swal.fire('지도 API 인증에 실패했습니다.');
+    };
 
-        <!-- 제출 버튼: 유효성 검사 후 제출 -->
-        <div class="field">
-          <div class="control">
-            <button id="submitBtn" type="submit" class="button is-fullwidth">
-              분석하기
-            </button>
-          </div>
-        </div>
-      </form>
+    function getChildIdFromUrl() {
+      // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
+      const pathParts = window.location.pathname.split('/');
+      // pathParts 예시: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
+      if (pathParts.length > 2 && pathParts[1] === 'children') {
+        return pathParts[2]; // 인덱스 2가 childId입니다.
+      }
+      return null;
+    }
+  </script>
+</head>
+
+<body>
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <!-- 로고 + dashboard 바로가기 -->
+    <div class="logo">
+      <a th:href="@{/dashboard}">
+        <img src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="로고" class="image"
+          style="width: 100px; height: auto" />
+      </a>
     </div>
-  </body>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" th:href="@{/children/{childId}/analysis/resultList(childId=${childId})}">
+            <span>감정분석결과 목록보기</span>
+          </a>
+        </div>
+      </div>
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="/guides"><span>이용안내</span></a>
+        </div>
+      </div>
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="/claims"><span>고객센터</span></a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1 class="title has-text-centered">
+      <span th:text="${childName}">000</span>
+      <br />그림, 사진 분석 페이지
+    </h1>
+    <form id="analysisInsertForm" th:action="@{/children/{childId}/analysis/new(childId=${childId})}" method="post"
+      enctype="multipart/form-data">
+      <!-- FilePond 영역: 단 한 장의 파일 업로드 -->
+      <div class="box">
+        <input id="fileInput" type="file" class="filepond" name="analysisTargetFile" data-allow-reorder="false"
+          data-max-file-size="50MB" data-max-files="1" />
+      </div>
+
+      <!-- 일시 입력 -->
+      <div class="field">
+        <label class="label">일시 입력</label>
+        <div class="control">
+          <input name="targetDate" id="analysisDatetime" class="input" type="datetime-local"
+            placeholder="2020-01-01T13:59" />
+        </div>
+      </div>
+
+      <!-- 분석 대상의 위치 -->
+      <div class="field">
+        <label class="label">분석 대상의 위치</label>
+        <div id="naverMap"></div>
+        <!-- 선택된 위치 표시 -->
+        <p id="selectedLocation" style="font-weight: bold"></p>
+        <!-- hidden 필드: 위치 이름, 위도, 경도 -->
+        <input type="hidden" id="locationName" name="locationName" />
+        <input type="hidden" id="latitude" name="latitude" />
+        <input type="hidden" id="longitude" name="longitude" />
+      </div>
+
+      <!-- 날씨 가져오기 -->
+      <div class="field">
+        <label class="label">날씨 가져오기</label>
+        <div class="control">
+          <button type="button" id="weatherBtn" class="button is-info is-fullwidth">
+            해당 일시와 위치의 날씨 조회하기
+          </button>
+        </div>
+        <!-- 날씨 정보 표시 영역 -->
+        <p id="weatherInfo" style="margin-top: 0.5rem; font-weight: bold"></p>
+        <!-- hidden 필드: 날씨 데이터 저장 -->
+        <input type="hidden" id="weatherData" name="weatherResponse" />
+      </div>
+
+      <!-- 누구와 함께 있었나요? -->
+      <div class="field">
+        <label class="label">누구와 함께 있었나요?</label>
+        <div class="control">
+          <input class="input" type="text" name="companion" placeholder="예: 엄마, 아빠, 친구" />
+        </div>
+      </div>
+
+      <!-- 데이터 보충 설명 -->
+      <div class="field">
+        <label class="label">데이터에 대한 보충 설명을 작성해주세요</label>
+        <div class="control">
+          <textarea class="textarea" name="supplementaryComment" placeholder="추가 설명을 입력하세요"></textarea>
+        </div>
+      </div>
+
+      <!-- 분석 유형 -->
+      <div class="field">
+        <label class="label">분석 유형</label>
+        <div id="analysis-types" class="control analysis-types">
+          <label class="checkbox">
+            <input type="checkbox" name="analysisTypes" value="WRITING" />
+            글 분석
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" name="analysisTypes" value="DRAWING" />
+            그림 분석
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" name="analysisTypes" value="PHOTO" />
+            표정 분석
+          </label>
+        </div>
+      </div>
+
+      <!-- 제출 버튼: 유효성 검사 후 제출 -->
+      <div class="field">
+        <div class="control">
+          <button id="submitBtn" type="submit" class="button is-fullwidth">
+            분석하기
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+
 </html>

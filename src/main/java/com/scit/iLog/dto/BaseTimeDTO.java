@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BaseTimeDTO 
-{	
+public class BaseTimeDTO {
     protected LocalDateTime createdAt;
     protected LocalDateTime modifiedAt;
 }

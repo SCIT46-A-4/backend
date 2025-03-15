@@ -15,6 +15,7 @@ import com.scit.iLog.domain.mentalsurvey.MentalSurveyResponseEntity;
 import com.scit.iLog.domain.mentalsurvey.QuestionResponse;
 import com.scit.iLog.domain.mentalsurvey.SectionResponse;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
+import com.scit.iLog.exception.FamilyBackgroundNotFoundException;
 import com.scit.iLog.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -71,6 +72,7 @@ public class DataInitializer implements CommandLineRunner {
                 .password(passwordEncoder.encode("ADMIN123!"))
                 .email("admin@example.com")
                 .role(MemberRole.ADMIN)
+                .relationType(RelationType.ADMIN)
                 .personalInformationCollectionAndUsageAgreement(false)
                 .build();
         memberRepository.save(admin);
@@ -129,7 +131,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println(fullName + ": SignInId: " + signInId);
 
             // 각 mom마다 2명의 자녀 생성
-            for (int j = 0; j < 2; j++) {
+            for (int j = 0; j < 4; j++) {
                 // 2. Child 엔티티 생성 (랜덤 이름, 생년월일, 출생지 등)
                 String childName = "Baby " + firstNames[random.nextInt(firstNames.length)] + " " + lastNames[random.nextInt(lastNames.length)];
                 String birthLocation = locations[random.nextInt(locations.length)];
@@ -142,6 +144,7 @@ public class DataInitializer implements CommandLineRunner {
                         .originalProfileImgName(null)
                         .savedProfileImgName(null)
                         .gender(Gender.WOMAN)
+                        .callName("혈연")
                         .build();
                 childRepository.save(girl);
 
@@ -196,6 +199,7 @@ public class DataInitializer implements CommandLineRunner {
                     mentalSurveyResponseRepository.save(mentalSurveyResponse);
                 }
 
+                List<AnalysisType> analysisTypeList = new ArrayList<>(Arrays.stream(AnalysisType.values()).toList());
                 // 각 자녀마다 40개의 AnalysisTarget 및 연관 데이터 생성
                 for (int k = 0; k < 20; k++) {
                     // 3. AnalysisTarget 엔티티 생성
@@ -210,8 +214,11 @@ public class DataInitializer implements CommandLineRunner {
                             .build();
                     analysisTargetRepository.save(analysisTarget);
 
+                    Collections.shuffle(analysisTypeList);
+                    List<AnalysisType> analysisTypesSubList = analysisTypeList.subList(0, 3);
                     List<AnalysisTargetTypeEntity> analysisTargetTypes = analysisTypeRepository.findAll()
                             .stream()
+                            .filter(analysisType -> analysisTypesSubList.contains(analysisType.getType()))
                             .map(analysisType -> AnalysisTargetTypeEntity.builder()
                                     .analysisTarget(analysisTarget)
                                     .analysisType(analysisType)
@@ -248,7 +255,7 @@ public class DataInitializer implements CommandLineRunner {
                             .content("This is a note on the analysis result " + random.nextInt(1000))
                             .build();
                     AnalysisSatisfactionEntity analysisSatisfaction = AnalysisSatisfactionEntity.builder()
-                            .satisfactionScore(1 + random.nextInt(10))
+                            .satisfactionScore(random.nextInt(5))
                             .analysisResult(analysisResult)
                             .build();
                     analysisResultNoteRepository.save(analysisResultNote);
@@ -300,7 +307,6 @@ public class DataInitializer implements CommandLineRunner {
             ClaimAnswerEntity claimAnswer = ClaimAnswerEntity.builder()
                     .claim(claim)
                     .author(admin)
-                    .title("Re: Service Issue " + random.nextInt(1000))
                     .content("We have resolved the issue " + random.nextInt(1000))
                     .build();
             claimAnswerRepository.save(claimAnswer);
@@ -348,7 +354,7 @@ public class DataInitializer implements CommandLineRunner {
                 .relationType(RelationType.TEACHER)
                 .build();
         relationShipRepository.save(teacherChildRelation);
-        
+
         //이도훈 이메일 인증 테스트 교사 계정 추가 dad에서 아이 추가 후 이 계정으로 메일 발신.
         MemberEntity LeeDoHun = MemberEntity.builder()
                 .signInId("aaaaa")
@@ -372,8 +378,7 @@ public class DataInitializer implements CommandLineRunner {
                         createFamilyBackgrounds 메서드 호출 (가정환경 enum타입의 데이터 생성)
                         util패키지의 FamilyBackGroundSerializer클래스 생성함.
                        */
-        CreateFamilyBackgrounds();
-
+        createFamilyBackgrounds();
     }
 
     private void CreateMentalSurveyResponses() {
@@ -424,7 +429,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     // 이 메서드를 DataInitializer의 run 메서드 끝부분에 추가하여 호출하세요.
-    private void CreateFamilyBackgrounds() {
+    private void createFamilyBackgrounds() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         // childId 1~20 까지 각 아동별로 1~3개의 랜덤 가정환경을 생성
@@ -446,16 +451,13 @@ public class DataInitializer implements CommandLineRunner {
 
             // 선택한 가정환경을 DB에 저장
             for (FamilyBackGround background : selectedBackgrounds) {
-                FamilyBackGroundEntity backgroundEntity = FamilyBackGroundEntity.builder()
-                        .familyBackGround(background)
-                        .build();
-                backgroundEntity.setFamilyBackGround(background);
-                familyBackgroundRepository.save(backgroundEntity);
+                FamilyBackGroundEntity familyBackGround = familyBackgroundRepository.findByFamilyBackGround(background)
+                        .orElseThrow(() -> new FamilyBackgroundNotFoundException());
 
                 // 아동과 가정환경 간 연결 관계 생성
                 ChildBackGroundEntity childBackGround = ChildBackGroundEntity.builder()
                         .child(child)
-                        .familyBackGround(backgroundEntity)
+                        .familyBackGround(familyBackGround)
                         .build();
 
                 childBackGroundRepository.save(childBackGround);
@@ -464,6 +466,4 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println("✅ 아동별 가정환경 데이터 초기화 완료");
     }
-
-
 }

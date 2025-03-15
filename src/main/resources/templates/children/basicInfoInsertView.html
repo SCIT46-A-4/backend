@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 
-<html
-        lang="en"
-        xmlns:th="http://thymeleaf.org"
->
+<html lang="en" xmlns:th="http://thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title>아동 상세 정보 등록 페이지</title>
@@ -144,6 +141,10 @@
         width: 170px;
         margin: 0 auto;
       }
+
+      .filepond--file-action-button.filepond--action-process-item {
+        display: none !important;
+      }
     </style>
 
     <script>
@@ -194,6 +195,7 @@
           instantUpload: false,
           allowMultiple: false,
           required: false,
+          allowRevert: false,
         });
 
         // JustValidate 설정
@@ -525,7 +527,7 @@
                 />
               </div>
 
-              <!-- 아동과의 관계 입력창 -->
+              <!-- 아동과의 관계 입력창 --> 
               <div class="field">
                 <label class="label">아동과의 관계(호칭입력)</label>
                 <input
@@ -533,6 +535,7 @@
                   type="text"
                   id="relationship"
                   name="callName"
+                  placeholder="아빠, 엄마, 부, 모, 할아버지, 할머니, 보육교사 등"
                 />
               </div>
 

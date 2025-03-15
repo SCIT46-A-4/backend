@@ -4,11 +4,11 @@ import lombok.Builder;
 
 @Builder
 public record ChildRecordExtractionDTO(
-    double height,
-    double weight,
-    double leftEye,
-    double rightEye,
-    String diagnosis
+        double height,
+        double weight,
+        double leftEye,
+        double rightEye,
+        String diagnosis
 ) implements ChildRecordExtraction {
     @Override
     public double getHeight() {

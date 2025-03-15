@@ -15,5 +15,7 @@ public interface RelationShipRepository extends JpaRepository<RelationShipEntity
     @Query("select r from RelationShipEntity r where r.member.id = :memberId")
     List<RelationShipEntity> findAllByMemberId(@Param("memberId") Long memberId);
 
+    void deleteAllByMember(MemberEntity member);
+
 	Optional<RelationShipEntity> findByMemberIdAndChildId(Long inviteeRelationId, Long childRelationId);
 }

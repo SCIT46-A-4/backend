@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>접근 권한 없음 - iLog</title>
+    <link
+      rel="stylesheet"
+      href="../../static/css/bulma.min.css"
+      th:href="@{/css/bulma.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --background-yellow: #fff8dc;
+        --button-mint: #98d8d8;
+        --button-pink: #ffb6c1;
+        --text-dark: #333333;
+      }
+
+      body {
+        background-color: var(--background-yellow);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      .error-container {
+        max-width: 600px;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .error-code {
+        font-size: 6rem;
+        font-weight: bold;
+        color: var(--button-pink);
+        margin-bottom: 0;
+        line-height: 1;
+      }
+
+      .error-title {
+        font-size: 2rem;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+      }
+
+      .error-message {
+        color: #666;
+        margin-bottom: 2rem;
+      }
+
+      .lock-animation {
+        margin: 0 auto 2rem;
+        width: 100px;
+        height: 100px;
+        position: relative;
+      }
+
+      .lock-icon {
+        font-size: 4rem;
+        color: var(--button-mint);
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .lock-icon:hover {
+        transform: scale(1.1);
+      }
+
+      .lock-icon:after {
+        content: '\f023';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+      }
+
+      .button.is-mint {
+        background-color: var(--button-mint);
+        color: var(--text-dark);
+        border: none;
+      }
+
+      .button.is-pink {
+        background-color: var(--button-pink);
+        color: var(--text-dark);
+        border: none;
+      }
+
+      .button.is-outlined {
+        background-color: transparent;
+        border: 2px solid var(--button-mint);
+        color: var(--text-dark);
+      }
+
+      .button-group {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .login-box {
+        max-width: 400px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+      }
+
+      .bounce {
+        animation: bounce 2s infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-20px);
+        }
+        60% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        .error-code {
+          font-size: 4rem;
+        }
+        .error-title {
+          font-size: 1.5rem;
+        }
+        .button-group {
+          flex-direction: column;
+          align-items: center;
+        }
+        .button-group .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-container">
+      <div class="lock-animation">
+        <i class="lock-icon bounce"></i>
+      </div>
+      <h1 class="error-code">403</h1>
+      <h2 class="error-title">접근 권한이 없습니다</h2>
+      <p class="error-message">
+        요청하신 페이지에 접근할 권한이 없습니다.<br />
+        로그인이 필요하거나 관리자에게 권한 요청이 필요할 수 있습니다.
+      </p>
+
+      <!-- <div class="login-box">
+        <p class="mb-3">접근하시려면 로그인하세요:</p>
+        <div class="field">
+          <div class="control has-icons-left">
+            <input class="input" type="text" placeholder="아이디" />
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control has-icons-left">
+            <input class="input" type="password" placeholder="비밀번호" />
+            <span class="icon is-small is-left">
+              <i class="fas fa-lock"></i>
+            </span>
+          </div>
+        </div>
+        <button class="button is-mint is-fullwidth">로그인</button>
+      </div> -->
+
+      <div class="button-group">
+        <a href="/dashboard" class="button is-mint">
+          <i class="fas fa-home mr-2"></i>홈으로 돌아가기
+        </a>
+        <button onclick="window.history.back()" class="button is-pink">
+          <i class="fas fa-arrow-left mr-2"></i>이전 페이지
+        </button>
+        <a href="/claims" class="button is-outlined">
+          <i class="fas fa-headset mr-2"></i>관리자에게 문의
+        </a>
+      </div>
+    </div>
+
+    <script>
+      // 락 아이콘 애니메이션 토글
+      document
+        .querySelector('.lock-icon')
+        .addEventListener('click', function () {
+          this.style.color =
+            this.style.color === 'var(--button-pink)'
+              ? 'var(--button-mint)'
+              : 'var(--button-pink)';
+          this.classList.toggle('bounce');
+
+          setTimeout(() => {
+            this.classList.add('bounce');
+          }, 100);
+        });
+
+      // 로그인 폼 제출
+      document
+        .querySelector('.login-box button')
+        .addEventListener('click', function () {
+          const username = document
+            .querySelector('.login-box input[type="text"]')
+            .value.trim();
+          const password = document
+            .querySelector('.login-box input[type="password"]')
+            .value.trim();
+
+          if (!username || !password) {
+            alert('아이디와 비밀번호를 모두 입력해주세요.');
+            return;
+          }
+
+          // 여기에 로그인 API 호출 코드 추가
+          this.classList.add('is-loading');
+
+          // 로그인 성공 시뮬레이션
+          setTimeout(() => {
+            this.classList.remove('is-loading');
+            // 로그인 후 원래 페이지로 리디렉션
+            // window.location.reload();
+          }, 1500);
+        });
+    </script>
+  </body>
+</html>

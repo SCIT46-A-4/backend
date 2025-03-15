@@ -1,19 +1,14 @@
 package com.scit.iLog.dto.child;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.child.Gender;
 import com.scit.iLog.dto.BaseTimeDTO;
 import com.scit.iLog.util.FamilyBackGroundSerializer;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter

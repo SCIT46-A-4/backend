@@ -1,177 +1,270 @@
 <!DOCTYPE html>
-<html
-        lang="ko"
-        xmlns:th="http://thymeleaf.org"
->
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>아이디/비밀번호 찾기 - iLog</title>
-    <link rel="stylesheet" th:href="@{/css/bulma.min.css}">
+    <script
+      src="../../static/js/jquery-3.7.1.min.js"
+      th:src="@{/js/jquery-3.7.1.min.js}"
+    ></script>
+    <link rel="stylesheet" th:href="@{/css/bulma.min.css}" />
+    <link
+      rel="stylesheet"
+      href="../../static/css/customColors.css"
+      th:href="@{/css/customColors.css}"
+    />
     <style>
-        :root {
-            --background-yellow: #FFF8DC;
-            --button-mint: #98D8D8;
-            --text-dark: #333333;
-        }
+      :root {
+        --background-yellow: #fff8dc;
+        --button-mint: #98d8d8;
+        --text-dark: #333333;
+      }
 
-        body {
-            background-color: var(--background-yellow);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+      body {
+        background-color: var(--primary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 2rem auto;
-            display: block;
-        }
+      .navbar-brand {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+      .logo {
+        max-height: 100px;
+        width: 100px;
+        height: auto;
+        margin: 2rem auto;
+        display: block;
+      }
 
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .find-container {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .find-section {
+        flex: 1;
+        min-width: 300px;
+        background-color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .title {
+        color: var(--text-dark);
+        text-align: center;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .subtitle {
+        color: #666;
+        text-align: center;
+        font-size: 0.9rem;
+        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .input {
+        background-color: #222;
+        border: none;
+        color: white;
+        margin-bottom: 1rem;
+      }
+
+      .input::placeholder {
+        color: #999;
+      }
+
+      .button.is-mint {
+        background-color: var(--secondary);
+        color: var(--text-dark);
+        border: none;
+        width: 100%;
+        height: 45px;
+        font-weight: bold;
+        transition: opacity 0.3s;
+      }
+
+      .button.is-mint:hover {
+        opacity: 0.9;
+      }
+
+      .field:not(:last-child) {
+        margin-bottom: 1.5rem;
+      }
+
+      @media screen and (max-width: 768px) {
         .find-container {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
+          flex-direction: column;
         }
 
         .find-section {
-            flex: 1;
-            min-width: 300px;
-            background-color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          width: 100%;
         }
-
-        .title {
-            color: var(--text-dark);
-            text-align: center;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .subtitle {
-            color: #666;
-            text-align: center;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
-
-        .input {
-            background-color: #222;
-            border: none;
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .input::placeholder {
-            color: #999;
-        }
-
-        .button.is-mint {
-            background-color: var(--button-mint);
-            color: var(--text-dark);
-            border: none;
-            width: 100%;
-            height: 45px;
-            font-weight: bold;
-            transition: opacity 0.3s;
-        }
-
-        .button.is-mint:hover {
-            opacity: 0.9;
-        }
-
-        .field:not(:last-child) {
-            margin-bottom: 1.5rem;
-        }
-
-        @media screen and (max-width: 768px) {
-            .find-container {
-                flex-direction: column;
-            }
-
-            .find-section {
-                width: 100%;
-            }
-        }
+      }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ID 찾기 버튼 클릭 이벤트
-            document.querySelector('.find-section:first-child .button').addEventListener('click', function() {
-                const email = this.parentElement.querySelector('input[type="email"]').value;
-                if (!email) {
-                    alert('이메일을 입력해주세요.');
-                    return;
-                }
-                // TODO: ID 찾기 API 호출
-                console.log('Finding ID for email:', email);
-            });
+      document.addEventListener('DOMContentLoaded', function () {
+        // ID 찾기 버튼 클릭 이벤트
+        document
+          .querySelector('.find-section:first-child .button')
+          .addEventListener('click', function () {
+            const email = this.parentElement.querySelector(
+              'input[type="email"]'
+            ).value;
+            if (!email) {
+              alert('이메일을 입력해주세요.');
+              return;
+            }
+            // TODO: ID 찾기 API 호출
+            console.log('Finding ID for email:', email);
 
-            // 비밀번호 재설정 버튼 클릭 이벤트
-            document.querySelector('.find-section:last-child .button').addEventListener('click', function() {
-                const id = this.parentElement.querySelector('input[type="text"]').value;
-                const email = this.parentElement.querySelector('input[type="email"]').value;
-                if (!id || !email) {
-                    alert('아이디와 이메일을 모두 입력해주세요.');
-                    return;
+            $.ajax({
+              url: '/auth/idFind',
+              type: 'GET',
+              data: { email: email },
+              success: function (response) {
+                console.log('📌 서버 응답:', response); // 서버 응답 확인 로그 추가
+                if (response.success) {
+                  alert('아이디가 이메일로 전송되었습니다.');
+                } else {
+                  alert('등록된 이메일이 없습니다.');
                 }
-                // TODO: 비밀번호 재설정 API 호출
-                console.log('Resetting password for:', { id, email });
+              },
+              error: function (xhr, status, error) {
+                console.log('❌ AJAX 요청 실패');
+                console.log('📌 상태 코드:', xhr.status);
+                console.log('📌 응답 텍스트:', xhr.responseText);
+                console.log('📌 에러 메시지:', error);
+                alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
+              },
             });
-        });
+          });
+
+        // 비밀번호 재설정 버튼 클릭 이벤트
+        document
+          .querySelector('.find-section:last-child .button')
+          .addEventListener('click', function () {
+            const id =
+              this.parentElement.querySelector('input[type="text"]').value;
+            const email = this.parentElement.querySelector(
+              'input[type="email"]'
+            ).value;
+
+            if (!id || !email) {
+              alert('아이디와 이메일을 모두 입력해주세요.');
+              return;
+            }
+            // TODO: 비밀번호 재설정 API 호출
+            console.log('Resetting password for:', { id, email });
+
+            $.ajax({
+              url: '/auth/pwFind',
+              type: 'GET',
+              data: { signInId: id, email: email },
+              success: function (response) {
+                if (response.success) {
+                  alert('임시 비밀번호가 이메일로 전송되었습니다.');
+                } else {
+                  alert('아이디 또는 이메일이 일치하지 않습니다.');
+                }
+              },
+              error: function () {
+                alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
+              },
+            });
+          });
+      });
     </script>
-</head>
-<body>
-<img th:src="@{/images/wilog.png}" src="../../static/images/wilog.png" alt="iLog Logo" class="logo">
+  </head>
 
-<div class="container">
-    <div class="find-container">
+  <body>
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img
+          th:src="@{/images/wilog.png}"
+          src="../../static/images/wilog.png"
+          alt="iLog Logo"
+          class="logo"
+        />
+      </a>
+    </div>
+
+    <div class="container">
+      <div class="find-container">
         <!-- ID 찾기 섹션 -->
         <div class="find-section">
-            <h1 class="title">아이디를 잊어버리셨나요?<br>Forget ID?</h1>
-            <p class="subtitle">지친가 가입했던 이메일로 아이디를 보내드리겠습니다</p>
+          <h1 class="title">아이디를 잊어버리셨나요?<br />Forget ID?</h1>
+          <p class="subtitle">가입했던 이메일로 아이디를 받으실 수 있습니다.</p>
 
-            <div class="field">
-                <label class="label">이메일 / Email</label>
-                <div class="control">
-                    <input class="input" type="email" placeholder="이메일을 입력해주세요.">
-                </div>
+          <div class="field">
+            <label class="label">이메일 / Email</label>
+            <div class="control">
+              <input
+                class="input"
+                type="email"
+                placeholder="가입한 이메일 주소를 입력해주세요."
+              />
             </div>
+          </div>
 
-            <button class="button is-mint">ID 찾기</button>
+          <button class="button is-mint">ID 찾기</button>
         </div>
 
         <!-- 비밀번호 찾기 섹션 -->
         <div class="find-section">
-            <h1 class="title">비밀번호를 잊어버리셨나요?<br>Forget password?</h1>
-            <p class="subtitle">입력하신 정보를 통해 비밀번호를 재설정하실 수 있습니다</p>
+          <h1 class="title">
+            비밀번호를 잊어버리셨나요?<br />Forget password?
+          </h1>
+          <p class="subtitle">
+            입력하신 정보를 통해 비밀번호를 재설정하실 수 있습니다
+          </p>
 
-            <div class="field">
-                <label class="label">아이디 / ID</label>
-                <div class="control">
-                    <input class="input" type="text" placeholder="아이디를 입력해주세요.">
-                </div>
+          <div class="field">
+            <label class="label">아이디 / ID</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                placeholder="가입한 아이디를 입력해주세요."
+              />
             </div>
+          </div>
 
-            <div class="field">
-                <label class="label">이메일 / Email</label>
-                <div class="control">
-                    <input class="input" type="email" placeholder="이메일을 입력해주세요.">
-                </div>
+          <div class="field">
+            <label class="label">이메일 / Email</label>
+            <div class="control">
+              <input
+                class="input"
+                type="email"
+                placeholder="가입한 이메일 주소를 입력해주세요."
+              />
             </div>
+          </div>
 
-            <button class="button is-mint">Reset Password</button>
+          <button class="button is-mint">비밀번호 재설정</button>
         </div>
+      </div>
     </div>
-</div>
-</body>
+    <div class="container">
+      <a th:href="@{/auth/signIn}" class="has-text-link">
+        <button class="button is-link">로그인하러가기</button>
+      </a>
+    </div>
+  </body>
 </html>

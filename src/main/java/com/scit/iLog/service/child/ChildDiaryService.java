@@ -70,7 +70,7 @@ public class ChildDiaryService {
     public DiaryDetailsDTO findDiaryDetailsById(Long diaryId) {
         ChildDiaryEntity diary = findChildDiaryById(diaryId);
         return DiaryDetailsDTO.builder()
-				.id(diary.getId())
+                .id(diary.getId())
                 .title(diary.getTitle())
                 .content(diary.getContent())
                 .createdAt(diary.getCreatedAt())
@@ -95,5 +95,13 @@ public class ChildDiaryService {
                         .child(child)
                         .build()
         ).getId();
+    }
+
+    @Transactional
+    public void inValidateByMember(Long memberId) {
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        childDiaryRepository.findAllByAuthor(member)
+                .forEach(childDiary -> childDiary.setAuthor(null));
     }
 }

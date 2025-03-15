@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
     private final MemberRepository memberRepository;
     private final LoginSuccessHandler loginSuccessHandler;
-	private final LoginFailureHandler loginFailureHandler;
+    private final LoginFailureHandler loginFailureHandler;
 
     @Bean
     SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
@@ -55,6 +55,8 @@ public class SecurityConfig {
                                 "/",
                                 "/auth/signIn",
                                 "/auth/signUp",
+                                "/auth/idFind",   // 아이디 찾기 허용
+                                "/auth/pwFind",   // 비밀번호 찾기 허용
                                 // 2025-02-17~20 이도훈 추가
                                 "/auth/checkSignInIdExists",
                                 "/auth/idPwFind",
@@ -62,10 +64,15 @@ public class SecurityConfig {
                                 "/claims",
                                 "/send-verification-code",
                                 "/verify-code",
+                                "/terms",
+                                "/privacy",
+                                "/youth-policy",
                                 "/js/**",
                                 "/css/**",
-                                "/images/**"
-                                )
+                                "/images/**",
+                                "/privacy",
+                                "/terms"
+                        )
                         .permitAll()
                         .requestMatchers("/dashboard/guardian").access(
                                 anyOf(allOf(hasRole("USER"), hasRole("GUARDIAN")), hasRole("ADMIN"))
@@ -81,15 +88,15 @@ public class SecurityConfig {
         );
 
         http.formLogin(formAuth ->
-                formAuth
-                        .loginPage("/auth/signIn")
-                        .loginProcessingUrl("/auth/signIn/proc")
-                        // 2025-02-17~20 이도훈 추가
-                        .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
-                        // 2025-02-17~20 이도훈 추가
-                        .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
-                        .usernameParameter("signInId")
-                        .passwordParameter("userPwd")
+                        formAuth
+                                .loginPage("/auth/signIn")
+                                .loginProcessingUrl("/auth/signIn/proc")
+                                // 2025-02-17~20 이도훈 추가
+                                .successHandler(loginSuccessHandler) //(추가) 로그인 성공시 처리할 핸들러 등록
+                                // 2025-02-17~20 이도훈 추가
+                                .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
+                                .usernameParameter("signInId")
+                                .passwordParameter("userPwd")
 //                        .defaultSuccessUrl("/")
 //                        .failureUrl("/member/login?error=true") //핸들러를 등록하면 필요없음
         );
@@ -100,6 +107,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
         );
+
         return http.build();
     }
 
@@ -110,29 +118,31 @@ public class SecurityConfig {
 
 
     //로그인 시 검증
+
     /**
      * 2025-02-17~20 이도훈
      * 커스텀 예외처리 추가.
+     *
      * @return
      */
     @Bean
     UserDetailsService userDetailsService() {
         return (signInId) -> {
-        	//signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
-        	MemberEntity member = memberRepository
+            //signInId를 이용해 DB에서 사용자 정보를 찾음. Optional<MemberEntity>을 반환.
+            MemberEntity member = memberRepository
                     .findBySignInId(signInId)
                     //사용자가 존재하지 않으면 커스텀 예외(WrongSignInIdException)를 발생시킴.
                     .orElseThrow(() -> new WrongSignInIdException(String.format("회원 조회 실패 아이디 : %s", signInId)));
             //사용자가 존재할 경우, MemberDetails 객체 생성 및 반환
             return MemberDetails.builder()
-                            .id(member.getId())
-                            .name(member.getName())
-                            .signInId(member.getSignInId())
-                            .password(member.getPassword())
-                            .email(member.getEmail())
-                            .relationType(member.getRelationType())
-                            .role(member.getRole())
-                            .build();
+                    .id(member.getId())
+                    .name(member.getName())
+                    .signInId(member.getSignInId())
+                    .password(member.getPassword())
+                    .email(member.getEmail())
+                    .relationType(member.getRelationType())
+                    .role(member.getRole())
+                    .build();
         };
     }
 
@@ -152,8 +162,8 @@ public class SecurityConfig {
         public Collection<? extends GrantedAuthority> getAuthorities() {
             return this.role == MemberRole.USER ?
                     List.of(
-                        new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())),
-                        new SimpleGrantedAuthority("ROLE_".concat(this.relationType.toString()))) :
+                            new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())),
+                            new SimpleGrantedAuthority("ROLE_".concat(this.relationType.toString()))) :
                     List.of(new SimpleGrantedAuthority("ROLE_".concat(this.role.toString())));
         }
 
@@ -171,21 +181,25 @@ public class SecurityConfig {
 
         @Override
         public boolean isAccountNonExpired() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isAccountNonExpired();
         }
 
         @Override
         public boolean isAccountNonLocked() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isAccountNonLocked();
         }
 
         @Override
         public boolean isCredentialsNonExpired() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isCredentialsNonExpired();
         }
 
         @Override
         public boolean isEnabled() {
+            if (this.role == MemberRole.LEAVED) return false;
             return UserDetails.super.isEnabled();
         }
     }

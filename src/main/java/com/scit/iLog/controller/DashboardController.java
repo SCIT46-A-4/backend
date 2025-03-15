@@ -35,9 +35,10 @@ public class DashboardController {
 
     /**
      * D-1,D-2
+     *
      * @return 부모 권한을 가진 사용자만 볼 수 있는 대시보드 페이지 템플릿의 경로를 반환합니다.
      */
-    @GetMapping({"","/"})
+    @GetMapping({"", "/"})
     public String handleGetDashboardView(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
@@ -63,19 +64,20 @@ public class DashboardController {
     }
 
     //-------------------------------------------------------------------------------------------------------
+
     /**
      * v1.x.x-11
      * D-2
      * 수정 2025-03-03 / 김은진 / 모든 아이들의 기본 정보 조회
      *
      * @return 선생님 권한을 가진 사용자만 볼 수 있는 대시보드 페이지의 템플릿의 경로를 반환합니다.
-     *         이 페이지에서는 하나의 페이지에서 여러 정보를 필요로 하므로
-     *         관련된 API의 구현이 필요합니다.
+     * 이 페이지에서는 하나의 페이지에서 여러 정보를 필요로 하므로
+     * 관련된 API의 구현이 필요합니다.
      */
     @GetMapping("/teacher")
     public String handleGetTeacherDashboardView(
             @AuthenticationPrincipal MemberDetails memberDetails,
-            @RequestParam(name="sortOption", defaultValue = "NAME") SortOption sortOption,
+            @RequestParam(name = "sortOption", defaultValue = "NAME") SortOption sortOption,
             Model model) {
 
         List<ChildBasicInfoDTO> childId = childService.getAllChildrenBasicInfo(sortOption);
@@ -92,7 +94,6 @@ public class DashboardController {
     }
 
 
-
     /**
      * v1.x.x-12
      * 2025-03-04 김은진 / 특정아동의 프로필 정보 조회
@@ -103,7 +104,7 @@ public class DashboardController {
     @ResponseBody
     @GetMapping("/{childId}/profile")
     public ResponseEntity<ChildBasicInfoDTO> getChildProfile(
-            @PathVariable(name="childId") Long childId) {
+            @PathVariable(name = "childId") Long childId) {
         try {
             ChildBasicInfoDTO childInfo = childService.getChildBasicInfo(childId);
 

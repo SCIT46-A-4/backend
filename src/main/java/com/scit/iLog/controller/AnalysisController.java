@@ -17,7 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
@@ -119,7 +118,7 @@ public class AnalysisController {
             @PathVariable("analysisResultId") Long analysisResultId,
             Model model
     ) {
-        AnalysisResultDetailsDTO analysisResultDetails =  analysisService.getAnalysisResultDetails(analysisTargetId);
+        AnalysisResultDetailsDTO analysisResultDetails = analysisService.getAnalysisResultDetails(analysisTargetId);
         model.addAttribute("analysisResultDetails", analysisResultDetails);
         return "children/analysis/analysisResultDetailsView";
     }
@@ -180,11 +179,12 @@ public class AnalysisController {
         AI-3
      */
     @ResponseBody
-    @DeleteMapping("/results/{analysisResultId}")
+    @DeleteMapping("/{analysisTargetId}/results/{analysisResultId}")
     public boolean handleDeleteAnalysisResult(
+            @PathVariable("analysisTargetId") Long analysisTargetId,
             @PathVariable("analysisResultId") Long analysisResultId
     ) {
-        return analysisResultService.deleteAnalysisResult(analysisResultId);
+        return analysisResultService.deleteAnalysisResult(analysisTargetId);
     }
 
     /*
