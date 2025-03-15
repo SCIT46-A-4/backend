@@ -286,6 +286,12 @@
       document.getElementById(
         'analysisResultListLink'
       ).href = `/children/${childId}/analysis/resultList`;
+      document.getElementById(
+        'childDiaryLink'
+      ).href = `/children/${childId}/diaries/new`;
+      document.getElementById(
+        'childDiaryListLink'
+      ).href = `/children/${childId}/diaries/diaryList`;
     }
 
     function getRandomColor() {
@@ -634,7 +640,7 @@
                   <select id="childSelector">
                     <th:block th:each="child : ${childProfiles.childProfiles}">
                       <option th:value="${child.childId}" th:text="${child.name}" th:id="|child-${child.childId}|"
-                        th:attr="data-birthDate=${child.birthDate}, 
+                        th:attr="data-birthDate=${child.birthDate},
                           data-profileImgSrc=${child.profileImgSrc}, 
                           data-birthLocation=${child.birthLocation}, 
                           data-gender=${child.gender}, 
@@ -700,6 +706,16 @@
                       분석 결과목록 바로가기
                     </button>
                   </a>
+                    <a id="childDiaryLink" th:href="@{/children/{childId}/diaries/new}">
+                        <button class="button is-fullwidth is-info is-light mb-2">
+                            일기 작성하기
+                        </button>
+                    </a>
+                    <a id="childDiaryListLink" th:href="@{/children/{childId}/diaries/diaryList}">
+                        <button class="button is-fullwidth is-primary is-light">
+                            우링 아이 일기목록 바로가기
+                        </button>
+                    </a>
                 </div>
               </div>
             </div>
