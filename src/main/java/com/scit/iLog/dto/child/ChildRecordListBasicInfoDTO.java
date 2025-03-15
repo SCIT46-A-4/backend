@@ -17,6 +17,6 @@ public record ChildRecordListBasicInfoDTO(
         Gender gender,
         String profileImgSrcUri,
         String callName,
-        List<FamilyBackGround>familyBackGrounds
+        List<FamilyBackGround> familyBackGrounds
 ) {
 }

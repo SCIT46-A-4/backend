@@ -7,6 +7,6 @@ import java.util.List;
 
 public record MentalSurveySectionDTO(
         String title,
-        List<MentalSurveyQuestionDTO>questions
+        List<MentalSurveyQuestionDTO> questions
 ) {
 }

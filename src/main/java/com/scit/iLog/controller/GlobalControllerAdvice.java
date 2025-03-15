@@ -1,10 +1,9 @@
 package com.scit.iLog.controller;
 
 import com.scit.iLog.exception.*;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;

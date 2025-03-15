@@ -8,5 +8,6 @@ public record WeatherResponse(
         String timezone,
         int timezone_offset,
         List<WeatherData> data
-) {}
+) {
+}
 

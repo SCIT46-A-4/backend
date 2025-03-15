@@ -29,6 +29,7 @@ public class GuideController {
 
     /**
      * "이용안내 목록 페이지"를 보여주는 뷰를 반환하는 핸들러
+     *
      * @return "guides/guideListView" 뷰 페이지
      */
     @GetMapping("/guides")
@@ -39,20 +40,19 @@ public class GuideController {
         model.addAttribute("guides", guides);
         return "guides/guideListView";
     }
-    
+
     // v1.x.x-1 이용안내 가이드 정보 조회
     // 25/2/17 준
     @PostMapping("/guides")
     @ResponseBody
     public List<GuideDTO> handleGetGuideList(
-            @RequestParam(name="searchItem") String searchItem,
-            @RequestParam(name="searchWord") String searchWord
-    )
-    {
-    	// searchItem: 찾을 옵션 ex)title, content
-    	// searchWord: 찾을 내용 ex)"아이스" "아메리카노" "카라멜" "마끼아또"
-    	List<GuideDTO> guideDTO = guidesService.selectAll(searchItem, searchWord);
-    	
-    	return guideDTO;
+            @RequestParam(name = "searchItem") String searchItem,
+            @RequestParam(name = "searchWord") String searchWord
+    ) {
+        // searchItem: 찾을 옵션 ex)title, content
+        // searchWord: 찾을 내용 ex)"아이스" "아메리카노" "카라멜" "마끼아또"
+        List<GuideDTO> guideDTO = guidesService.selectAll(searchItem, searchWord);
+
+        return guideDTO;
     }
 }

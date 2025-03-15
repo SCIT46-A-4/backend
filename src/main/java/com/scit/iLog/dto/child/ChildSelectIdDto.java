@@ -9,8 +9,8 @@ import lombok.Builder;
  */
 @Builder
 public record ChildSelectIdDto(
-		Long id,
-	    String name,
-	    String authId
-		) {
+        Long id,
+        String name,
+        String authId
+) {
 }

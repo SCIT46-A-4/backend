@@ -3,9 +3,11 @@ package com.scit.iLog.service.analysis;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
-import com.scit.iLog.dto.analysis.*;
+import com.scit.iLog.dto.analysis.AnalysisResultDetailsDTO;
+import com.scit.iLog.dto.analysis.AnalysisResultNoteDetailsViewDTO;
+import com.scit.iLog.dto.analysis.AnalysisResultSatisfactionDetailsViewDTO;
+import com.scit.iLog.dto.analysis.AnalysisTargetInsertDTO;
 import com.scit.iLog.dto.analysis.ai.AIAnalysisResponseDTO;
-import com.scit.iLog.dto.analysis.ai.AIAnalysisResponseForWritingDTO;
 import com.scit.iLog.dto.analysis.weather.WeatherData;
 import com.scit.iLog.dto.analysis.weather.WeatherResponse;
 import com.scit.iLog.dto.child.ChildRecordExtraction;
@@ -38,15 +40,14 @@ public class AnalysisService {
     private final AnalysisTargetRepository analysisTargetRepository;
     private final MemberRepository memberRepository;
     private final ChildRepository childRepository;
-    private final AnalysisResultNoteRepository analysisResultNoteRepository;
-    private final AnalysisSatisfactionRepository analysisSatisfactionRepository;
     private final AnalysisTypeRepository analysisTypeRepository;
 
     @Transactional
     public Long getAnalysisResult(Long analysisTargetId) {
         AnalysisTargetEntity analysisTarget = findAnalysisTargetById(analysisTargetId);
         AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
-        if (StringUtils.hasText(aiAnalysisResponse.extractedText())) analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
+        if (StringUtils.hasText(aiAnalysisResponse.extractedText()))
+            analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
 
         AnalysisResultEntity analysisResult = AnalysisResultEntity.builder()
                 .title("Analysis-".concat(UUID.randomUUID().toString()))
@@ -89,15 +90,19 @@ public class AnalysisService {
                 .weather(analysisTarget.getWeather().getWeatherDesc())
                 .companion(analysisTarget.getCompanion())
                 .supplement(analysisTarget.getSupplement())
+                .analysisTypes(
+                        analysisTarget.getAnalysisTargetTypes().stream()
+                                .map(analysisTargetType ->
+                                        analysisTargetType.getAnalysisType().getType()).toList())
                 .extractedText(analysisTarget.getAnalyzedText())
                 .emotionScore(analysisResult.getEmotionScore())
                 .emotionDescription(analysisResult.getEmotionType().getKoreanName())
                 .analysisResult(analysisResult.getAnalysisResultText())
                 .suggestedSolution(analysisResult.getSuggestedSolution())
                 .analysisResultNote(
-                        new AnalysisResultNoteDetailsViewDTO(analysisResult.getAnalysisResultNote().getId(),analysisResult.getAnalysisResultNote().getContent()))
+                        new AnalysisResultNoteDetailsViewDTO(analysisResult.getAnalysisResultNote().getId(), analysisResult.getAnalysisResultNote().getContent()))
                 .analysisResultSatisfaction(
-                        new AnalysisResultSatisfactionDetailsViewDTO(analysisResult.getSatisfaction().getId(),analysisResult.getSatisfaction().getSatisfactionScore()))
+                        new AnalysisResultSatisfactionDetailsViewDTO(analysisResult.getSatisfaction().getId(), analysisResult.getSatisfaction().getSatisfactionScore()))
                 .build();
     }
 

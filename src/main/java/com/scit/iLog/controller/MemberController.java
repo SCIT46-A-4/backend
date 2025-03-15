@@ -1,5 +1,6 @@
 package com.scit.iLog.controller;
 
+import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.dto.member.MemberUpdateDTO;
 import com.scit.iLog.dto.member.MemberUpdateRequestDTO;
 import com.scit.iLog.service.ClaimService;
@@ -22,7 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static com.scit.iLog.config.SecurityConfig.*;
+import static com.scit.iLog.config.SecurityConfig.MemberDetails;
 
 @Slf4j
 @Controller
@@ -60,9 +61,7 @@ public class MemberController {
 
         return "/member/memberDetailsView";
     }
-    
-    
-    
+
 
     /*
         M-1
@@ -89,20 +88,18 @@ public class MemberController {
     @PostMapping("/quit/v2")
     public boolean handleDeleteMemberV2(
             HttpServletRequest request,
-            Authentication authentication,
-            @RequestParam(value = "deleteAllChildren", required = false) boolean deleteAllChildren
+            Authentication authentication
     ) {
         if (!authentication.isAuthenticated()) return false;
         MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
-        if (deleteAllChildren) {
+
+        if (memberDetails.getRelationType() == RelationType.GUARDIAN) {
             claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
             relationShipService.deleteAllChildrenOf(memberDetails.getId());
-        } else {
-            claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
-            childDiaryService.inValidateByMember(memberDetails.getId());
-            analysisService.inValidateByMember(memberDetails.getId());
-            childRecordService.inValidateByMember(memberDetails.getId());
+        } else if (memberDetails.getRelationType() == RelationType.TEACHER) {
             memberService.deleteMemberWithRelationShips(memberDetails.getId());
+            claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
+
         }
 
         SecurityContextHolder.clearContext();
@@ -128,6 +125,7 @@ public class MemberController {
         return "/member/memberUpdateView";
     }
 
+    @ResponseBody
     @PostMapping("/password/validate")
     public boolean handlePostPasswordReset(
             @AuthenticationPrincipal MemberDetails memberDetails,

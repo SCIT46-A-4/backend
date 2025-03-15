@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class HealthCheckListDTO {
-	private Long id;
-	private String childName;
-	private String originalHealthCheckImgName;
-	private String createdAt;
+    private Long id;
+    private String childName;
+    private String originalHealthCheckImgName;
+    private String createdAt;
 }

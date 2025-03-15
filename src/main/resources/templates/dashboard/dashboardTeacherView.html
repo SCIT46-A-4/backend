@@ -1,418 +1,355 @@
 <!DOCTYPE html>
-<html
-  lang="ko"
-  xmlns:th="http://thymeleaf.org"
-  xmlns:sec="http://thymeleaf.org/extras/spring-security"
->
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>교사용 대시보드 - iLog</title>
-    <link rel="stylesheet" href="/css/bulma.min.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+<html lang="ko" xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 
-    <script src="/js/jquery-3.7.1.min.js"></script>
-    <script src="/js/highcharts.js"></script>
-    <script src="/js/exporting.js"></script>
-    <script src="/js/accessibility.js"></script>
-    <script src="/js/export-data.js"></script>
-    <script src="/js/series-label.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>교사용 대시보드 - iLog</title>
+  <link rel="stylesheet" href="/css/bulma.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <style>
-      /* 네비게이션 바 스타일 */
-      .navbar {
-        background-color: #ffe4e1;
-      }
+  <script src="/js/jquery-3.7.1.min.js"></script>
+  <script src="/js/highcharts.js"></script>
+  <script src="/js/exporting.js"></script>
+  <script src="/js/accessibility.js"></script>
+  <script src="/js/export-data.js"></script>
+  <script src="/js/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+    <script>
+        Highcharts.setOptions({
+        lang: {
+          contextButtonTitle: '차트 메뉴',
+          downloadPNG: 'PNG 이미지 다운로드',
+          downloadJPEG: 'JPEG 이미지 다운로드',
+          downloadPDF: 'PDF 다운로드',
+          downloadSVG: 'SVG 다운로드',
+          printChart: '차트 인쇄',
+          viewFullscreen: '전체 화면 보기',
+          exitFullscreen: '전체 화면 닫기',
+          downloadCSV: 'CSV 다운로드',
+          downloadXLS: '엑셀 다운로드',
+          openInCloud: 'Highcharts 클라우드에서 열기',
+        },
+        exporting: {
+          enabled: true,
+          fallbackToExportServer: false, // 서버 없이 내보내기
+          libURL: 'https://code.highcharts.com/modules/', // 필요한 라이브러리 경로 설정
+        },
+      });
+    </script>
+  <style>
+    /* 네비게이션 바 스타일 */
+    .navbar {
+      background-color: #ffe4e1;
+    }
 
-      /* 로고 이미지 스타일 */
-      .logo-image {
-        max-width: 150px;
-        height: auto;
-      }
+    /* 로고 이미지 스타일 */
+    .logo-image {
+      max-width: 150px;
+      height: auto;
+    }
 
-      /* 학생 리스트 스타일 */
-      .student-list {
-        height: calc(100vh - 200px);
-        overflow-y: auto;
-      }
+    /* 학생 리스트 스타일 */
+    .student-list {
+      height: calc(100vh - 200px);
+      overflow-y: auto;
+    }
 
-      /* 학생 리스트 아이템 스타일 */
-      .student-item {
-        padding: 10px;
-        margin-bottom: 5px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
+    /* 학생 리스트 아이템 스타일 */
+    .student-item {
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-      .student-item:hover {
-        background-color: #f5f5f5;
-      }
+    .student-item:hover {
+      background-color: #f5f5f5;
+    }
 
-      .student-item.active {
-        background-color: #ffe4e1;
-      }
+    .student-item.active {
+      background-color: #ffe4e1;
+    }
 
-      /* 통계 컨테이너 스타일 */
-      .stats-container {
-        background-color: white;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        height: 300px;
-      }
+    /* 통계 컨테이너 스타일 */
+    .stats-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      height: 300px;
+    }
 
-      /* 프로필 이미지 크기 설정 */
-      .image.is-64x64 {
-        width: 64px;
-        height: 64px;
-        overflow: hidden;
-      }
+    /* 프로필 이미지 크기 설정 */
+    .image.is-64x64 {
+      width: 64px;
+      height: 64px;
+      overflow: hidden;
+    }
 
-      /* 프로필 이미지 맞춤 */
-      .image.is-64x64 img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+    /* 프로필 이미지 맞춤 */
+    .image.is-64x64 img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-      /* 태그 크기 설정 */
-      .tag.is-medium {
-        font-size: 1rem;
-        height: 2em;
-        padding-left: 0.875em;
-        padding-right: 0.875em;
-      }
+    /* 태그 크기 설정 */
+    .tag.is-medium {
+      font-size: 1rem;
+      height: 2em;
+      padding-left: 0.875em;
+      padding-right: 0.875em;
+    }
 
-      /* 선택된 테이블 행의 배경색 변경 */
-      .table tr.is-selected {
-        background-color: #f5f5f5;
-      }
+    /* 선택된 테이블 행의 배경색 변경 */
+    .table tr.is-selected {
+      background-color: #f5f5f5;
+    }
 
-      /* 리스트에 스크롤 기능 추가 */
-      .table-container {
-        max-height: calc(100vh - 300px);
-        overflow-y: auto;
-        border: 1px solid #dbdbdb;
-        border-radius: 4px;
-      }
+    /* 리스트에 스크롤 기능 추가 */
+    .table-container {
+      max-height: calc(100vh - 300px);
+      overflow-y: auto;
+      border: 1px solid #dbdbdb;
+      border-radius: 4px;
+    }
 
-      /* 테이블 헤더 고정 */
-      .table thead th {
-        position: sticky;
-        top: 0;
-        background-color: white;
-        z-index: 1;
-        border-bottom: 2px solid #dbdbdb;
-      }
+    /* 테이블 헤더 고정 */
+    .table thead th {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 1;
+      border-bottom: 2px solid #dbdbdb;
+    }
 
-      /* 스크롤바 스타일 */
-      .table-container::-webkit-scrollbar {
-        width: 8px;
-      }
+    /* 스크롤바 스타일 */
+    .table-container::-webkit-scrollbar {
+      width: 8px;
+    }
 
-      .table-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-      }
+    .table-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
 
-      .table-container::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 4px;
-      }
+    .table-container::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
 
-      .table-container::-webkit-scrollbar-thumb:hover {
-        background: #555;
-      }
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
 
-      /* 리스트 아이템 기본 스타일 */
-      .child-item {
-        cursor: pointer;
-      }
+    /* 리스트 아이템 기본 스타일 */
+    .child-item {
+      cursor: pointer;
+    }
 
-      /* 선택된 리스트 아이템 스타일 */
-      .child-item.is-selected {
-        background-color: #f5f5f5;
-      }
+    /* 선택된 리스트 아이템 스타일 */
+    .child-item.is-selected {
+      background-color: #f5f5f5;
+    }
 
-      /* 프로필 섹션 여백 */
-      .profile-section {
-        padding: 20px;
-      }
+    /* 프로필 섹션 여백 */
+    .profile-section {
+      padding: 20px;
+    }
 
-      /* 프로필 이미지 스타일 */
-      .profile-image {
-        width: 150px !important;
-        height: 150px !important;
-        object-fit: cover !important;
-        border-radius: 50%;
-      }
+    /* 프로필 이미지 스타일 */
+    .profile-image {
+      width: 150px !important;
+      height: 150px !important;
+      object-fit: cover !important;
+      border-radius: 50%;
+    }
 
-      /* 테이블 너비 자동 조정 */
-      .table {
-        table-layout: auto;
-        width: 100%;
-      }
+    /* 테이블 너비 자동 조정 */
+    .table {
+      table-layout: auto;
+      width: 100%;
+    }
 
-      /* 테이블 셀 스타일 */
-      .table th,
-      .table td {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding: 10px 12px;
-        text-align: center;
-      }
+    /* 테이블 셀 스타일 */
+    .table th,
+    .table td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 10px 12px;
+      text-align: center;
+    }
 
-      /* 생년월일 칼럼 너비 조정 */
-      .table th:nth-child(2),
-      .table td:nth-child(2) {
-        min-width: 120px;
-        max-width: 150px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+    /* 생년월일 칼럼 너비 조정 */
+    .table th:nth-child(2),
+    .table td:nth-child(2) {
+      min-width: 120px;
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-      /* 최근 게시물 칼럼 중앙 정렬 */
-      .table th:nth-child(3),
-      .table td:nth-child(3) {
-        text-align: center;
-      }
+    /* 최근 게시물 칼럼 중앙 정렬 */
+    .table th:nth-child(3),
+    .table td:nth-child(3) {
+      text-align: center;
+    }
 
-      /* 컬럼(좌측 & 우측) 높이 맞추기 */
+    /* 컬럼(좌측 & 우측) 높이 맞추기 */
+    .columns {
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* 왼쪽 컬럼 스타일 */
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      height: auto;
+    }
+
+    /* 오른쪽 컬럼 스타일 */
+    .right-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* 리스트 컨테이너 스타일 */
+    .child-list-container {
+      overflow-y: auto;
+      border: 1px solid #dbdbdb;
+      border-radius: 4px;
+    }
+
+    /* 왼쪽 컬럼 너비 조정 (30%) */
+    .column.is-3.left-column {
+      flex: 0 0 30%;
+    }
+
+    /* 반응형 설정 (화면이 1024px 이하일 때 적용) */
+    @media screen and (max-width: 1024px) {
       .columns {
-        display: flex;
-        align-items: stretch;
-      }
-
-      /* 왼쪽 컬럼 스타일 */
-      .left-column {
-        display: flex;
         flex-direction: column;
-        height: auto;
       }
 
-      /* 오른쪽 컬럼 스타일 */
+      .column {
+        width: 100%;
+      }
+
+      .left-column,
       .right-column {
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
+        width: 100%;
       }
 
-      /* 리스트 컨테이너 스타일 */
       .child-list-container {
+        max-height: 50vh;
         overflow-y: auto;
-        border: 1px solid #dbdbdb;
-        border-radius: 4px;
+        width: 100%;
       }
 
-      /* 왼쪽 컬럼 너비 조정 (30%) */
-      .column.is-3.left-column {
-        flex: 0 0 30%;
+      /* 테이블 셀 크기 조정 */
+      .table th,
+      .table td {
+        font-size: 0.9rem;
+        padding: 8px 10px;
       }
 
-      /* 반응형 설정 (화면이 1024px 이하일 때 적용) */
-      @media screen and (max-width: 1024px) {
-        .columns {
-          flex-direction: column;
-        }
-
-        .column {
-          width: 100%;
-        }
-
-        .left-column,
-        .right-column {
-          flex: 1;
-          width: 100%;
-        }
-
-        .child-list-container {
-          max-height: 50vh;
-          overflow-y: auto;
-          width: 100%;
-        }
-
-        /* 테이블 셀 크기 조정 */
-        .table th,
-        .table td {
-          font-size: 0.9rem;
-          padding: 8px 10px;
-        }
-
-        /* 생년월일 칼럼 크기 조정 */
-        .table th:nth-child(2),
-        .table td:nth-child(2) {
-          font-size: 0.9rem;
-          width: auto;
-          min-width: 150px;
-        }
+      /* 생년월일 칼럼 크기 조정 */
+      .table th:nth-child(2),
+      .table td:nth-child(2) {
+        font-size: 0.9rem;
+        width: auto;
+        min-width: 150px;
       }
-    </style>
+    }
+  </style>
 
-    <script>
-      // 통합 스크립트: 학생 클릭 시 프로필, 도넛 차트, 그리고 트렌드 차트(설문조사 결과)를 불러옵니다.
-      $(document).ready(function () {
-        // 도넛 차트 기간 선택 버튼 이벤트
-        $('.donut-date-range-buttons button').on('click', function () {
-          const period = $(this).attr('data-period');
-          setDonutDateRange(period);
-        });
-
-        // 학생 클릭 이벤트 처리 (원본의 .student-item 사용)
-        $(document).on('click', '.student-item', function () {
-          const childId = $(this).attr('data-child-id');
-          // 선택 효과
-          $('.student-item').removeClass('active');
-          $(this).addClass('active');
-
-          // 프로필 정보 로드 (fetch API 사용 - 순수 JS 방식 참고)
-          fetch(`/dashboard/${childId}/profile`, {
-            method: 'GET',
-            headers: { Accept: 'application/json' },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              // 프로필 이미지 업데이트
-              const profileImage = document.querySelector('#profileImage');
-              profileImage.src =
-                data.profileImgSrcUri || '/images/default-profile.png';
-              profileImage.onerror = () =>
-                (profileImage.src = '/images/default-profile.png');
-
-              // 생년월일 및 나이 계산
-              const birthDate = new Date(data.birthDate);
-              const age = calculateAge(birthDate);
-              const formattedDate = birthDate.toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              });
-
-              // 프로필 정보 업데이트 (원본 HTML의 id에 맞게)
-              $('#studentName').text(data.name);
-              $('#studentBirthDate').text(formattedDate);
-              $('#studentAge').text(`(만 ${age}세)`);
-              $('#studentGender').text(data.gender === 'MAN' ? '남자' : '여자');
-              // 필요시 노트 정보도 업데이트 (노트 출력 요소가 있다면)
-              $('#studentNote').text(data.note || '-');
-
-              // 가정환경 정보를 추가
-              const familyBackgrounds = data.familyBackGrounds;
-              if (
-                Array.isArray(familyBackgrounds) &&
-                familyBackgrounds.length > 0
-              ) {
-                const backgroundsText = familyBackgrounds.join(', ');
-                $('#studentFamilyBackground').text(backgroundsText);
-              } else {
-                $('#studentFamilyBackground').text('-');
-              }
-            })
-            .catch((error) => {
-              console.error('Error:', error);
-              $('#profileImage').attr('src', '/images/default-profile.png');
-              $('#studentName').text('-');
-              $('#studentBirthDate').text('-');
-              $('#studentAge').text('-');
-              $('#studentGender').text('-');
-              $('#studentNote').text('-');
-            });
-
-          // 학생 클릭 시 도넛 차트는 기본 주간으로 출력
-          setDonutDateRange('WEEK');
-
-          // 설문조사 결과(Trend 차트) 데이터 출력
-          loadSurveyData(childId);
-        });
-
-        // 감정 분석 데이터 출력 (도넛 차트)
-        function loadStudentEmotionData(childId) {
-          const periodType = 'WEEK';
-
-          $.ajax({
-            url: `/${childId}/dashBoardEmotionStats`,
-            type: 'GET',
-            data: { startDate, endDate, periodType },
-            dataType: 'json',
-            success: function (data) {
-              console.log('📊 감정 데이터:', data);
-              updatePieChart(data.seriesDataList);
-            },
-            error: function () {
-              console.error('🚨 감정 데이터 불러오기 실패');
-            },
-          });
-        }
-
-        // 문서 로드 후 목록의 첫 번째 학생 자동 선택
-        var $firstStudent = $('.student-item').first();
-        if ($firstStudent.length) {
-          $firstStudent.trigger('click');
-        }
+  <script>
+    // 통합 스크립트: 학생 클릭 시 프로필, 도넛 차트, 그리고 트렌드 차트(설문조사 결과)를 불러옵니다.
+    $(document).ready(function () {
+      // 도넛 차트 기간 선택 버튼 이벤트
+      $('.donut-date-range-buttons button').on('click', function () {
+        const period = $(this).attr('data-period');
+        setDonutDateRange(period);
       });
 
-      // 전역 함수들 정의 시작
+      // 학생 클릭 이벤트 처리 (원본의 .student-item 사용)
+      $(document).on('click', '.student-item', function () {
+        const childId = $(this).attr('data-child-id');
+        // 선택 효과
+        $('.student-item').removeClass('active');
+        $(this).addClass('active');
 
-      // 나이 계산 함수 (plain JavaScript)
-      function calculateAge(birthDate) {
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-        }
-        return age;
-      }
+        // 프로필 정보 로드 (fetch API 사용 - 순수 JS 방식 참고)
+        fetch(`/dashboard/${childId}/profile`, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // 프로필 이미지 업데이트
+            const profileImage = document.querySelector('#profileImage');
+            profileImage.src =
+              data.profileImgSrcUri || '/images/default-profile.png';
+            profileImage.onerror = () =>
+              (profileImage.src = '/images/default-profile.png');
 
-      // 날짜를 "yyyy-MM-dd" 형식으로 변환하는 함수 (시간 부분 제거) //수정함
-      function formatDate(date) {
-        const year = date.getFullYear();
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
-        return `${year}-${month}-${day}T00:00:00`;
-      }
+            // 생년월일 및 나이 계산
+            const birthDate = new Date(data.birthDate);
+            const age = calculateAge(birthDate);
+            const formattedDate = birthDate.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            });
 
-      // 선택한 기간(주간, 월간, 반년)에 따라 시작일과 종료일을 계산하고 도넛 차트를 업데이트하는 함수 //수정함
-      function setDonutDateRange(period) {
-        const now = new Date();
-        let startDate;
-        switch (period) {
-          case 'WEEK':
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - 7);
-            break;
-          case 'MONTH':
-            startDate = new Date(now);
-            startDate.setMonth(now.getMonth() - 1);
-            break;
-          default:
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - 7);
-            break;
-        }
-        const startStr = formatDate(startDate);
-        const endStr = formatDate(now);
-        // periodType 값을 그대로 전달 (예: "WEEK", "MONTH")
-        loadEmotionStatsWithDates(startStr, endStr, period);
-      }
+            // 프로필 정보 업데이트 (원본 HTML의 id에 맞게)
+            $('#studentName').text(data.name);
+            $('#studentBirthDate').text(formattedDate);
+            $('#studentAge').text(`(만 ${age}세)`);
+            $('#studentGender').text(data.gender === 'MAN' ? '남자' : '여자');
+            // 필요시 노트 정보도 업데이트 (노트 출력 요소가 있다면)
+            $('#studentNote').text(data.note || '-');
 
-      // 현재 선택된 아이의 ID 반환 함수
-      function getSelectedChildId() {
-        return $('.student-item.active').attr('data-child-id');
-      }
+            // 가정환경 정보를 추가
+            const familyBackgrounds = data.familyBackGrounds;
+            if (
+              Array.isArray(familyBackgrounds) &&
+              familyBackgrounds.length > 0
+            ) {
+              const backgroundsText = familyBackgrounds.join(', ');
+              $('#studentFamilyBackground').text(backgroundsText);
+            } else {
+              $('#studentFamilyBackground').text('-');
+            }
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            $('#profileImage').attr('src', '/images/default-profile.png');
+            $('#studentName').text('-');
+            $('#studentBirthDate').text('-');
+            $('#studentAge').text('-');
+            $('#studentGender').text('-');
+            $('#studentNote').text('-');
+          });
 
-      // 도넛 차트 데이터를 서버에서 불러오는 함수 (날짜 범위와 periodType 전달)
-      function loadEmotionStatsWithDates(startDate, endDate, periodType) {
-        const childId = getSelectedChildId();
-        if (!childId) {
-          console.warn('선택된 아동이 없습니다.');
-          return;
-        }
+        // 학생 클릭 시 도넛 차트는 기본 주간으로 출력
+        setDonutDateRange('WEEK');
+
+        // 설문조사 결과(Trend 차트) 데이터 출력
+        loadSurveyData(childId);
+      });
+
+      // 감정 분석 데이터 출력 (도넛 차트)
+      function loadStudentEmotionData(childId) {
+        const periodType = 'WEEK';
+
         $.ajax({
           url: `/${childId}/dashBoardEmotionStats`,
           type: 'GET',
@@ -428,516 +365,515 @@
         });
       }
 
-      // 도넛 차트 업데이트 함수 (감정 분석 결과)
-      function updatePieChart(data) {
-        console.log('📊 감정 차트 데이터:', data);
-        if (!Array.isArray(data) || data.length === 0) {
-          console.warn('⚠ 감정 데이터 없음. 기본 데이터로 초기화');
-          data = [
-            { name: '기쁨', y: 30 },
-            { name: '슬픔', y: 20 },
-            { name: '분노', y: 25 },
-            { name: '놀람', y: 25 },
-          ];
-        } else {
-          const emotionColorMap = {
-            기쁨: '#FFD700', // 골드(따뜻한 느낌)
-            슬픔: '#4169E1', // 로열블루(깊은 슬픔)
-            분노: '#DC143C', // 크림슨(강한 분노)
-            두려움: '#483D8B', // 다크 슬레이트 블루(무거운 느낌)
-            놀람: '#FFEC8B', // 연한 오렌지(경쾌한 놀람)
-            중립: '#A9A9A9', // 다크그레이(중립적인 느낌)
-            혼란: '#FF69B4', // 핫핑크(어지러운 혼란)
-            불안: '#8B0000', // 다크레드(불안감)
-            지루함: '#2F4F4F', // 다크슬레이트그레이(무거운 지루함)
-            흥분: '#FF1493', // 딥핑크(에너지 넘치는 흥분)
-            수줍음: '#FFDAB9', // 연한 살구색(부드러운 수줍음)
-          };
-
-          data = data
-            .filter((item) => item.label && item.resultScore !== null)
-            .map((item) => ({
-              name: item.label,
-              y: item.resultScore,
-              color: emotionColorMap[item.label] || undefined,
-            }));
-        }
-        if ($('#progressChart').length === 0) {
-          console.error('🚨 progressChart 요소가 존재하지 않습니다!');
-          return;
-        }
-        Highcharts.chart('progressChart', {
-          chart: {
-            type: 'pie',
-            custom: {},
-            events: {
-              render() {
-                const chart = this,
-                  series = chart.series[0];
-
-                // 가장 큰 감정 비율을 찾기
-                let maxPoint = series.data.reduce(
-                  (prev, curr) => (curr.y > prev.y ? curr : prev),
-                  series.data[0]
-                );
-
-                // 중앙에 표시될 텍스트 설정
-                let labelText = maxPoint
-                  ? `${maxPoint.name}<br/><strong>${maxPoint.y.toFixed(
-                      0
-                    )}%</strong>`
-                  : '총 감정 분석<br/><strong>100%</strong>';
-
-                // 기존 레이블이 있으면 업데이트, 없으면 새로 생성
-                let customLabel = chart.options.chart.custom.label;
-                if (!customLabel) {
-                  customLabel = chart.options.chart.custom.label =
-                    chart.renderer
-                      .label(labelText)
-                      .css({
-                        color: '#000',
-                        textAnchor: 'middle',
-                        fontSize: '1.2em',
-                        fontWeight: 'bold',
-                      })
-                      .attr({
-                        align: 'center', // 중앙 정렬
-                      })
-                      .add();
-                } else {
-                  customLabel.attr({ text: labelText });
-                }
-
-                // 📌 **정확한 중앙 위치 계산**
-                // 가로 중앙
-                const x = chart.plotLeft + series.center[0];
-                // 세로 중앙 조정
-                const y =
-                  chart.plotTop +
-                  series.center[1] -
-                  customLabel.getBBox().height / 4;
-
-                // 중앙 라벨 위치 적용
-                customLabel.attr({ x, y });
-
-                // 폰트 크기 자동 조정
-                customLabel.css({
-                  fontSize: `${series.center[2] / 10}px`,
-                });
-              },
-            },
-          },
-          accessibility: { point: { valueSuffix: '%' } },
-          title: { text: '감정 분석 결과' },
-          tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.0f}%</b>',
-          },
-          legend: { enabled: false },
-          plotOptions: {
-            pie: {
-              innerSize: '75%',
-              allowPointSelect: true,
-              cursor: 'pointer',
-              borderRadius: 8,
-              dataLabels: {
-                enabled: true,
-                distance: -15,
-                format: '{point.name}<br/>{point.percentage:.0f}%',
-                style: { fontSize: '0.9em' },
-              },
-              showInLegend: true,
-            },
-          },
-          series: [
-            {
-              name: '비율',
-              colorByPoint: false,
-              data: data,
-            },
-          ],
-        });
+      // 문서 로드 후 목록의 첫 번째 학생 자동 선택
+      var $firstStudent = $('.student-item').first();
+      if ($firstStudent.length) {
+        $firstStudent.trigger('click');
       }
+    });
 
-      // 설문조사 결과(Trend 차트) 데이터 불러오기
-      function loadSurveyData(childId) {
-        let calanderNum = 7; // 주간 7, 월간 30, 반년 180 등
-        $.ajax({
-          url: `/children/${childId}/mentalSurveys/${calanderNum}/GetScores`,
-          type: 'POST',
-          success: function (response) {
-            updateLineChart(response);
-          },
-          error: function (xhr, status, error) {
-            console.error('🚨 설문 데이터 로딩 실패:', error);
-          },
-        });
+    // 전역 함수들 정의 시작
+
+    // 나이 계산 함수 (plain JavaScript)
+    function calculateAge(birthDate) {
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
       }
+      return age;
+    }
 
-      // Trend 차트 업데이트 (설문조사 결과)
-      function updateLineChart(data) {
-        if (!data || data.length === 0) {
-          console.warn(
-            '⚠ 설문 데이터가 없습니다. Trend Chart를 생성하지 않습니다.'
-          );
-          return;
-        }
-        let categories = data.map((item) => item.createdAt);
-        let scores = data.map((item) => item.totalLikertScore);
-        Highcharts.chart('trendChart', {
-          title: { text: '설문조사 결과', align: 'left' },
-          yAxis: { title: { text: 'Score' } },
-          xAxis: { categories: categories, title: { text: 'Date' } },
-          series: [{ name: '심리분석 점수', data: scores }],
-        });
+    // 날짜를 "yyyy-MM-dd" 형식으로 변환하는 함수 (시간 부분 제거) //수정함
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = ('0' + (date.getMonth() + 1)).slice(-2);
+      const day = ('0' + date.getDate()).slice(-2);
+      return `${year}-${month}-${day}T00:00:00`;
+    }
+
+    // 선택한 기간(주간, 월간, 반년)에 따라 시작일과 종료일을 계산하고 도넛 차트를 업데이트하는 함수 //수정함
+    function setDonutDateRange(period) {
+      const now = new Date();
+      let startDate;
+      switch (period) {
+        case 'WEEK':
+          startDate = new Date(now);
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case 'MONTH':
+          startDate = new Date(now);
+          startDate.setMonth(now.getMonth() - 1);
+          break;
+        default:
+          startDate = new Date(now);
+          startDate.setDate(now.getDate() - 7);
+          break;
       }
+      const startStr = formatDate(startDate);
+      const endStr = formatDate(now);
+      // periodType 값을 그대로 전달 (예: "WEEK", "MONTH")
+      loadEmotionStatsWithDates(startStr, endStr, period);
+    }
 
-      // 정렬(select) 변경 시 페이지 이동 함수
-      function changeSort(sortOption) {
-        window.location.href = `/dashboard/teacher?sortOption=${sortOption}`;
+    // 현재 선택된 아이의 ID 반환 함수
+    function getSelectedChildId() {
+      return $('.student-item.active').attr('data-child-id');
+    }
+
+    // 도넛 차트 데이터를 서버에서 불러오는 함수 (날짜 범위와 periodType 전달)
+    function loadEmotionStatsWithDates(startDate, endDate, periodType) {
+      const childId = getSelectedChildId();
+      if (!childId) {
+        console.warn('선택된 아동이 없습니다.');
+        return;
       }
-
-      // DOMContentLoaded 이벤트를 통해 URL 파라미터로부터 현재 정렬 상태 반영 (필요 시)
-      document.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentSort = urlParams.get('sortOption');
-        if (currentSort) {
-          document.getElementById('sortOption').value = currentSort;
-        }
+      $.ajax({
+        url: `/${childId}/dashBoardEmotionStats`,
+        type: 'GET',
+        data: { startDate, endDate, periodType },
+        dataType: 'json',
+        success: function (data) {
+          console.log('📊 감정 데이터:', data);
+          updatePieChart(data.seriesDataList);
+        },
+        error: function () {
+          console.error('🚨 감정 데이터 불러오기 실패');
+        },
       });
-      // 전역 함수들 정의 끝
+    }
 
-      function adjustListHeight() {
-        const rightColumn = document.querySelector('.right-column');
-        const childListContainer = document.querySelector(
-          '.child-list-container'
-        );
+    // 도넛 차트 업데이트 함수 (감정 분석 결과)
+    function updatePieChart(data) {
+      console.log('📊 감정 차트 데이터:', data);
+      if (!Array.isArray(data) || data.length === 0) {
+        console.warn('⚠ 감정 데이터 없음. 기본 데이터로 초기화');
+        data = [
+          { name: '기쁨', y: 30 },
+          { name: '슬픔', y: 20 },
+          { name: '분노', y: 25 },
+          { name: '놀람', y: 25 },
+        ];
+      } else {
+        const emotionColorMap = {
+          기쁨: '#FFD700', // 골드(따뜻한 느낌)
+          슬픔: '#4169E1', // 로열블루(깊은 슬픔)
+          분노: '#DC143C', // 크림슨(강한 분노)
+          두려움: '#483D8B', // 다크 슬레이트 블루(무거운 느낌)
+          놀람: '#FFEC8B', // 연한 오렌지(경쾌한 놀람)
+          중립: '#A9A9A9', // 다크그레이(중립적인 느낌)
+          혼란: '#FF69B4', // 핫핑크(어지러운 혼란)
+          불안: '#8B0000', // 다크레드(불안감)
+          지루함: '#2F4F4F', // 다크슬레이트그레이(무거운 지루함)
+          흥분: '#FF1493', // 딥핑크(에너지 넘치는 흥분)
+          수줍음: '#FFDAB9', // 연한 살구색(부드러운 수줍음)
+        };
 
-        if (rightColumn && childListContainer) {
-          const rightColumnHeight = rightColumn.offsetHeight;
-          childListContainer.style.maxHeight = `${rightColumnHeight * 0.76}px`;
-        }
+        data = data
+          .filter((item) => item.label && item.resultScore !== null)
+          .map((item) => ({
+            name: item.label,
+            y: item.resultScore,
+            color: emotionColorMap[item.label] || undefined,
+          }));
       }
+      if ($('#progressChart').length === 0) {
+        console.error('🚨 progressChart 요소가 존재하지 않습니다!');
+        return;
+      }
+      Highcharts.chart('progressChart', {
+        chart: {
+          type: 'pie',
+          custom: {},
+          events: {
+            render() {
+              const chart = this,
+                series = chart.series[0];
 
-      document.addEventListener('DOMContentLoaded', adjustListHeight);
-      window.addEventListener('resize', adjustListHeight);
-    </script>
-  </head>
+              // 가장 큰 감정 비율을 찾기
+              let maxPoint = series.data.reduce(
+                (prev, curr) => (curr.y > prev.y ? curr : prev),
+                series.data[0]
+              );
 
-  <body>
-    <!-- 네비게이션 바 -->
-    <nav class="navbar">
-      <div class="navbar-brand">
-        <a class="navbar-item" th:href="@{/dashboard}">
-          <!-- 로고 이미지 -->
-          <img
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="로고"
-            class="logo-image"
-          />
-        </a>
-      </div>
+              // 중앙에 표시될 텍스트 설정
+              let labelText = maxPoint
+                ? `${maxPoint.name}<br/><strong>${maxPoint.y.toFixed(
+                  0
+                )}%</strong>`
+                : '총 감정 분석<br/><strong>100%</strong>';
 
-      <!-- 우측 네비게이션 -->
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons">
-            <!-- 이용안내 페이지 이동 버튼 -->
-            <a class="button is-light" th:href="@{/guides}">이용안내</a>
-            <!-- 고객센터 페이지 이동 버튼 -->
-            <a class="button is-light" th:href="@{/claims}">고객 센터</a>
-              <!-- 로그아웃 버튼 -->
-              <a class="button is-light" th:href="@{/auth/logout}">로그아웃</a>
-              <!-- 사용자 정보 표시 및 프로필 페이지 이동 버튼 -->
-            <a class="button is-light" th:href="@{/members/myDetails}">
-              <span class="icon"><i class="fas fa-user"></i></span>
-              <span
-                th:text="${userName} + ' (' + (${relationType} ?: '미지정') + ')'"
-              ></span>
-            </a>
-          </div>
+              // 기존 레이블이 있으면 업데이트, 없으면 새로 생성
+              let customLabel = chart.options.chart.custom.label;
+              if (!customLabel) {
+                customLabel = chart.options.chart.custom.label =
+                  chart.renderer
+                    .label(labelText)
+                    .css({
+                      color: '#000',
+                      textAnchor: 'middle',
+                      fontSize: '1.2em',
+                      fontWeight: 'bold',
+                    })
+                    .attr({
+                      align: 'center', // 중앙 정렬
+                    })
+                    .add();
+              } else {
+                customLabel.attr({ text: labelText });
+              }
+
+              // 📌 **정확한 중앙 위치 계산**
+              // 가로 중앙
+              const x = chart.plotLeft + series.center[0];
+              // 세로 중앙 조정
+              const y =
+                chart.plotTop +
+                series.center[1] -
+                customLabel.getBBox().height / 4;
+
+              // 중앙 라벨 위치 적용
+              customLabel.attr({ x, y });
+
+              // 폰트 크기 자동 조정
+              customLabel.css({
+                fontSize: `${series.center[2] / 10}px`,
+              });
+            },
+          },
+        },
+        accessibility: { point: { valueSuffix: '%' } },
+        title: { text: '감정 분석 결과' },
+        tooltip: {
+          pointFormat: '{series.name}: <b>{point.percentage:.0f}%</b>',
+        },
+        legend: { enabled: false },
+        plotOptions: {
+          pie: {
+            innerSize: '75%',
+            allowPointSelect: true,
+            cursor: 'pointer',
+            borderRadius: 8,
+            dataLabels: {
+              enabled: true,
+              distance: -15,
+              format: '{point.name}<br/>{point.percentage:.0f}%',
+              style: { fontSize: '0.9em' },
+            },
+            showInLegend: true,
+          },
+        },
+        series: [
+          {
+            name: '비율',
+            colorByPoint: false,
+            data: data,
+          },
+        ],
+      });
+    }
+
+    // 설문조사 결과(Trend 차트) 데이터 불러오기
+    function loadSurveyData(childId) {
+      let calanderNum = 7; // 주간 7, 월간 30, 반년 180 등
+      $.ajax({
+        url: `/children/${childId}/mentalSurveys/${calanderNum}/GetScores`,
+        type: 'POST',
+        success: function (response) {
+          updateLineChart(response);
+        },
+        error: function (xhr, status, error) {
+          console.error('🚨 설문 데이터 로딩 실패:', error);
+        },
+      });
+    }
+
+    // Trend 차트 업데이트 (설문조사 결과)
+    function updateLineChart(data) {
+      if (!data || data.length === 0) {
+        console.warn(
+          '⚠ 설문 데이터가 없습니다. Trend Chart를 생성하지 않습니다.'
+        );
+        return;
+      }
+      let categories = data.map((item) => item.createdAt);
+      let scores = data.map((item) => item.totalLikertScore);
+      Highcharts.chart('trendChart', {
+        title: { text: '설문조사 결과', align: 'left' },
+        yAxis: { title: { text: 'Score' } },
+        xAxis: { categories: categories, title: { text: 'Date' } },
+        series: [{ name: '심리분석 점수', data: scores }],
+      });
+    }
+
+    // 정렬(select) 변경 시 페이지 이동 함수
+    function changeSort(sortOption) {
+      window.location.href = `/dashboard/teacher?sortOption=${sortOption}`;
+    }
+
+    // DOMContentLoaded 이벤트를 통해 URL 파라미터로부터 현재 정렬 상태 반영 (필요 시)
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentSort = urlParams.get('sortOption');
+      if (currentSort) {
+        document.getElementById('sortOption').value = currentSort;
+      }
+    });
+    // 전역 함수들 정의 끝
+
+    function adjustListHeight() {
+      const rightColumn = document.querySelector('.right-column');
+      const childListContainer = document.querySelector(
+        '.child-list-container'
+      );
+
+      if (rightColumn && childListContainer) {
+        const rightColumnHeight = rightColumn.offsetHeight;
+        childListContainer.style.maxHeight = `${rightColumnHeight * 0.76}px`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', adjustListHeight);
+    window.addEventListener('resize', adjustListHeight);
+  </script>
+</head>
+
+<body>
+  <!-- 네비게이션 바 -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <!-- 로고 이미지 -->
+        <img src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="로고" class="logo-image" />
+      </a>
+    </div>
+
+    <!-- 우측 네비게이션 -->
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <!-- 이용안내 페이지 이동 버튼 -->
+          <a class="button is-light" th:href="@{/guides}">이용안내</a>
+          <!-- 고객센터 페이지 이동 버튼 -->
+          <a class="button is-light" th:href="@{/claims}">고객 센터</a>
+          <!-- 로그아웃 버튼 -->
+          <a class="button is-light" th:href="@{/auth/logout}">로그아웃</a>
+          <!-- 사용자 정보 표시 및 프로필 페이지 이동 버튼 -->
+          <a class="button is-light" th:href="@{/members/myDetails}">
+            <span class="icon"><i class="fas fa-user"></i></span>
+            <span th:text="${userName} + ' (' + (${relationType} ?: '미지정') + ')'"></span>
+          </a>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <!-- 본문 섹션 -->
-    <section class="section">
-      <div class="container is-fluid">
-        <div class="columns">
-            <!-- 왼쪽 컬럼 (아동 리스트) -->
-            <div class="column is-3 left-column">
-                <!-- 연도 선택 드롭다운 -->
-                <!--                    <div class="field">-->
-                <!--                        <div class="control">-->
-                <!--                            <select id="yearSelector">-->
-                <!--                                <option value="">연도 선택</option>-->
-                <!--                                <option th:each="year : ${years}" th:text="${year} + '년'" th:value="${year}"></option>-->
-                <!--                            </select>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
+  <!-- 본문 섹션 -->
+  <section class="section">
+    <div class="container is-fluid">
+      <div class="columns">
+        <!-- 왼쪽 컬럼 (아동 리스트) -->
+        <div class="column is-3 left-column">
+          <!-- 연도 선택 드롭다운 -->
+          <!--                    <div class="field">-->
+          <!--                        <div class="control">-->
+          <!--                            <select id="yearSelector">-->
+          <!--                                <option value="">연도 선택</option>-->
+          <!--                                <option th:each="year : ${years}" th:text="${year} + '년'" th:value="${year}"></option>-->
+          <!--                            </select>-->
+          <!--                        </div>-->
+          <!--                    </div>-->
 
-            <!-- 총 아동 수 표시 -->
-            <div style="display: flex; justify-content: flex-end; width: 100%">
-              <p class="subtitle is-size-6">
-                총 <strong th:text="${#lists.size(childId)}">0</strong>명
-              </p>
-            </div>
+          <!-- 총 아동 수 표시 -->
+          <div style="display: flex; justify-content: flex-end; width: 100%">
+            <p class="subtitle is-size-6">
+              총 <strong th:text="${#lists.size(childId)}">0</strong>명
+            </p>
+          </div>
 
-            <hr />
+          <hr />
 
-            <!-- 정렬 옵션 선택 -->
-            <div class="field has-text-right">
-              <div class="select is-small">
-                <select id="sortOption" onchange="changeSort(this.value)">
-                  <option
-                    value="NAME"
-                    th:selected="${currentSort.name() == 'NAME'}"
-                  >
-                    이름순
-                  </option>
-                  <option
-                    value="BIRTH_DATE"
-                    th:selected="${currentSort.name() == 'BIRTH_DATE'}"
-                  >
-                    생년월일순
-                  </option>
-                  <option
-                    value="REGISTER_DATE"
-                    th:selected="${currentSort.name() == 'REGISTER_DATE'}"
-                  >
-                    아동등록순
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <!-- 아동 리스트 테이블 -->
-            <div class="child-list-container">
-              <table class="table is-fullwidth is-striped is-hoverable">
-                <thead>
-                  <tr>
-                    <th>이름</th>
-                    <th>생년월일</th>
-                    <th>최근게시물</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    th:each="child : ${childId}"
-                    th:data-child-id="${child.id}"
-                    class="student-item"
-                  >
-                    <td th:text="${child.name}">이름</td>
-                    <td
-                      th:text="${#temporals.format(child.birthDate, 'yyyy-MM-dd')}"
-                    >
-                      생년월일
-                    </td>
-                    <td>-</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- 아이 권한 요청 관리 페이지 이동 버튼 -->
-            <div style="text-align: center; margin-top: 1rem">
-              <a class="button is-light" th:href="@{/permissions}"
-                >아이 권한 요청 관리</a
-              >
+          <!-- 정렬 옵션 선택 -->
+          <div class="field has-text-right">
+            <div class="select is-small">
+              <select id="sortOption" onchange="changeSort(this.value)">
+                <option value="NAME" th:selected="${currentSort.name() == 'NAME'}">
+                  이름순
+                </option>
+                <option value="BIRTH_DATE" th:selected="${currentSort.name() == 'BIRTH_DATE'}">
+                  생년월일순
+                </option>
+                <option value="REGISTER_DATE" th:selected="${currentSort.name() == 'REGISTER_DATE'}">
+                  아동등록순
+                </option>
+              </select>
             </div>
           </div>
 
-          <!-- 오른쪽 컬럼 (아동 상세 정보) -->
-          <div class="column right-column">
-            <div class="columns">
-              <!-- 프로필 카드 -->
-              <div class="column is-4">
-                <div class="card">
-                  <!-- 아동 프로필 사진 -->
-                  <div class="card-content has-text-centered">
-                    <figure
-                      class="image is-inline-block mb-2"
-                      style="width: 160px; height: 160px"
-                    >
-                      <img
-                        id="profileImage"
-                        class="profile-image is-rounded"
-                        th:src="@{/images/default-profile.png}"
-                        alt="프로필 이미지"
-                      />
-                    </figure>
-                  </div>
+          <!-- 아동 리스트 테이블 -->
+          <div class="child-list-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+              <thead>
+                <tr>
+                  <th>이름</th>
+                  <th>생년월일</th>
+                  <th>최근게시물</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="child : ${childId}" th:data-child-id="${child.id}" class="student-item">
+                  <td th:text="${child.name}">이름</td>
+                  <td th:text="${#temporals.format(child.birthDate, 'yyyy-MM-dd')}">
+                    생년월일
+                  </td>
+                  <td>-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-                  <!-- 아동 기본 정보 -->
-                  <div class="content has-text-centered is-medium">
-                    <p
-                      class="mb-1"
-                      style="font-size: 1.25rem; font-weight: bold"
-                    >
-                      <strong>이름/성별 :</strong>
-                      <span
-                        id="studentName"
-                        class="profile-name"
-                        style="font-weight: normal"
-                        >-</span
-                      >
-                      /
-                      <span
-                        id="studentGender"
-                        class="profile-gender"
-                        style="font-weight: normal"
-                        >-</span
-                      >
-                    </p>
-                    <p class="mb-3" style="font-size: 1.15rem">
-                      <strong>생년월일 :</strong>
-                      <span
-                        id="studentBirthDate"
-                        class="profile-birthDate"
-                        style="font-weight: normal"
-                        >-</span
-                      >
-                      <span id="studentAge" style="font-weight: normal">-</span>
-                    </p>
-                    <!-- 레이아웃 용 추가 여백 -->
-                    <div style="height: 15px"></div>
-                  </div>
+          <!-- 아이 권한 요청 관리 페이지 이동 버튼 -->
+          <div style="text-align: center; margin-top: 1rem">
+            <a class="button is-light" th:href="@{/permissions}">아이 권한 요청 관리</a>
+          </div>
+        </div>
+
+        <!-- 오른쪽 컬럼 (아동 상세 정보) -->
+        <div class="column right-column">
+          <div class="columns">
+            <!-- 프로필 카드 -->
+            <div class="column is-4">
+              <div class="card">
+                <!-- 아동 프로필 사진 -->
+                <div class="card-content has-text-centered">
+                  <figure class="image is-inline-block mb-2" style="width: 160px; height: 160px">
+                    <img id="profileImage" class="profile-image is-rounded" th:src="@{/images/default-profile.png}"
+                      alt="프로필 이미지" />
+                  </figure>
+                </div>
+
+                <!-- 아동 기본 정보 -->
+                <div class="content has-text-centered is-medium">
+                  <p class="mb-1" style="font-size: 1.25rem; font-weight: bold">
+                    <strong>이름/성별 :</strong>
+                    <span id="studentName" class="profile-name" style="font-weight: normal">-</span>
+                    /
+                    <span id="studentGender" class="profile-gender" style="font-weight: normal">-</span>
+                  </p>
+                  <p class="mb-3" style="font-size: 1.15rem">
+                    <strong>생년월일 :</strong>
+                    <span id="studentBirthDate" class="profile-birthDate" style="font-weight: normal">-</span>
+                    <span id="studentAge" style="font-weight: normal">-</span>
+                  </p>
+                  <!-- 레이아웃 용 추가 여백 -->
+                  <div style="height: 15px"></div>
                 </div>
               </div>
+            </div>
 
-                <!-- 가정환경 및 특이사항 카드 -->
-                <div class="column is-4">
-                    <div
-                            class="card"
-                            style="
+            <!-- 가정환경 및 특이사항 카드 -->
+            <div class="column is-4">
+              <div class="card" style="
                     height: 310px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                  "
-                    >
-                        <div class="card-content has-text-centered">
-                            <!-- 가정환경 -->
-                            <div class="content has-text-centered is-medium">
-                                <p
-                                        class="mb-1"
-                                        style="font-size: 1.25rem; font-weight: bold"
-                                >
-                                    <strong>가정환경</strong>
-                                </p>
-                                <p
-                                        id="studentFamilyBackground"
-                                        class="profile-familyBackGrounds"
-                                        style="
+                  ">
+                <div class="card-content has-text-centered">
+                  <!-- 가정환경 -->
+                  <div class="content has-text-centered is-medium">
+                    <p class="mb-1" style="font-size: 1.25rem; font-weight: bold">
+                      <strong>가정환경</strong>
+                    </p>
+                    <p id="studentFamilyBackground" class="profile-familyBackGrounds" style="
                           font-weight: normal;
                           font-size: 1.1rem;
                           margin-bottom: 1.5rem;
-                        "
-                                >
-                                    -
-                                </p>
-                            </div>
-                            <!-- 특이사항 -->
-                            <div class="content has-text-centered is-medium">
-                                <p
-                                        class="mb-1"
-                                        style="font-size: 1.25rem; font-weight: bold"
-                                >
-                                    <strong>특이사항</strong>
-                                </p>
-                                <p
-                                        id="studentNote"
-                                        class="profile-note"
-                                        style="font-weight: normal; font-size: 1.1rem"
-                                >
-                                    -
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 바로가기 버튼들 -->
-                <div class="column">
-                    <div class="columns is-multiline">
-                        <div class="column is-12">
-                            <button id="surveyButton" class="button is-fullwidth is-info is-light"
-                                    onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/responses/stats'">
-                                최근 설문 결과 보기
-                            </button>
-                        </div>
-                        <div class="column is-12">
-                            <button class="button is-fullwidth is-success is-light"
-                                    onclick="location.href='/children/' + getSelectedChildId() + '/analysis/resultList'">
-                                최근 분석 결과 보기
-                            </button>
-                        </div>
-                        <div class="column is-12">
-                            <button class="button is-fullwidth is-warning is-light"
-                                    onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/selects'">
-                                체크리스트 작성하기
-                            </button>
-                        </div>
-                        <div class="column is-12">
-                            <button class="button is-fullwidth is-danger is-light"
-                                    onclick="location.href='/children/' + getSelectedChildId() + '/analysis/new'">
-                                감정 분석하기
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="columns">
-              <!-- 설문조사 점수 통계 그래프 -->
-              <div class="column is-8">
-                <div class="card">
-                  <div class="card-content">
-                    <div id="trendChart" class="stats-container"></div>
+                        ">
+                      -
+                    </p>
+                  </div>
+                  <!-- 특이사항 -->
+                  <div class="content has-text-centered is-medium">
+                    <p class="mb-1" style="font-size: 1.25rem; font-weight: bold">
+                      <strong>특이사항</strong>
+                    </p>
+                    <p id="studentNote" class="profile-note" style="font-weight: normal; font-size: 1.1rem">
+                      -
+                    </p>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <!-- 설문조사 결과 감정 그래프 -->
-              <div class="column is-4">
-                <div class="card">
-                  <div
-                    class="card-content"
-                    style="
+            <!-- 바로가기 버튼들 -->
+            <div class="column">
+              <div class="columns is-multiline">
+                <div class="column is-12">
+                  <button id="surveyButton" class="button is-fullwidth is-info is-light"
+                    onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/responses/stats'">
+                    최근 설문 결과 보기
+                  </button>
+                </div>
+                <div class="column is-12">
+                  <button class="button is-fullwidth is-success is-light"
+                    onclick="location.href='/children/' + getSelectedChildId() + '/analysis/resultList'">
+                    최근 분석 결과 보기
+                  </button>
+                </div>
+                <div class="column is-12">
+                  <button class="button is-fullwidth is-warning is-light"
+                    onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/selects'">
+                    체크리스트 작성하기
+                  </button>
+                </div>
+                <div class="column is-12">
+                  <button class="button is-fullwidth is-danger is-light"
+                    onclick="location.href='/children/' + getSelectedChildId() + '/analysis/new'">
+                    감정 분석하기
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="columns">
+            <!-- 설문조사 점수 통계 그래프 -->
+            <div class="column is-8">
+              <div class="card">
+                <div class="card-content">
+                  <div id="trendChart" class="stats-container"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 설문조사 결과 감정 그래프 -->
+            <div class="column is-4">
+              <div class="card">
+                <div class="card-content" style="
                       display: flex;
                       flex-direction: column;
                       justify-content: space-between;
                       height: 100%;
-                    "
-                  >
-                    <div class="donut-date-range-buttons has-text-centered">
-                      <button
-                        class="button is-link"
-                        data-period="WEEK"
-                        onclick="setDonutDateRange('WEEK')"
-                      >
-                        주간
-                      </button>
-                      <button
-                        class="button is-link"
-                        data-period="MONTH"
-                        onclick="setDonutDateRange('MONTH')"
-                      >
-                        월간
-                      </button>
-                    </div>
-                    <div
-                      id="progressChart"
-                      class="stats-container"
-                      style="height: 270px; width: 100%"
-                    ></div>
+                    ">
+                  <div class="donut-date-range-buttons has-text-centered">
+                    <button class="button is-link" data-period="WEEK" onclick="setDonutDateRange('WEEK')">
+                      주간
+                    </button>
+                    <button class="button is-link" data-period="MONTH" onclick="setDonutDateRange('MONTH')">
+                      월간
+                    </button>
                   </div>
+                  <div id="progressChart" class="stats-container" style="height: 270px; width: 100%"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  </body>
+    </div>
+  </section>
+</body>
+
 </html>
