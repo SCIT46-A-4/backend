@@ -48,6 +48,7 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     private PermissionRequestStatus permissionStatus;
 
     // 기타 필요하다면 초대코드, 만료일시, 메시지 등
+    @Setter
     @Column(name = "request_link_code")
     private String requestLinkCode;
 
@@ -59,9 +60,5 @@ public class PermissionRequestEntity extends BaseTimeEntity {
         // 스태이터스 변경 로직, 변경이 되는 순간 코드는 초기화한다.
         this.permissionStatus = status;
         this.requestLinkCode = null;
-    }
-
-    public void setRequestLinkCode(String requestLinkCode) {
-        this.requestLinkCode = requestLinkCode;
     }
 }
