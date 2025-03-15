@@ -7,6 +7,7 @@
     <title>권한 관리 페이지 (부모) - iLog</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/sweetalert2.js"></script>
     <style>
         :root {
             --background-yellow: #FFF8DC;
@@ -85,6 +86,21 @@
                 width: 100%;
                 margin-bottom: 0.5rem;
             }
+
+            /* 로고 설정 */
+            .logo a {
+                display: inline-block;
+            }
+
+            .logo img {
+                cursor: pointer;
+            }
+
+            /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
+            .logo-image {
+                width: 100px;
+                height: auto;
+            }
         }
     </style>
     <script>
@@ -97,8 +113,20 @@
                 const memberId = $('input[name="memberId"]').val();
 
                 // 필수 입력값 검증
-                if (!alias || !inviteeEmail) {
-                    alert('모든 필드를 입력해 주세요.');
+                if (!alias) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '호칭',
+                        text: '호칭을 입력해 주세요.'
+                    });
+                    return;
+                }
+                if (!inviteeEmail) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '이메일',
+                        text: '이메일이 틀렸습니다.'
+                    });
                     return;
                 }
 
@@ -113,14 +141,25 @@
                     },
                     success: function (response) {
                         if (response == true) {
-                            alert('인증 코드가 전송되었습니다.');
+                            Swal.fire({
+                                icon: 'success',
+                                title: '인증 코드가 전송되었습니다.'
+                            });
                         } else {
-                            alert(response.message || '이메일 전송에 실패했습니다.');
+                            Swal.fire({
+                                icon: 'error',
+                                title: '이메일 전송 실패',
+                                text: response.message || '이메일 전송에 실패했습니다.'
+                            });
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error('에러 발생:', error);
-                        alert('서버와의 통신 중 오류가 발생했습니다.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: '서버 오류',
+                            text: '서버와의 통신 중 오류가 발생했습니다.'
+                        });
                     }
                 });
             });
@@ -138,14 +177,28 @@
 
 
                 if (childId === undefined || childId === null) {
-                    alert('아이 정보가 누락되었습니다.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: '아이 정보 없음',
+                        text: '아이 정보가 없습니다.'
+                    });
                     return; // 요청을 보내지 않고 종료
                 }
 
-                if (confirm('초대 취소하시겠습니까?')) {
-                    // AJAX 요청 보내기
-                    cancelEmailInviteLink(permissionId, childId, alias);
-                }
+                Swal.fire({
+                    title: '초대 취소',
+                    text: '초대 취소하시겠습니까?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '취소',
+                    cancelButtonText: '취소하지 않음',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // AJAX 요청 보내기
+                        cancelEmailInviteLink(permissionId, childId, alias);
+                    }
+                });
             });
 
             // 초대 취소 요청을 처리하는 AJAX 함수
@@ -155,20 +208,52 @@
                     type: 'DELETE',
                     success: function (response) {
                         if (response) {
-                            alert('초대가 취소되었습니다.');
+                            Swal.fire({
+                                icon: 'success',
+                                title: '초대 취소 완료',
+                                text: '초대가 취소되었습니다.'
+                            });
                             // 해당 행을 DOM에서 제거
                             $(`button[data-id="${permissionId}"]`).closest('tr').remove();
                             updateCounts();
                         } else {
-                            alert('초대 취소에 실패했습니다.');
+                            Swal.fire({
+                                icon: 'error',
+                                title: '취소 실패',
+                                text: '초대 취소에 실패했습니다.'
+                            });
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error('초대 취소 중 오류 발생:', error);
-                        alert('서버와의 통신 중 오류가 발생했습니다.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: '서버 오류',
+                            text: '서버와의 통신 중 오류가 발생했습니다.'
+                        });
                     }
                 });
             }
+
+            // 삭제 버튼 클릭 이벤트 리스너 추가
+            $(document).on('click', '.delete-button', function () {
+                const permissionId = $(this).data('id'); // 버튼에서 permissionId 가져오기
+                const button = $(this);
+
+                Swal.fire({
+                    title: '정말로 권한을 삭제하시겠습니까?',
+                    text: '이 항목은 복구할 수 없습니다.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '삭제',
+                    cancelButtonText: '취소',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deletePermission(permissionId, button);
+                    }
+                });
+            });
 
             // 삭제 요청을 처리하는 AJAX 함수
             function deletePermission(permissionId, button) {
@@ -179,15 +264,23 @@
                         if (response) {
                             // 삭제된 항목의 행을 DOM에서 제거
                             button.closest('tr').remove();
-                            alert('삭제 완료되었습니다.');
+                            Swal.fire('삭제 완료', '', 'success');
                             updateCounts();  // 카운트 업데이트
                         } else {
-                            alert('삭제에 실패했습니다.');
+                            Swal.fire({
+                                icon: 'error',
+                                title: '삭제 실패',
+                                text: '삭제에 실패했습니다.'
+                            });
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error('삭제 요청 중 오류 발생:', error);
-                        alert('서버와의 통신 중 오류가 발생했습니다.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: '서버 오류',
+                            text: '서버와의 통신 중 오류가 발생했습니다.'
+                        });
                     }
                 });
             }
@@ -207,85 +300,97 @@
 
 <body>
     <div class="container">
+        <!-- 로고 + dashboard 바로가기 -->
+        <div class="logo">
+            <a th:href="@{/dashboard}">
+                <img src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="로고" class="image"
+                    style="width: 100px; height: auto" />
+            </a>
+        </div>
         <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (부모)</h1>
 
         <!-- 동적 값(childId, memberId)은 서버에서 채워지거나 자바스크립트로 설정 -->
         <input type="hidden" name="childId" th:value="${childId}">
         <input type="hidden" name="memberId" th:value="${memberId}">
 
-        <div class="permission-header">
+        <div class="table-container">
             <div class="buttons">
                 <!-- <button class="button is-mint">피아노 선생님</button> -->
-                <input type="text" class="input" name="alias" placeholder="호칭을 입력하세요.">
+                <input type="text" class="input column is-half" name="alias" placeholder="호칭을 입력하세요.">
                 <!-- <button class="button is-mint">정보열람 권한을 보낼 선생님 이메일(전화번호 등)을 입력해서 초대하기</button> -->
-                <input type="email" class="input" name="inviteeEmail" placeholder="정보열람 권한을 보낼 선생님 이메일을 입력하세요.">
+                <input type="email" class="input column is-half" name="inviteeEmail"
+                    placeholder="정보열람 권한을 보낼 선생님 이메일을 입력하세요.">
             </div>
-            <button class="button is-light send-email-button">초대링크 보내기</button>
-        </div>
-
-        <div class="status-box">
-            <div class="columns">
-                <div class="column">
-                    <!-- "송신중" 상태 건수를 출력 -->
-                    <p th:text="'송신중: ' + ${pendingCount} + '건'">송신중: 0건</p>
-                    <!-- 승인 완료 건수 출력 -->
-                    <p th:text="'승인 완료: ' + ${acceptedCount} + '건'">승인 완료: 0건</p>
-                </div>
-                <div>
-                    <table class="table is-fullwidth">
-                        <thead>
-                            <tr>
-                                <th>호칭</th>
-                                <th>아이 이름</th>
-                                <th>초대 취소</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- 여기에 동적으로 각 permission의 데이터를 출력 -->
-                            <tr th:each="permission : ${list}">
-                                <td th:text="${permission.alias}">임선생</td>
-                                <td th:text="${permission.childName}">김민지</td>
-                                <td>
-                                    <button class="button is-mint cancelBtn" th:data-id="${permission.id}"
-                                        th:data-childid="${permission.childId}" th:data-alias="${permission.alias}">
-                                        초대 취소
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <button class="button is-light send-email-button is-fullwidth">초대링크 보내기</button>
         </div>
 
         <div class="table-container">
-            <h2 class="title is-4 mb-4">승인된 리스트</h2>
-            <table class="table is-fullwidth">
-                <thead>
-                    <tr>
-                        <th>보호자 이름</th>
-                        <th>내 자녀 이름</th>
-                        <th>승인한 날짜</th>
-                        <th>자녀와의 관계</th>
-                        <th>관리</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="permission : ${list}"
-                        th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
-                        th:data-id="${permission.id}">
-                        <td th:text="${permission.alias}">선생 호칭</td>
-                        <td th:text="${permission.childName}">내 자녀 이름</td>
-                        <td th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}">승인한 날짜</td>
-                        <td th:text="${permission.relationType.typeNameKr}">자녀와의 관계</td>
-                        <td>
-                            <button class="button is-small is-pink delete-button" th:data-id="${permission.id}">권한
-                                삭제</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="columns">
+                <div class="column is-half has-text-centered">
+                    <!-- "송신중" 상태 건수를 출력 -->
+                    <p th:text="'송신중: ' + ${pendingCount} + '건'">송신중: 0건</p>
+                </div>
+                <div class="column is-half has-text-centered">
+                    <!-- 승인 완료 건수 출력 -->
+                    <p th:text="'승인 완료: ' + ${acceptedCount} + '건'">승인 완료: 0건</p>
+                </div>
+            </div>
+            <div>
+                <table class="table is-fullwidth  has-text-centered">
+                    <thead>
+                        <tr>
+                            <th class="has-text-centered">호칭</th>
+                            <th class="has-text-centered">아이 이름</th>
+                            <th class="has-text-centered">초대 취소</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 여기에 동적으로 각 permission의 데이터를 출력 -->
+                        <tr th:each="permission : ${list}" th:if="${permission.permissionRequestStatus == 
+                            T(com.scit.iLog.domain.permition.PermissionRequestStatus).PENDING}">
+                            <td th:text="${permission.alias}"></td>
+                            <td th:text="${permission.childName}"></td>
+                            <td>
+                                <button class="button is-mint cancelBtn" th:data-id="${permission.id}"
+                                    th:data-childid="${permission.childId}" th:data-alias="${permission.alias}">
+                                    초대 취소
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </div>
+
+    <div class="table-container">
+        <h2 class="title is-4 mb-4 has-text-centered">승인된 리스트</h2>
+        <table class="table is-fullwidth has-text-centered">
+            <thead>
+                <tr>
+                    <th class="has-text-centered">보호자 이름</th>
+                    <th class="has-text-centered">내 자녀 이름</th>
+                    <th class="has-text-centered">승인한 날짜</th>
+                    <th class="has-text-centered">자녀와의 관계</th>
+                    <th class="has-text-centered">관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="permission : ${list}"
+                    th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permition.PermissionRequestStatus).PENDING}"
+                    th:data-id="${permission.id}">
+                    <td th:text="${permission.alias}"></td>
+                    <td th:text="${permission.childName}"></td>
+                    <td th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}"></td>
+                    <td th:text="${permission.requesterRelationType.typeNameKr}"></td>
+                    <td>
+                        <button class="button is-small is-pink delete-button" th:data-id="${permission.id}">권한
+                            삭제</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     </div>
 </body>
 

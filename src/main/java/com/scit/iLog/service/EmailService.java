@@ -9,7 +9,9 @@ import com.scit.iLog.domain.permission.PermissionRequestEntity;
 import com.scit.iLog.domain.permission.PermissionRequestStatus;
 import com.scit.iLog.dto.auth.PermissionRequestDTO;
 import com.scit.iLog.dto.auth.PermissionTeacherDTO;
+import com.scit.iLog.exception.ChildNotFoundException;
 import com.scit.iLog.exception.MemberNotFoundException;
+import com.scit.iLog.exception.PermisssionRequestNotFoundException;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.PermissionRequestRepository;
@@ -78,12 +80,14 @@ public class EmailService {
             Long requesterId,
             String _alias,
             String inviteeEmail, // 사용자가 뷰에서 입력한 이메일 (수신자)
-            String etc) {
+            String etc
+    ) {
         SimpleMailMessage message = new SimpleMailMessage();
         //Null처리
         String str = (etc == null || etc.length() < 1) ? "" : etc;
         String token = UUID.randomUUID().toString();
-        String verificationUrl = "http://localhost:9900/verifyLink?token=" + token;
+        String targetUrl = "/auth/permission"; //리디렉트할 페이지 엔드포인트
+        String verificationUrl = "http://localhost:9900/verifyLink?token=" + token + "&targetUrl=" + targetUrl;
         message.setFrom("aaaTesT255@gmail.com"); // 발신자 주소 이도훈email
         message.setTo(inviteeEmail);
         message.setSubject(guardianName + "로부터" + " 권한 초대 링크입니다.");
@@ -120,15 +124,16 @@ public class EmailService {
 
     // 초대 받은 사람이 링크 클릭시, 이것이 db에 있는지 확인하고 업데이트 하는 로직
     @Transactional
-    public void findInviteCodeAndUpdate(String code) throws Exception {
+    public MemberEntity findInviteCodeAndUpdate(String code) throws Exception {
         // null을 검색하면 문제 다른 유저 것도 검색될 수 있어서 null 체크로 방지
         if (code == null)
             throw new IllegalArgumentException("받은 링크가 null입니다.");
 
+
         // 저장된 코드 찾기
         PermissionRequestEntity resultEntity = permissionRequestRepository.findByRequestLinkCode(code)
-                .orElseThrow(() -> new Exception("링크가 같은 것을 DB에서 찾지 못했습니다."));
-        ;
+                .orElseThrow(() -> new PermisssionRequestNotFoundException("링크가 같은 것을 DB에서 찾지 못했습니다."));
+
 
         // 3분 이내인지 체크
         boolean isTimeLimit = checkInTimeLimit(resultEntity.getModifiedAt(), 3);
@@ -140,6 +145,8 @@ public class EmailService {
         // 코드 받은 사람이 있고, 제한 시간 안에 들어왔다면 update
         resultEntity.setPermissionStatusAndDeleteRequestLinkCode(PermissionRequestStatus.ACCEPTED);
         saveRelationShipEntity(resultEntity);
+
+        return resultEntity.getInvitee();
     }
 
     /**
@@ -224,13 +231,11 @@ public class EmailService {
             result = false;
 
         return result;
-
     }
 
     /**
      * 2025-03-10~12 이도훈
      * 부모용
-     *
      * @param memberId
      * @return
      */
@@ -264,16 +269,16 @@ public class EmailService {
     /**
      * 2025-03-10~12 정준성
      * 교사용
-     *
      * @param inviteeId
      * @param _waitRequestList
      * @param _permissionList
      */
     @Transactional
     public void findAllByPermissionEntity(
-            Long inviteeId,
-            List<PermissionTeacherDTO> _waitRequestList,
-            List<PermissionTeacherDTO> _permissionList) {
+    		Long inviteeId,
+    		List<PermissionTeacherDTO> _waitRequestList,
+    		List<PermissionTeacherDTO> _permissionList
+    ) {
         // 25/3/11 jun : requester 기준으로 db 찾아서 반환하는 함수 교사용
         List<PermissionRequestEntity> list = permissionRequestRepository.findAllByInviteeId(inviteeId);
 
@@ -289,7 +294,6 @@ public class EmailService {
     /**
      * 2025-03-10~12 정준성
      * 교사용
-     *
      * @param _entity
      * @return
      */
@@ -308,49 +312,45 @@ public class EmailService {
 
     // 나중에 옮겨야 할 함수
     // permission table의 record 삭제 함수
-
     /**
-     * 2025-03-10~12
-     * 삭제 메서드(부모, 교사 공용)
-     *
+	 * 2025-03-10~12
+	 * 삭제 메서드(부모, 교사 공용)
      * @param permissionId
      * @return
      */
+    // 수정 후: deletePermissionTable 메서드 (불필요한 중괄호 제거)
     public boolean deletePermissionTable(Long permissionId) {
         boolean isPermission = permissionRequestRepository.existsById(permissionId);
         if (!isPermission) return false;
-
-        Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository.findById(permissionId);
-        if (permissionEntity.isPresent()) {
-            // 삭제 전, 관련된 relationshipId를 변수로 저장할 수 있음 (예시)
-            Long relationshipId = permissionEntity.get().getInvitee().getId();
-
-            permissionRequestRepository.delete(permissionEntity.get());
-
-            relationShipRepository.deleteById(relationshipId);
-
+        Optional<PermissionRequestEntity> permissionEntityOpt = permissionRequestRepository.findById(permissionId);
+        if (permissionEntityOpt.isPresent()) {
+            PermissionRequestEntity permissionEntity = permissionEntityOpt.get();
+            Long inviteeId = permissionEntity.getInvitee().getId(); // 초대받은 사람(교사)의 ID
+            Long childId = permissionEntity.getChild().getId(); // 아이의 ID
+            Optional<RelationShipEntity> relationOpt = relationShipRepository.findByMemberIdAndChildId(inviteeId, childId);
+            relationOpt.ifPresent(relationShipRepository::delete);
+            permissionRequestRepository.delete(permissionEntity);
+            return true;
         }
-        return true;
+        return false;
     }
 
+    // 수정 후: cancelEmailInviteLink 메서드
     @Transactional
     public boolean cancelEmailInviteLink(
             Long permissionId,
             Long childId,
-            String alias) {
-
-        Optional<ChildEntity> child = childRepository.findById(childId);
-
+            String alias
+    ) {
+        ChildEntity child = childRepository.findById(childId)
+                .orElseThrow(() -> new ChildNotFoundException(childId));
         Optional<PermissionRequestEntity> permissionEntity = permissionRequestRepository
-                .findByidAndChildAndAlias(permissionId, child, alias);
-
+                .findByIdAndChildAndAlias(permissionId, child, alias);
         if (!permissionEntity.isPresent()) {
             return false; // 해당하는 요청이 없다면 삭제하지 않음
         }
-
         // Permission 요청 삭제
         permissionRequestRepository.delete(permissionEntity.get());
-
         return true; // 삭제 성공 시 true 반환
     }
 }

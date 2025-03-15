@@ -242,10 +242,6 @@ public class AuthController {
     @DeleteMapping("/permission/delete/{permissionId}")
     @ResponseBody
     public boolean deletePermissionTable(@PathVariable(name = "permissionId") Long permissionId) {
-        boolean result = emailService.deletePermissionTable(permissionId);
-
-        if (!result) return false;
-
-        return true;
+        return emailService.deletePermissionTable(permissionId);
     }
 }

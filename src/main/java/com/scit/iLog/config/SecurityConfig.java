@@ -1,16 +1,12 @@
 package com.scit.iLog.config;
 
-import com.scit.iLog.domain.RelationType;
-import com.scit.iLog.domain.member.MemberEntity;
-import com.scit.iLog.domain.member.MemberRole;
-import com.scit.iLog.exception.WrongSignInIdException;
-import com.scit.iLog.repository.MemberRepository;
-import com.scit.iLog.util.LoginFailureHandler;
-import com.scit.iLog.util.LoginSuccessHandler;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
+import static org.springframework.security.authorization.AuthorizationManagers.allOf;
+import static org.springframework.security.authorization.AuthorizationManagers.anyOf;
+
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,12 +19,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.Collection;
-import java.util.List;
+import com.scit.iLog.domain.RelationType;
+import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.domain.member.MemberRole;
+import com.scit.iLog.exception.WrongSignInIdException;
+import com.scit.iLog.repository.MemberRepository;
+import com.scit.iLog.util.CustomRequestCache;
+import com.scit.iLog.util.LoginFailureHandler;
+import com.scit.iLog.util.LoginSuccessHandler;
 
-import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
-import static org.springframework.security.authorization.AuthorizationManagers.allOf;
-import static org.springframework.security.authorization.AuthorizationManagers.anyOf;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
@@ -42,6 +45,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
+        
+        // CustomRequestCache 등록: 정적 리소스 요청(/static/**, /js/**, /css/**, /images/**)은 저장하지 않음
+        http.requestCache(requestCache -> requestCache.requestCache(new CustomRequestCache()));
+        
         http.authorizeHttpRequests(auth ->
                 auth
                         .requestMatchers(
