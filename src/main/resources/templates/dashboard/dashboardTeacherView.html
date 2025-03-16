@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="/css/bulma.min.css" />
     <link
       rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link
+      rel="stylesheet" href="../../static/css/footer.css" th:href="@{/css/footer.css}" />
+	
+	<link
+      rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
@@ -24,14 +30,15 @@
     <style>
       /* 네비게이션 바 스타일 */
       .navbar {
-        background-color: #ffe4e1;
+        background-color: #FDF5BF;
       }
 
       /* 로고 이미지 스타일 */
-      .logo-image {
-        max-width: 150px;
-        height: auto;
-      }
+      #logo {
+		  max-height: 80px;
+		  width: 70px;
+		  height: auto;
+		}
 
       /* 학생 리스트 스타일 */
       .student-list {
@@ -50,10 +57,11 @@
       .student-item:hover {
         background-color: #f5f5f5;
       }
-
-      .student-item.active {
-        background-color: #ffe4e1;
-      }
+      
+		.student-item.active,
+		.child-item.is-selected {
+			background-color: #FDF5BF !important;
+		}
 
       /* 통계 컨테이너 스타일 */
       .stats-container {
@@ -130,11 +138,6 @@
       /* 리스트 아이템 기본 스타일 */
       .child-item {
         cursor: pointer;
-      }
-
-      /* 선택된 리스트 아이템 스타일 */
-      .child-item.is-selected {
-        background-color: #f5f5f5;
       }
 
       /* 프로필 섹션 여백 */
@@ -214,6 +217,13 @@
       .column.is-3.left-column {
         flex: 0 0 30%;
       }
+      
+      /* 푸터 배경색 변경 */
+	  footer {
+	    background-color: #FDF5BF; /* 원하는 색상 */
+	    padding: 2rem 0;
+	  }
+
 
       /* 반응형 설정 (화면이 1024px 이하일 때 적용) */
       @media screen and (max-width: 1024px) {
@@ -673,10 +683,10 @@
         <a class="navbar-item" th:href="@{/dashboard}">
           <!-- 로고 이미지 -->
           <img
+            id="logo"
             src="../../static/images/wilog.png"
             th:src="@{/images/wilog.png}"
-            alt="로고"
-            class="logo-image"
+            alt="iLog 로고"
           />
         </a>
       </div>
@@ -719,17 +729,8 @@
                 <!--                        </div>-->
                 <!--                    </div>-->
 
-            <!-- 총 아동 수 표시 -->
-            <div style="display: flex; justify-content: flex-end; width: 100%">
-              <p class="subtitle is-size-6">
-                총 <strong th:text="${#lists.size(childId)}">0</strong>명
-              </p>
-            </div>
-
-            <hr />
-
             <!-- 정렬 옵션 선택 -->
-            <div class="field has-text-right">
+            <div class="field has-text-left">
               <div class="select is-small">
                 <select id="sortOption" onchange="changeSort(this.value)">
                   <option
@@ -752,6 +753,13 @@
                   </option>
                 </select>
               </div>
+            </div>
+            
+			<!-- 총 아동 수 표시 -->
+            <div style="display: flex; justify-content: flex-end; width: 100%">
+              <p class="subtitle is-size-6 mb-2">
+                총 <strong th:text="${#lists.size(childId)}">0</strong>명
+              </p>
             </div>
 
             <!-- 아동 리스트 테이블 -->
@@ -785,6 +793,7 @@
             <!-- 아이 권한 요청 관리 페이지 이동 버튼 -->
             <div style="text-align: center; margin-top: 1rem">
               <a class="button is-light" th:href="@{/permissions}"
+                style="background-color: #FDF5BF !important; color: black !important; border-color: #e6d57a !important;"
                 >아이 권한 요청 관리</a
               >
             </div>
@@ -982,5 +991,57 @@
         </div>
       </div>
     </section>
+    <!-- 공통 footer -->
+    <footer>
+      <div class="container">
+        <div class="columns">
+          <div class="column is-4">
+            <div class="logo-container">
+              <img
+                class="footer-logo"
+                src="../../static/images/wilog.png"
+                th:src="@{/images/wilog.png}"
+                alt="iLog 로고"
+              />
+              <span class="footer-title">iLog</span>
+            </div>
+            <p>
+              아이의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을
+              돕는 서비스입니다.
+            </p>
+          </div>
+          <div class="column is-4"></div>
+          <div class="column is-4">
+            <h3 class="title is-5">연락처</h3>
+            <div class="contact-info">
+              <p>
+                <i class="fas fa-map-marker-alt"></i> 서울특별시 강남구 테헤란로
+                123
+              </p>
+              <p><i class="fas fa-phone"></i> 02-123-4567</p>
+              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
+              <p>
+                <i class="fas fa-clock"></i> 평일 09:00 - 18:00 (공휴일 제외)
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+		  <div class="columns is-vcentered">
+		    <div class="column is-4"></div> <!-- 왼쪽 공백 -->
+		    <div class="column is-4 has-text-centered">
+		      <p>
+		        <a href="/terms">이용약관</a> |
+		        <a href="/privacy"><strong>개인정보처리방침</strong></a> |
+		        <a href="/youth-policy">청소년보호정책</a>
+		      </p>
+		    </div>
+		    <div class="column is-4 has-text-right">
+		      <p>&copy; 2025 iLog. All rights reserved.</p>
+		    </div>
+		  </div>
+		</div>
+      </div>
+    </footer>
   </body>
 </html>
