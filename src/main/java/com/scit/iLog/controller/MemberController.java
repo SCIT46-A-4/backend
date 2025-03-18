@@ -3,6 +3,7 @@ package com.scit.iLog.controller;
 import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.dto.member.MemberUpdateDTO;
 import com.scit.iLog.dto.member.MemberUpdateRequestDTO;
+import com.scit.iLog.repository.PermissionRequestRepository;
 import com.scit.iLog.service.ClaimService;
 import com.scit.iLog.service.MemberService;
 import com.scit.iLog.service.analysis.AnalysisService;
@@ -33,6 +34,7 @@ public class MemberController {
     private final MemberService memberService;
     private final RelationShipService relationShipService;
     private final ClaimService claimService;
+    private final PermissionRequestRepository permissionRequestRepository;
     private final ChildDiaryService childDiaryService;
     private final AnalysisService analysisService;
     private final ChildRecordService childRecordService;
@@ -99,7 +101,6 @@ public class MemberController {
         } else if (memberDetails.getRelationType() == RelationType.TEACHER) {
             memberService.deleteMemberWithRelationShips(memberDetails.getId());
             claimService.deleteClaimsAndAnswersOf(memberDetails.getId());
-
         }
 
         SecurityContextHolder.clearContext();
@@ -122,6 +123,8 @@ public class MemberController {
         MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
         MemberUpdateDTO memberUpdateDTO = memberService.getMemberUpdateDataById(memberDetails.getId());
         model.addAttribute("memberDetails", memberUpdateDTO);
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         return "/member/memberUpdateView";
     }
 

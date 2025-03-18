@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-
-<html lang="en" xmlns:th="http://thymeleaf.org">
+<html lang="ko" xmlns:th="http://thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title>아동 상세 정보 등록 페이지</title>
-    <script src="/js/jquery-3.7.1.min.js"></script>
 
     <!-- bulma -->
     <link
@@ -19,6 +17,8 @@
       href="../../static/css/customColors.css"
       th:href="@{/css/customColors.css}"
     />
+
+    <script src="/js/jquery-3.7.1.min.js"></script>
 
     <!-- just-validate -->
     <script th:src="@{/js/just-validate.production.min.js}"></script>
@@ -527,7 +527,7 @@
                 />
               </div>
 
-              <!-- 아동과의 관계 입력창 --> 
+              <!-- 아동과의 관계 입력창 -->
               <div class="field">
                 <label class="label">아동과의 관계(호칭입력)</label>
                 <input
@@ -550,5 +550,6 @@
         </div>
       </div>
     </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

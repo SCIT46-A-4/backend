@@ -1,5 +1,7 @@
 package com.scit.iLog.controller;
 
+import com.scit.iLog.config.SecurityConfig;
+import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.permission.PermissionRequestStatus;
@@ -10,6 +12,7 @@ import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -161,48 +164,40 @@ public class AuthController {
         return new PwFindDTO(false, "유효하지 않은 이메일입니다.");
     }
 
-    @GetMapping("/parentsView")
-    public String getAuthPage() {
-
-        return "/children/permissions/guardianView";
-
-    }
-
     /**
      * 2025-03-10~12 이도훈
      * 부모용
      *
-     * @param memberId
      * @param childId
      * @param model
      * @return
      * @throws Exception
      */
-    @GetMapping("/permissionGuardian/{memberId}/{childId}")
+    @GetMapping("/permissionGuardian/{childId}")
     public String handleGetPermissionGuardian(
-            @PathVariable(name = "memberId") Long memberId,
+            @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable(name = "childId") Long childId,
             Model model
     ) {
         // memberId를 이용해서 해당 ID의 멤버가 있는지 조회 후 갖고 옴
-        MemberEntity member = memberService.findById(memberId);
+        MemberEntity member = memberService.findById(memberDetails.getId());
         // childId를 이용해서 해당 ID의 자식이 있는지 조회 후 갖고 옴
         ChildEntity child = childService.findById(childId);
 
         // memberId를 이용해서 List로 Dto의 객체를 생성
-        List<PermissionRequestDTO> list = emailService.findPermissionRequestDTOList(memberId);
+        List<PermissionRequestDTO> permissionRequests = emailService.findPermissionRequestDTOList(memberDetails.getId());
 
         // 송신중
-        long pendingCount = list.stream().filter(dto ->
+        long pendingCount = permissionRequests.stream().filter(dto ->
                 dto.getPermissionRequestStatus() == PermissionRequestStatus.PENDING).count();
         // 승인 완료
-        long acceptedCount = list.stream().filter(dto ->
+        long acceptedCount = permissionRequests.stream().filter(dto ->
                 dto.getPermissionRequestStatus() == PermissionRequestStatus.ACCEPTED).count();
 
 
         model.addAttribute("child", child);
         model.addAttribute("member", member);
-        model.addAttribute("list", list);
+        model.addAttribute("list", permissionRequests);
         model.addAttribute("pendingCount", pendingCount);
         model.addAttribute("acceptedCount", acceptedCount);
 

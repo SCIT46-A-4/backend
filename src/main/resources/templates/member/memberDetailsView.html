@@ -5,6 +5,7 @@
     <title>회원 상세 정보 - iLog</title>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
+
     <script>
       $(document).ready(function () {
         var deleteAllChildren;
@@ -83,7 +84,8 @@
       }
       #section-main {
         display: grid;
-        align-items: center;
+        place-items: center;
+        grid-template-rows: 100px auto;
       }
 
       /* 2025-03-11 / 김은진 */
@@ -126,14 +128,14 @@
           />
         </a>
       </div>
+    </section>
+
+    <section id="section-main" class="section">
       <div class="hero-body">
         <div class="container">
           <h1 class="title">회원 상세 정보</h1>
         </div>
       </div>
-    </section>
-
-    <section id="section-main" class="section">
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-half">
@@ -194,5 +196,6 @@
         </div>
       </div>
     </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

@@ -29,7 +29,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     		HttpServletRequest request,
     		HttpServletResponse response,
             Authentication authentication
-            ) throws IOException {
+            ) throws IOException
+    {
     	
     	
         /* Principal이 MemberDetails 타입인지 검증
@@ -59,7 +60,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         // 2️⃣ 기존 저장된 요청이 있는 경우 처리
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (savedRequest != null) {
+        if (savedRequest != null && !savedRequest.getRedirectUrl().contains("favicon")) {
             String targetUrl = savedRequest.getRedirectUrl();
             log.info("저장된 요청 발견: {}", targetUrl);
             response.sendRedirect(targetUrl);

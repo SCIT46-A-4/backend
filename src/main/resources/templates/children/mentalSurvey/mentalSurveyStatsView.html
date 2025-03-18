@@ -14,6 +14,8 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
     <style>
       :root {
         --primary-color: #fdf5bf;
@@ -74,6 +76,11 @@
       .no-data-message {
         text-align: center;
         padding: 3rem;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
       }
       .no-data-message h3 {
         font-size: 1.5rem;
@@ -91,7 +98,7 @@
       }
       /* 푸터 스타일 */
       footer {
-        background-color: var(--footer-bg);
+        background-color: var(--primary-color);
         color: var(--footer-text);
         padding: 2rem 1.5rem;
         border-top: 5px solid var(--secondary-color);
@@ -195,22 +202,6 @@
         document.getElementById('chart-container').innerHTML =
           '<div class="loading-indicator"><div class="spinner"></div><div style="margin-top: 15px; font-size: 18px;">데이터를 불러오는 중입니다...</div></div>';
 
-        // 아동 정보 가져오기
-        $.ajax({
-          url: `/children/${getChildIdFromURL()}`,
-          type: 'GET',
-          dataType: 'json',
-          success: function (childData) {
-            if (childData && childData.name) {
-              document.getElementById('child-name').textContent =
-                childData.name;
-            }
-          },
-          error: function (xhr, status, error) {
-            console.error('아동 정보 가져오기 실패:', error);
-          },
-        });
-
         // AJAX 호출을 통해 mentalsurvey 데이터를 가져옵니다.
         $.ajax({
           url: `/children/${getChildIdFromURL()}/mentalSurveys/responses/stats/data`,
@@ -227,7 +218,12 @@
 
       function renderMentalStatsChart(mentalStats) {
         // seriesData가 없거나 길이가 0인 경우 메시지와 버튼 표시.
-        if (!mentalStats.seriesData || mentalStats.seriesData.length === 0) {
+        if (
+          (!mentalStats.parentSeriesData ||
+            mentalStats.parentSeriesData.length === 0) &&
+          (!mentalStats.teacherSeriesData ||
+            !mentalStats.teacherSeriesData.length === 0)
+        ) {
           document.getElementById('chart-container').innerHTML =
             '<div class="no-data-message">' +
             '<h3>실시한 설문이 없습니다.</h3>' +
@@ -238,18 +234,43 @@
           return;
         }
 
-        // data: [{ date, resultScore, detailUrl }, ...] 형식의 배열이라 가정.
-        // Highcharts에서 사용하는 밀리초 단위의 타임스탬프로 변환 후 데이터 배열 생성.
-        let seriesData = mentalStats.seriesData.map((statPointData) => {
-          return [
-            new Date(statPointData.date).getTime(),
-            statPointData.resultScore,
-            statPointData.detailUrl,
-          ];
-        });
+        let parentSeriesData = mentalStats.parentSeriesData.map(
+          (statPointData) => {
+            return [
+              new Date(statPointData.date).getTime(),
+              statPointData.resultScore,
+              statPointData.detailUrl,
+            ];
+          }
+        );
+
+        const parentSeriesDataAvg = calculateAverageResultScore(
+          mentalStats.parentSeriesData
+        );
+
+        let teacherSeriesData = mentalStats.teacherSeriesData.map(
+          (statPointData) => {
+            return [
+              new Date(statPointData.date).getTime(),
+              statPointData.resultScore,
+              statPointData.detailUrl,
+            ];
+          }
+        );
+
+        const teacherSeriesDataAvg = calculateAverageResultScore(
+          mentalStats.teacherSeriesData
+        );
+
+        const totalSeriesDataAvg =
+          (parentSeriesDataAvg + teacherSeriesDataAvg) / 2;
+
+        console.log('parentSeriesData:', parentSeriesData);
+        console.log('teacherSeriesData:', teacherSeriesData);
 
         // 데이터가 시간순으로 정렬되어 있지 않을 경우, 정렬
-        seriesData.sort((a, b) => a[0] - b[0]);
+        parentSeriesData.sort((a, b) => a[0] - b[0]);
+        teacherSeriesData.sort((a, b) => a[0] - b[0]);
 
         // Highcharts 차트 초기화: 마커 클릭 시 해당 링크로 이동하도록 설정.
         Highcharts.stockChart('chart-container', {
@@ -258,7 +279,7 @@
             backgroundColor: 'transparent',
           },
           title: {
-            text: '심리 설문 결과 통계',
+            text: '아동 심리 설문 결과 통계',
             style: {
               color: '#333',
               fontWeight: 'bold',
@@ -352,16 +373,42 @@
           },
           series: [
             {
-              name: '심리 척도값',
-              data: seriesData.map((d) => [d[0], d[1]]),
-              color: 'var(--secondary-color)',
+              name: '보호자 심리 설문 결과',
+              data: parentSeriesData.map((d) => [d[0], d[1]]),
+              color: '#1f77b4',
               lineWidth: 2,
               marker: {
                 enabled: true,
                 radius: 5,
                 fillColor: '#fff',
                 lineWidth: 2,
-                lineColor: 'var(--secondary-color)',
+                lineColor: '#1f77b4',
+              },
+              point: {
+                events: {
+                  click: function () {
+                    // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
+                    let pointData = seriesData.find(
+                      (item) => item[0] === this.x
+                    );
+                    if (pointData && pointData[2]) {
+                      window.open(pointData[2], '_blank');
+                    }
+                  },
+                },
+              },
+            },
+            {
+              name: '교사 심리 설문 결과',
+              data: teacherSeriesData.map((d) => [d[0], d[1]]),
+              color: '#ff7f0e',
+              lineWidth: 2,
+              marker: {
+                enabled: true,
+                radius: 5,
+                fillColor: '#fff',
+                lineWidth: 2,
+                lineColor: '#ff7f0e',
               },
               point: {
                 events: {
@@ -466,59 +513,6 @@
       </div>
     </div>
 
-    <!-- 푸터 -->
-    <!-- 공통 footer -->
-    <footer>
-      <div class="container">
-        <div class="columns">
-          <div class="column is-4">
-            <div class="logo-container">
-              <img
-                class="footer-logo"
-                src="../../static/images/wilog.png"
-                th:src="@{/images/wilog.png}"
-                alt="iLog 로고"
-              />
-              <span class="footer-title">iLog</span>
-            </div>
-            <p>
-              아이의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을
-              돕는 서비스입니다.
-            </p>
-          </div>
-          <div class="column is-4"></div>
-          <div class="column is-4">
-            <h3 class="title is-5">연락처</h3>
-            <div class="contact-info">
-              <p>
-                <i class="fas fa-map-marker-alt"></i> 서울특별시 강남구 테헤란로
-                123
-              </p>
-              <p><i class="fas fa-phone"></i> 02-123-4567</p>
-              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
-              <p>
-                <i class="fas fa-clock"></i> 평일 09:00 - 18:00 (공휴일 제외)
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <div class="columns is-vcentered">
-            <div class="column is-4"></div>
-            <!-- 왼쪽 공백 -->
-            <div class="column is-4 has-text-centered">
-              <p>
-                <a href="/terms">이용약관</a> |
-                <a href="/privacy"><strong>개인정보처리방침</strong></a> |
-                <a href="/youth-policy">청소년보호정책</a>
-              </p>
-            </div>
-            <div class="column is-4 has-text-right">
-              <p>&copy; 2025 iLog. All rights reserved.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

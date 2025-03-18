@@ -6,21 +6,12 @@
   <title>아동 상세 정보 등록 페이지</title>
   <script src="/js/jquery-3.7.1.min.js"></script>
   <script src="/js/sweetalert2.js"></script>
-
-  <!-- bulma -->
-  <link rel="stylesheet" href="../../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
-
-  <!-- customColors -->
-  <link rel="stylesheet" href="../../static/css/customColors.css" th:href="@{/css/customColors.css}">
-
-  <!-- just-validate -->
   <script th:src="@{/js/just-validate.production.min.js}"></script>
+  <!-- just-validate -->
   <script src="/js/just-validate.production.min.js"></script>
+  
 
-  <!-- FilePond CSS -->
-  <link rel="stylesheet" href="../../static/css/filepond.css" th:href="@{/css/filepond.css}">
-  <link rel="stylesheet" href="../../static/css/filepond-plugin-image-preview.css" th:href="@{/css/filepond-plugin-image-preview.css}">
-
+  
   <!-- FilePond JS -->
   <script src="/js/filepond/filepond.min.js"></script>
   <script src="/js/filepond-plugin-file-encode.min.js"></script>
@@ -29,6 +20,17 @@
   <script src="/js/filepond-plugin-image-exif-orientation.min.js"></script>
   <script src="/js/filepond-plugin-image-resize.min.js"></script>
   <script src="/js/filepond-plugin-image-transform.min.js"></script>
+  
+  <!-- bulma -->
+  <link rel="stylesheet" href="../../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
+
+  <!-- customColors -->
+  <link rel="stylesheet" href="../../static/css/customColors.css" th:href="@{/css/customColors.css}">
+
+
+  <!-- FilePond CSS -->
+  <link rel="stylesheet" href="../../static/css/filepond.css" th:href="@{/css/filepond.css}">
+  <link rel="stylesheet" href="../../static/css/filepond-plugin-image-preview.css" th:href="@{/css/filepond-plugin-image-preview.css}">
 
   <style>
     /* 전체 배경색 */
@@ -470,7 +472,6 @@
       </div>
     </div>
   </section>
-
+  <div th:replace="fragments/footer :: ilogFooter"></div>
 </body>
-
 </html>

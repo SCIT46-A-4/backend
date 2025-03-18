@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>iLog - Child Development Tracking Service</title>
+  <link
+      rel="stylesheet" href="../../static/css/footer.css" th:href="@{/css/footer.css}" />
   <link rel="stylesheet" href="../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
   <link rel="stylesheet" href="../static/css/customColors.css" th:href="@{/css/customColors.css}">
   <script src="../static/js/jquery-3.6.0.min.js" th:src="@{/js/jquery-3.6.0.min.js}"></script>
@@ -57,6 +59,47 @@
 		    height: auto;
 		    max-height: 80px;
 		}
+		
+		
+		
+	.hero.is-primary-custom {
+	        background-image: url('[[@{/images/background.png}]]');
+	        background-size: cover;
+	        background-position: center;
+	        color: black; /* 글자색 변경 (배경 이미지에 따라 조절 가능) */
+	    }
+	
+	    .hero-content {
+	        position: relative;
+	        z-index: 1;
+	        text-align: left; /* 텍스트 왼쪽 정렬 */
+	    }
+	
+	    .hero-body {
+	        display: flex;
+	        align-items: center; /* 세로 중앙 정렬 */
+	    }
+	
+	    .hero-text-container {
+	        max-width: 650px; /* 텍스트 박스 최대 너비 제한 */
+	    }
+        
+        /* 푸터 배경색 변경 */
+		  .footer {
+		    background-color: #FDF5BF; /* 원하는 색상 */
+		    padding: 2rem 0;
+		  }
+		  
+		  .button.is-white {
+		    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15); /* 그림자 추가 */
+		    border-radius: 12px; /* 둥근 모서리 */
+		    transition: all 0.2s ease-in-out; /* 부드러운 애니메이션 */
+		}
+		
+		.button.is-white:hover {
+		    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* 호버 시 강조 */
+		}	
+		
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -135,28 +178,33 @@
 
 <!-- Hero Section -->
 <section class="hero is-primary-custom is-medium">
-  <div class="floating-shapes"></div>
-  <div class="hero-body">
-    <div class="container hero-content">
-      <div class="columns is-centered">
-        <div class="column is-8 has-text-centered">
-          <h1 class="title is-1 mb-6">AI-Powered Child Growth Journal</h1>
-          <p class="subtitle is-4 mb-6">
-            From emotion analysis to growth records, capture every special moment of your child.
-          </p>
-          <div class="buttons is-centered">
-            <a class="button is-white is-large"
-               th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-            >
-              <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'Go to Dashboard' : 'Get Started'">Get Started</strong>
-            </a>
-            <a class="button is-white is-outlined is-large has-text-black" href="#features">Learn More</a>
-          </div>
+    <div class="hero-body">
+        <div class="container hero-content">
+            <div class="columns">
+                <div class="column is-6">
+                    <div class="hero-text-container">
+                        <h1 class="title is-1 mb-5">
+                            AI-Powered <br> Child Growth Journal
+                        </h1>
+                        <p class="subtitle is-4 mb-6">
+                            From emotion analysis to growth records <br> capture every special moment of your child.
+                        </p>
+                        <div class="buttons">
+                            <a class="button is-white is-large mr-3"
+                               th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
+                                <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : 'Get Started'"> Get Started </strong>
+                            </a>
+                            <a class="button is-primary-custom is-large has-text-black" href="#features">
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </section>
+
 
 <!-- Features Section -->
 <section class="section" id="features">
@@ -228,31 +276,55 @@
   </div>
 </section>
 
-<!-- Footer -->
-<footer class="footer">
-  <div class="container">
-    <div class="columns">
-      <div class="column is-4">
-        <h3 class="title is-4 has-text-primary-custom">iLog</h3>
-        <p>Capture your child's growth in a special way.</p>
+<!-- 공통 footer -->
+    <footer>
+      <div class="container">
+        <div class="columns">
+          <div class="column is-4">
+            <div class="logo-container">
+              <img
+                class="footer-logo"
+                src="../../static/images/wilog.png"
+                th:src="@{/images/wilog.png}"
+                alt="iLog 로고"
+              />
+              <span class="footer-title">iLog</span>
+            </div>
+            <p>
+              This service systematically records and analyzes a child's emotions and development to support healthy growth.
+            </p>
+          </div>
+          <div class="column is-4"></div>
+          <div class="column is-4">
+            <h3 class="title is-5">Contact</h3>
+            <div class="contact-info">
+              <p>
+                <i class="fas fa-map-marker-alt"></i> 123, Teheran-ro, Gangnam-gu, Seoul, South Korea
+              </p>
+              <p><i class="fas fa-phone"></i> 02-123-4567</p>
+              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
+              <p>
+                <i class="fas fa-clock"></i> weekday 09:00 - 18:00 (except public holidays)
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+		  <div class="columns is-vcentered">
+		    <div class="column is-4"></div> <!-- 왼쪽 공백 -->
+		    <div class="column is-4 has-text-centered">
+		      <p>
+		        <a href="/terms">Terms of Service</a> |
+		        <a href="/privacy"><strong>Privacy Policy</strong></a> |
+		        <a href="/youth-policy">Youth Protection Policy</a>
+		      </p>
+		    </div>
+		    <div class="column is-4 has-text-right">
+		      <p>&copy; 2025 iLog. All rights reserved.</p>
+		    </div>
+		  </div>
+		</div>
       </div>
-      <div class="column is-4">
-        <h3 class="title is-5">Quick Links</h3>
-        <ul>
-          <li><a th:href="@{/guides}">Guide</a></li>
-          <li><a th:href="@{/claims}">Support</a></li>
-          <li><a th:href="@{/privacy}">Privacy Policy</a></li>
-          <li><a th:href="@{/terms}">Terms of Use</a></li>
-        </ul>
-      </div>
-      <div class="column is-4">
-        <h3 class="title is-5"><a th:href="@{/claims/new}">Contact Us</a></h3>
-        <p>Email: support@ilog.com</p>
-        <p>Phone: 1234-5678</p>
-        <p>Hours: Weekdays 09:00-18:00</p> 
-      </div>
-    </div>
-  </div>
-</footer>
+    </footer>
 </body>
 </html>

@@ -147,8 +147,10 @@ public class MentalSurveyService {
     public ChildMentalStatsDTO getMentalSurveyStatsBetween(Long childId, Long memberId, LocalDate startDate, LocalDate endDate) {
         if (!ObjectUtils.isEmpty(startDate) && !ObjectUtils.isEmpty(endDate)) {
             // 기간 내 데이터 조회 (시작 날짜와 종료 날짜 사이)
-            List<ChildMentalSurveyStatPointDataDTO> surveyResponseStatPointData = mentalSurveyResponseRepository
-                    .findByChildIdAndRespondentIdAndCreatedAtBetween(childId, memberId, startDate.atTime(23, 59, 59), endDate.atTime(23, 59, 59)).stream()
+            List<MentalSurveyResponseEntity> mentalSurveys = mentalSurveyResponseRepository
+                    .findByChildCreatedAtBetween(childId, startDate.atTime(23, 59, 59), endDate.atTime(23, 59, 59));
+            List<ChildMentalSurveyStatPointDataDTO> parentSurveyResponseStatPointData = mentalSurveys.stream()
+                    .filter(mentalSurveyResponse -> mentalSurveyResponse.getRelationType().equals(RelationType.GUARDIAN.name()))
                     .map(mentalSurveyResponse ->
                             ChildMentalSurveyStatPointDataDTO.builder()
                                     .date(mentalSurveyResponse.getCreatedAt())
@@ -156,13 +158,24 @@ public class MentalSurveyService {
                                     .resultScore(mentalSurveyResponse.getTotalLikertScore())
                                     .detailUrl(String.format("/children/%d/mentalSurveys/responses/%s/details", childId, mentalSurveyResponse.getId()))
                                     .build()).toList();
-            return new ChildMentalStatsDTO(surveyResponseStatPointData);
+            List<ChildMentalSurveyStatPointDataDTO> teacherSurveyResponseStatPointData = mentalSurveys.stream()
+                    .filter(mentalSurveyResponse -> mentalSurveyResponse.getRelationType().equals(RelationType.TEACHER.name()))
+                    .map(mentalSurveyResponse ->
+                            ChildMentalSurveyStatPointDataDTO.builder()
+                                    .date(mentalSurveyResponse.getCreatedAt())
+                                    .label(mentalSurveyResponse.getSurveyTitle())
+                                    .resultScore(mentalSurveyResponse.getTotalLikertScore())
+                                    .detailUrl(String.format("/children/%d/mentalSurveys/responses/%s/details", childId, mentalSurveyResponse.getId()))
+                                    .build()).toList();
+            return new ChildMentalStatsDTO(parentSurveyResponseStatPointData, teacherSurveyResponseStatPointData);
         } else {
             // 파라미터가 하나라도 없으면 전체 데이터를 기본 간격인 최근 한달로 조회
             LocalDateTime today = LocalDateTime.now();
             LocalDateTime dayAMonthAgo = today.minusMonths(1);
-            List<ChildMentalSurveyStatPointDataDTO> surveyResponseStatPointData = mentalSurveyResponseRepository
-                    .findByChildIdAndRespondentIdAndCreatedAtBetween(childId, memberId, dayAMonthAgo, today).stream()
+            List<MentalSurveyResponseEntity> mentalSurveys = mentalSurveyResponseRepository
+                    .findByChildCreatedAtBetween(childId, dayAMonthAgo, today);
+            List<ChildMentalSurveyStatPointDataDTO> parentSurveyResponseStatPointData = mentalSurveys.stream()
+                    .filter(mentalSurveyResponse -> mentalSurveyResponse.getRelationType().equals(RelationType.GUARDIAN.name()))
                     .map(mentalSurveyResponse ->
                             ChildMentalSurveyStatPointDataDTO.builder()
                                     .date(mentalSurveyResponse.getCreatedAt())
@@ -170,7 +183,16 @@ public class MentalSurveyService {
                                     .resultScore(mentalSurveyResponse.getTotalLikertScore())
                                     .detailUrl(String.format("/children/%d/mentalSurveys/responses/%s/details", childId, mentalSurveyResponse.getId()))
                                     .build()).toList();
-            return new ChildMentalStatsDTO(surveyResponseStatPointData);
+            List<ChildMentalSurveyStatPointDataDTO> teacherSurveyResponseStatPointData = mentalSurveys.stream()
+                    .filter(mentalSurveyResponse -> mentalSurveyResponse.getRelationType().equals(RelationType.TEACHER.name()))
+                    .map(mentalSurveyResponse ->
+                            ChildMentalSurveyStatPointDataDTO.builder()
+                                    .date(mentalSurveyResponse.getCreatedAt())
+                                    .label(mentalSurveyResponse.getSurveyTitle())
+                                    .resultScore(mentalSurveyResponse.getTotalLikertScore())
+                                    .detailUrl(String.format("/children/%d/mentalSurveys/responses/%s/details", childId, mentalSurveyResponse.getId()))
+                                    .build()).toList();
+            return new ChildMentalStatsDTO(parentSurveyResponseStatPointData, teacherSurveyResponseStatPointData);
         }
     }
 

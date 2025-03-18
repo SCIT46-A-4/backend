@@ -3,6 +3,7 @@ package com.scit.iLog.dto.mentalsurvey;
 import java.util.List;
 
 public record ChildMentalStatsDTO(
-        List<ChildMentalSurveyStatPointDataDTO> seriesData
+        List<ChildMentalSurveyStatPointDataDTO> parentSeriesData,
+        List<ChildMentalSurveyStatPointDataDTO> teacherSeriesData
 ) {
 }

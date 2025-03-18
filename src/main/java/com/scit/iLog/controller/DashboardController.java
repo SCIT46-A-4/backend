@@ -60,10 +60,36 @@ public class DashboardController {
         model.addAttribute("memberName", memberDetails.getName());
         model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         model.addAttribute("childProfiles", childProfiles);
-        return "dashboard/dashboardGuardianView";
+        return "dashboard/dashboardGuardianViewV2";
     }
 
-    //-------------------------------------------------------------------------------------------------------
+    @GetMapping("/guardian/v1")
+    public String handleGetParentDashboardViewV1(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            Model model
+    ) {
+        ParentDashboardChildListDTO childProfiles = childService.getChildrenProfilesOf(memberDetails.getId());
+
+        model.addAttribute("memberId", memberDetails.getId());
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
+        model.addAttribute("childProfiles", childProfiles);
+        return "dashboard/dashboardGuardianViewV1";
+    }
+
+    @GetMapping("/guardian/v2")
+    public String handleGetParentDashboardViewV2(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            Model model
+    ) {
+        ParentDashboardChildListDTO childProfiles = childService.getChildrenProfilesOf(memberDetails.getId());
+
+        model.addAttribute("memberId", memberDetails.getId());
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
+        model.addAttribute("childProfiles", childProfiles);
+        return "dashboard/dashboardGuardianViewV2";
+    }
 
     /**
      * v1.x.x-11
@@ -118,21 +144,4 @@ public class DashboardController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    public enum SortOption {
-        NAME("이름순"),
-        BIRTH_DATE("생년월일순"),
-        REGISTER_DATE("등록순");
-
-        private final String displayName;
-
-        SortOption(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-    // 김은진 코드 끝 --------------------------------------------------------------------------------------------
 }

@@ -1,306 +1,556 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>개인정보처리방침</title>
-    <link rel="stylesheet" href="../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
-    <link rel="stylesheet" href="../static/css/customColors.css" th:href="@{/css/customColors.css}">
-    <script src="../static/js/jquery-3.6.0.min.js" th:href="@{/js/jquery-3.6.0.min.js}"></script>
-    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+    <link
+      rel="stylesheet"
+      href="../static/css/bulma.min.css"
+      th:href="@{/css/bulma.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      href="../static/css/customColors.css"
+      th:href="@{/css/customColors.css}"
+    />
+    <script
+      src="../static/js/jquery-3.6.0.min.js"
+      th:href="@{/js/jquery-3.6.0.min.js}"
+    ></script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
+    ></script>
+
     <style>
-        body {
-            background-color: #FDF5BF;
-            font-family: 'Arial', sans-serif;
-        }
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            background: white;
-            padding: 50px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .topR {
-        	text-align: center;
-        	color: gray;
-        }
-        
-        h2 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        .toc {
-            background: #f8f8f8;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 100px;
-        }
-        .toc h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        .toc ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .toc ul li {
-            padding: 5px 0;
-        }
-        .toc ul li a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-        h3 {
-            margin-top: 10px;
-            font-size: 22px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-        }
-        p, ul {
-            font-size: 16px;
-            line-height: 1.8;
-        }
-        ul {
-            padding-left: 20px;
-        }
-        #logo {
-		    width: 70px;
-		    height: auto;
-		    max-height: 80px;
-		}
+      body {
+        background-color: #fdf5bf;
+        font-family: 'Arial', sans-serif;
+      }
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: white;
+        padding: 50px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .topR {
+        text-align: center;
+        color: gray;
+      }
+
+      h2 {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 20px;
+      }
+      .toc {
+        background: #f8f8f8;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 100px;
+      }
+      .toc h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+      .toc ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      .toc ul li {
+        padding: 5px 0;
+      }
+      .toc ul li a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+      }
+      h3 {
+        margin-top: 10px;
+        font-size: 22px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+      }
+      p,
+      ul {
+        font-size: 16px;
+        line-height: 1.8;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      #logo {
+        width: 70px;
+        height: auto;
+        max-height: 80px;
+      }
     </style>
-</head>
-<body>
-<!-- Navigation -->
-<nav class="navbar is-white" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar is-white" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
         <a class="navbar-item" href="/">
-        	<img id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="iLog 로고"/>
+          <img
+            id="logo"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="iLog 로고"
+          />
         </a>
 
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
+        <a
+          role="button"
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navbarBasic"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
         </a>
-    </div>
+      </div>
 
-    <div id="navbarBasic" class="navbar-menu">
+      <div id="navbarBasic" class="navbar-menu">
         <div class="navbar-end">
-            <div class="navbar-item">
-                <div class="buttons">
-                    <a
-                            class="button is-primary-custom has-text-black"
-                            th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-                    >
-                        <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'">
-                            이용하기
-                        </strong>
-                    </a>
-                </div>
+          <div class="navbar-item">
+            <div class="buttons">
+              <a
+                class="button is-primary-custom has-text-black"
+                th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
+              >
+                <strong
+                  th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'"
+                >
+                  이용하기
+                </strong>
+              </a>
             </div>
+          </div>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
     <section class="section">
-        <div class="container">
-            <h2><strong>개인정보처리방침</strong></h2>
-            <p class="topR">ilog(이하 ‘아이로그’)는 서비스 기획부터 종료까지 개인정보보호법 등 국내의 개인정보 보호 법령을 철저히 준수합니다.<br> 또한 OECD의 개인정보 보호 가이드라인 등 국제 기준을 준수하여 서비스를 제공합니다.</p><br><br>
+      <div class="container">
+        <h2><strong>개인정보처리방침</strong></h2>
+        <p class="topR">
+          ilog(이하 ‘아이로그’)는 서비스 기획부터 종료까지 개인정보보호법 등
+          국내의 개인정보 보호 법령을 철저히 준수합니다.<br />
+          또한 OECD의 개인정보 보호 가이드라인 등 국제 기준을 준수하여 서비스를
+          제공합니다.
+        </p>
+        <br /><br />
 
-            <!-- 목차 -->
-            <div class="toc">
-                <h3>목차</h3><br>
-                <h4>※ 클릭 시 해당 조항으로 이동됩니다. ※</h4><br> 
-                <ul>
-			        <li><a href="#publicity">제1조: 본 방침의 공개</a></li>
-			        <li><a href="#changes">제2조: 본 방침의 변경</a></li>
-			        <li><a href="#registration">제3조: 회원 가입을 위한 정보</a></li>
-			        <li><a href="#authentication">제4조: 본인 인증을 위한 정보</a></li>
-			        <li><a href="#guardian">제5조: 법정대리인 동의를 위한 정보</a></li>
-			        <li><a href="#service_provision">제6조: 서비스 제공을 위한 정보</a></li>
-			        <li><a href="#usage_analysis">제7조: 서비스 이용 및 부정 이용 확인을 위한 정보</a></li>
-			        <li><a href="#collection_methods">제8조: 개인정보 수집 방법</a></li>
-			        <li><a href="#use_of_data">제9조: 개인정보의 이용</a></li>
-			        <li><a href="#retention_period">제10조: 개인정보의 보유 및 이용기간</a></li>
-			        <li><a href="#legal_retention">제11조: 법령에 따른 개인정보의 보유 및 이용기간</a></li>
-			        <li><a href="#destruction_principle">제12조: 개인정보의 파기 원칙</a></li>
-			        <li><a href="#destruction_process">제13조: 개인정보 파기 절차</a></li>
-			        <li><a href="#destruction_methods">제14조: 개인정보 파기 방법</a></li>
-			        <li><a href="#advertising">제15조: 광고성 정보의 전송 조치</a></li>
-			        <li><a href="#child_protection">제16조: 아동의 개인정보보호</a></li>
-			        <li><a href="#withdrawal">제17조: 개인정보 조회 및 수집동의 철회</a></li>
-			        <li><a href="#data_modification">제18조: 개인정보 정보변경 등</a></li>
-			        <li><a href="#user_responsibilities">제19조: 이용자의 의무</a></li>
-			    </ul>
-            </div>
-
-            <div class="content">
-                <h3 id="publicity">제1조(본 방침의 공개)</h3>
-                <p>회사는 다음과 같은 개인정보를 수집할 수 있습니다.</p>
-                <ol>
-				    <li>회사는 이용자가 언제든지 쉽게 본 방침을 확인할 수 있도록 회사 홈페이지 첫 화면 또는 첫 화면과의 연결화면을 통해 본 방침을 공개하고 있습니다.</li>
-				    <li>회사는 제1항에 따라 본 방침을 공개하는 경우 글자 크기, 색상 등을 활용하여 이용자가 본 방침을 쉽게 확인할 수 있도록 합니다.</li>
-				</ol><br>
-				
-                <h3 id="changes">제2조 (본 방침의 변경)</h3>
-                <ol>
-				    <li>본 방침은 개인정보 관련 법령, 지침, 고시 또는 정부나 회사 서비스의 정책이나 내용의 변경에 따라 개정될 수 있습니다.</li>
-				    <li>회사는 제1항에 따라 본 방침을 개정하는 경우 다음 각 호 하나 이상의 방법으로 공지합니다.
-				        <ul style="list-style-type: none; margin-left: -10px;">
-				            <li>가. 회사가 운영하는 인터넷 홈페이지 첫 화면의 공지사항란 또는 별도의 창을 통하여 공지하는 방법</li>
-				            <li>나. 서면·모사전송·전자우편 또는 이와 비슷한 방법으로 이용자에게 공지하는 방법</li>
-				        </ul>
-				    </li>
-				    <li>회사는 제2항의 공지는 본 방침 개정의 시행일로부터 최소 7일 이전에 공지합니다. 
-				        다만, 이용자 권리의 중요한 변경이 있을 경우에는 최소 30일 전에 공지합니다.</li>
-				</ol><br>
-
-                <h3 id="registration">제3조 (회원 가입을 위한 정보)</h3>
-                <p>회사는 이용자의 회사 서비스에 대한 회원가입을 위하여 다음과 같은 정보를 수집합니다.</p>
-                <ol>
-				    <li>필수 수집 정보: 의메일 주소, 비밀번호, 이름 및 생년월일</li>
-				</ol><br>
-				
-                <h3 id="authentication">제4조 (본인 인종을 위한 정보)</h3>
-                <p>회사는 이용자의 본인인중을 위하여 다음과 같은 정보를 수집합니다.</p>
-                <ol>
-				    <li>필수 수집 정보: 이메일 주소</li>
-				</ol><br>
-
-                <h3 id="guardian">제5조 (법정대리인 동의를 위한 정보)</h3>
-                <p>회사는 법정대리인의 동의가 필요한 경우 법정대리인의 동의를 위하여 다음과 같은 정보를 수집합니다.</p>
-                <ol>
-				    <li>필수 수집 정보: 보호자 이름, 보호자 성별, 보호자 내/외국인 여부 및 본인과의 관계</li>
-				</ol><br>
-
-                <h3 id="service_provision">제6조 (회사 서비스 제공을 위한 정보)</h3>
-                <p>회사는 이용자에게 회사의 서비스를 제공하기 위하여 다음과 같은 정보를 수집합니다.</p>
-                <ol>
-				    <li>필수 수집 정보: 이메일 주소, 이름 및 생년월일 </li>
-				</ol><br>
-
-                <h3 id="usage_analysis">제7조 (서비스 이용 및 부정 이용 확인을 위한 정보)</h3>
-                <p>회사는 이용자의 서비스 이용에 따른 통계.분석 및 부정이용의 확인.분석을 위하여 다음과 같은 정보를 수집합니다. (부정이용이란 회원달퇴 후 재가입, 상품구매 후 구매취소 등을 반 복적으로 행하는 등 회사가 제공하는 할인쿠폰, 이벤트 혜택 등의 경제상 이익을 불-편법적 으로 수취하는 행위, 이용약관 등에서 금지하고 있는 행위, 명의도용 등의 불.편법행위 등을 말합니다.) </p>
-                <ol>
-				    <li>필수 수집 정보: 서비스 이용기록 및 접속지 정보</li>
-				</ol><br>
-				
-				<h3 id="collection_methods">제8조 (개인정보 수집 방법)</h3>
-                <p>회사는 다음과 같은 방법으로 이용자의 개인정보를 수집합니다.</p>
-                <ol>
-				    <li>이용자가 회사의 홈페이지에 자신의 개인정보를 입력하는 방식</li>
-				    <li>어플리케이션 등 회사가 제공하는 홈페이지 외의 서비스를 통해 이용자가 자신의 개 인정보를 입력하는 방식 </li>
-				    <li>의용자가 고객센터의 상담, 게시판에서의 활동 등 회사의 서비스를 이용하는 과정에 서 이용자가 입력하는 방식</li>
-				</ol><br>
-				
-				<h3 id="use_of_data">제9조 (개인정보의 이용)</h3>
-                <p>회사는 개인정보를 다음 각 호의 경우에 이용합니다.</p>
-                <ol>
-				    <li>공지사항의 전달 등 회사운영에 필요한 경우</li>
-				    <li>이용문의에 대한 회신, 불만의 처리 등 이용자에 대한 서비스 개선을 위한 경우</li>
-				    <li>회사의 서비스를 제공하기 위한 경우</li>
-				    <li>법령 및 회사 약관을 위반하는 회원에 대한 이용 제한 조치, 부정 이용 행위를 포함하 여 서비스의 원활한 운영에 지장을 주는 행위에 대한 방지 및 제재를 위한 경우</li>
-				    <li>인구통계학적 분석, 서비스 방문 및 이용기록의 분석을 위한 경우</li>
-				</ol><br>
-				
-				<h3 id="retention_period">제10조 (개인정보의 보유 및 이용기간)</h3>
-                <ol>
-				    <li>회사는 이용자의 개인정보에 대해 개인정보의 수집.이용 목적 달성을 위한 기간 동안 개인정보를 보유 및 이용합니다.</li>
-				    <li>전항에도 불구하고 회사는 내부 방침에 의해 서비스 부정이용기록은 부정 가입 및 이 용 방지를 위하여 회원 탈퇴 시점으로부터 최대 1년간 보관합니다.</li>
-				</ol><br>
-				
-				<h3 id="legal_retention">제11조 (법령에 따른 개인정보의 보유 및 이용기간) </h3>
-				<p>회사는 관계법령에 따라 다음과 같이 개인정보를 보유 및 이용합니다.</p>
-                <ol>
-				    <li>전자상거래 등에서의 소비자보호에 관한 법률에 따른 보유정보 및 보유기간</li>
-				        <ul style="list-style-type: none; margin-left: -10px;">
-				            <li>가. 계약 또는 청약철회 등에 관한 기록</li>
-				            <li>나. 대금결제 및 재화 등의 공급에 관한 기록: 5년</li>
-				            <li>다. 소비자의 불만 또는 분쟁처리에 관한 기록: 3년</li>
-				            <li>라. 표시.광고에 관한 기록 :6개월</li>
-				        </ul>
-				    <li>통신비밀보호법에 따른 보유정보 및 보유기간</li>
-					    <ul style="list-style-type: none; margin-left: -10px;">
-					            <li>가. 웹사이트 로그 기록 자료: 3개월</li>
-					        </ul>
-					<li>전자금융거래에 따른 보유정보 및 보유기간</li>
-					    <ul style="list-style-type: none; margin-left: -10px;">
-					            <li>가. 전자금융거래에 관한 기록: 5년</li>
-					        </ul>
-					<li>위치정보의 보호 및 이용 등에 관한 법률</li>
-					    <ul style="list-style-type: none; margin-left: -10px;">
-					            <li>가. 개인위치정보에 관한 기록 : 6개월</li>
-					        </ul>
-				</ol><br>
-				
-				<h3 id="destruction_principle">제12조 (개인정보의 파기원칙)</h3>
-                <p>회사는 원칙적으로 이용자의 개인정보 처리 목적의 달성, 보유.이용기간의 경과 등 개인정 보가 필요하지 않을 경우에는 해당 정보를 지체 없이 파기합니다.</p><br>
-				
-				<h3 id="destruction_process">제13조 (개인정보파기절차)</h3>
-                <ol>
-				    <li>이용자가 회원가입 등을 위해 입력한 정보는 개인정보 처리 목적이 달성된 후 별도의 DB로 옮겨져(종이의 경우 별도의 서류함) 내부 방침 및 기타 관련 법령에 의한 정보 보호 사유에 따라(보유 및 이용기간 참조) 일정 기간 저장된 후 파기 되어집니다</li>
-				    <li>회사는 파기 사유가 발생한 개인정보를 개인정보보호 책임자의 승인절차를 거쳐 파 기합니다.</li>
-				</ol><br>
-				
-				<h3 id="destruction_methods">제14조 (개인정보파기방법)</h3>
-                <p>회사는 전자적 파일형태로 저장된 개인정보는기록을 재생할 없는 기술적 방법을 사용하 여 삭제하며, 종이로 출력된 개인정보는 분쇄기로 분쇄하거나 소각 등을 통하여 파기합니다.</p><br>
-				
-				<h3 id="advertising">제15조 (광고성 정보의 전송 조치)</h3>
-				<ol>
-				    <li> 회사는 전자적 전송매체를 이용하여 영리목적의 광고성 정보를 전송하는 경우 이용 자의 명시적인 사전동의를 받습니다. 다만, 다음 각호 어느 하나에 해당하는 경우에는 사전 동의를 받지 않습니다.</li>
-				        <ul style="list-style-type: none; margin-left: -10px;">
-				            <li>가. 회사가 재화 등의 거래관계를 통하여 수신자로부터 직접 연락처를 수집한 경우, 거래가 종료된 날로부터 6개월 이내에 회사가 처리하고 수신자와 거래한 것과 동 종의 재화 등에 대한 영리목적의 광고성 정보를 전송하려는 경우</li>
-				            <li>나. r방문판매 등에 관한 법률J 에 따른 전화권유판매자가 육성으로 수신자에게 개 인정보의 수집술처를 고지하고 전화권유를 하는 경우</li>
-				        </ul>
-				    <li>회사는 전항에도 불구하고 수신자가 수신거부의사를 표시하거나 사전 동의를 철회한 경우에는 영리목적의 광고성 정보를 전송하지 않으며 수신거부 및 수신동의 철회에 대한 처리 결과를 알립니다.</li>
-					<li>회사는 오후 9시부터 그다음 날 오전 8시까지의 시간에 전자적 전송매체를 이용하여 영리목적의 광고성 정보를 전송하는 경우에는 제1항에도 불구하고 그 수신자로부터 별도의 사전 동의를 받습니다.</li>
-					<li>회사는 전자적 전송매체를 이용하여 영리목적의 광고성 정보를 전송하는 경우 다음 의 사항 등을 광고성 정보에 구체적으로 밝힙니다.</li>
-					    <ul style="list-style-type: none; margin-left: -10px;">
-					            <li>가. 회사명 및 연락처</li>
-					            <li>나. 수신 거부 또는 수신 동의의 철회 의사표시에 관한 사항의 표시</li>
-					        </ul>
-					<li>회사는 전자적 전송매체를 이용하여 영리목적의 광고성 정보를 전송하는 경우 다음 각 호의 어느 하나에 해당하는 조치를 하지 않습니다.</li>
-					    <ul style="list-style-type: none; margin-left: -10px;">
-					            <li>가. 광고성 정보 수신자의 수신거부 또는 수신동의의 철회를 회피.방해하는 조치</li>
-					            <li>나. 숫자.부호 또는 문자를 조합하여 전화번호.전자우편주소 등 수신자의 연락처를 자동으로 만들어 내는 조치</li>
-					            <li>다. 영리목적의 광고성 정보를 전송할 목적으로 전화번호 또는 전자우편주소를 자동 으로 등록하는 조치</li>
-					            <li>라. 광고성 정보 전송자의 신원이나 광고 전송 출처를 감추기 위한 각종 조치</li>
-					            <li>마. 영리목적의 광고성 정보를 전송할 목적으로 수신자를 기망하여 회신을 유도하는 각종 조치</li>
-					        </ul>
-				</ol><br>
-				
-				<h3 id="child_protection">제16조 (아동의 개인정보보호)</h3>
-                <ol>
-				    <li>회사는 만 14세 미만 아동의 개인정보 보호를 위하여 만 14세 이상의 이용자에 한하 여회원가입을 허용합니다.</li>
-				    <li>제1항에도 불구하고 회사는 이용자가 만 14세 미만의 아동일 경우에는, 그 아동의 밥 정대리인으로부터 그 아동의 개인정보 수집, 이용, 제공 등의 동의를 그 아동의 법정 대리인으로부터 받습니다.</li>
-				    <li>제2항의 경우 회사는 그 법정대리인의 이름, 생년월일, 성별, 중복가입확인정보(ID), 휴대폰 번호 등을 추가로 수집합니다.</li>
-				</ol><br>
-				
-				<h3 id="withdrawal">제17조 (개인정보 조회 및 수집동의 철회)</h3>
-                <ol>
-				    <li>이용자 및 법정 대리인은 언제든지 등록되어 있는 자신의 개인정보를 조회하거나 수 정할 수 있으며 개인정보수집 동의 철회를 요청할 수 있습니다.</li>
-				    <li>이용자 및 법정 대리인은 자신의 가입정보 수집 등에 대한 동의를 철회하기 위해서는 개인정보보호책임자 또는 담당자에게 서면, 전화 또는 전자우편주소로 연락하시면 회사는 지체 없이 조치하겠습니다.</li>
-				</ol><br>
-				
-				<h3 id="data_modification">제18조 (개인정보 정보변경 등)</h3>
-                <ol>
-				    <li>이용자는 회사에게 전조의 방법을 통해 개인정보의 오류에 대한 정정을 요청할 수 있 습니다.</li>
-				    <li>회사는 전항의 경우에 개인정보의 정정을 완료하기 전까지 개인정보를 이용 또는 제 공하지 않으며 잘못된 개인정보를 제3자에게 이미 제공한 경우에는 정정 처리결과를 제3자에게 지체 없이 통지하여 정정이 이루어지도록 하겠습니다.</li>
-				</ol><br>
-				
-				<h3 id="user_responsibilities">제19조 (이용자의 의무)</h3>
-                <ol>
-				    <li>이용자는 자신의 개인정보를 최신의 상태로 유지해야 하며, 이용자의 부정확한 정보 입력으로 발생하는 문제의 책임은 이용자 자신에게 있습니다.</li>
-				    <li>타인의 개인정보를 도용한 회원가입의 경우 이용자 자격을 상실하거나 관련 개인정 보보호 법령에 의해 처벌받을 수 있습니다.</li>
-				    <li>이용자는 전자우편주소, 비밀번호 등에 대한 보안을 유지할 책임이 있으며 제3자에게 이를 양도하거나 대여할 수 없습니다.</li>
-				</ol><br>
-            </div>
+        <!-- 목차 -->
+        <div class="toc">
+          <h3>목차</h3>
+          <br />
+          <h4>※ 클릭 시 해당 조항으로 이동됩니다. ※</h4>
+          <br />
+          <ul>
+            <li><a href="#publicity">제1조: 본 방침의 공개</a></li>
+            <li><a href="#changes">제2조: 본 방침의 변경</a></li>
+            <li><a href="#registration">제3조: 회원 가입을 위한 정보</a></li>
+            <li><a href="#authentication">제4조: 본인 인증을 위한 정보</a></li>
+            <li><a href="#guardian">제5조: 법정대리인 동의를 위한 정보</a></li>
+            <li>
+              <a href="#service_provision">제6조: 서비스 제공을 위한 정보</a>
+            </li>
+            <li>
+              <a href="#usage_analysis"
+                >제7조: 서비스 이용 및 부정 이용 확인을 위한 정보</a
+              >
+            </li>
+            <li><a href="#collection_methods">제8조: 개인정보 수집 방법</a></li>
+            <li><a href="#use_of_data">제9조: 개인정보의 이용</a></li>
+            <li>
+              <a href="#retention_period"
+                >제10조: 개인정보의 보유 및 이용기간</a
+              >
+            </li>
+            <li>
+              <a href="#legal_retention"
+                >제11조: 법령에 따른 개인정보의 보유 및 이용기간</a
+              >
+            </li>
+            <li>
+              <a href="#destruction_principle">제12조: 개인정보의 파기 원칙</a>
+            </li>
+            <li>
+              <a href="#destruction_process">제13조: 개인정보 파기 절차</a>
+            </li>
+            <li>
+              <a href="#destruction_methods">제14조: 개인정보 파기 방법</a>
+            </li>
+            <li><a href="#advertising">제15조: 광고성 정보의 전송 조치</a></li>
+            <li><a href="#child_protection">제16조: 아동의 개인정보보호</a></li>
+            <li>
+              <a href="#withdrawal">제17조: 개인정보 조회 및 수집동의 철회</a>
+            </li>
+            <li>
+              <a href="#data_modification">제18조: 개인정보 정보변경 등</a>
+            </li>
+            <li><a href="#user_responsibilities">제19조: 이용자의 의무</a></li>
+          </ul>
         </div>
+
+        <div class="content">
+          <h3 id="publicity">제1조(본 방침의 공개)</h3>
+          <p>회사는 다음과 같은 개인정보를 수집할 수 있습니다.</p>
+          <ol>
+            <li>
+              회사는 이용자가 언제든지 쉽게 본 방침을 확인할 수 있도록 회사
+              홈페이지 첫 화면 또는 첫 화면과의 연결화면을 통해 본 방침을
+              공개하고 있습니다.
+            </li>
+            <li>
+              회사는 제1항에 따라 본 방침을 공개하는 경우 글자 크기, 색상 등을
+              활용하여 이용자가 본 방침을 쉽게 확인할 수 있도록 합니다.
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="changes">제2조 (본 방침의 변경)</h3>
+          <ol>
+            <li>
+              본 방침은 개인정보 관련 법령, 지침, 고시 또는 정부나 회사 서비스의
+              정책이나 내용의 변경에 따라 개정될 수 있습니다.
+            </li>
+            <li>
+              회사는 제1항에 따라 본 방침을 개정하는 경우 다음 각 호 하나 이상의
+              방법으로 공지합니다.
+              <ul style="list-style-type: none; margin-left: -10px">
+                <li>
+                  가. 회사가 운영하는 인터넷 홈페이지 첫 화면의 공지사항란 또는
+                  별도의 창을 통하여 공지하는 방법
+                </li>
+                <li>
+                  나. 서면·모사전송·전자우편 또는 이와 비슷한 방법으로
+                  이용자에게 공지하는 방법
+                </li>
+              </ul>
+            </li>
+            <li>
+              회사는 제2항의 공지는 본 방침 개정의 시행일로부터 최소 7일 이전에
+              공지합니다. 다만, 이용자 권리의 중요한 변경이 있을 경우에는 최소
+              30일 전에 공지합니다.
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="registration">제3조 (회원 가입을 위한 정보)</h3>
+          <p>
+            회사는 이용자의 회사 서비스에 대한 회원가입을 위하여 다음과 같은
+            정보를 수집합니다.
+          </p>
+          <ol>
+            <li>필수 수집 정보: 의메일 주소, 비밀번호, 이름 및 생년월일</li>
+          </ol>
+          <br />
+
+          <h3 id="authentication">제4조 (본인 인종을 위한 정보)</h3>
+          <p>
+            회사는 이용자의 본인인중을 위하여 다음과 같은 정보를 수집합니다.
+          </p>
+          <ol>
+            <li>필수 수집 정보: 이메일 주소</li>
+          </ol>
+          <br />
+
+          <h3 id="guardian">제5조 (법정대리인 동의를 위한 정보)</h3>
+          <p>
+            회사는 법정대리인의 동의가 필요한 경우 법정대리인의 동의를 위하여
+            다음과 같은 정보를 수집합니다.
+          </p>
+          <ol>
+            <li>
+              필수 수집 정보: 보호자 이름, 보호자 성별, 보호자 내/외국인 여부 및
+              본인과의 관계
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="service_provision">제6조 (회사 서비스 제공을 위한 정보)</h3>
+          <p>
+            회사는 이용자에게 회사의 서비스를 제공하기 위하여 다음과 같은 정보를
+            수집합니다.
+          </p>
+          <ol>
+            <li>필수 수집 정보: 이메일 주소, 이름 및 생년월일</li>
+          </ol>
+          <br />
+
+          <h3 id="usage_analysis">
+            제7조 (서비스 이용 및 부정 이용 확인을 위한 정보)
+          </h3>
+          <p>
+            회사는 이용자의 서비스 이용에 따른 통계.분석 및 부정이용의
+            확인.분석을 위하여 다음과 같은 정보를 수집합니다. (부정이용이란
+            회원달퇴 후 재가입, 상품구매 후 구매취소 등을 반 복적으로 행하는 등
+            회사가 제공하는 할인쿠폰, 이벤트 혜택 등의 경제상 이익을 불-편법적
+            으로 수취하는 행위, 이용약관 등에서 금지하고 있는 행위, 명의도용
+            등의 불.편법행위 등을 말합니다.)
+          </p>
+          <ol>
+            <li>필수 수집 정보: 서비스 이용기록 및 접속지 정보</li>
+          </ol>
+          <br />
+
+          <h3 id="collection_methods">제8조 (개인정보 수집 방법)</h3>
+          <p>회사는 다음과 같은 방법으로 이용자의 개인정보를 수집합니다.</p>
+          <ol>
+            <li>이용자가 회사의 홈페이지에 자신의 개인정보를 입력하는 방식</li>
+            <li>
+              어플리케이션 등 회사가 제공하는 홈페이지 외의 서비스를 통해
+              이용자가 자신의 개 인정보를 입력하는 방식
+            </li>
+            <li>
+              의용자가 고객센터의 상담, 게시판에서의 활동 등 회사의 서비스를
+              이용하는 과정에 서 이용자가 입력하는 방식
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="use_of_data">제9조 (개인정보의 이용)</h3>
+          <p>회사는 개인정보를 다음 각 호의 경우에 이용합니다.</p>
+          <ol>
+            <li>공지사항의 전달 등 회사운영에 필요한 경우</li>
+            <li>
+              이용문의에 대한 회신, 불만의 처리 등 이용자에 대한 서비스 개선을
+              위한 경우
+            </li>
+            <li>회사의 서비스를 제공하기 위한 경우</li>
+            <li>
+              법령 및 회사 약관을 위반하는 회원에 대한 이용 제한 조치, 부정 이용
+              행위를 포함하 여 서비스의 원활한 운영에 지장을 주는 행위에 대한
+              방지 및 제재를 위한 경우
+            </li>
+            <li>
+              인구통계학적 분석, 서비스 방문 및 이용기록의 분석을 위한 경우
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="retention_period">제10조 (개인정보의 보유 및 이용기간)</h3>
+          <ol>
+            <li>
+              회사는 이용자의 개인정보에 대해 개인정보의 수집.이용 목적 달성을
+              위한 기간 동안 개인정보를 보유 및 이용합니다.
+            </li>
+            <li>
+              전항에도 불구하고 회사는 내부 방침에 의해 서비스 부정이용기록은
+              부정 가입 및 이 용 방지를 위하여 회원 탈퇴 시점으로부터 최대 1년간
+              보관합니다.
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="legal_retention">
+            제11조 (법령에 따른 개인정보의 보유 및 이용기간)
+          </h3>
+          <p>
+            회사는 관계법령에 따라 다음과 같이 개인정보를 보유 및 이용합니다.
+          </p>
+          <ol>
+            <li>
+              전자상거래 등에서의 소비자보호에 관한 법률에 따른 보유정보 및
+              보유기간
+            </li>
+            <ul style="list-style-type: none; margin-left: -10px">
+              <li>가. 계약 또는 청약철회 등에 관한 기록</li>
+              <li>나. 대금결제 및 재화 등의 공급에 관한 기록: 5년</li>
+              <li>다. 소비자의 불만 또는 분쟁처리에 관한 기록: 3년</li>
+              <li>라. 표시.광고에 관한 기록 :6개월</li>
+            </ul>
+            <li>통신비밀보호법에 따른 보유정보 및 보유기간</li>
+            <ul style="list-style-type: none; margin-left: -10px">
+              <li>가. 웹사이트 로그 기록 자료: 3개월</li>
+            </ul>
+            <li>전자금융거래에 따른 보유정보 및 보유기간</li>
+            <ul style="list-style-type: none; margin-left: -10px">
+              <li>가. 전자금융거래에 관한 기록: 5년</li>
+            </ul>
+            <li>위치정보의 보호 및 이용 등에 관한 법률</li>
+            <ul style="list-style-type: none; margin-left: -10px">
+              <li>가. 개인위치정보에 관한 기록 : 6개월</li>
+            </ul>
+          </ol>
+          <br />
+
+          <h3 id="destruction_principle">제12조 (개인정보의 파기원칙)</h3>
+          <p>
+            회사는 원칙적으로 이용자의 개인정보 처리 목적의 달성,
+            보유.이용기간의 경과 등 개인정 보가 필요하지 않을 경우에는 해당
+            정보를 지체 없이 파기합니다.
+          </p>
+          <br />
+
+          <h3 id="destruction_process">제13조 (개인정보파기절차)</h3>
+          <ol>
+            <li>
+              이용자가 회원가입 등을 위해 입력한 정보는 개인정보 처리 목적이
+              달성된 후 별도의 DB로 옮겨져(종이의 경우 별도의 서류함) 내부 방침
+              및 기타 관련 법령에 의한 정보 보호 사유에 따라(보유 및 이용기간
+              참조) 일정 기간 저장된 후 파기 되어집니다
+            </li>
+            <li>
+              회사는 파기 사유가 발생한 개인정보를 개인정보보호 책임자의
+              승인절차를 거쳐 파 기합니다.
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="destruction_methods">제14조 (개인정보파기방법)</h3>
+          <p>
+            회사는 전자적 파일형태로 저장된 개인정보는기록을 재생할 없는 기술적
+            방법을 사용하 여 삭제하며, 종이로 출력된 개인정보는 분쇄기로
+            분쇄하거나 소각 등을 통하여 파기합니다.
+          </p>
+          <br />
+
+          <h3 id="advertising">제15조 (광고성 정보의 전송 조치)</h3>
+          <ol>
+            <li>
+              회사는 전자적 전송매체를 이용하여 영리목적의 광고성 정보를
+              전송하는 경우 이용 자의 명시적인 사전동의를 받습니다. 다만, 다음
+              각호 어느 하나에 해당하는 경우에는 사전 동의를 받지 않습니다.
+            </li>
+            <ul style="list-style-type: none; margin-left: -10px">
+              <li>
+                가. 회사가 재화 등의 거래관계를 통하여 수신자로부터 직접
+                연락처를 수집한 경우, 거래가 종료된 날로부터 6개월 이내에 회사가
+                처리하고 수신자와 거래한 것과 동 종의 재화 등에 대한 영리목적의
+                광고성 정보를 전송하려는 경우
+              </li>
+              <li>
+                나. r방문판매 등에 관한 법률J 에 따른 전화권유판매자가 육성으로
+                수신자에게 개 인정보의 수집술처를 고지하고 전화권유를 하는 경우
+              </li>
+            </ul>
+            <li>
+              회사는 전항에도 불구하고 수신자가 수신거부의사를 표시하거나 사전
+              동의를 철회한 경우에는 영리목적의 광고성 정보를 전송하지 않으며
+              수신거부 및 수신동의 철회에 대한 처리 결과를 알립니다.
+            </li>
+            <li>
+              회사는 오후 9시부터 그다음 날 오전 8시까지의 시간에 전자적
+              전송매체를 이용하여 영리목적의 광고성 정보를 전송하는 경우에는
+              제1항에도 불구하고 그 수신자로부터 별도의 사전 동의를 받습니다.
+            </li>
+            <li>
+              회사는 전자적 전송매체를 이용하여 영리목적의 광고성 정보를
+              전송하는 경우 다음 의 사항 등을 광고성 정보에 구체적으로 밝힙니다.
+            </li>
+            <ul style="list-style-type: none; margin-left: -10px">
+              <li>가. 회사명 및 연락처</li>
+              <li>
+                나. 수신 거부 또는 수신 동의의 철회 의사표시에 관한 사항의 표시
+              </li>
+            </ul>
+            <li>
+              회사는 전자적 전송매체를 이용하여 영리목적의 광고성 정보를
+              전송하는 경우 다음 각 호의 어느 하나에 해당하는 조치를 하지
+              않습니다.
+            </li>
+            <ul style="list-style-type: none; margin-left: -10px">
+              <li>
+                가. 광고성 정보 수신자의 수신거부 또는 수신동의의 철회를
+                회피.방해하는 조치
+              </li>
+              <li>
+                나. 숫자.부호 또는 문자를 조합하여 전화번호.전자우편주소 등
+                수신자의 연락처를 자동으로 만들어 내는 조치
+              </li>
+              <li>
+                다. 영리목적의 광고성 정보를 전송할 목적으로 전화번호 또는
+                전자우편주소를 자동 으로 등록하는 조치
+              </li>
+              <li>
+                라. 광고성 정보 전송자의 신원이나 광고 전송 출처를 감추기 위한
+                각종 조치
+              </li>
+              <li>
+                마. 영리목적의 광고성 정보를 전송할 목적으로 수신자를 기망하여
+                회신을 유도하는 각종 조치
+              </li>
+            </ul>
+          </ol>
+          <br />
+
+          <h3 id="child_protection">제16조 (아동의 개인정보보호)</h3>
+          <ol>
+            <li>
+              회사는 만 14세 미만 아동의 개인정보 보호를 위하여 만 14세 이상의
+              이용자에 한하 여회원가입을 허용합니다.
+            </li>
+            <li>
+              제1항에도 불구하고 회사는 이용자가 만 14세 미만의 아동일 경우에는,
+              그 아동의 밥 정대리인으로부터 그 아동의 개인정보 수집, 이용, 제공
+              등의 동의를 그 아동의 법정 대리인으로부터 받습니다.
+            </li>
+            <li>
+              제2항의 경우 회사는 그 법정대리인의 이름, 생년월일, 성별,
+              중복가입확인정보(ID), 휴대폰 번호 등을 추가로 수집합니다.
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="withdrawal">제17조 (개인정보 조회 및 수집동의 철회)</h3>
+          <ol>
+            <li>
+              이용자 및 법정 대리인은 언제든지 등록되어 있는 자신의 개인정보를
+              조회하거나 수 정할 수 있으며 개인정보수집 동의 철회를 요청할 수
+              있습니다.
+            </li>
+            <li>
+              이용자 및 법정 대리인은 자신의 가입정보 수집 등에 대한 동의를
+              철회하기 위해서는 개인정보보호책임자 또는 담당자에게 서면, 전화
+              또는 전자우편주소로 연락하시면 회사는 지체 없이 조치하겠습니다.
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="data_modification">제18조 (개인정보 정보변경 등)</h3>
+          <ol>
+            <li>
+              이용자는 회사에게 전조의 방법을 통해 개인정보의 오류에 대한 정정을
+              요청할 수 있 습니다.
+            </li>
+            <li>
+              회사는 전항의 경우에 개인정보의 정정을 완료하기 전까지 개인정보를
+              이용 또는 제 공하지 않으며 잘못된 개인정보를 제3자에게 이미 제공한
+              경우에는 정정 처리결과를 제3자에게 지체 없이 통지하여 정정이
+              이루어지도록 하겠습니다.
+            </li>
+          </ol>
+          <br />
+
+          <h3 id="user_responsibilities">제19조 (이용자의 의무)</h3>
+          <ol>
+            <li>
+              이용자는 자신의 개인정보를 최신의 상태로 유지해야 하며, 이용자의
+              부정확한 정보 입력으로 발생하는 문제의 책임은 이용자 자신에게
+              있습니다.
+            </li>
+            <li>
+              타인의 개인정보를 도용한 회원가입의 경우 이용자 자격을 상실하거나
+              관련 개인정 보보호 법령에 의해 처벌받을 수 있습니다.
+            </li>
+            <li>
+              이용자는 전자우편주소, 비밀번호 등에 대한 보안을 유지할 책임이
+              있으며 제3자에게 이를 양도하거나 대여할 수 없습니다.
+            </li>
+          </ol>
+          <br />
+        </div>
+      </div>
     </section>
-</body>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>
