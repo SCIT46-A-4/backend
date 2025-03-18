@@ -23,7 +23,7 @@
 
     <style>
       /* ✅ 배경색 적용 */
-      html {
+      nav#mainNav {
         background-color: var(--primary);
         /* #FDF5BF */
       }
@@ -33,16 +33,16 @@
         height: auto;
       }
 
-    .custom-container {
-    width: 1000px;
-      max-width: 1000px;
-      margin: 0 auto;
-      text-align: center;
-      display: flex;
-      align-items: stretch;
-      justify-content: space-between;
-      flex-direction: column;
-    }
+      .custom-container {
+        width: 1000px;
+        max-width: 1000px;
+        margin: 0 auto;
+        text-align: center;
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        flex-direction: column;
+      }
 
       .claim-list {
         min-height: 60vh;
@@ -66,16 +66,16 @@
         box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.15);
       }
 
-    .button-container {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-    }
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
 
-    .write-btn {
-      text-align: right;
-      margin-bottom: 10px;
-    }
+      .write-btn {
+        text-align: right;
+        margin-bottom: 10px;
+      }
 
       .logo {
         font-size: 24px;
@@ -112,10 +112,9 @@
       }
     </style>
   </head>
-
   <body>
-    <div class="navbar-brand">
-      <a class="navbar-item" href="/">
+    <div id="mainNav" class="navbar-brand">
+      <a class="navbar-item" href="/dashboard">
         <img
           id="logo"
           src="../../static/images/wilog.png"
@@ -124,18 +123,43 @@
         />
       </a>
     </div>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="/guides"><span>이용안내</span></a>
+        </div>
+      </div>
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="/auth/logout"
+            ><span>로그아웃</span></a
+          >
+        </div>
+      </div>
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" th:href="@{/members/myDetails}">
+            <span class="icon"><i class="fas fa-user"></i></span>
+            <span th:text="|${memberName}(${relationType})|"
+              >김미영(부모)</span
+            >
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
     <section class="section">
       <div class="container custom-container">
         <h2 class="title is-4">내 문의 목록 페이지</h2>
 
-      <div class="button-container">
-        <div class="write-btn">
-          <a th:href="@{/claims}" class="button is-light">고객센터로 이동</a>
+        <div class="button-container">
+          <div class="write-btn">
+            <a th:href="@{/claims}" class="button is-light">고객센터로 이동</a>
+          </div>
+          <div class="write-btn">
+            <a th:href="@{/claims/new}" class="button is-light">문의 하기</a>
+          </div>
         </div>
-        <div class="write-btn">
-          <a th:href="@{/claims/new}" class="button is-light">문의 하기</a>
-        </div>
-      </div>
 
         <!-- claim이 없을 경우 -->
         <div
@@ -164,19 +188,22 @@
                   <span class="ml-2" th:text="${claim.title}">문의 제목</span>
                 </div>
 
-              <!-- 등록 날짜 -->
-              <div class="column is-3 text-right">
-                <!-- ✅ 답변이 1개 이상이면 체크 아이콘 표시 -->
-                <span th:if="${claim.hasAnswers()}" class="icon">
-                  ✅
-                  <!-- ✅ 이모지 또는 FontAwesome 아이콘 사용 가능 -->
-                </span>
-                <span th:text="${#temporals.format(claim.createdDate, 'yyyy-MM-dd')}">2025-01-24</span>
+                <!-- 등록 날짜 -->
+                <div class="column is-3 text-right">
+                  <!-- ✅ 답변이 1개 이상이면 체크 아이콘 표시 -->
+                  <span th:if="${claim.hasAnswers()}" class="icon">
+                    ✅
+                    <!-- ✅ 이모지 또는 FontAwesome 아이콘 사용 가능 -->
+                  </span>
+                  <span
+                    th:text="${#temporals.format(claim.createdDate, 'yyyy-MM-dd')}"
+                    >2025-01-24</span
+                  >
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </th:block>
+        </th:block>
 
         <!-- 페이지네이션 -->
         <nav class="pagination is-centered mt-5">

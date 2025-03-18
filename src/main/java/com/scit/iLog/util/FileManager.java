@@ -103,6 +103,15 @@ public final class FileManager {
         }
     }
 
+    public static String joinFilePath(String uploadPath, String savedFileName) {
+        File directory = new File(uploadPath);
+        if (!directory.exists() && !directory.mkdirs()) {
+            throw new IllegalStateException("디렉토리 생성 실패: " + uploadPath);
+        }
+        File savedFile = new File(directory, savedFileName);
+        return savedFile.getAbsolutePath();
+    }
+
     /*
         파일을 저장하고 저장된 파일 이름을 반환하는 메서드
      */

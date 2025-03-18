@@ -99,6 +99,7 @@ public class EmailVerificationController {
         }
     }
 
+    @ResponseBody
     @GetMapping("/checkDuplicatedEmail")
     public boolean handleGetCheckDuplicatedEmail(
             @RequestParam("email") String email

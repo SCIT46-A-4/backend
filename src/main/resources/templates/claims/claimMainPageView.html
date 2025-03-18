@@ -10,7 +10,6 @@
 
     <!-- Bulma 스타일 -->
     <link rel="stylesheet" href="/css/bulma.min.css" />
-    <link rel="stylesheet" href="/css/customColors.css" />
 
     <link
       rel="stylesheet"
@@ -79,10 +78,55 @@
         font-size: 2.5rem;
         margin-bottom: 10px;
       }
+      nav#mainNav {
+        background-color: var(--primary);
+      }
     </style>
   </head>
 
   <body>
+    <nav
+      id="mainNav"
+      class="navbar"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
+          <img
+            id="logo"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="iLog 로고"
+          />
+        </a>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/guides"><span>이용안내</span></a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/auth/logout"
+              ><span>로그아웃</span></a
+            >
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(부모)</span
+              >
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
     <section class="section">
       <div class="container">
         <!-- 제목 -->

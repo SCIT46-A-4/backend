@@ -192,13 +192,13 @@
                   </div>
                   <div class="card-content">
                     <div class="content">
-                      <p class="has-text-grey">분석일시: ${new Date(
+                      <strong>${item.analysisResultTitle}</strong>
+                      <p class="has-text-grey">분석일시 <br>${new Date(
                         item.analysisDate
                       ).toLocaleString()}</p>
-                      <p class="has-text-grey">등록일시: ${new Date(
+                      <p class="has-text-grey">등록일시 <br>${new Date(
                         item.createdAt
                       ).toLocaleDateString()}</p>
-                      <p>${item.analysisResultTitle}</p>
                     </div>
                   </div>
                   <footer class="card-footer-custom">

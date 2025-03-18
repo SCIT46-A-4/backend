@@ -200,7 +200,7 @@ public class ChildService {
         MultipartFile profileImg = childBasicInfoUpdateDTO.profileImg();
         // 이미지가 삭제된 경우 (빈 파일이 전송된 경우)
         if (ObjectUtils.isEmpty(profileImg)) {
-            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat(ChildEntity.DEFAULT_PROFILE_IMG);
+            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat("/").concat(ChildEntity.DEFAULT_PROFILE_IMG);
             FileManager.deleteFile(existingFilePath);
             child.setDefaultProfileImg();
             return;
@@ -238,7 +238,7 @@ public class ChildService {
         // 프로필 이미지 삭제 (기본 이미지가 아닌 경우에만)
         if (!child.getSavedProfileImgName().equals(ChildEntity.DEFAULT_PROFILE_IMG)) {
             // 저장된 이미지 파일의 전체 경로 생성
-            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat(child.getSavedProfileImgName());
+            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat("/").concat(child.getSavedProfileImgName());
             FileManager.deleteFile(existingFilePath);
         }
         childRepository.deleteById(childId);

@@ -62,7 +62,7 @@ public class AnalysisResultService {
                         AnalysisResultListItemDTO.builder()
                                 .analysisTargetId(analysisTarget.getId())
                                 .analysisResultId(analysisTarget.getAnalysisResult().getId())
-                                .analysisResultTitle(analysisTarget.getAnalysisResult().getAnalysisResultText())
+                                .analysisResultTitle(analysisTarget.getAnalysisResult().getTitle())
                                 .analysisDate(analysisTarget.getRegisterDate())
                                 .analysisTypes(analysisTarget.getAnalysisTargetTypes().stream()
                                         .map(analysisTargetType -> analysisTargetType.getAnalysisType().getType())

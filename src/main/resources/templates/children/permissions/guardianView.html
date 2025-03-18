@@ -143,7 +143,7 @@
               inviteeEmail: inviteeEmail,
             },
             success: function (response) {
-              if (response == true) {
+              if (response) {
                 Swal.fire({
                   icon: 'success',
                   title: '인증 코드가 전송되었습니다.',
@@ -363,7 +363,7 @@
               <!-- 여기에 동적으로 각 permission의 데이터를 출력 -->
               <tr
                 th:each="permission : ${list}"
-                th:if="${permission.permissionRequestStatus == T(com.scit.iLog.domain.permition.PermissionRequestStatus).PENDING}"
+                th:if="${permission.permissionRequestStatus == T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
               >
                 <td th:text="${permission.alias}"></td>
                 <td th:text="${permission.childName}"></td>
@@ -402,7 +402,7 @@
           <tbody>
             <tr
               th:each="permission : ${list}"
-              th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permition.PermissionRequestStatus).PENDING}"
+              th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
               th:data-id="${permission.id}"
             >
               <td th:text="${permission.alias}"></td>

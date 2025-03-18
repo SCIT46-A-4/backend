@@ -23,6 +23,21 @@
         align-items: stretch;
         grid-template-rows: 100px 1fr auto;
       }
+      .diagnosis {
+        text-decoration: underline;
+      }
+      .diagnosis.red {
+        color: red;
+      }
+      .diagnosis.orange {
+        color: orange;
+      }
+      .diagnosis.green {
+        color: green;
+      }
+      .diagnosis.blue {
+        color: blue;
+      }
     </style>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
@@ -100,6 +115,76 @@
               th:text="${#temporals.format(responseDetails.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
               >2025-02-17 00:00:00</span
             >
+          </p>
+          <th:block th:if="${totalLikertScore < 15}">
+            <h3>
+              <strong>현재 진단 결과: </strong
+              ><span class="diagnosis red">위험</span>
+            </h3>
+            <p>
+              현재 심리 상태는 즉각적인 주의가 필요한 단계로 보입니다.<br />
+              일상생활에서 불안정성이 크게 느껴지거나, 심리·정서적 어려움이
+              급격하게 나타날 가능성이 있습니다.<br />
+              가능한 한 빠른 시일 내에 전문가 상담 및 적절한 조치를 통해 심층
+              평가와 지원이 필요합니다.
+            </p>
+          </th:block>
+
+          <th:block th:if="${totalLikertScore >= 15 and totalLikertScore < 30}">
+            <h3>
+              <strong>현재 진단 결과: </strong
+              ><span class="diagnosis orange">주의 필요</span>
+            </h3>
+            <p>
+              눈에 띄는 불안 요인이나 스트레스가 감지되므로, 가까운 시일 내에
+              자세한 관찰이 요구됩니다.<br /> 큰 위기는 아니어도, 환경적·심리적
+              요인을 조기에 파악하여 문제를 완화하거나 예방하는 노력이
+              중요합니다.<br />
+              스스로 혹은 주변인과 함께 심리적 지원 체계를 마련하고, 일상 속에서
+              스트레스 조절 방안을 찾아 실천해보는 것이 좋습니다.
+            </p>
+          </th:block>
+
+          <th:block th:if="${totalLikertScore >= 30 and totalLikertScore < 45}">
+            <h3>
+              <strong>현재 진단 결과: </strong
+              ><span class="diagnosis green">정상</span>
+            </h3>
+            <p>
+              전반적으로 안정적이며, 큰 심리적 부담이나 스트레스 징후가
+              두드러지지 않은 상태로 보입니다.<br /> 다만, 언제든 일상 속 변화나
+              외부 요인으로 인해 스트레스가 발생할 수 있으므로, 꾸준한 자기
+              돌봄이 중요합니다.<br />
+              주기적인 자기 점검과 생활 습관 관리, 가족·친구 등 사회적 지지망을
+              유지하며 필요하면 전문가와 상담할 수 있도록 대비하면 좋습니다.
+            </p>
+          </th:block>
+
+          <th:block th:if="${totalLikertScore >= 45}">
+            <h3>
+              <strong>현재 진단 결과: </strong
+              ><span class="diagnosis blue">양호</span>
+            </h3>
+            <p>
+              현재 심리 상태가 매우 양호하여, 스트레스 대처 능력도 비교적
+              건전하고 안정적인 편으로 판단됩니다.<br /> 긍정적인 자기 인식과
+              대인관계, 감정 조절 능력을 바탕으로 일상생활 전반에서 건강한 심리
+              상태를 유지하고 있을 가능성이 높습니다.<br />
+              향후에도 규칙적인 운동·취미 활동·사회적 교류 등을 통해 이 상태를
+              꾸준히 이어나가고, 정기적으로 점검하며 균형을 잃지 않도록 주의하는
+              것이 좋습니다.
+            </p>
+          </th:block>
+          <p id="information">
+            본 설문은 아이의 감정 상태를 이해하는 데 도움을 주기 위한 참고
+            자료입니다. 점수는 아이의 감정 상태를 반영하는 하나의 지표이며,
+            아이의 행동이나 생활 패턴과 함께 고려하는 것이 중요합니다.
+            정기적으로 설문을 진행하여 아이의 감정 변화를 체크해 보세요. 아이가
+            보이는 감정이나 행동을 주의 깊게 살펴보시고, 아이와의 대화를 통해
+            감정을 자연스럽게 표현할 수 있도록 도와주세요. 필요하다면 전문가의
+            상담을 고려해볼 수도 있습니다. 아이가 건강한 감정을 키워갈 수 있도록
+            항상 노력하는 보호자의 노고에 감사드립니다. 작은 변화도 소중히
+            여기며, 아이와 함께 성장하는 따뜻한 시간이 되길 바랍니다. 😊
           </p>
         </div>
         <!-- 버튼 영역 -->

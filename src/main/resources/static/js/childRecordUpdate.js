@@ -17,7 +17,7 @@ $(document).ready(function () {
   const checkPath = checkPathElem ? checkPathElem.value : '';
   /*  const checkPath = document.getElementById('myHealthCheckImageSrc').value;*/
   const existingImagePath = checkPath
-    ? 'http://localhost:9900/healthCheckImages' + checkPath
+    ? 'http://localhost:9900' + checkPath
     : null;
   originalImagePath = existingImagePath;
   console.log('📌 Existing image path:', existingImagePath);
@@ -148,7 +148,7 @@ $(document).ready(function () {
   function submitFormData(childId, recordId, formData) {
     $.ajax({
       url: `/children/${childId}/records/${recordId}/edit`,
-      type: 'POST',
+      method: 'POST',
       data: formData,
       contentType: false,
       processData: false,
@@ -162,12 +162,12 @@ $(document).ready(function () {
           window.location.href = response.redirectUrl;
         } else {
           console.error('❌ Update failed');
-          alert('수정에 실패했습니다. 다시 시도해 주세요.');
+          Swal.fire('수정에 실패했습니다. 다시 시도해 주세요.');
         }
       },
       error: function (xhr) {
         console.error('❌ AJAX error:', xhr.responseText);
-        alert('수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        Swal.fire('수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
       },
     });
   }

@@ -269,7 +269,7 @@
             method: 'GET',
             data: { email: email },
             success: function (isExists) {
-              if (isExists) {
+              if (isExists == true) {
                 Swal.fire(
                   '이미 가입된 이메일 주소입니다. 다른 이메일을 입력해주세요.'
                 );

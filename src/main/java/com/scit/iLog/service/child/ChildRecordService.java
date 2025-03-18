@@ -164,6 +164,10 @@ public class ChildRecordService {
         return savedChildRecord.getId();
     }
 
+    private double roundDouble(double value) {
+        return Math.round(value * 10.0) / 10.0;
+    }
+
     /**
      * Controller : handleGetChildRecordUpdateView
      * API : v1.x.x-8
@@ -179,10 +183,10 @@ public class ChildRecordService {
                 .childId(childRecord.getChild().getId()) // childId 추가
                 .registerDate(childRecord.getRegisterDate())
                 .note(childRecord.getNote())
-                .height(childRecord.getHeight())
-                .weight(childRecord.getWeight())
-                .leftEye(childRecord.getLeftEye())
-                .rightEye(childRecord.getRightEye())
+                .height(roundDouble(childRecord.getHeight()))
+                .weight(roundDouble(childRecord.getWeight()))
+                .leftEye(roundDouble(childRecord.getLeftEye()))
+                .rightEye(roundDouble(childRecord.getRightEye()))
                 .healthCheckImage(
                         new HealthCheckImageDTO(
                                 !ObjectUtils.isEmpty(childRecord.getHealthCheck()),
@@ -240,12 +244,14 @@ public class ChildRecordService {
         if (ObjectUtils.isEmpty(healthCheck)) return;
         String existingFileName = healthCheck.getSavedFileName();
         if (existingFileName != null && !existingFileName.isEmpty()) {
-            String existingFilePath = filePathUtil.childHealthCheckImgUploadPath().concat(existingFileName);
+            String existingFilePath = filePathUtil.childHealthCheckImgUploadPath().concat("/").concat(existingFileName);
             FileManager.deleteFile(existingFilePath);
         }
+        childRecord.setHealthCheck(null);
+        healthCheckRepository.delete(healthCheck);
         // 파일 관련 정보를 null 처리하여 삭제 효과 반영
-        healthCheck.setOriginalFileName(null);
-        healthCheck.setSavedFileName(null);
+//        healthCheck.setOriginalFileName(null);
+//        healthCheck.setSavedFileName(null);
     }
 
     private void processHealthCheckFileUpdate(ChildEntity child, MemberEntity member, ChildRecordEntity childRecord, ChildRecordUpdateRequestDTO request) {
@@ -259,7 +265,7 @@ public class ChildRecordService {
             // 기존 파일 삭제
             String existingFileName = existingHealthCheck.getSavedFileName();
             if (StringUtils.hasText(existingFileName) && !existingFileName.isEmpty()) {
-                String existingFilePath = filePathUtil.childHealthCheckImgUploadPath().concat(existingFileName);
+                String existingFilePath = filePathUtil.childHealthCheckImgUploadPath().concat("/").concat(existingFileName);
                 FileManager.deleteFile(existingFilePath);
             }
 

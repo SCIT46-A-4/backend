@@ -97,7 +97,7 @@
         </div>
 
         <div class="columns">
-          <div th:if="${childRecord.healthCheckImage.hasHealthCheckImage}">
+          <th:block th:if="${childRecord.healthCheckImage.hasHealthCheckImage}">
             <div class="column is-half">
               <div class="box preview-box">
                 <img
@@ -116,9 +116,12 @@
                 </button>
               </div>
             </div>
-          </div>
+          </th:block>
 
-          <div class="column is-half">
+          <div
+            class="column"
+            th:classappend="${childRecord.healthCheckImage.hasHealthCheckImage} ? ' is-half' : ''"
+          >
             <div class="box">
               <div class="columns">
                 <div class="column">

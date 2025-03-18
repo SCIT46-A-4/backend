@@ -314,13 +314,15 @@ public class DataInitializer implements CommandLineRunner {
 
         // 초기 회원 생성
         MemberEntity admin = createAdminAccount();
+        // 이용안내 초기화
+        initializeGuideEntities();
 
         // FamilyBackGround와 AnalysisType 초기 데이터 생성
         initializeFamilyBackgrounds();
         initializeAnalysisTypes();
 
         // 일반 회원(엄마) 및 자녀, 그리고 설문/분석/기록 데이터 생성
-        for (int i = 1; i <= 2; i++) {
+        for (int i = 1; i <= 1; i++) {
             MemberEntity mom = createMomAccount(random);
             createChildrenForMom(mom, random, now);
         }
@@ -370,8 +372,8 @@ public class DataInitializer implements CommandLineRunner {
 
     private void createChildrenForMom(MemberEntity mom, ThreadLocalRandom random, LocalDateTime now) {
         String[] locations = {"서울", "부산", "인천", "대구", "광주"};
-        // 각 mom마다 4명의 자녀 생성
-        for (int j = 0; j < 4; j++) {
+        // 각 mom마다 2명의 자녀 생성
+        for (int j = 0; j < 2; j++) {
             String[] firstNames = {"김", "이"};
             String[] lastNames = {"지호", "지영"};
             String childName = firstNames[random.nextInt(firstNames.length)] + " " + lastNames[random.nextInt(lastNames.length)];
@@ -382,8 +384,8 @@ public class DataInitializer implements CommandLineRunner {
                     .birthDate(now.minusYears(random.nextInt(3) + 1))
                     .birthLocation(birthLocation)
                     .note("발달 장애가 있음. " + random.nextInt(100))
-                    .originalProfileImgName(null)
-                    .savedProfileImgName(null)
+                    .originalProfileImgName(childName.contains("지호") ? "jiho-0.jpg" : "jiyoung-0.jpeg")
+                    .savedProfileImgName(childName.contains("지호") ? "jiho-0.jpg" : "jiyoung-0.jpeg")
                     .gender(childName.contains("지호") ? Gender.MAN : Gender.WOMAN)
                     .callName("엄마")
                     .build();
@@ -399,7 +401,7 @@ public class DataInitializer implements CommandLineRunner {
             relationShipRepository.save(relationship);
 
             // MentalSurveyResponse 테스트 데이터 생성
-            createMentalSurveyResponses(child, mom, random);
+//            createMentalSurveyResponses(child, mom, random);
 
             // AnalysisTarget 및 관련 데이터 생성
             createAnalysisTargets(child, mom, random, now);
@@ -410,86 +412,16 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    @Getter
-    @Setter
-    private static class MentalSurveyDTO {
-        private String _id;
-        private String id;
-        private String title;
-        private String type;
-        private List<MentalSurveySectionDTO> sections;
-        private String createdAt;  // 필요하면 파싱
-        private String description;
-        // getters, setters
-    }
-
-    @Getter
-    @Setter
-    private static class MentalSurveySectionDTO {
-        private String title;
-        private List<MentalSurveyQuestionDTO> questions;
-        // getters, setters
-    }
-
-    @Getter
-    @Setter
-    private static class MentalSurveyQuestionDTO {
-        private String item;
-        private String example;
-        // getters, setters
-    }
-
-    @Transactional
-    private void createMentalSurveyResponsesFromJson(ChildEntity child, MemberEntity respondent, ThreadLocalRandom random, LocalDateTime now) {
-        ObjectMapper mapper = new ObjectMapper();
-        // JavaTimeModule 등 추가 모듈 등록 (LocalDateTime 처리를 위해)
-        mapper.findAndRegisterModules();
-        try (InputStream is = getClass().getResourceAsStream("/ilog.mentalSurveys.json")) {
-            List<MentalSurveyDTO> surveys = mapper.readValue(is, new TypeReference<List<MentalSurveyDTO>>() {});
-            for (MentalSurveyDTO survey : surveys) {
-                if (!respondent.getRelationType().name().equals(survey.getType())) continue;
-                // 테스트용: 오늘부터 한달전까지 매일 하나씩 응답 생성
-                LocalDateTime startDate = now.minusDays(30).with(LocalTime.MIN);  // 한달전 00시
-                for (LocalDateTime date = startDate; date.isBefore(now.plusDays(1)); date = date.plusDays(1)) {
-                    List<SectionResponse> sectionResponses = new ArrayList<>();
-                    for (MentalSurveySectionDTO section : survey.getSections()) {
-                        List<QuestionResponse> qResponses = new ArrayList<>();
-                        for (MentalSurveyQuestionDTO question : section.getQuestions()) {
-                            int score = random.nextInt(1, 6); // 1~5 사이의 랜덤 점수
-                            qResponses.add(new QuestionResponse(question.getItem(), question.getExample(), score));
-                        }
-                        int sectionScore = qResponses.stream().mapToInt(QuestionResponse::getScore).sum();
-                        sectionResponses.add(new SectionResponse(section.getTitle(), qResponses, sectionScore));
-                    }
-                    int totalScore = sectionResponses.stream().mapToInt(SectionResponse::getSectionLikertScore).sum();
-                    String comment = "테스트 데이터: 심리 평가 결과 총점 " + totalScore;
-                    MentalSurveyResponseEntity response = MentalSurveyResponseEntity.builder()
-                            .surveyId(survey.getId())
-                            .surveyTitle(survey.getTitle())
-                            .relationType(survey.getType())
-                            .childId(child.getId())
-                            .respondentId(respondent.getId())
-                            .totalLikertScore(totalScore)
-                            .sectionResponses(sectionResponses)
-                            .comment(comment)
-                            .createdAt(date)
-                            .lastModifiedAt(date.plusHours(1))
-                            .build();
-                    mentalSurveyResponseRepository.save(response);
-                }
-            }
-        } catch (Exception e) {
-            log.error("정신 설문 JSON 데이터를 읽어오는 중 오류 발생", e);
-        }
-    }
-
-
     private void createMentalSurveyResponses(ChildEntity child, MemberEntity respondent, ThreadLocalRandom random) {
         LocalDateTime now = LocalDateTime.now();
+        //한달치의 설문조사 데이터 생성
         LocalDateTime startDate = now.minusDays(30);
         int childAge = AgeCalculator.calculateAge(child.getBirthDate());
         List<MentalSurveyEntity> mentalSurveys = mentalSurveyRepository
                 .findByTitleContainingAndType(Integer.toString(childAge), respondent.getRelationType());
+//        Set<ChildEntity> childSet = respondent.getRelationShips().stream()
+//                .map(relationShip -> relationShip.getChild()).collect(Collectors.toSet());
+
         for (MentalSurveyEntity mentalSurvey : mentalSurveys) {
             for (LocalDateTime date = startDate; date.isBefore(now.plusDays(1)); date = date.plusDays(1)) {
                 List<SectionResponse> sectionResponses = new ArrayList<>();
@@ -573,15 +505,15 @@ public class DataInitializer implements CommandLineRunner {
                     .child(child)
                     .registerDate(now.minusDays(random.nextInt(30)))
                     .uploadedBy(uploader)
-                    .originalTargetFileName(String.format("test-target-%d.png", k))
-                    .savedTargetFileName(String.format("test-target-%d.png", k))
+                    .originalTargetFileName(String.format("test-target-%d.jpeg", k))
+                    .savedTargetFileName(String.format("test-target-%d.jpeg", k))
                     .supplement(DataInitializer.supplementaryComments[k])
                     .companion(DataInitializer.companionDescriptions[k])
                     .build();
             analysisTargetRepository.save(target);
 
             Collections.shuffle(analysisTypeList);
-            List<AnalysisType> selectedTypes = analysisTypeList.subList(0, 3);
+            List<AnalysisType> selectedTypes = analysisTypeList.subList(0, 2);
             List<AnalysisTargetTypeEntity> targetTypes = analysisTypeRepository.findAll().stream()
                     .filter(at -> selectedTypes.contains(at.getType()))
                     .map(at -> AnalysisTargetTypeEntity.builder()
@@ -665,7 +597,7 @@ public class DataInitializer implements CommandLineRunner {
         // 이 메서드는 필요에 따라 별도로 분리할 수 있습니다.
     }
 
-    private void initializeGuideEntities(ThreadLocalRandom random, LocalDateTime now) {
+    private void initializeGuideEntities() {
         for (int i = 0; i < 10; i++) {
             GuideEntity guide = GuideEntity.builder()
                     .author(memberRepository.findBySignInId("ADMIN").orElse(null))
@@ -701,7 +633,7 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             relationShipRepository.save(teacherChildRelation);
 
-            createMentalSurveyResponses(existingChild, teacher, random);
+//            createMentalSurveyResponses(existingChild, teacher, random);
         }
     }
 

@@ -184,6 +184,17 @@
       }
 
       document.addEventListener('DOMContentLoaded', function () {
+        // 오늘 날짜의 23:59로 max값을 설정
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+        const day = String(today.getDate()).padStart(2, '0');
+        // 23:59로 설정
+        const maxDateTime = `${year}-${month}-${day}T23:59`;
+        document
+          .getElementById('analysisDatetime')
+          .setAttribute('max', maxDateTime);
+
         var weatherJsonString;
         // Initialize FilePond: 단 한 장의 파일만 업로드
         FilePond.registerPlugin(

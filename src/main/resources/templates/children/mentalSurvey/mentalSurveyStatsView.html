@@ -166,6 +166,17 @@
       }
     </style>
     <script>
+      function calculateAverageResultScore(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+          return 0;
+        }
+        const total = data.reduce((sum, item) => {
+          const score = parseFloat(item.resultScore);
+          return sum + (isNaN(score) ? 0 : score);
+        }, 0);
+        return total / data.length;
+      }
+
       function getChildIdFromURL() {
         // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
         const pathParts = window.location.pathname.split('/');
@@ -195,6 +206,19 @@
             enabled: true,
             fallbackToExportServer: false, // 서버 없이 내보내기
             libURL: 'https://code.highcharts.com/modules/', // 필요한 라이브러리 경로 설정
+            buttons: {
+              contextButton: {
+                menuItems: [
+                  'viewFullscreen',
+                  'downloadPNG',
+                  'downloadJPEG',
+                  'downloadPDF',
+                  'downloadCSV',
+                  'downloadXLS',
+                  'printChart',
+                ],
+              },
+            },
           },
         });
 

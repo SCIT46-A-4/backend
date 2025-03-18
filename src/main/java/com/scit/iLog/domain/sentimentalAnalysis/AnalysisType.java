@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum AnalysisType {
     WRITING("글"),
     DRAWING("그림"),
-    PHOTO("사진"),
-    VOICE("음성");
+    PHOTO("사진");
 
     private final String krName;
 }
