@@ -43,7 +43,6 @@ public class DiaryController {
      * 조회된 일기 목록을 모델에 추가하여 뷰에서 사용할 수 있도록 함 :
      * model.addAttribute("list", _page);
      * 
-     * @param id 조회할 아이의 고유 iD
      * @param pageable 페이징 처리를 위한 pageable 객체
      *                 아래 코드에서는
      *                 기본적으로 첫 번째 페이지(page=0)와
@@ -77,7 +76,13 @@ public class DiaryController {
      * CD-2
      */
     @GetMapping("/new")
-    public String handleGetDiaryInsertView(@PathVariable("childId") Long childId, Model model) {
+    public String handleGetDiaryInsertView(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @PathVariable("childId") Long childId,
+            Model model
+    ) {
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
     	model.addAttribute("childId", childId);
         return "children/diaries/diaryInsertView";
     }

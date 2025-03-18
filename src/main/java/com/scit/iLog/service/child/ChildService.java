@@ -1,6 +1,6 @@
 package com.scit.iLog.service.child;
 
-import com.scit.iLog.controller.DashboardController;
+import com.scit.iLog.controller.SortOption;
 import com.scit.iLog.domain.PermissionLevel;
 import com.scit.iLog.domain.RelationShipEntity;
 import com.scit.iLog.domain.child.ChildBackGroundEntity;
@@ -292,7 +292,7 @@ public class ChildService {
      * 2025-03-04 / 김은진 / 교사용 대시보드에서 모든 아이들의 기본 정보 조회
      */
     @Transactional(readOnly = true)
-    public List<ChildBasicInfoDTO> getAllChildrenBasicInfo(DashboardController.SortOption sortOption) {
+    public List<ChildBasicInfoDTO> getAllChildrenBasicInfo(SortOption sortOption) {
         List<ChildEntity> children;
         switch (sortOption) {
             case NAME:

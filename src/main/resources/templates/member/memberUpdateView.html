@@ -7,6 +7,7 @@
     <script src="/js/sweetalert2.js"></script>
     <script src="/js/passwordVisibility.js"></script>
     <script th:src="@{/js/just-validate.production.min.js}"></script>
+
     <script>
       $(function () {
         document
@@ -181,16 +182,32 @@
       th:href="@{/css/bulma.min.css}"
       href="../../static/css/bulma.min.css"
     />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/footer.css}"
+      href="../../static/css/footer.css"
+    />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/customColors.css}"
+      href="../../static/css/customColors.css"
+    />
     <style>
       .hero.is-primary {
-        background-color: #fdf5bf;
+        background-color: var(--primary);
+        text-align: center;
+        margin-bottom: 20px;
       }
       .hero.is-primary .title {
-        color: white;
+        color: black;
+      }
+      #submitBtn {
+        background-color: var(--secondary);
       }
     </style>
   </head>
   <body>
+    <div th:replace="fragments/navbar :: navbar"></div>
     <section class="hero is-primary">
       <div class="hero-body">
         <div class="container">
@@ -199,7 +216,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section>
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-half">
@@ -353,12 +370,12 @@
 
               <div class="field is-grouped is-grouped-centered">
                 <p class="control">
-                  <button type="submit" class="button is-primary">
+                  <button id="submitBtn" type="submit" class="button">
                     변경사항 저장
                   </button>
                 </p>
                 <p class="control">
-                  <a class="button is-light" th:href="@{/members/myDetails}">
+                  <a class="button is-danger" th:href="@{/members/myDetails}">
                     취소
                   </a>
                 </p>
@@ -368,5 +385,6 @@
         </div>
       </div>
     </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

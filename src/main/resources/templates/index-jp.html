@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iLog - 子どもの発達追跡サービス</title>
+    <link
+      rel="stylesheet" href="../../static/css/footer.css" th:href="@{/css/footer.css}" />
     <link rel="stylesheet" href="../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
     <link rel="stylesheet" href="../static/css/customColors.css" th:href="@{/css/customColors.css}">
     <script src="../static/js/jquery-3.6.0.min.js" th:src="@{/js/jquery-3.6.0.min.js}"></script>
@@ -57,6 +59,46 @@
 		    height: auto;
 		    max-height: 80px;
 		}
+		
+		.hero.is-primary-custom {
+	        background-image: url('[[@{/images/background.png}]]');
+	        background-size: cover;
+	        background-position: center;
+	        color: black; /* 글자색 변경 (배경 이미지에 따라 조절 가능) */
+	    }
+	
+	    .hero-content {
+	        position: relative;
+	        z-index: 1;
+	        text-align: left; /* 텍스트 왼쪽 정렬 */
+	    }
+	
+	    .hero-body {
+	        display: flex;
+	        align-items: center; /* 세로 중앙 정렬 */
+	    }
+	
+	    .hero-text-container {
+	        max-width: 650px; /* 텍스트 박스 최대 너비 제한 */
+	    }
+        
+        /* 푸터 배경색 변경 */
+		  .footer {
+		    background-color: #FDF5BF; /* 원하는 색상 */
+		    padding: 2rem 0;
+		  }
+		  
+		  .button.is-white {
+		    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15); /* 그림자 추가 */
+		    border-radius: 12px; /* 둥근 모서리 */
+		    transition: all 0.2s ease-in-out; /* 부드러운 애니메이션 */
+		}
+		
+		.button.is-white:hover {
+		    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* 호버 시 강조 */
+		}
+        
+		
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -135,21 +177,26 @@
 
 <!-- Hero Section -->
 <section class="hero is-primary-custom is-medium">
-    <div class="floating-shapes"></div>
     <div class="hero-body">
         <div class="container hero-content">
-            <div class="columns is-centered">
-                <div class="column is-8 has-text-centered">
-                    <h1 class="title is-1 mb-6">AIとともに子どもの成長日記</h1>
-                    <p class="subtitle is-4 mb-6">
-                        感情分析から成長記録まで、大切な子どものすべての瞬間を記録します。
-                    </p>
-                    <div class="buttons is-centered">
-                        <a class="button is-white is-large"
-                           th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
-                            <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'ダッシュボードへ' : '利用する'">利用する</strong>
-                        </a>
-                        <a class="button is-white is-outlined is-large has-text-black" href="#features">もっと詳しく</a>
+            <div class="columns">
+                <div class="column is-6">
+                    <div class="hero-text-container">
+                        <h1 class="title is-1 mb-5">
+                            AIとともに <br> 子どもの成長日記
+                        </h1>
+                        <p class="subtitle is-4 mb-6">
+                            感情分析から成長記録まで <br> 大切な子どものすべての瞬間を記録します。
+                        </p>
+                        <div class="buttons">
+                            <a class="button is-white is-large mr-3"
+                               th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
+                                <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '利用する'">利用する</strong>
+                            </a>
+                            <a class="button is-primary-custom is-large has-text-black" href="#features">
+                                もっと詳しく
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -166,21 +213,21 @@
                 <div class="box has-text-centered h-100">
                     <span class="icon feature-icon mb-4"><i class="fas fa-robot"></i></span>
                     <h3 class="title is-4">AI感情分析</h3>
-                    <p>日記や絵をAIが解析し、子どもの感情を把握します。</p>
+                    <p>日記や絵をAIが解析し<br> 子どもの感情を把握します。</p>
                 </div>
             </div>
             <div class="column is-one-third">
                 <div class="box has-text-centered h-100">
                     <span class="icon feature-icon mb-4"><i class="fas fa-heart"></i></span>
                     <h3 class="title is-4">心理調査</h3>
-                    <p>定期的なアンケートで子どもの心の状態を管理します。</p>
+                    <p>定期的なアンケートで <br> 子どもの心の状態を管理します。</p>
                 </div>
             </div>
             <div class="column is-one-third">
                 <div class="box has-text-centered h-100">
                     <span class="icon feature-icon mb-4"><i class="fas fa-child"></i></span>
                     <h3 class="title is-4">成長記録</h3>
-                    <p>身長、体重、健康診断など、子どもの成長を一元管理します。</p>
+                    <p>身長、体重、健康診断など <br> 子どもの成長を一元管理します。</p>
                 </div>
             </div>
             <div class="column is-one-third">
@@ -226,31 +273,55 @@
     </div>
 </section>
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
+<!-- 공통 footer -->
+    <footer>
+      <div class="container">
         <div class="columns">
-            <div class="column is-4">
-                <h3 class="title is-4 has-text-primary-custom">iLog</h3>
-                <p>子どもの成長をより特別に記録しましょう。</p>
+          <div class="column is-4">
+            <div class="logo-container">
+              <img
+                class="footer-logo"
+                src="../../static/images/wilog.png"
+                th:src="@{/images/wilog.png}"
+                alt="iLog 로고"
+              />
+              <span class="footer-title">iLog</span>
             </div>
-            <div class="column is-4">
-                <h3 class="title is-5">リンク</h3>
-                <ul>
-                    <li><a th:href="@{/guides}">利用案内</a></li>
-                    <li><a th:href="@{/claims}">カスタマーセンター</a></li>
-                    <li><a th:href="@{/privacy}">プライバシーポリシー</a></li>
-                    <li><a th:href="@{/terms}">利用規約</a></li>
-                </ul>
+            <p>
+              子どもの感情と発達を体系的に記録・分析し <br> 健やかな成長をサポートするサービスです。
+            </p>
+          </div>
+          <div class="column is-4"></div>
+          <div class="column is-4">
+            <h3 class="title is-5">連絡先</h3>
+            <div class="contact-info">
+              <p>
+                <i class="fas fa-map-marker-alt"></i> 韓国 ソウル特別市 江南区 テヘラン路 123
+              </p>
+              <p><i class="fas fa-phone"></i> 02-123-4567</p>
+              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
+              <p>
+                <i class="fas fa-clock"></i> 平日 09:00 - 18:00 (祝日を除く)
+              </p>
             </div>
-            <div class="column is-4">
-                <h3 class="title is-5"><a th:href="@{/claims/new}">お問い合わせ</a></h3>
-                <p>メール: support@ilog.com</p>
-                <p>電話: 1234-5678</p>
-                <p>営業時間: 平日 09:00-18:00</p> 
-            </div>
+          </div>
         </div>
-    </div>
-</footer>
+        <div class="footer-bottom">
+		  <div class="columns is-vcentered">
+		    <div class="column is-4"></div>
+		    <div class="column is-4 has-text-centered">
+		      <p>
+		        <a href="/terms">利用規約</a> |
+		        <a href="/privacy"><strong>個人情報取扱方針</strong></a> |
+		        <a href="/youth-policy">青少年保護方針</a>
+		      </p>
+		    </div>
+		    <div class="column is-4 has-text-right">
+		      <p>&copy; 2025 iLog. All rights reserved.</p>
+		    </div>
+		  </div>
+		</div>
+      </div>
+    </footer>
 </body>
 </html>

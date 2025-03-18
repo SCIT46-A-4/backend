@@ -106,6 +106,7 @@
     ></script>
     <script src="/js/sweetalert2.js"></script>
     <script src="/js/just-validate.production.min.js"></script>
+
     <script
       type="text/javascript"
       src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rjbh1smfnw&callback=onNaverMapLoad&submodules=geocoder"
@@ -186,6 +187,7 @@
 
       $(document).ready(function () {
         // 초기값 저장
+        var originalTitle = $('#titleInput').val();
         var originalDatetime = $('#analysisDatetime').val();
         var originalLocationName = $('#locationName').val();
         var originalCompanion = $('#companionInput').val();
@@ -320,7 +322,7 @@
         // 초기 별점 반영
         stars.forEach((star, index) => {
           if (index < initialScore) {
-            star.textContent = '★';
+            star.textContent = '⭐';
           } else {
             star.textContent = '☆';
           }
@@ -330,7 +332,7 @@
         stars.forEach((star, index) => {
           star.addEventListener('click', () => {
             stars.forEach((s, i) => {
-              s.textContent = i <= index ? '★' : '☆';
+              s.textContent = i <= index ? '⭐' : '☆';
             });
             // 선택된 별 개수를 hidden 필드에 저장
             satisfactionScoreInput.value = index + 1;
@@ -812,56 +814,6 @@
       </div>
     </div>
 
-    <!-- 공통 footer -->
-    <footer>
-      <div class="container">
-        <div class="columns">
-          <div class="column is-4">
-            <div class="logo-container">
-              <img
-                class="footer-logo"
-                src="../../static/images/wilog.png"
-                th:src="@{/images/wilog.png}"
-                alt="iLog 로고"
-              />
-              <span class="footer-title">iLog</span>
-            </div>
-            <p>
-              아이의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을
-              돕는 서비스입니다.
-            </p>
-          </div>
-          <div class="column is-4"></div>
-          <div class="column is-4">
-            <h3 class="title is-5">연락처</h3>
-            <div class="contact-info">
-              <p>
-                <i class="fas fa-map-marker-alt"></i> 서울특별시 강남구 테헤란로
-                123
-              </p>
-              <p><i class="fas fa-phone"></i> 02-123-4567</p>
-              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
-              <p>
-                <i class="fas fa-clock"></i> 평일 09:00 - 18:00 (공휴일 제외)
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <div class="columns">
-            <div class="column is-8">
-              <p>
-                <a href="/terms">이용약관</a> |
-                <a href="/privacy">개인정보처리방침</a> |
-                <a href="/youth-policy">청소년보호정책</a>
-              </p>
-            </div>
-            <div class="column is-4 has-text-right">
-              <p>&copy; 2025 iLog. All rights reserved.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

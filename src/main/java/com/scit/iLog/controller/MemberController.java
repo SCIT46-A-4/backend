@@ -123,6 +123,8 @@ public class MemberController {
         MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
         MemberUpdateDTO memberUpdateDTO = memberService.getMemberUpdateDataById(memberDetails.getId());
         model.addAttribute("memberDetails", memberUpdateDTO);
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         return "/member/memberUpdateView";
     }
 

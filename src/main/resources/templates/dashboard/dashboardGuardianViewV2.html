@@ -26,6 +26,8 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting-csv.js"></script>
+    
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         var emotionColorMap = {
@@ -95,11 +97,11 @@
           // 아동 정보 업데이트
           updateChildInfo(childId);
 
-          // 날짜 파라미터 설정
-          const today = new Date().toISOString().split('T')[0];
-          const aMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
+          const now = new Date();
+          const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
+          const startDateObj = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+          startDateObj.setHours(0, 0, 0, 0);
+          const aMonthAgo = startDateObj.toISOString();
 
           // 심리 설문 데이터 업데이트
           $.ajax({
@@ -107,7 +109,7 @@
             method: 'GET',
             data: {
               startDate: aMonthAgo,
-              endDate: today,
+              endDate: endDate,
             },
             dataType: 'json',
             success: function (mentalSurveyScores) {
@@ -127,11 +129,11 @@
             method: 'GET',
             data: {
               startDate: aMonthAgo,
-              endDate: today,
+              endDate: endDate,
             },
             dataType: 'json',
             success: function (emotionRatioData) {
-              renderEmotionRatioChart(emotionRatioData);
+              renderEmotionRatioChart(childId, emotionRatioData);
             },
             error: function (xhr, status, error) {
               console.error(
@@ -152,6 +154,10 @@
             new Date(
               childOption.getAttribute('data-birthDate')
             ).toLocaleDateString();
+          document.getElementById('childAge').textContent =
+            '나이: 만 ' +
+            calculateAge(childOption.getAttribute('data-birthDate')) +
+            '세';
           document.getElementById('childBirthLocation').textContent =
             '출생지: ' + childOption.getAttribute('data-birthLocation');
           document.getElementById('childGender').textContent =
@@ -172,70 +178,49 @@
           document.getElementById(
             'childRecordListLink'
           ).href = `/children/${childId}/recordList`;
+          //diary로의 링크 넣어야함.
+          document.getElementById('childDiaryLink').href = `/children/${childId}/diaries/new`;
+          document.getElementById('childDiaryListLink').href = `/children/${childId}/diaries/diaryList`;
+
+          document.getElementById('childPermissionLink').href = `/auth/permissionGuardian/${childId}`;
         }
 
-        // 감정 분석 추이 차트 렌더링
-        function renderMentalSurveyTimeSeriesChart(data) {
-          // data
-          const categories = data.seriesData.map(
-            (statPointData) => statPointData.date
-          );
-          const guardianScores = data.seriesData.map((statPointData) => ({
-            x: new Date(statPointData.date).getTime(),
-            y: statPointData.resultScore, // Use guardianScore or resultScore if available
-            url: statPointData.detailUrl,
-            label: statPointData.label,
-          }));
+        function calculateAge(birthDateString) {
+          const birthDate = new Date(birthDateString);
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
 
-          mentalSurveyScoreLineChart = Highcharts.chart(
-            'mentalSurveyScoreLineChart',
-            {
-              chart: { type: 'line' },
-              title: { text: '심리 설문 결과' },
-              xAxis: { type: 'datetime' },
-              yAxis: { title: { text: '심리 척도값' } },
-              plotOptions: {
-                series: {
-                  cursor: 'pointer',
-                  dataLabels: {
-                    enabled: true,
-                    formatter: function () {
-                      return this.point.options.label || '';
-                    },
-                  },
-                  point: {
-                    events: {
-                      click: function () {
-                        if (this.options.url) {
-                          window.open(this.options.url, '_blank');
-                        }
-                      },
-                    },
-                  },
-                },
-              },
-              series: [
-                {
-                  name: '보호자 설문 결과',
-                  data: data.guardianScores,
-                  color: '#BEE6D9',
-                },
-                // { name: '부정', data: data.negative, color: '#FFB6C1' },
-              ],
-            }
-          );
+          // 생일이 지나지 않았으면 1세 차감
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+          return age;
         }
+
 
         // 감정 통계 차트 렌더링
-        function renderEmotionRatioChart(data) {
+        function renderEmotionRatioChart(childId, data) {
           // data 예시: [ { name: '인지발달', y: 30, color: '#BEE6D9' }, ... ]
 
+          console.log('data:', data);
           const emotionData = data.seriesData.map((statPointData) => ({
             name: statPointData.label,
             y: statPointData.emotionRatio,
             percentage: statPointData.emotionRatio,
             color: emotionToColorMap.get(statPointData.emotionType),
           }));
+
+          // 데이터가 없으면 컨테이너 중앙에 메시지 표시
+          if (!emotionData || emotionData.length === 0) {
+              document.getElementById('childEmotionScorePieChart').innerHTML =
+              '<div style="text-align: center;">' +
+              '<h1 style="font-size: 36px; color: #FDF5BF;">실시한 분석이 없습니다.</h1>' +
+              `<button id="newAnalysisBtn" onclick="location.href='/children/${childId}/analysis/new'">분석하러가기</button>` +
+              '</div>';
+            return;
+          }
+
           childEmotionScorePieChart = Highcharts.chart(
             'childEmotionScorePieChart',
             {
@@ -251,7 +236,7 @@
                   },
                 },
               },
-              title: { text: '최근 감정 분석 결과' },
+              title: { text: '최근 한달 감정 분석 결과' },
               plotOptions: {
                 pie: {
                   innerSize: '50%',
@@ -309,11 +294,74 @@
         return '#' + randomColor.padStart(6, '0');
       }
 
+      // 감정 분석 추이 차트 렌더링
+      // function renderMentalSurveyTimeSeriesChart(data) {
+      //     // data
+      //     const categories = data.seriesData.map(
+      //       (statPointData) => statPointData.date
+      //     );
+      //     const guardianScores = data.seriesData.map((statPointData) => ({
+      //       x: new Date(statPointData.date).getTime(),
+      //       y: statPointData.resultScore, // Use guardianScore or resultScore if available
+      //       url: statPointData.detailUrl,
+      //       label: statPointData.label,
+      //     }));
+
+      //     mentalSurveyScoreLineChart = Highcharts.chart(
+      //       'mentalSurveyScoreLineChart',
+      //       {
+      //         chart: { type: 'line' },
+      //         title: { text: '심리 설문 결과' },
+      //         xAxis: { type: 'datetime' },
+      //         yAxis: { title: { text: '심리 척도값' } },
+      //         plotOptions: {
+      //           series: {
+      //             cursor: 'pointer',
+      //             dataLabels: {
+      //               enabled: true,
+      //               formatter: function () {
+      //                 return this.point.options.label || '';
+      //               },
+      //             },
+      //             point: {
+      //               events: {
+      //                 click: function () {
+      //                   if (this.options.url) {
+      //                     window.open(this.options.url, '_blank');
+      //                   }
+      //                 },
+      //               },
+      //             },
+      //           },
+      //         },
+      //         series: [
+      //           {
+      //             name: '보호자 설문 결과',
+      //             data: data.guardianScores,
+      //             color: '#BEE6D9',
+      //           },
+      //           // { name: '부정', data: data.negative, color: '#FFB6C1' },
+      //         ],
+      //       }
+      //     );
+      //   }
+
+      function calculateAverageResultScore(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+          return 0;
+        }
+        const total = data.reduce((sum, item) => {
+          const score = parseFloat(item.resultScore);
+          return sum + (isNaN(score) ? 0 : score);
+        }, 0);
+        return total / data.length;
+      }
+
       function renderMentalStatsChart(childId, mentalStats) {
         // seriesData가 없거나 길이가 0인 경우 메시지와 버튼 표시.
-        if (!mentalStats.seriesData || mentalStats.seriesData.length === 0) {
+        if ((!mentalStats.parentSeriesData || mentalStats.parentSeriesData.length === 0) && (!mentalStats.teacherSeriesData || !mentalStats.teacherSeriesData.length === 0)) {
           document.getElementById('mentalSurveyScoreLineChart').innerHTML =
-            '<div style="text-align: center; margin-top: 50px;">' +
+            '<div style="text-align: center;">' +
             '<h1 style="font-size: 36px; color: #FDF5BF;">실시한 설문이 없습니다.</h1>' +
             `<button id="newMentalSurveyBtn" onclick="location.href='/children/${childId}/mentalSurveys/selects'">설문 작성하기</button>` +
             '</div>';
@@ -322,7 +370,7 @@
 
         // data: [{ date, resultScore, detailUrl }, ...] 형식의 배열이라 가정.
         // Highcharts에서 사용하는 밀리초 단위의 타임스탬프로 변환 후 데이터 배열 생성.
-        let seriesData = mentalStats.seriesData.map((statPointData) => {
+        let parentSeriesData = mentalStats.parentSeriesData.map((statPointData) => {
           return [
             new Date(statPointData.date).getTime(),
             statPointData.resultScore,
@@ -330,8 +378,27 @@
           ];
         });
 
+        const parentSeriesDataAvg = calculateAverageResultScore(mentalStats.parentSeriesData);
+
+        let teacherSeriesData = mentalStats.teacherSeriesData.map((statPointData) => {
+          return [
+            new Date(statPointData.date).getTime(),
+            statPointData.resultScore,
+            statPointData.detailUrl,
+          ];
+        });
+
+        const teacherSeriesDataAvg = calculateAverageResultScore(mentalStats.teacherSeriesData);
+
+        const totalSeriesDataAvg = (parentSeriesDataAvg + teacherSeriesDataAvg) / 2;
+
+        console.log('parentSeriesData:', parentSeriesData);
+        console.log('teacherSeriesData:', teacherSeriesData);
+
         // 데이터가 시간순으로 정렬되어 있지 않을 경우, 정렬
-        seriesData.sort((a, b) => a[0] - b[0]);
+        parentSeriesData.sort((a, b) => a[0] - b[0]);
+        teacherSeriesData.sort((a, b) => a[0] - b[0]);
+
 
         // Highcharts 차트 초기화 (일반 line 차트로 변경)
         Highcharts.chart('mentalSurveyScoreLineChart', {
@@ -347,28 +414,30 @@
               },
             },
           },
-          title: { text: '최근 심리 설문 추이' },
+          title: { text: '최근 한달 아동 심리 설문 추이' },
           xAxis: {
             type: 'datetime',
             title: { text: '시간' },
           },
           yAxis: {
+            max: 60,
             title: { text: '심리 척도값' },
             // ✅ 수평선 (기준선) 추가
-            plotLines: [
-              {
-                value: 20,
-                zIndex: 7,
-                dashStyle: 'shortDash',
-                label: {
+            plotLines: [{
+              color: '#B73C28',
+              width: 2,
+              dashStyle: 'shortdash',
+              value: totalSeriesDataAvg,
+              animation: {
+                  duration: 1000,
+                  defer: 4000
+              },
+              label: {
                   text: '평균',
                   align: 'left',
-                  style: {
-                    color: '#B73C28',
-                  },
-                },
-              },
-            ],
+                  x: -20
+              }
+            }]
           },
           tooltip: {
             formatter: function () {
@@ -379,17 +448,18 @@
           },
           series: [
             {
-              name: '심적 안정도',
-              data: seriesData.map((d) => [d[0], d[1]]),
+              name: '보호자 심리설문 결과',
+              data: parentSeriesData.map((d) => [d[0], d[1]]),
               marker: {
                 enabled: true,
                 radius: 5,
               },
+              cursor: 'pointer',
               point: {
                 events: {
                   click: function () {
                     // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
-                    let pointData = seriesData.find(
+                    let pointData = parentSeriesData.find(
                       (item) => item[0] === this.x
                     );
                     if (pointData && pointData[2]) {
@@ -399,6 +469,28 @@
                 },
               },
             },
+            {
+              name: '교사 심리설문 결과',
+              data: teacherSeriesData.map((d) => [d[0], d[1]]),
+              marker: {
+                enabled: true,
+                radius: 5,
+              },
+              cursor: 'pointer',
+              point: {
+                events: {
+                  click: function () {
+                    // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
+                    let pointData = teacherSeriesData.find(
+                      (item) => item[0] === this.x
+                    );
+                    if (pointData && pointData[2]) {
+                      window.open(pointData[2], '_blank');
+                    }
+                  },
+                },
+              },
+            }
           ],
         });
       }
@@ -519,6 +611,9 @@
 	  top: 50%;
 	  left: 50%;
 	  transform: translate(-50%, -50%) scale(0.95);
+    min-height: 80%;
+    display: grid;
+    place-items: center;
 	}
 	
 	/* 감정 분석 */
@@ -543,6 +638,9 @@
 	  top: 50%;
 	  left: 50%;
 	  transform: translate(-50%, -50%) scale(1.05);
+    min-height: 80%;
+    display: grid;
+    place-items: center;
 	}
 	
 	/* ==========================
@@ -740,8 +838,7 @@
 	  }
 	}
 </style>
-
-  </head>
+</head>
   <body>
     <!-- Navigation -->
     <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -822,19 +919,19 @@
     </th:block>
     
     <th:block th:unless="${#lists.isEmpty(childProfiles.childProfiles)}">
-  <!-- 전체 레이아웃을 감싸는 컨테이너 -->
-  <div class="dashboard-wrapper">
-    <div id="dashboardContainer">
-      <!-- Left Column - Child Info -->
-      <div id="childProfileContainer">
-        <div class="card">
-          <div class="card-content">
-            <div class="field">
-              <div id="childLinkContainer2" class="right-align">
-				  <a id="childInfoInsertLink" href="/children/new">
-				    <img src="../../static/images/btn.png" th:src="@{/images/btn.png}" alt="새로운 아이 등록하기" class="clickable-image">
-				  </a>
-				</div>
+    <!-- 전체 레이아웃을 감싸는 컨테이너 -->
+    <div class="dashboard-wrapper">
+      <div id="dashboardContainer">
+        <!-- Left Column - Child Info -->
+        <div id="childProfileContainer">
+          <div class="card">
+            <div class="card-content">
+              <div class="field">
+                <div id="childLinkContainer2" class="right-align">
+	  			  <a id="childInfoInsertLink" href="/children/new">
+	  			    <img src="../../static/images/btn.png" th:src="@{/images/btn.png}" alt="새로운 아이 등록하기" class="clickable-image">
+	  			  </a>
+	  			</div>
 
               <div class="control">
                 <div class="select is-fullwidth">
@@ -849,175 +946,123 @@
                   </select>
                 </div>
               </div>
-            </div>
-            <!-- 로딩 인디케이터 -->
-            <div id="childInfoLoading" style="display: none">
-              <div class="skeleton">
-                <p style="padding: 10px; text-align: center">
-                  아이 정보를 불러오는 중입니다...
-                </p>
               </div>
-            </div>
-            <!-- 아동 정보 컨테이너 -->
-            <div id="childInfoContainer">
-              <figure class="image is-square mb-2">
-                <img id="child-profile-photo" src="../../static/images/ilog.png" th:src="@{/images/ilog.png}" 
-                     alt="아이 사진" class="child-photo" />
-              </figure>
-              <div class="content">
-                <p class="title is-4 has-text-centered mb-4" id="childName">아이 이름</p>
-                <p class="subtitle is-6" id="childBirthdate">YYYY-MM-dd</p>
-                <p class="subtitle is-6" id="childGender">성별</p>
-                <p class="subtitle is-6" id="childBirthLocation">출생지</p>
-                <p class="subtitle is-6" id="childCallName">호칭</p>
-                <hr>
+              <!-- 로딩 인디케이터 -->
+              <div id="childInfoLoading" style="display: none">
+                <div class="skeleton">
+                  <p style="padding: 10px; text-align: center">
+                    아이 정보를 불러오는 중입니다...
+                  </p>
+                </div>
+              </div>
+              <!-- 아동 정보 컨테이너 -->
+              <div id="childInfoContainer">
+                <figure class="image is-square mb-2">
+                  <img id="child-profile-photo" src="../../static/images/ilog.png" th:src="@{/images/ilog.png}" 
+                       alt="아이 사진" class="child-photo" />
+                </figure>
+                <div class="content">
+                  <p class="title is-4 has-text-centered mb-4" id="childName">아이 이름</p>
+                  <p class="subtitle is-6" id="childBirthdate">YYYY-MM-dd</p>
+                  <p class="subtitle is-6" id="childAge">만나이</p>
+                  <p class="subtitle is-6" id="childGender">성별</p>
+                  <p class="subtitle is-6" id="childBirthLocation">출생지</p>
+                  <p class="subtitle is-6" id="childCallName">호칭</p>
+                  <hr>
                 <div id="childLinkContainer" class="grid-container">
-                  <!-- 1 -->
-				  <a id="childDetailLink" href="/children/{childId}/basicInfo">
-				    <div class="info-card">
-				      <img src="../../static/images/btn2.png" th:src="@{/images/btn2.png}" alt="상세보기">
-				      <p>아이상세</p>
-				    </div>
-				  </a>
-                  <!-- 2 -->
-				  <a id="childRecordListLink" href="/children/{childId}/recordList">
-				    <div class="info-card">
-				      <img src="../../static/images/btn5.png" th:src="@{/images/btn5.png}" alt="성장 정보">
-				      <p>성장정보</p>
-				    </div>
-				  </a>
-                  
-                  <!-- 3 -->
-				  <a id="surveySelectLink" href="/children/{childId}/mentalSurveys/selects">
-				    <div class="info-card">
-				      <img src="../../static/images/btn4.png" th:src="@{/images/btn4.png}" alt="설문 작성">
-				      <p>설문하기</p>
-				    </div>
-				  </a>
-                  <!-- 4 -->
-  <a id="surveyStatsLink" href="/children/{childId}/mentalSurveys/responses/stats">
-    <div class="info-card">
-      <img src="../../static/images/btn3.png" th:src="@{/images/btn3.png}" alt="설문 결과">
-      <p>설문결과</p>
-    </div>
-  </a>
+                    <!-- 1 -->
+	  			  <a id="childDetailLink" href="/children/{childId}/basicInfo">
+	  			    <div class="info-card">
+	  			      <img src="../../static/images/btn2.png" th:src="@{/images/btn2.png}" alt="상세보기">
+	  			      <p>아이상세</p>
+	  			    </div>
+	  			  </a>
+                    <!-- 2 -->
+	  			  <a id="childRecordListLink" href="/children/{childId}/recordList">
+	  			    <div class="info-card">
+	  			      <img src="../../static/images/btn5.png" th:src="@{/images/btn5.png}" alt="성장 정보">
+	  			      <p>성장정보</p>
+	  			    </div>
+	  			  </a>
 
-  <!-- 5 -->
-  <a id="analysisInsertLink" href="/children/{childId}/analysis/new">
-    <div class="info-card">
-      <img src="../../static/images/btn12.png" th:src="@{/images/btn12.png}" alt="분석">
-      <p>분석하기</p>
-    </div>
-  </a>
-
-  <!-- 6 -->
-  <a id="analysisResultListLink" href="/children/{childId}/analysis/resultList">
-    <div class="info-card">
-      <img src="../../static/images/btn11.png" th:src="@{/images/btn11.png}" alt="분석 결과">
-      <p>분석목록</p>
-    </div>
-  </a>
-
-  <!-- 7 -->
-  <a id="childDiaryLink" href="/children/{childId}/diaries/new">
-    <div class="info-card">
-      <img src="../../static/images/btn7.png" th:src="@{/images/btn7.png}" alt="일기 작성">
-      <p>일기쓰기</p>
-    </div>
-  </a>
-
-  <!-- 8 -->
-  <a id="childDiaryListLink" href="/children/{childId}/diaries/diaryList">
-    <div class="info-card">
-      <img src="../../static/images/btn8.png" th:src="@{/images/btn8.png}" alt="일기 목록">
-      <p>일기목록</p>
-    </div>
-  </a>
-</div>
-<hr>
-<div id="childLinkContainer2">
-                  <a id="childPermissionLink" href="/permissions">
-                    <button class="button is-fullwidth is-info is-light mb-1">
-                      내 아이 권한 관리
-                    </button>
-                  </a>
+                    <!-- 3 -->
+	  			  <a id="surveySelectLink" href="/children/{childId}/mentalSurveys/selects">
+	  			    <div class="info-card">
+	  			      <img src="../../static/images/btn4.png" th:src="@{/images/btn4.png}" alt="설문 작성">
+	  			      <p>설문하기</p>
+	  			    </div>
+	  			  </a>
+                    <!-- 4 -->
+            <a id="surveyStatsLink" href="/children/{childId}/mentalSurveys/responses/stats">
+              <div class="info-card">
+                <img src="../../static/images/btn3.png" th:src="@{/images/btn3.png}" alt="설문 결과">
+                <p>설문결과</p>
+              </div>
+            </a>
+          
+            <!-- 5 -->
+            <a id="analysisInsertLink" href="/children/{childId}/analysis/new">
+              <div class="info-card">
+                <img src="../../static/images/btn12.png" th:src="@{/images/btn12.png}" alt="분석">
+                <p>분석하기</p>
+              </div>
+            </a>
+          
+            <!-- 6 -->
+            <a id="analysisResultListLink" href="/children/{childId}/analysis/resultList">
+              <div class="info-card">
+                <img src="../../static/images/btn11.png" th:src="@{/images/btn11.png}" alt="분석 결과">
+                <p>분석목록</p>
+              </div>
+            </a>
+          
+            <!-- 7 -->
+            <a id="childDiaryLink" href="/children/{childId}/diaries/new">
+              <div class="info-card">
+                <img src="../../static/images/btn7.png" th:src="@{/images/btn7.png}" alt="일기 작성">
+                <p>일기쓰기</p>
+              </div>
+            </a>
+          
+            <!-- 8 -->
+            <a id="childDiaryListLink" href="/children/{childId}/diaries/diaryList">
+              <div class="info-card">
+                <img src="../../static/images/btn8.png" th:src="@{/images/btn8.png}" alt="일기 목록">
+                <p>일기목록</p>
+              </div>
+            </a>
+          </div>
+                  <hr>
+                  <div id="childLinkContainer2">
+                    <a id="childPermissionLink" href="/auth/permissionGuardian/{memberId}/{childId}">
+                      <button class="button is-fullwidth is-info is-light mb-1">
+                        내 아이 권한 관리
+                      </button>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Middle Column - Statistics -->
-      <div id="statsContainer">
-        <div id="mentalSurveyStatsCard" class="card stats-card">
-          <div class="card-content">
-            <div id="mentalSurveyScoreLineChart" class="stats-container"></div>
+        <!-- Middle Column - Statistics -->
+        <div id="statsContainer">
+          <div id="mentalSurveyStatsCard" class="card stats-card">
+            <div class="card-content">
+              <div id="mentalSurveyScoreLineChart" class="stats-container"></div>
+            </div>
           </div>
-        </div>
-        <div id="sentAnalysisStatsCard" class="card stats-card">
-          <div class="card-content">
-            <div id="childEmotionScorePieChart" class="stats-container"></div>
+          <div id="sentAnalysisStatsCard" class="card stats-card">
+            <div class="card-content">
+              <div id="childEmotionScorePieChart" class="stats-container"></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- 공통 footer -->
-    <footer>
-      <div class="container">
-        <div class="columns">
-          <div class="column is-4">
-            <div class="logo-container">
-              <img
-                class="footer-logo"
-                src="../../static/images/wilog.png"
-                th:src="@{/images/wilog.png}"
-                alt="iLog 로고"
-              />
-              <span class="footer-title">iLog</span>
-            </div>
-            <p>
-              아이의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을
-              돕는 서비스입니다.
-            </p>
-          </div>
-          <div class="column is-4"></div>
-          <div class="column is-4">
-            <h3 class="title is-5">연락처</h3>
-            <div class="contact-info">
-              <p>
-                <i class="fas fa-map-marker-alt"></i> 서울특별시 강남구 테헤란로
-                123
-              </p>
-              <p><i class="fas fa-phone"></i> 02-123-4567</p>
-              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
-              <p>
-                <i class="fas fa-clock"></i> 평일 09:00 - 18:00 (공휴일 제외)
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-		  <div class="columns is-vcentered">
-		    <div class="column is-4"></div> <!-- 왼쪽 공백 -->
-		    <div class="column is-4 has-text-centered">
-		      <p>
-		        <a href="/terms">이용약관</a> |
-		        <a href="/privacy"><strong>개인정보처리방침</strong></a> |
-		        <a href="/youth-policy">청소년보호정책</a>
-		      </p>
-		    </div>
-		    <div class="column is-4 has-text-right">
-		      <p>&copy; 2025 iLog. All rights reserved.</p>
-		    </div>
-		  </div>
-		</div>
-      </div>
-    </footer>
-</th:block>
-
+    </th:block>
+  <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>
 

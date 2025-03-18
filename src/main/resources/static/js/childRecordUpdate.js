@@ -42,10 +42,10 @@ $(document).ready(function () {
   // Add existing image to FilePond if it exists
   if (existingImagePath) {
     pond.addFiles(existingImagePath, {
-      type: 'local',
-      source: existingImagePath,
+      // type: 'remote',
+      source: checkPath,
       options: {
-        type: 'local',
+        type: 'remote',
       },
     });
   }

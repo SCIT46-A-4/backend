@@ -19,13 +19,14 @@
       th:href="@{/css/all.min.css}"
       href="../../../static/css/all.min.css"
     />
+
     <style>
       .view-toggle {
         margin-bottom: 1rem;
       }
 
       .preview-image {
-        background-color: #ffb6c1;
+        background-color: var(--primary);
         aspect-ratio: 1;
         display: flex;
         align-items: center;
@@ -34,8 +35,8 @@
       }
 
       .pagination-link.is-current {
-        background-color: #ffb6c1;
-        border-color: #ffb6c1;
+        background-color: var(--primary);
+        border-color: var(--primary);
       }
 
       .delete-button {
@@ -46,7 +47,7 @@
       }
 
       .details-button {
-        background-color: var(--primary-color);
+        background-color: var(--primary);
         border: none;
         padding: 0.5em 1em;
         cursor: pointer;
@@ -61,6 +62,14 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        height: 100%;
+      }
+
+      .card-footer-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 0 5px 5px 0;
       }
     </style>
     <script
@@ -68,6 +77,7 @@
       src="../../../static/js/jquery-3.7.1.min.js"
     ></script>
     <script th:src="@{/js/sweetalert2.js}"></script>
+
     <script>
       var analysisUrl = `/children/${getChildIdFromUrl()}/analysis`;
       function deleteItem(event) {
@@ -175,7 +185,7 @@
               card.classList.add('column', 'is-one-fifth');
               card.innerHTML = `
                 <div class="card">
-                  <div class="card-image">
+                  <div>
                     <figure class="image preview-image">
                       <img src="${item.analysisTargetFileSrcUri}" />
                     </figure>
@@ -191,7 +201,7 @@
                       <p>${item.analysisResultTitle}</p>
                     </div>
                   </div>
-                  <footer class="card-footer">
+                  <footer class="card-footer-custom">
                     <a href="/children/${getChildIdFromUrl()}/analysis/${
                 item.analysisTargetId
               }/results/${
@@ -211,7 +221,7 @@
             // List View
             const listTableBody = document.getElementById('listTableBody');
             listTableBody.innerHTML = '';
-            content.forEach((item) => {
+            content.forEach((item, idx) => {
               const row = document.createElement('tr');
               const icons = item.analysisTypes
                 .map((analysisType) => {
@@ -221,11 +231,13 @@
                     return '🖼️';
                   } else if (analysisType === 'PHOTO') {
                     return '📸';
+                  } else {
+                    return '';
                   }
                 })
                 .join(', ');
               row.innerHTML = `
-                <td>${item.analysisResultId}</td>
+                <td>${idx + 1}</td>
                 <td>${new Date(item.createdAt).toLocaleDateString()}</td>
                 <td>${new Date(item.analysisDate).toLocaleDateString()}</td>
                 <td><a href="/children/${getChildIdFromUrl()}/analysis/${
@@ -457,5 +469,6 @@
         </nav>
       </div>
     </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

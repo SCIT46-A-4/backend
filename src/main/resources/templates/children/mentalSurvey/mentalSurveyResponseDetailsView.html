@@ -16,6 +16,13 @@
       .secondary-bg {
         background-color: #bee6d9;
       }
+      #resultContainer {
+        min-height: 80vh;
+        display: grid;
+        flex-direction: column;
+        align-items: stretch;
+        grid-template-rows: 100px 1fr auto;
+      }
     </style>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
@@ -57,17 +64,17 @@
       <div class="logo">
         <a th:href="@{/dashboard}">
           <img
-                  src="../../static/images/wilog.png"
-                  th:src="@{/images/wilog.png}"
-                  alt="로고"
-                  class="image"
-                  style="width: 100px; height: auto"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="로고"
+            class="image"
+            style="width: 100px; height: auto"
           />
         </a>
       </div>
     </nav>
     <section class="section">
-      <div class="container">
+      <div id="resultContainer" class="container">
         <!-- 설문 제목 -->
         <h1
           class="title primary-color"
@@ -116,5 +123,6 @@
         </div>
       </div>
     </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

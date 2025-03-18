@@ -1,111 +1,138 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-  <meta charset="UTF-8" />
-  <title>일기 상세 페이지</title>
-  <!-- Bulma CSS -->
-  <link rel="stylesheet" th:href="@{/css/bulma.min.css}" href="../../../static/css/bulma.min.css" />
-  <style>
-    body {
-      background-color: #fdf5bf;
-      /* 프라이머리 컬러 */
-    }
-
-    .secondary-bg {
-      background-color: #bee6d9;
-      /* 세컨더리 컬러 */
-      border: none;
-      color: #333;
-    }
-
-    /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
-    .logo-image {
-      width: 100px;
-      height: auto;
-    }
-
-    /* 로고 설정 */
-    .logo a {
-      display: inline-block;
-    }
-
-    .logo img {
-      cursor: pointer;
-    }
-  </style>
-  <script src="/js/jquery-3.7.1.min.js"></script>
-  <script>
-    // 모바일 대응을 위한 navbar burger 토글
-    document.addEventListener('DOMContentLoaded', () => {
-      const $navbarBurgers = Array.prototype.slice.call(
-        document.querySelectorAll('.navbar-burger'),
-        0
-      );
-      if ($navbarBurgers.length > 0) {
-        $navbarBurgers.forEach((el) => {
-          el.addEventListener('click', () => {
-            const target = el.dataset.target;
-            const $target = document.getElementById(target);
-            el.classList.toggle('is-active');
-            $target.classList.toggle('is-active');
-          });
-        });
+  <head>
+    <meta charset="UTF-8" />
+    <title>일기 상세 페이지</title>
+    <!-- Bulma CSS -->
+    <link
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
+      href="../../../static/css/bulma.min.css"
+    />
+    <style>
+      body {
+        background-color: #fdf5bf;
+        /* 프라이머리 컬러 */
       }
-    });
-  </script>
-</head>
 
-<body>
-  <!-- 네비게이션 바 -->
-  <nav class="navbar secondary-bg" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <!-- 로고 + dashboard 바로가기 -->
-      <div class="logo">
-        <a th:href="@{/dashboard}">
-          <img src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="로고" class="image logo-image" />
-        </a>
-      </div>
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-    <div id="navMenu" class="navbar-menu">
-      <div class="navbar-start">
-        <!-- 추가 메뉴가 필요하면 이곳에 삽입 -->
-      </div>
-    </div>
-  </nav>
+      .secondary-bg {
+        background-color: #bee6d9;
+        /* 세컨더리 컬러 */
+        border: none;
+        color: #333;
+      }
 
-  <section class="section">
-    <div class="container">
-      <h1 class="title has-text-centered" style="color: #fdf5bf">
-        일기 상세 페이지
-      </h1>
-      <div class="box">
-        <div class="content ">
-          <!-- 일기 제목, 내용, 작성일을 표시 -->
-          <h2 class="subtitle" th:text="${diaryDetails.title}">제목</h2>
-          <p>
-            <strong>작성일:</strong>
-            <span th:text="${#temporals.format(diaryDetails.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성일</span>
-          </p>
-          <div class="box secondary-bg">
-            <pre class="is-size-4 has-text-centered" th:text="${diaryDetails.content}">내용</pre>
-          </div>
-        </div>
-        <div class="has-text-centered ">
+      /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
+      .logo-image {
+        width: 100px;
+        height: auto;
+      }
 
-          <a
-            th:href="@{/children/{childId}/diaries/{diaryId}/edit(childId=${diaryDetails.childId}, diaryId=${diaryDetails.id})}">
-            <button class="button secondary-bg">수정하기</button>
+      /* 로고 설정 */
+      .logo a {
+        display: inline-block;
+      }
+
+      .logo img {
+        cursor: pointer;
+      }
+    </style>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+
+    <script>
+      // 모바일 대응을 위한 navbar burger 토글
+      document.addEventListener('DOMContentLoaded', () => {
+        const $navbarBurgers = Array.prototype.slice.call(
+          document.querySelectorAll('.navbar-burger'),
+          0
+        );
+        if ($navbarBurgers.length > 0) {
+          $navbarBurgers.forEach((el) => {
+            el.addEventListener('click', () => {
+              const target = el.dataset.target;
+              const $target = document.getElementById(target);
+              el.classList.toggle('is-active');
+              $target.classList.toggle('is-active');
+            });
+          });
+        }
+      });
+    </script>
+  </head>
+
+  <body>
+    <!-- 네비게이션 바 -->
+    <nav
+      class="navbar secondary-bg"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="navbar-brand">
+        <!-- 로고 + dashboard 바로가기 -->
+        <div class="logo">
+          <a th:href="@{/dashboard}">
+            <img
+              src="../../static/images/wilog.png"
+              th:src="@{/images/wilog.png}"
+              alt="로고"
+              class="image logo-image"
+            />
           </a>
         </div>
+        <a
+          role="button"
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navMenu"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
       </div>
-    </div>
-  </section>
-</body>
+      <div id="navMenu" class="navbar-menu">
+        <div class="navbar-start">
+          <!-- 추가 메뉴가 필요하면 이곳에 삽입 -->
+        </div>
+      </div>
+    </nav>
 
+    <section class="section">
+      <div class="container">
+        <h1 class="title has-text-centered" style="color: #fdf5bf">
+          일기 상세 페이지
+        </h1>
+        <div class="box">
+          <div class="content">
+            <!-- 일기 제목, 내용, 작성일을 표시 -->
+            <h2 class="subtitle" th:text="${diaryDetails.title}">제목</h2>
+            <p>
+              <strong>작성일:</strong>
+              <span
+                th:text="${#temporals.format(diaryDetails.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
+                >작성일</span
+              >
+            </p>
+            <div class="box secondary-bg">
+              <pre
+                class="is-size-4 has-text-centered"
+                th:text="${diaryDetails.content}"
+              >
+내용</pre
+              >
+            </div>
+          </div>
+          <div class="has-text-centered">
+            <a
+              th:href="@{/children/{childId}/diaries/{diaryId}/edit(childId=${diaryDetails.childId}, diaryId=${diaryDetails.id})}"
+            >
+              <button class="button secondary-bg">수정하기</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>
