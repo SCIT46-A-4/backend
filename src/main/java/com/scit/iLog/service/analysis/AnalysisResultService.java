@@ -170,21 +170,44 @@ public class AnalysisResultService {
         AnalysisTargetEntity analysisTarget = analysisResult.getAnalysisTarget();
         analysisTarget.setRegisterDate(reAnalyzeRequest.datetime());
 
-        WeatherResponse fakeWeatherResponse = weatherService.parseWeatherResponseFromJson(reAnalyzeRequest.weather());
-        WeatherData weatherData = fakeWeatherResponse.data().get(0);
-        LocalDateTime recordedAt = LocalDateTime.ofInstant(Instant.ofEpochSecond(weatherData.dt()), ZoneId.systemDefault());
-        String weatherDescription = weatherData.weather().get(0).description();
+        if (!ObjectUtils.isEmpty(reAnalyzeRequest.datetime())) {
+            analysisTarget.setRegisterDate(reAnalyzeRequest.datetime());
+        }
+        if (!ObjectUtils.isEmpty(reAnalyzeRequest.locationName())) {
+            analysisTarget.setLocationName(reAnalyzeRequest.locationName());
+        }
+        if (!ObjectUtils.isEmpty(reAnalyzeRequest.latitude())) {
+            analysisTarget.setLatitude(reAnalyzeRequest.latitude());
+        }
+        if (!ObjectUtils.isEmpty(reAnalyzeRequest.longitude())) {
+            analysisTarget.setLongitude(reAnalyzeRequest.longitude());
+        }
+        if (!ObjectUtils.isEmpty(reAnalyzeRequest.companion())) {
+            analysisTarget.setCompanion(reAnalyzeRequest.companion());
+        }
+        if (!ObjectUtils.isEmpty(reAnalyzeRequest.supplement())) {
+            analysisTarget.setSupplement(reAnalyzeRequest.supplement());
+        }
 
-        WeatherEntity weather = analysisTarget.getWeather();
-        weather.setHumidity(weatherData.humidity());
-        weather.setTemperature(weatherData.temp());
-        weather.setWindSpeed(weatherData.wind_speed());
-        weather.setRecordedAt(recordedAt);
-        weather.setWeatherDesc(weatherDescription);
+        if (!ObjectUtils.isEmpty(reAnalyzeRequest.weather())) {
+            WeatherResponse fakeWeatherResponse = weatherService.parseWeatherResponseFromJson(reAnalyzeRequest.weather());
+            WeatherData weatherData = fakeWeatherResponse.data().get(0);
+            LocalDateTime recordedAt = LocalDateTime.ofInstant(Instant.ofEpochSecond(weatherData.dt()), ZoneId.systemDefault());
+            String weatherDescription = weatherData.weather().get(0).description();
+
+            WeatherEntity weather = analysisTarget.getWeather();
+            weather.setHumidity(weatherData.humidity());
+            weather.setTemperature(weatherData.temp());
+            weather.setWindSpeed(weatherData.wind_speed());
+            weather.setRecordedAt(recordedAt);
+            weather.setWeatherDesc(weatherDescription);
+            analysisTarget.setWeather(weather);
+        }
 
         AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
-        if (StringUtils.hasText(aiAnalysisResponse.extractedText()))
+        if (StringUtils.hasText(aiAnalysisResponse.extractedText())) {
             analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
+        }
 
         analysisResult.setAnalysisResultText(aiAnalysisResponse.analysisResult());
         analysisResult.setSuggestedSolution(aiAnalysisResponse.suggestedSolution());

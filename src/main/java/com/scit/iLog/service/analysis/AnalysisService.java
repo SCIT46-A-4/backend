@@ -1,6 +1,7 @@
 package com.scit.iLog.service.analysis;
 
 import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
 import com.scit.iLog.dto.analysis.AnalysisResultDetailsDTO;
@@ -13,6 +14,8 @@ import com.scit.iLog.dto.analysis.weather.WeatherResponse;
 import com.scit.iLog.dto.child.ChildRecordExtraction;
 import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.*;
+import com.scit.iLog.util.FileManager;
+import com.scit.iLog.util.FilePathUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,8 @@ public class AnalysisService {
     private final MemberRepository memberRepository;
     private final ChildRepository childRepository;
     private final AnalysisTypeRepository analysisTypeRepository;
+    private final FileManager fileManager;
+    private final FilePathUtil filePathUtil;
 
     @Transactional
     public Long getAnalysisResult(Long analysisTargetId) {
@@ -117,7 +122,16 @@ public class AnalysisService {
                 .orElseThrow(() -> new EntityNotFoundException("Member 조회 실패: ".concat(memberId.toString())));
         ChildEntity child = childRepository.findById(childId)
                 .orElseThrow(() -> new EntityNotFoundException("Child 조회 실패: ".concat(childId.toString())));
-        WeatherResponse fakeWeatherResponse = weatherService.getFakeWeatherResponse();
+        WeatherResponse fakeWeatherResponse = weatherService.parseWeatherResponseFromJson(analysisTargetInsertDTO.weatherResponse());
+
+        String savedFileName = FileManager
+                .getSavedFileName(StringUtils.hasText(analysisTargetInsertDTO.analysisTargetFile().getOriginalFilename())
+                        ? analysisTargetInsertDTO.analysisTargetFile().getOriginalFilename()
+                        : Instant.now().toString().concat(".jpeg"));
+
+
+        fileManager.saveFile(analysisTargetInsertDTO.analysisTargetFile(), filePathUtil.childAnalysisFileUploadPath(), savedFileName);
+
         AnalysisTargetEntity analysisTarget = AnalysisTargetEntity.builder()
                 .locationName(analysisTargetInsertDTO.locationName())
                 .latitude(analysisTargetInsertDTO.latitude())
@@ -125,10 +139,11 @@ public class AnalysisService {
                 .registerDate(analysisTargetInsertDTO.targetDate())
                 .companion(analysisTargetInsertDTO.companion())
                 .uploadedBy(member)
+                .originalTargetFileName(analysisTargetInsertDTO.analysisTargetFile().getOriginalFilename())
+                .savedTargetFileName(savedFileName)
                 .supplement(analysisTargetInsertDTO.supplementaryComment())
                 .child(child)
-                .originalTargetFileName("test-target.png")
-                .savedTargetFileName("test-target.png").build();
+                .build();
 
         if (!ObjectUtils.isEmpty(analysisTargetInsertDTO.analysisTypes()) && !analysisTargetInsertDTO.analysisTypes().isEmpty()) {
             List<AnalysisTargetTypeEntity> analysisTargetTypes = analysisTypeRepository.findAll()
@@ -158,6 +173,25 @@ public class AnalysisService {
                 .build();
         analysisTarget.setWeather(weather);
         return analysisTargetRepository.save(analysisTarget).getId();
+    }
+
+    @Transactional
+    public String saveHealthCheckImage(MultipartFile healthCheckImg) {
+        // 1. 업로드 경로 결정 (OS에 따라)
+        String uploadPath = filePathUtil.childHealthCheckImgUploadPath();
+
+        // 2. 원본 파일명이 있는지 확인 후, 안전한 저장 파일명 생성
+        String originalFilename = healthCheckImg.getOriginalFilename();
+        if (!StringUtils.hasText(originalFilename)) {
+            throw new IllegalArgumentException("업로드 파일에 원본 파일명이 존재하지 않습니다.");
+        }
+        String savedFileName = FileManager.getSavedFileName(originalFilename);
+
+        // 3. 파일 저장 (FileManager.saveFile 메서드 사용)
+        fileManager.saveFile(healthCheckImg, uploadPath, savedFileName);
+
+        // 4. 저장된 파일의 전체 경로를 반환하거나 DB에 저장할 때 사용할 파일명을 반환
+        return savedFileName;
     }
 
     public ChildRecordExtraction getExtractChildRecordData(MultipartFile healthCheckImg) {

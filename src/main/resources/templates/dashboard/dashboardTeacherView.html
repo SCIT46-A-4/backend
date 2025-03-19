@@ -1,25 +1,31 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<html
+  lang="ko"
+  xmlns:th="http://thymeleaf.org"
+  xmlns:sec="http://thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>교사용 대시보드 - iLog</title>
+    <link rel="stylesheet" href="/css/bulma.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>교사용 대시보드 - iLog</title>
-  <link rel="stylesheet" href="/css/bulma.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-  <script src="/js/jquery-3.7.1.min.js"></script>
-  <script src="/js/highcharts.js"></script>
-  <script src="/js/exporting.js"></script>
-  <script src="/js/accessibility.js"></script>
-  <script src="/js/export-data.js"></script>
-  <script src="/js/series-label.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/highcharts.js"></script>
+    <script src="/js/exporting.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/export-data.js"></script>
+    <script src="/js/series-label.js"></script>
     <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
 
     <script>
-        Highcharts.setOptions({
+      Highcharts.setOptions({
         lang: {
           contextButtonTitle: '차트 메뉴',
           downloadPNG: 'PNG 이미지 다운로드',
@@ -40,18 +46,18 @@
         },
       });
     </script>
-  <style>
-    /* 네비게이션 바 스타일 */
-    .navbar {
-      background-color: #FDF5BF;
-    }
+    <style>
+      /* 네비게이션 바 스타일 */
+      .navbar {
+        background-color: #fdf5bf;
+      }
 
       /* 로고 이미지 스타일 */
       #logo {
-		  max-height: 80px;
-		  width: 70px;
-		  height: auto;
-		}
+        max-height: 80px;
+        width: 70px;
+        height: auto;
+      }
 
       /* 학생 리스트 스타일 */
       .student-list {
@@ -71,10 +77,10 @@
         background-color: #f5f5f5;
       }
 
-		.student-item.active,
-		.child-item.is-selected {
-			background-color: #FDF5BF !important;
-		}
+      .student-item.active,
+      .child-item.is-selected {
+        background-color: #fdf5bf !important;
+      }
 
       /* 통계 컨테이너 스타일 */
       .stats-container {
@@ -232,10 +238,10 @@
       }
 
       /* 푸터 배경색 변경 */
-	  footer {
-	    background-color: #FDF5BF; /* 원하는 색상 */
-	    padding: 2rem 0;
-	  }
+      footer {
+        background-color: #fdf5bf; /* 원하는 색상 */
+        padding: 2rem 0;
+      }
 
       /* 반응형 설정 (화면이 1024px 이하일 때 적용) */
       @media screen and (max-width: 1024px) {
@@ -354,7 +360,6 @@
 
         // 감정 분석 데이터 출력 (도넛 차트)
         function loadStudentEmotionData(childId) {
-
           const periodType = 'WEEK';
 
           $.ajax({
@@ -372,12 +377,12 @@
           });
         }
 
-      // 문서 로드 후 목록의 첫 번째 학생 자동 선택
-      var $firstStudent = $('.student-item').first();
-      if ($firstStudent.length) {
-        $firstStudent.trigger('click');
-      }
-    });
+        // 문서 로드 후 목록의 첫 번째 학생 자동 선택
+        var $firstStudent = $('.student-item').first();
+        if ($firstStudent.length) {
+          $firstStudent.trigger('click');
+        }
+      });
 
       // 전역 함수들 정의 시작
 
@@ -392,13 +397,13 @@
         return age;
       }
 
-    // 날짜를 "yyyy-MM-dd" 형식으로 변환하는 함수 (시간 부분 제거) //수정함
-    function formatDate(date) {
-      const year = date.getFullYear();
-      const month = ('0' + (date.getMonth() + 1)).slice(-2);
-      const day = ('0' + date.getDate()).slice(-2);
-      return `${year}-${month}-${day}T00:00:00`;
-    }
+      // 날짜를 "yyyy-MM-dd" 형식으로 변환하는 함수 (시간 부분 제거) //수정함
+      function formatDate(date) {
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}T00:00:00`;
+      }
 
       // 선택한 기간(주간, 월간, 반년)에 따라 시작일과 종료일을 계산하고 도넛 차트를 업데이트하는 함수 //수정함
       function setDonutDateRange(period) {
@@ -451,58 +456,58 @@
         });
       }
 
-    // 도넛 차트 업데이트 함수 (감정 분석 결과)
-    function updatePieChart(data) {
-      console.log('📊 감정 차트 데이터:', data);
-      if (!Array.isArray(data) || data.length === 0) {
-        console.warn('⚠ 감정 데이터 없음. 기본 데이터로 초기화');
-        data = [
-          { name: '기쁨', y: 30 },
-          { name: '슬픔', y: 20 },
-          { name: '분노', y: 25 },
-          { name: '놀람', y: 25 },
-        ];
-      } else {
-        const emotionColorMap = {
-          기쁨: '#FFD700', // 골드(따뜻한 느낌)
-          슬픔: '#4169E1', // 로열블루(깊은 슬픔)
-          분노: '#DC143C', // 크림슨(강한 분노)
-          두려움: '#483D8B', // 다크 슬레이트 블루(무거운 느낌)
-          놀람: '#FFEC8B', // 연한 오렌지(경쾌한 놀람)
-          중립: '#A9A9A9', // 다크그레이(중립적인 느낌)
-          혼란: '#FF69B4', // 핫핑크(어지러운 혼란)
-          불안: '#8B0000', // 다크레드(불안감)
-          지루함: '#2F4F4F', // 다크슬레이트그레이(무거운 지루함)
-          흥분: '#FF1493', // 딥핑크(에너지 넘치는 흥분)
-          수줍음: '#FFDAB9', // 연한 살구색(부드러운 수줍음)
-        };
+      // 도넛 차트 업데이트 함수 (감정 분석 결과)
+      function updatePieChart(data) {
+        console.log('📊 감정 차트 데이터:', data);
+        if (!Array.isArray(data) || data.length === 0) {
+          console.warn('⚠ 감정 데이터 없음. 기본 데이터로 초기화');
+          data = [
+            { name: '기쁨', y: 30 },
+            { name: '슬픔', y: 20 },
+            { name: '분노', y: 25 },
+            { name: '놀람', y: 25 },
+          ];
+        } else {
+          const emotionColorMap = {
+            기쁨: '#FFD700', // 골드(따뜻한 느낌)
+            슬픔: '#4169E1', // 로열블루(깊은 슬픔)
+            분노: '#DC143C', // 크림슨(강한 분노)
+            두려움: '#483D8B', // 다크 슬레이트 블루(무거운 느낌)
+            놀람: '#FFEC8B', // 연한 오렌지(경쾌한 놀람)
+            중립: '#A9A9A9', // 다크그레이(중립적인 느낌)
+            혼란: '#FF69B4', // 핫핑크(어지러운 혼란)
+            불안: '#8B0000', // 다크레드(불안감)
+            지루함: '#2F4F4F', // 다크슬레이트그레이(무거운 지루함)
+            흥분: '#FF1493', // 딥핑크(에너지 넘치는 흥분)
+            수줍음: '#FFDAB9', // 연한 살구색(부드러운 수줍음)
+          };
 
-        data = data
-          .filter((item) => item.label && item.resultScore !== null)
-          .map((item) => ({
-            name: item.label,
-            y: item.resultScore,
-            color: emotionColorMap[item.label] || undefined,
-          }));
-      }
-      if ($('#progressChart').length === 0) {
-        console.error('🚨 progressChart 요소가 존재하지 않습니다!');
-        return;
-      }
-      Highcharts.chart('progressChart', {
-        chart: {
-          type: 'pie',
-          custom: {},
-          events: {
-            render() {
-              const chart = this,
-                series = chart.series[0];
+          data = data
+            .filter((item) => item.label && item.resultScore !== null)
+            .map((item) => ({
+              name: item.label,
+              y: item.resultScore,
+              color: emotionColorMap[item.label] || undefined,
+            }));
+        }
+        if ($('#progressChart').length === 0) {
+          console.error('🚨 progressChart 요소가 존재하지 않습니다!');
+          return;
+        }
+        Highcharts.chart('progressChart', {
+          chart: {
+            type: 'pie',
+            custom: {},
+            events: {
+              render() {
+                const chart = this,
+                  series = chart.series[0];
 
-              // 가장 큰 감정 비율을 찾기
-              let maxPoint = series.data.reduce(
-                (prev, curr) => (curr.y > prev.y ? curr : prev),
-                series.data[0]
-              );
+                // 가장 큰 감정 비율을 찾기
+                let maxPoint = series.data.reduce(
+                  (prev, curr) => (curr.y > prev.y ? curr : prev),
+                  series.data[0]
+                );
 
                 // 중앙에 표시될 텍스트 설정
                 let labelText = maxPoint
@@ -511,24 +516,20 @@
                     )}%</strong>`
                   : '분석할 데이터가<br/><strong>없습니다.</strong>';
 
-                  // 데이터가 없을 때 div에 '데이터가 없습니다' 띄우는 코드
-                  if(!maxPoint)
-                	  {
-                	      Highcharts.charts.forEach( (chart) =>
-                	    	  {
-                	          if (chart && chart.renderTo.id === "progressChart")
-                	        	  {
-                	            	chart.destroy();
-                	          	}
-                	    	  }
-                	    	  )
+                // 데이터가 없을 때 div에 '데이터가 없습니다' 띄우는 코드
+                if (!maxPoint) {
+                  Highcharts.charts.forEach((chart) => {
+                    if (chart && chart.renderTo.id === 'progressChart') {
+                      chart.destroy();
+                    }
+                  });
 
-                	    	chartContainer.innerHTML = `<div id="progressChart" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+                  chartContainer.innerHTML = `<div id="progressChart" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
                 	    		  <strong style="font-size: 18px; color: #666;">데이터가 없습니다.</strong>
                 	    		</div>`;
 
-                	    	 return;
-                	  }
+                  return;
+                }
 
                 // 기존 레이블이 있으면 업데이트, 없으면 새로 생성
                 let customLabel = chart.options.chart.custom.label;
@@ -616,15 +617,13 @@
       }
 
       // Trend 차트 업데이트 (설문조사 결과)
-      function updateLineChart(data)
-      {
-        if (!data || data.length === 0)
-        {
+      function updateLineChart(data) {
+        if (!data || data.length === 0) {
           console.warn(
             '⚠ 설문 데이터가 없습니다. Trend Chart를 생성하지 않습니다.'
           );
 
-          const chartContainer = document.getElementById("trendChart");
+          const chartContainer = document.getElementById('trendChart');
 
           chartContainer.innerHTML = `<div id="trendChart" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
                 	    		  <strong style="font-size: 18px; color: #666;">데이터가 없습니다.</strong>
@@ -642,10 +641,10 @@
         });
       }
 
-    // 정렬(select) 변경 시 페이지 이동 함수
-    function changeSort(sortOption) {
-      window.location.href = `/dashboard/teacher?sortOption=${sortOption}`;
-    }
+      // 정렬(select) 변경 시 페이지 이동 함수
+      function changeSort(sortOption) {
+        window.location.href = `/dashboard/teacher?sortOption=${sortOption}`;
+      }
 
       // DOMContentLoaded 이벤트를 통해 URL 파라미터로부터 현재 정렬 상태 반영 (필요 시)
       document.addEventListener('DOMContentLoaded', () => {
@@ -689,105 +688,117 @@
         </a>
       </div>
 
-    <!-- 우측 네비게이션 -->
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          <!-- 이용안내 페이지 이동 버튼 -->
-          <a class="button is-light" th:href="@{/guides}">이용안내</a>
-          <!-- 고객센터 페이지 이동 버튼 -->
-          <a class="button is-light" th:href="@{/claims}">고객 센터</a>
-          <!-- 로그아웃 버튼 -->
-          <a class="button is-light" th:href="@{/auth/logout}">로그아웃</a>
-          <!-- 사용자 정보 표시 및 프로필 페이지 이동 버튼 -->
-          <a class="button is-light" th:href="@{/members/myDetails}">
-            <span class="icon"><i class="fas fa-user"></i></span>
-            <span th:text="${userName} + ' (' + (${relationType} ?: '미지정') + ')'"></span>
-          </a>
+      <!-- 우측 네비게이션 -->
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <!-- 이용안내 페이지 이동 버튼 -->
+            <a class="button is-light" th:href="@{/guides}">이용안내</a>
+            <!-- 고객센터 페이지 이동 버튼 -->
+            <a class="button is-light" th:href="@{/claims}">고객 센터</a>
+            <!-- 로그아웃 버튼 -->
+            <a class="button is-light" th:href="@{/auth/logout}">로그아웃</a>
+            <!-- 사용자 정보 표시 및 프로필 페이지 이동 버튼 -->
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span
+                th:text="${userName} + ' (' + (${relationType} ?: '미지정') + ')'"
+              ></span>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <!-- 본문 섹션 -->
-  <section class="section">
-    <div class="container is-fluid">
-      <div class="columns">
-        <!-- 왼쪽 컬럼 (아동 리스트) -->
-        <div class="column is-3 left-column">
-          <!-- 연도 선택 드롭다운 -->
-          <!--                    <div class="field">-->
-          <!--                        <div class="control">-->
-          <!--                            <select id="yearSelector">-->
-          <!--                                <option value="">연도 선택</option>-->
-          <!--                                <option th:each="year : ${years}" th:text="${year} + '년'" th:value="${year}"></option>-->
-          <!--                            </select>-->
-          <!--                        </div>-->
-          <!--                    </div>-->
+    <!-- 본문 섹션 -->
+    <section class="section">
+      <div class="container is-fluid">
+        <div class="columns">
+          <!-- 왼쪽 컬럼 (아동 리스트) -->
+          <div class="column is-3 left-column">
+            <!-- 연도 선택 드롭다운 -->
+            <!--                    <div class="field">-->
+            <!--                        <div class="control">-->
+            <!--                            <select id="yearSelector">-->
+            <!--                                <option value="">연도 선택</option>-->
+            <!--                                <option th:each="year : ${years}" th:text="${year} + '년'" th:value="${year}"></option>-->
+            <!--                            </select>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
 
             <!-- 정렬 옵션 선택 -->
             <div class="field has-text-left">
-                <div class="select is-small">
-                    <select id="sortOption" onchange="changeSort(this.value)">
-                        <option
-                                value="NAME"
-                                th:selected="${currentSort.name() == 'NAME'}"
-                        >
-                            이름순
-                        </option>
-                        <option
-                                value="BIRTH_DATE"
-                                th:selected="${currentSort.name() == 'BIRTH_DATE'}"
-                        >
-                            생년월일순
-                        </option>
-                        <option
-                                value="REGISTER_DATE"
-                                th:selected="${currentSort.name() == 'REGISTER_DATE'}"
-                        >
-                            아동등록순
-                        </option>
-                    </select>
-                </div>
+              <div class="select is-small">
+                <select id="sortOption" onchange="changeSort(this.value)">
+                  <option
+                    value="NAME"
+                    th:selected="${currentSort.name() == 'NAME'}"
+                  >
+                    이름순
+                  </option>
+                  <option
+                    value="BIRTH_DATE"
+                    th:selected="${currentSort.name() == 'BIRTH_DATE'}"
+                  >
+                    생년월일순
+                  </option>
+                  <option
+                    value="REGISTER_DATE"
+                    th:selected="${currentSort.name() == 'REGISTER_DATE'}"
+                  >
+                    아동등록순
+                  </option>
+                </select>
+              </div>
             </div>
 
             <!-- 총 아동 수 표시 -->
             <div style="display: flex; justify-content: flex-end; width: 100%">
-                <p class="subtitle is-size-6 mb-2">
-                    총 <strong th:text="${#lists.size(childId)}">0</strong>명
-                </p>
+              <p class="subtitle is-size-6 mb-2">
+                총 <strong th:text="${#lists.size(childId)}">0</strong>명
+              </p>
             </div>
 
-          <!-- 아동 리스트 테이블 -->
-          <div class="child-list-container">
-            <table class="table is-fullwidth is-striped is-hoverable">
-              <thead>
-                <tr>
-                  <th>이름</th>
-                  <th>생년월일</th>
-                  <th>최근게시물</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr th:each="child : ${childId}" th:data-child-id="${child.id}" class="student-item">
-                  <td th:text="${child.name}">이름</td>
-                  <td th:text="${#temporals.format(child.birthDate, 'yyyy-MM-dd')}">
-                    생년월일
-                  </td>
-                  <td>-</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+            <!-- 아동 리스트 테이블 -->
+            <div class="child-list-container">
+              <table class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                  <tr>
+                    <th>이름</th>
+                    <th>생년월일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    th:each="child : ${childId}"
+                    th:data-child-id="${child.id}"
+                    class="student-item"
+                  >
+                    <td th:text="${child.name}">이름</td>
+                    <td
+                      th:text="${#temporals.format(child.birthDate, 'yyyy-MM-dd')}"
+                    >
+                      생년월일
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
             <!-- 아이 권한 요청 관리 페이지 이동 버튼 -->
             <div style="text-align: center; margin-top: 1rem">
-                <a class="button is-light" th:href="@{/permissions}"
-                   style="background-color: #FDF5BF !important; color: black !important; border-color: #e6d57a !important;"
+              <a
+                class="button is-light"
+                th:href="@{/auth/permissionTeacher}"
+                style="
+                  background-color: #fdf5bf !important;
+                  color: black !important;
+                  border-color: #e6d57a !important;
+                "
                 >아이 권한 요청 관리</a
-                >
+              >
             </div>
-        </div>
+          </div>
 
           <!-- 오른쪽 컬럼 (아동 상세 정보) -->
           <div class="column right-column">
@@ -847,86 +858,114 @@
                 </div>
               </div>
 
-            <!-- 가정환경 및 특이사항 카드 -->
-            <div class="column is-4">
-              <div class="card" style="
+              <!-- 가정환경 및 특이사항 카드 -->
+              <div class="column is-4">
+                <div
+                  class="card"
+                  style="
                     height: 310px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                  ">
-                <div class="card-content has-text-centered">
-                  <!-- 가정환경 -->
-                  <div class="content has-text-centered is-medium">
-                    <p class="mb-1" style="font-size: 1.25rem; font-weight: bold">
-                      <strong>가정환경</strong>
-                    </p>
-                    <p id="studentFamilyBackground" class="profile-familyBackGrounds" style="
+                  "
+                >
+                  <div class="card-content has-text-centered">
+                    <!-- 가정환경 -->
+                    <div class="content has-text-centered is-medium">
+                      <p
+                        class="mb-1"
+                        style="font-size: 1.25rem; font-weight: bold"
+                      >
+                        <strong>가정환경</strong>
+                      </p>
+                      <p
+                        id="studentFamilyBackground"
+                        class="profile-familyBackGrounds"
+                        style="
                           font-weight: normal;
                           font-size: 1.1rem;
                           margin-bottom: 1.5rem;
-                        ">
-                      -
-                    </p>
+                        "
+                      >
+                        -
+                      </p>
+                    </div>
+                    <!-- 특이사항 -->
+                    <div class="content has-text-centered is-medium">
+                      <p
+                        class="mb-1"
+                        style="font-size: 1.25rem; font-weight: bold"
+                      >
+                        <strong>특이사항</strong>
+                      </p>
+                      <p
+                        id="studentNote"
+                        class="profile-note"
+                        style="font-weight: normal; font-size: 1.1rem"
+                      >
+                        -
+                      </p>
+                    </div>
                   </div>
-                  <!-- 특이사항 -->
-                  <div class="content has-text-centered is-medium">
-                    <p class="mb-1" style="font-size: 1.25rem; font-weight: bold">
-                      <strong>특이사항</strong>
-                    </p>
-                    <p id="studentNote" class="profile-note" style="font-weight: normal; font-size: 1.1rem">
-                      -
-                    </p>
+                </div>
+              </div>
+
+              <!-- 바로가기 버튼들 -->
+              <div class="column">
+                <div class="columns is-multiline">
+                  <div class="column is-12">
+                    <button
+                      id="surveyButton"
+                      class="button is-fullwidth is-info is-light"
+                      onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/responses/stats'"
+                    >
+                      최근 설문 결과 보기
+                    </button>
+                  </div>
+                  <div class="column is-12">
+                    <button
+                      class="button is-fullwidth is-success is-light"
+                      onclick="location.href='/children/' + getSelectedChildId() + '/analysis/resultList'"
+                    >
+                      최근 분석 결과 보기
+                    </button>
+                  </div>
+                  <div class="column is-12">
+                    <button
+                      class="button is-fullwidth is-warning is-light"
+                      onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/selects'"
+                    >
+                      체크리스트 작성하기
+                    </button>
+                  </div>
+                  <div class="column is-12">
+                    <button
+                      class="button is-fullwidth is-danger is-light"
+                      onclick="location.href='/children/' + getSelectedChildId() + '/analysis/new'"
+                    >
+                      감정 분석하기
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- 바로가기 버튼들 -->
-            <div class="column">
-              <div class="columns is-multiline">
-                <div class="column is-12">
-                  <button id="surveyButton" class="button is-fullwidth is-info is-light"
-                    onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/responses/stats'">
-                    최근 설문 결과 보기
-                  </button>
-                </div>
-                <div class="column is-12">
-                  <button class="button is-fullwidth is-success is-light"
-                    onclick="location.href='/children/' + getSelectedChildId() + '/analysis/resultList'">
-                    최근 분석 결과 보기
-                  </button>
-                </div>
-                <div class="column is-12">
-                  <button class="button is-fullwidth is-warning is-light"
-                    onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/selects'">
-                    체크리스트 작성하기
-                  </button>
-                </div>
-                <div class="column is-12">
-                  <button class="button is-fullwidth is-danger is-light"
-                    onclick="location.href='/children/' + getSelectedChildId() + '/analysis/new'">
-                    감정 분석하기
-                  </button>
+            <div class="columns">
+              <!-- 설문조사 점수 통계 그래프 -->
+              <div class="column is-8">
+                <div class="card">
+                  <div class="card-content">
+                    <div id="trendChart" class="stats-container"></div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div class="columns">
-            <!-- 설문조사 점수 통계 그래프 -->
-            <div class="column is-8">
-              <div class="card">
-                <div class="card-content">
-                  <div id="trendChart" class="stats-container"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 설문조사 결과 감정 그래프 -->
-            <div class="column is-4">
-              <div class="card">
-                <div class="card-content" style="
+              <!-- 설문조사 결과 감정 그래프 -->
+              <div class="column is-4">
+                <div class="card">
+                  <div
+                    class="card-content"
+                    style="
                       display: flex;
                       flex-direction: column;
                       justify-content: space-between;
@@ -963,56 +1002,6 @@
       </div>
     </section>
     <!-- 공통 footer -->
-    <footer>
-      <div class="container">
-        <div class="columns">
-          <div class="column is-4">
-            <div class="logo-container">
-              <img
-                class="footer-logo"
-                src="../../static/images/wilog.png"
-                th:src="@{/images/wilog.png}"
-                alt="iLog 로고"
-              />
-              <span class="footer-title">iLog</span>
-            </div>
-            <p>
-              아이의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을
-              돕는 서비스입니다.
-            </p>
-          </div>
-          <div class="column is-4"></div>
-          <div class="column is-4">
-            <h3 class="title is-5">연락처</h3>
-            <div class="contact-info">
-              <p>
-                <i class="fas fa-map-marker-alt"></i> 서울특별시 강남구 테헤란로
-                123
-              </p>
-              <p><i class="fas fa-phone"></i> 02-123-4567</p>
-              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
-              <p>
-                <i class="fas fa-clock"></i> 평일 09:00 - 18:00 (공휴일 제외)
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-		  <div class="columns is-vcentered">
-		    <div class="column is-4"></div> <!-- 왼쪽 공백 -->
-		    <div class="column is-4 has-text-centered">
-		      <p>
-		        <a href="/terms">이용약관</a> |
-		        <a href="/privacy"><strong>개인정보처리방침</strong></a> |
-		        <a href="/youth-policy">청소년보호정책</a>
-		      </p>
-		    </div>
-		    <div class="column is-4 has-text-right">
-		      <p>&copy; 2025 iLog. All rights reserved.</p>
-		    </div>
-		  </div>
-		</div>
-      </div>
-    </footer>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

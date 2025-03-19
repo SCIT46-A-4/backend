@@ -104,10 +104,9 @@ public class DashboardController {
     public String handleGetTeacherDashboardView(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @RequestParam(name = "sortOption", defaultValue = "NAME") SortOption sortOption,
-            Model model) {
-
-        List<ChildBasicInfoDTO> childId = childService.getAllChildrenBasicInfo(sortOption);
-
+            Model model
+    ) {
+        List<ChildBasicInfoDTO> childId = childService.getRelatedChildrenBasicInfo(memberDetails.getId(), sortOption);
         // 사용자 이름과 관계 유형을 모델에 추가
         model.addAttribute("userName", memberDetails.getName());
         model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());

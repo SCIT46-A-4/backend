@@ -99,6 +99,14 @@
         height: auto;
         border-radius: 5px;
       }
+      #weatherInfo {
+        font-weight: bold;
+        font-size: larger;
+        border: 3px solid black;
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 10px;
+      }
     </style>
     <script
       th:src="@{/js/jquery-3.7.1.min.js}"
@@ -137,9 +145,13 @@
       // 네이버 지도 로딩 및 클릭 이벤트 처리
       async function onNaverMapLoad() {
         const position = await getCurrentLocation();
+        const latitude =
+          document.getElementById('latitude').value || position.latitude;
+        const longitude =
+          document.getElementById('longitude').value || position.longitude;
         var mapOptions = {
           // 초기 위치: 자기위치로 바꿔야함
-          center: new naver.maps.LatLng(position.latitude, position.longitude),
+          center: new naver.maps.LatLng(latitude, longitude),
           zoom: 20,
         };
 
@@ -197,6 +209,8 @@
           : null;
         var originalMemo = $('#analysisMemo').val();
         var originalSatisfaction = $('#satisfactionScore').val();
+
+        var weatherJsonString;
 
         // 제목 필드 변경 감지
         $('#titleInput').on('input', function () {
@@ -401,35 +415,57 @@
           const locationName = $('#locationName').val();
           const longitude = $('#longitude').val();
           const latitude = $('#latitude').val();
-          const companion = $('#companionSelect').val();
+          const companion = $('#companionInput').val();
           const supplement = $('#supplementTextarea').val();
           // 재분석 요청전에 일시, 위치, 날씨, 동반자 필드에 값이 있는지 확인
-          if (
-            !datetime ||
-            !weatherJsonString ||
-            !locationName ||
-            !longitude ||
-            !latitude
-          ) {
-            Swal.fire('일시, 위치, 날씨 정보를 먼저 입력해주세요.');
-            return;
+          // if (
+          //   !datetime ||
+          //   !weatherJsonString ||
+          //   !locationName ||
+          //   !longitude ||
+          //   !latitude
+          // ) {
+          //   Swal.fire('일시, 위치, 날씨 정보를 먼저 입력해주세요.');
+          //   return;
+          // }
+
+          // 전송할 data 객체를 빈 객체로 초기화하고, 값이 존재하는 경우에만 키를 추가
+          const data = {};
+          if (datetime) {
+            data.datetime = datetime;
           }
+          if (
+            typeof weatherJsonString !== 'undefined' &&
+            weatherJsonString.trim() !== ''
+          ) {
+            data.weather = weatherJsonString;
+          }
+          if (locationName) {
+            data.locationName = locationName;
+          }
+          if (longitude) {
+            data.longitude = longitude;
+          }
+          if (latitude) {
+            data.latitude = latitude;
+          }
+          if (companion) {
+            data.companion = companion;
+          }
+          if (supplement) {
+            data.supplement = supplement;
+          }
+
           $.ajax({
             url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/reanalyze`,
             method: 'POST',
-            data: {
-              datetime: datetime,
-              weather: weatherJsonString,
-              locationName: locationName,
-              longitude: longitude,
-              latitude: latitude,
-              companion: companion,
-              supplement: supplement,
-            },
+            data: data,
             success: function (res) {
               Swal.fire('재분석 요청이 완료되었습니다.');
               // 화면 갱신
-              window.location.reload();
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
             },
             error: function (err) {
               Swal.fire('재분석 요청 중 오류가 발생했습니다.');

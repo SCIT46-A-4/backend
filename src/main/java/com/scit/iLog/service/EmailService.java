@@ -16,6 +16,7 @@ import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.MemberRepository;
 import com.scit.iLog.repository.PermissionRequestRepository;
 import com.scit.iLog.repository.RelationShipRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -82,23 +83,9 @@ public class EmailService {
             String inviteeEmail, // 사용자가 뷰에서 입력한 이메일 (수신자)
             String etc
     ) {
-        SimpleMailMessage message = new SimpleMailMessage();
         //Null처리
         String str = (etc == null || etc.length() < 1) ? "" : etc;
         String token = UUID.randomUUID().toString();
-        String targetUrl = "/auth/permission"; //리디렉트할 페이지 엔드포인트
-        String verificationUrl = "http://localhost:9900/verifyLink?token=" + token + "&targetUrl=" + targetUrl;
-        message.setFrom("aaaTesT255@gmail.com"); // 발신자 주소 이도훈email
-        message.setTo(inviteeEmail);
-        message.setSubject(guardianName + "로부터" + " 권한 초대 링크입니다.");
-        message.setText("안녕하세요,\n\n"
-                + "인증 링크: \n"
-                + verificationUrl + "\n"
-                + str);
-
-        log.info("생성된 토큰: {}", token);
-        log.info("생성된 인증 URL: {}", verificationUrl);
-        mailSender.send(message);
 
         Long inviteeId = memberRepository.findByEmail(inviteeEmail)
                 .orElseThrow(() -> new MemberNotFoundException(inviteeEmail)).getId();
@@ -114,12 +101,26 @@ public class EmailService {
                 .requestCodeLink(token)
                 .build();
 
-        Optional<MemberEntity> requesterEntity = memberRepository.findById(permissionRequestDto.getRequesterId()); // 요청보낸사람
-        Optional<MemberEntity> inviteeEntity = memberRepository.findById(permissionRequestDto.getInviteeId()); // 초대받은사람
+        PermissionRequestEntity permissionRequest = savePermissionEntity(permissionRequestDto);
 
-        childRepository.findById(permissionRequestDto.getChildId());
+        SimpleMailMessage message = new SimpleMailMessage();
+        String targetUrl = "/auth/permissionTeacher"; //리디렉트할 페이지 엔드포인트
+        String verificationUrl = "http://localhost:9900/verifyLink?token=" + token +
+                "&targetUrl=" + targetUrl +
+                "&requestId=" + permissionRequest.getId();
+        message.setFrom("aaaTesT255@gmail.com"); // 발신자 주소 이도훈email
+        message.setTo(inviteeEmail);
+        message.setSubject(guardianName + "님 으로부터의 아동정보 열람권한 초대 링크입니다.");
+        message.setText("안녕하세요,\n\n"
+                + "링크: \n"
+                + verificationUrl + "\n"
+                + str);
 
-        return savePermissionEntity(permissionRequestDto);
+        log.info("생성된 토큰: {}", token);
+        log.info("생성된 인증 URL: {}", verificationUrl);
+        mailSender.send(message);
+
+        return permissionRequest;
     }
 
     // 초대 받은 사람이 링크 클릭시, 이것이 db에 있는지 확인하고 업데이트 하는 로직
@@ -191,14 +192,17 @@ public class EmailService {
 
     // void에서 PermissionRequestEntity로 변경
     public PermissionRequestEntity savePermissionEntity(PermissionRequestDTO dto) {
-        Optional<MemberEntity> requesterEntity = memberRepository.findById(dto.getRequesterId()); // 요청보낸사람
-        Optional<MemberEntity> inviteeEntity = memberRepository.findById(dto.getInviteeId()); // 초대받은사람
-        Optional<ChildEntity> childEntity = childRepository.findById(dto.getChildId()); // 초대받은사람
+        MemberEntity requesterEntity = memberRepository.findById(dto.getRequesterId())
+                .orElseThrow(EntityNotFoundException::new); // 요청보낸사람
+        MemberEntity inviteeEntity = memberRepository.findById(dto.getInviteeId())
+                .orElseThrow(EntityNotFoundException::new); // 초대받은사람
+        ChildEntity childEntity = childRepository.findById(dto.getChildId())
+                .orElseThrow(EntityNotFoundException::new); // 초대받은사람
 
         PermissionRequestEntity _entity = PermissionRequestEntity.builder()
-                .requester(requesterEntity.get())
-                .child(childEntity.get())
-                .invitee(inviteeEntity.get())
+                .requester(requesterEntity)
+                .child(childEntity)
+                .invitee(inviteeEntity)
                 .relationType(dto.getRequesterRelationType())
                 .permissionStatus(dto.getPermissionRequestStatus())
                 .requestLinkCode(dto.getRequestCodeLink())
@@ -273,7 +277,7 @@ public class EmailService {
      * @param _waitRequestList
      * @param _permissionList
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public void findAllByPermissionEntity(
     		Long inviteeId,
     		List<PermissionTeacherDTO> _waitRequestList,
@@ -282,12 +286,14 @@ public class EmailService {
         // 25/3/11 jun : requester 기준으로 db 찾아서 반환하는 함수 교사용
         List<PermissionRequestEntity> list = permissionRequestRepository.findAllByInviteeId(inviteeId);
 
-        for (var _entity : list) {
+        for (PermissionRequestEntity _entity : list) {
             // accept 상태라면 permissionList에 넣기 아니라면 pending
-            if (_entity.getPermissionStatus().equals(PermissionRequestStatus.ACCEPTED))
+            if (_entity.getPermissionStatus().equals(PermissionRequestStatus.ACCEPTED)) {
                 _permissionList.add(entityToPermissionTeacherDTO(_entity));
-            else
+            }
+            else if (_entity.getPermissionStatus() == PermissionRequestStatus.PENDING) {
                 _waitRequestList.add(entityToPermissionTeacherDTO(_entity));
+            }
         }
     }
 
@@ -297,7 +303,6 @@ public class EmailService {
      * @param _entity
      * @return
      */
-    @Transactional
     private PermissionTeacherDTO entityToPermissionTeacherDTO(PermissionRequestEntity _entity) {
         return PermissionTeacherDTO.builder()
                 .id(_entity.getId())
@@ -325,9 +330,9 @@ public class EmailService {
         Optional<PermissionRequestEntity> permissionEntityOpt = permissionRequestRepository.findById(permissionId);
         if (permissionEntityOpt.isPresent()) {
             PermissionRequestEntity permissionEntity = permissionEntityOpt.get();
-            Long inviteeId = permissionEntity.getInvitee().getId(); // 초대받은 사람(교사)의 ID
-            Long childId = permissionEntity.getChild().getId(); // 아이의 ID
-            Optional<RelationShipEntity> relationOpt = relationShipRepository.findByMemberIdAndChildId(inviteeId, childId);
+            MemberEntity invitee = permissionEntity.getInvitee();
+            ChildEntity child = permissionEntity.getChild(); // 아이의 ID
+            Optional<RelationShipEntity> relationOpt = relationShipRepository.findByMemberAndChild(invitee, child);
             relationOpt.ifPresent(relationShipRepository::delete);
             permissionRequestRepository.delete(permissionEntity);
             return true;

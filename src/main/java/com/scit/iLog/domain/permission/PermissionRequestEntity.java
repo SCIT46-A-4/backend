@@ -43,6 +43,7 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     private RelationType relationType;
 
     // PENDING, ACCEPTED, DENIED, EXPIRED 등
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private PermissionRequestStatus permissionStatus;
@@ -53,6 +54,7 @@ public class PermissionRequestEntity extends BaseTimeEntity {
     private String requestLinkCode;
 
     // 그럼 저기에 있는 사람의 별칭은 어떻게 세팅할 것인가?
+    @Setter
     @Column(name = "alias")
     private String alias;
 

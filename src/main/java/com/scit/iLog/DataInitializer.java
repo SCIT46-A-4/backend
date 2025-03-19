@@ -283,6 +283,30 @@ public class DataInitializer implements CommandLineRunner {
             "고객 지원이 필요한 경우 '고객 지원' 메뉴에서 문의하기 기능을 이용하세요. 이메일(support@ilog.co.kr) 또는 전화(02-123-4567)로도 문의할 수 있으며, 평일 09:00-18:00에 실시간 채팅 상담도 가능합니다."
     };
 
+    // 위도 배열 (예시 값: 실제 상황에 맞게 수정 가능)
+    private static final double[] LATITUDES = {
+            37.5665, 35.1796, 35.1595, 37.4563, 35.8714,
+            36.3504, 35.5384, 36.3504, 35.8401, 35.1550,
+            37.4563, 35.1796, 35.1595, 37.5665, 36.3504,
+            35.8401, 35.5384, 35.1550, 35.8714, 37.4563
+    };
+
+    // 경도 배열 (예시 값: 실제 상황에 맞게 수정 가능)
+    private static final double[] LONGITUDES = {
+            126.9780, 129.0756, 129.0756, 126.7052, 129.0756,
+            127.3845, 126.8494, 127.3845, 128.5918, 126.7848,
+            126.7052, 129.0756, 129.0756, 126.9780, 127.3845,
+            128.5918, 126.8494, 126.7848, 129.0756, 126.7052
+    };
+
+    // 위치 이름 배열 (예시: "서울", "부산", 등)
+    private static final String[] LOCATION_NAMES = {
+            "서울", "부산", "대구", "인천", "광주",
+            "대전", "울산", "세종", "경기", "강원",
+            "충북", "충남", "전북", "전남", "경북",
+            "경남", "제주", "부산1", "대구1", "서울1"
+    };
+
     private final MemberRepository memberRepository;
     private final ChildRepository childRepository;
     private final AnalysisTargetRepository analysisTargetRepository;
@@ -509,6 +533,9 @@ public class DataInitializer implements CommandLineRunner {
                     .savedTargetFileName(String.format("test-target-%d.jpeg", k))
                     .supplement(DataInitializer.supplementaryComments[k])
                     .companion(DataInitializer.companionDescriptions[k])
+                    .latitude(LATITUDES[k])
+                    .longitude(LONGITUDES[k])
+                    .locationName(LOCATION_NAMES[k])
                     .build();
             analysisTargetRepository.save(target);
 
@@ -614,7 +641,7 @@ public class DataInitializer implements CommandLineRunner {
                 .signInId("teacherKim")
                 .password(passwordEncoder.encode("Teacher1!"))
                 .name("김선생님")
-                .email("teacherkim@teacher.com")
+                .email("bldolphin96@gmail.com")
                 .relationType(RelationType.TEACHER)
                 .personalInformationCollectionAndUsageAgreement(true)
                 .build();
@@ -623,18 +650,15 @@ public class DataInitializer implements CommandLineRunner {
 
         // 기존에 저장된 아동 중 하나를 선택하여 교사와 관계 생성
         List<ChildEntity> existingChildren = childRepository.findAll();
-        for (ChildEntity existingChild : existingChildren) {
-            // 예시로 첫 번째 아동을 선택 (필요에 따라 다른 조건을 적용할 수 있음)
-            RelationShipEntity teacherChildRelation = RelationShipEntity.builder()
-                    .member(teacher)
-                    .child(existingChild)
-                    .permissionLevel(PermissionLevel.VIEWER)
-                    .relationType(RelationType.TEACHER)
-                    .build();
-            relationShipRepository.save(teacherChildRelation);
-
+        // 예시로 첫 번째 아동을 선택 (필요에 따라 다른 조건을 적용할 수 있음)
+        RelationShipEntity teacherChildRelation = RelationShipEntity.builder()
+                .member(teacher)
+                .child(existingChildren.get(0))
+                .permissionLevel(PermissionLevel.VIEWER)
+                .relationType(RelationType.TEACHER)
+                .build();
+        relationShipRepository.save(teacherChildRelation);
 //            createMentalSurveyResponses(existingChild, teacher, random);
-        }
     }
 
     private void initializeFamilyBackgrounds() {

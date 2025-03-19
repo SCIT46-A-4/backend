@@ -114,9 +114,9 @@ public class EmailVerificationController {
             @RequestParam(name = "childId") Long childId,
             @RequestParam(name = "memberId") Long memberId,
             @RequestParam(name = "alias") String alias,
-            @RequestParam(name = "inviteeEmail") String inviteeEmail) {
+            @RequestParam(name = "inviteeEmail") String inviteeEmail
+    ) {
         MemberDetailsDTO memberDto = memberService.getMemberDetailsById(memberId);
-        childService.findBasicInfoById(childId);
 
         emailService.sendAuthInviteEmail(
                 memberDto.email(),
@@ -143,7 +143,8 @@ public class EmailVerificationController {
     public boolean cancelEmailInviteLink(
             @PathVariable(name = "permissionId") Long permissionId,
             @PathVariable(name = "childId") Long childId,
-            @PathVariable(name = "alias") String alias) throws Exception {
+            @PathVariable(name = "alias") String alias
+    ) throws Exception {
         try {
 
             // 서비스에서 취소 요청을 처리하는 메서드 호출
