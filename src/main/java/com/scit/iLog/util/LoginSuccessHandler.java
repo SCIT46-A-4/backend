@@ -23,24 +23,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	// 특정 URL요청으로 접속시 해당 URL저장
 	private final CustomRequestCache requestCache = new CustomRequestCache();
-	
-    @Override
-    public void onAuthenticationSuccess(
-    		HttpServletRequest request,
-    		HttpServletResponse response,
-            Authentication authentication
-            ) throws IOException
-    {
-    	
-    	
-        /* Principal이 MemberDetails 타입인지 검증
-         * authentication.getPrincipal()은 로그인한 사용자의 인증 정보를 반환합니다.
-         * 일반적으로 UserDetails를 구현한 객체(예: MemberDetails)가 반환됩니다.
-         * instanceof를 사용하여 authentication.getPrincipal()이 MemberDetails 타입인지 검사합니다
-         * authentication.getPrincipal()이 MemberDetails가 아니면,
-         * memberDetails 변수에 할당되지 않고 if 문을 실행합니다.
-         * */
 
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException {
         if (!(authentication.getPrincipal() instanceof MemberDetails memberDetails)) {
             log.warn("로그인 성공했지만, 인증된 사용자 정보를 가져올 수 없습니다.");
             response.sendRedirect("/auth/signIn?error=unauthorized");
@@ -51,14 +37,44 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         String targetUrlParam = request.getParameter("targetUrl");
         if (targetUrlParam != null && !targetUrlParam.isBlank()) {
             requestCache.removeRequest(request, response);
-            log.info("targetUrl 파라미터 발견: {} - 해당 URL로 리다이렉트", targetUrlParam);
-            
-            // 🔥 targetUrl에 success=true 추가
-            response.sendRedirect(targetUrlParam + "?success=true");
-            return;
+
+            // targetUrl이 "/auth/permissionTeacher" 인 경우, token과 requestId 등 추가 파라미터 보존
+            if ("/auth/permissionTeacher".equals(targetUrlParam)) {
+                String token = request.getParameter("token");
+//                String requestId = request.getParameter("requestId");
+                StringBuilder redirectUrl = new StringBuilder(targetUrlParam);
+                redirectUrl.append("?");
+//                boolean first = true;
+                if (token != null) {
+                    redirectUrl.append("token=").append(token);
+//                    first = false;
+                }
+//                if (requestId != null) {
+//                    if (!first) {
+//                        redirectUrl.append("&");
+//                    }
+//                    redirectUrl.append("requestId=").append(requestId);
+//                    first = false;
+//                }
+                // success 파라미터 추가
+//                if (!first) {
+//                    redirectUrl.append("&");
+//                }
+//                redirectUrl.append("success=true");
+
+                log.info("targetUrl 파라미터 발견: {} - 해당 URL로 리다이렉트", redirectUrl.toString());
+                response.sendRedirect(redirectUrl.toString());
+                return;
+            } else {
+                // 다른 targetUrl인 경우에도 success=true를 추가하여 리다이렉트
+                String redirectUrl = targetUrlParam + (targetUrlParam.contains("?") ? "&" : "?") + "success=true";
+                log.info("targetUrl 파라미터 발견: {} - 해당 URL로 리다이렉트", redirectUrl);
+                response.sendRedirect(redirectUrl);
+                return;
+            }
         }
 
-        // 2️⃣ 기존 저장된 요청이 있는 경우 처리
+        // 2️⃣ 저장된 요청이 있는 경우 처리 (예: 인증이 필요한 페이지로의 접근 시)
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         if (savedRequest != null && !savedRequest.getRedirectUrl().contains("favicon")) {
             String targetUrl = savedRequest.getRedirectUrl();
@@ -67,11 +83,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
 
-        // 3️⃣ 기본 리다이렉트 경로 설정
-        String redirectUrl = (memberDetails.getRelationType() == RelationType.GUARDIAN)
+        // 3️⃣ 기본 리다이렉트 경로 설정 (역할에 따라)
+        String defaultRedirect = (memberDetails.getRelationType() == RelationType.GUARDIAN)
                 ? "/dashboard/guardian"
                 : "/dashboard/teacher";
-
-        response.sendRedirect(redirectUrl);
+        response.sendRedirect(defaultRedirect);
     }
 }

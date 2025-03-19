@@ -7,6 +7,7 @@ import com.scit.iLog.service.analysis.AnalysisResultService;
 import com.scit.iLog.service.analysis.AnalysisService;
 import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +17,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/children/{childId}/analysis")
@@ -100,6 +103,10 @@ public class AnalysisController {
             @PathVariable("childId") Long childId,
             @ModelAttribute AnalysisTargetInsertDTO analysisTargetInsertDTO
     ) {
+        if (ObjectUtils.isEmpty(analysisTargetInsertDTO.analysisTargetFile()) || analysisTargetInsertDTO.analysisTargetFile().isEmpty()) {
+            log.info("📌 분석 파일 업로드 없음");
+            return new AnalysisTargetInsertResponseDTO(false, "");
+        }
         Long analysisTargetId = analysisService.saveAnalysisTarget(memberDetails.getId(), childId, analysisTargetInsertDTO);
         Long analysisResultId = analysisService.getAnalysisResult(analysisTargetId);
         return new AnalysisTargetInsertResponseDTO(

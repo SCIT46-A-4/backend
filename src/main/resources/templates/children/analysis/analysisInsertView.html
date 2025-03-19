@@ -184,6 +184,17 @@
       }
 
       document.addEventListener('DOMContentLoaded', function () {
+        // 오늘 날짜의 23:59로 max값을 설정
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+        const day = String(today.getDate()).padStart(2, '0');
+        // 23:59로 설정
+        const maxDateTime = `${year}-${month}-${day}T23:59`;
+        document
+          .getElementById('analysisDatetime')
+          .setAttribute('max', maxDateTime);
+
         var weatherJsonString;
         // Initialize FilePond: 단 한 장의 파일만 업로드
         FilePond.registerPlugin(
@@ -345,12 +356,12 @@
                 } else {
                   // ❌ 실패 시 에러 메시지 출력
                   console.error('❌ 업로드 실패: 서버에서 success=false 응답');
-                  alert('업로드에 실패했습니다. 다시 시도해 주세요.');
+                  Swal.fire('업로드에 실패했습니다. 다시 시도해 주세요.');
                 }
               },
               error: function (xhr, status, error) {
                 console.error('❌ AJAX 오류:', xhr.responseText);
-                alert('업로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                Swal.fire('업로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
               },
             });
           });

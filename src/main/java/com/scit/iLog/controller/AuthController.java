@@ -8,9 +8,11 @@ import com.scit.iLog.domain.permission.PermissionRequestStatus;
 import com.scit.iLog.dto.auth.*;
 import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
+import com.scit.iLog.service.PermissionService;
 import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Role;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,7 @@ public class AuthController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final ChildService childService;
+    private final PermissionService permissionService;
 
     /**
      * 회원가입 화면 요청
@@ -77,8 +80,11 @@ public class AuthController {
      * @return auth/signInView (로그인 페이지 경로)
      */
     @GetMapping("/signIn")
-    public String handleGetSignInView() {
-
+    public String handleGetSignInView(
+            @RequestParam(value = "token", required = false) String token,
+            @RequestParam(value = "targetUrl", required = false) String targetUrl,
+            @RequestParam(value = "requestId", required = false) String requestId
+    ) {
         return "auth/signInView";
     }
 
@@ -197,6 +203,9 @@ public class AuthController {
 
         model.addAttribute("child", child);
         model.addAttribute("member", member);
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
+        model.addAttribute("memberId", member.getId());
         model.addAttribute("list", permissionRequests);
         model.addAttribute("pendingCount", pendingCount);
         model.addAttribute("acceptedCount", acceptedCount);
@@ -208,22 +217,42 @@ public class AuthController {
      * 2025-03-10~12 정준성
      * 교사용
      *
-     * @param memberId
      * @param model
      * @return
      * @throws Exception
      */
-    @GetMapping("/permissionTeacher/{memberId}")
-    public String handleGetPermissionTeacher(@PathVariable(name = "memberId") Long memberId, Model model) throws Exception {
+    @GetMapping("/permissionTeacher")
+    public String handleGetPermissionTeacher(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+//            @RequestParam(value = "success", required = false) boolean success,
+            Model model
+    ) throws Exception {
         //PENDING상태의 객체들의 정보와 ACCEPT상태의 객체들을 저장하기 위한 List
         List<PermissionTeacherDTO> waitRequestList = new ArrayList<>();
         List<PermissionTeacherDTO> permissionList = new ArrayList<>();
 
-        emailService.findAllByPermissionEntity(memberId, waitRequestList, permissionList);
+        emailService.findAllByPermissionEntity(memberDetails.getId(), waitRequestList, permissionList);
         model.addAttribute("permissionList", permissionList);
         model.addAttribute("waitRequestList", waitRequestList);
-
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         return "children/permissions/teacherView";
+    }
+
+    @ResponseBody
+    @PutMapping("/permission/approve/{permissionId}")
+    public boolean handlePutPermissionApprove(
+            @PathVariable("permissionId") Long permissionId
+    ) {
+        return permissionService.acceptPermission(permissionId);
+    }
+
+    @ResponseBody
+    @PutMapping("/permission/abort/{permissionId}")
+    public boolean handlePutPermissionAbort(
+            @PathVariable("permissionId") Long permissionId
+    ) {
+        return permissionService.abortPermission(permissionId);
     }
 
 

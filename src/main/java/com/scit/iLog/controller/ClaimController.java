@@ -1,5 +1,7 @@
 package com.scit.iLog.controller;
 
+import com.scit.iLog.config.SecurityConfig;
+import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.claims.ClaimAnswerDTO;
 import com.scit.iLog.dto.claims.ClaimDetailsDTO;
 import com.scit.iLog.dto.claims.ClaimListViewDTO;
@@ -44,7 +46,12 @@ public class ClaimController {
      * CL-4
      */
     @GetMapping({"", "/"})
-    public String handleGetClaimMainPageView() {
+    public String handleGetClaimMainPageView(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            Model model
+    ) {
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         return "claims/claimMainPageView";
     }
 
@@ -55,7 +62,7 @@ public class ClaimController {
      * 사용자가 등록한 모든 문의(클레임)를 조회하여 목록 페이지로 이동합니다.
      * ADMIN 계정일 경우 모든 사용자의 문의를 조회할 수 있습니다.
      *
-     * @param userDetails - 현재 로그인한 사용자 정보
+     * @param memberDetails - 현재 로그인한 사용자 정보
      * @param pageable    - 페이지네이션 정보
      * @param model       - 조회된 문의 목록을 뷰로 전달하기 위한 모델 객체
      * @return "/claims/claimsListView" (문의 목록 페이지 경로)
@@ -64,11 +71,11 @@ public class ClaimController {
      */
     @GetMapping("/claimsList")
     public String handleGetClaimsListView(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal MemberDetails memberDetails,
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             Model model
     ) {
-        String signInId = userDetails.getUsername();
+        String signInId = memberDetails.getSignInId();
 
         // ✅ 본인이 작성한 글 + ADMIN은 모든 글 조회 가능
         Page<ClaimListViewDTO> claimsPage = claimService.getPagedUserClaims(signInId, pageable);
@@ -80,6 +87,8 @@ public class ClaimController {
             totalPages = 1;
         }
 
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         model.addAttribute("claimsPage", claimsPage);
         model.addAttribute("currentPage", claimsPage.getNumber());
         model.addAttribute("totalPages", claimsPage.getTotalPages());
@@ -99,7 +108,12 @@ public class ClaimController {
      * CL-2
      */
     @GetMapping("/new")
-    public String handleGetClaimsInsertView(Model model) {
+    public String handleGetClaimsInsertView(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            Model model
+    ) {
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         model.addAttribute("claimsDTO", new ClaimsInsertDTO()); // 빈 DTO 추가
         return "claims/claimInsertView";
     }

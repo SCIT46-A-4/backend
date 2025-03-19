@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>권한 관리 페이지 (부모) - iLog</title>
     <link rel="stylesheet" href="/css/bulma.min.css" />
+    <link rel="stylesheet" href="/css/customColors.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
 
@@ -17,9 +23,8 @@
       }
 
       body {
-        background-color: var(--background-yellow);
+        background-color: var(--primary);
         min-height: 100vh;
-        padding: 2rem;
       }
 
       .container {
@@ -47,18 +52,19 @@
       }
 
       .table th {
-        background-color: var(--button-mint);
+        background-color: var(--secondary);
         color: var(--text-dark);
+        text-align: center;
       }
 
       .button.is-mint {
-        background-color: var(--button-mint);
+        background-color: var(--secondary);
         color: var(--text-dark);
         border: none;
       }
 
       .button.is-pink {
-        background-color: var(--button-pink);
+        background-color: var(--third);
         color: var(--text-dark);
         border: none;
       }
@@ -106,17 +112,22 @@
       #permissionInputs {
         display: flex;
       }
+
+      #mainNav {
+        background-color: white;
+        margin-bottom: 20px;
+      }
     </style>
     <script>
       $(document).ready(function () {
-        $('.send-email-button').on('click', function () {
+        $('#inviteBtn').on('click', function () {
           const alias = $('input[name="alias"]').val();
           const inviteeEmail = $('input[name="inviteeEmail"]').val();
           const childId = $('input[name="childId"]').val();
           const memberId = $('input[name="memberId"]').val();
 
           // 필수 입력값 검증
-          if (!alias) {
+          if (alias.length === 0) {
             Swal.fire({
               icon: 'error',
               title: '호칭',
@@ -124,7 +135,7 @@
             });
             return;
           }
-          if (!inviteeEmail) {
+          if (inviteeEmail.length === 0) {
             Swal.fire({
               icon: 'error',
               title: '이메일',
@@ -133,15 +144,22 @@
             return;
           }
 
+          console.log('alias:', alias);
+          console.log('inviteeEmail:', inviteeEmail);
+          console.log('childId:', childId);
+          console.log('memberId:', memberId);
+
+          const formData = new FormData();
+          formData.append('childId', childId);
+          formData.append('memberId', memberId);
+          formData.append('alias', alias);
+          formData.append('inviteeEmail', inviteeEmail);
           $.ajax({
             url: '/send-invite-link',
             method: 'POST',
-            data: {
-              childId: childId,
-              memberId: memberId,
-              alias: alias,
-              inviteeEmail: inviteeEmail,
-            },
+            data: formData,
+            contentType: false,
+            processData: false,
             success: function (response) {
               if (response == true) {
                 Swal.fire({
@@ -168,7 +186,9 @@
         });
 
         // 초대 취소 버튼 클릭 시
-        $(document).on('click', '.cancelBtn', function () {
+        $(document).on('click', '.cancelBtn', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
           const permissionId = $(this).data('id'); // permissionId
           const childId = $(this).data('childid'); // childId
           const alias = $(this).data('alias'); // alias
@@ -208,7 +228,7 @@
             url: `/cancel-invite-link/${permissionId}/${childId}/${alias}`,
             type: 'DELETE',
             success: function (response) {
-              if (response) {
+              if (response == true) {
                 Swal.fire({
                   icon: 'success',
                   title: '초대 취소 완료',
@@ -237,7 +257,9 @@
         }
 
         // 삭제 버튼 클릭 이벤트 리스너 추가
-        $(document).on('click', '.delete-button', function () {
+        $(document).on('click', '.delete-button', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
           const permissionId = $(this).data('id'); // 버튼에서 permissionId 가져오기
           const button = $(this);
 
@@ -248,7 +270,7 @@
             showCancelButton: true,
             confirmButtonText: '삭제',
             cancelButtonText: '취소',
-            reverseButtons: true,
+            reverseButtons: false,
           }).then((result) => {
             if (result.isConfirmed) {
               deletePermission(permissionId, button);
@@ -262,7 +284,7 @@
             url: `/auth/permission/delete/${permissionId}`,
             type: 'DELETE',
             success: function (response) {
-              if (response) {
+              if (response == true) {
                 // 삭제된 항목의 행을 DOM에서 제거
                 button.closest('tr').remove();
                 Swal.fire('삭제 완료', '', 'success');
@@ -298,19 +320,55 @@
     </script>
   </head>
   <body>
-    <div class="container">
-      <!-- 로고 + dashboard 바로가기 -->
-      <div class="logo">
-        <a th:href="@{/dashboard}">
+    <nav
+      id="mainNav"
+      class="navbar"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
           <img
+            id="logo"
             src="../../static/images/wilog.png"
             th:src="@{/images/wilog.png}"
-            alt="로고"
-            class="image"
-            style="width: 100px; height: auto"
+            alt="iLog 로고"
           />
         </a>
       </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/guides"><span>이용안내</span></a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/claims"><span>고객센터</span></a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/auth/logout"
+              ><span>로그아웃</span></a
+            >
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(부모)</span
+              >
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- 로고 + dashboard 바로가기 -->
       <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (부모)</h1>
 
       <!-- 동적 값(childId, memberId)은 서버에서 채워지거나 자바스크립트로 설정 -->
@@ -332,7 +390,10 @@
             placeholder="정보열람 권한을 보낼 선생님 이메일을 입력하세요."
           />
         </div>
-        <button class="button is-light send-email-button is-fullwidth">
+        <button
+          id="inviteBtn"
+          class="button is-light send-email-button is-fullwidth"
+        >
           초대링크 보내기
         </button>
       </div>
@@ -363,7 +424,7 @@
               <!-- 여기에 동적으로 각 permission의 데이터를 출력 -->
               <tr
                 th:each="permission : ${list}"
-                th:if="${permission.permissionRequestStatus == T(com.scit.iLog.domain.permition.PermissionRequestStatus).PENDING}"
+                th:if="${permission.permissionRequestStatus == T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
               >
                 <td th:text="${permission.alias}"></td>
                 <td th:text="${permission.childName}"></td>
@@ -402,7 +463,7 @@
           <tbody>
             <tr
               th:each="permission : ${list}"
-              th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permition.PermissionRequestStatus).PENDING}"
+              th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
               th:data-id="${permission.id}"
             >
               <td th:text="${permission.alias}"></td>

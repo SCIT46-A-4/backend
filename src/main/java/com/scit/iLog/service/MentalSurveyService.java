@@ -230,11 +230,11 @@ public class MentalSurveyService {
                 = mentalSurveyResponseRepository.findAllByChildIdAndCreatedAtBetween(childId, startDate, endDate, sort);
 
         List<MentalSurveyResponseChartDTO> chartDtoList = new ArrayList<>();
-        System.out.println("childId: " + childId);
-        System.out.println("start: " + startDate);
-        System.out.println("end: " + endDate);
-        for (int i = 0; i < mentalSurveyResponseEntity.size(); i++)
-            System.out.println(mentalSurveyResponseEntity.get(i).getId());
+//        System.out.println("childId: " + childId);
+//        System.out.println("start: " + startDate);
+//        System.out.println("end: " + endDate);
+//        for (int i = 0; i < mentalSurveyResponseEntity.size(); i++)
+//            System.out.println(mentalSurveyResponseEntity.get(i).getId());
 
 
         for (var data : mentalSurveyResponseEntity) {

@@ -80,11 +80,24 @@
             downloadCSV: 'CSV 다운로드',
             downloadXLS: '엑셀 다운로드',
             openInCloud: 'Highcharts 클라우드에서 열기',
+            noData: '표시할 데이터가 없습니다.',
           },
           exporting: {
             enabled: true,
             fallbackToExportServer: false, // 서버 없이 내보내기
             libURL: 'https://code.highcharts.com/modules/', // 필요한 라이브러리 경로 설정
+            buttons: {
+              contextButton: {
+                  menuItems: [
+                      'viewFullscreen',
+                      'downloadPNG',
+                      'downloadJPEG',
+                      'downloadPDF',
+                      'downloadCSV',
+                      'downloadXLS',
+                      'printChart',
+                  ]
+              }}
           },
         });
         // 아동 선택에 따른 대시보드 업데이트 함수
@@ -293,58 +306,6 @@
         // 6자리 숫자로 맞추기 위해 앞에 '0'을 붙임 (padStart)
         return '#' + randomColor.padStart(6, '0');
       }
-
-      // 감정 분석 추이 차트 렌더링
-      // function renderMentalSurveyTimeSeriesChart(data) {
-      //     // data
-      //     const categories = data.seriesData.map(
-      //       (statPointData) => statPointData.date
-      //     );
-      //     const guardianScores = data.seriesData.map((statPointData) => ({
-      //       x: new Date(statPointData.date).getTime(),
-      //       y: statPointData.resultScore, // Use guardianScore or resultScore if available
-      //       url: statPointData.detailUrl,
-      //       label: statPointData.label,
-      //     }));
-
-      //     mentalSurveyScoreLineChart = Highcharts.chart(
-      //       'mentalSurveyScoreLineChart',
-      //       {
-      //         chart: { type: 'line' },
-      //         title: { text: '심리 설문 결과' },
-      //         xAxis: { type: 'datetime' },
-      //         yAxis: { title: { text: '심리 척도값' } },
-      //         plotOptions: {
-      //           series: {
-      //             cursor: 'pointer',
-      //             dataLabels: {
-      //               enabled: true,
-      //               formatter: function () {
-      //                 return this.point.options.label || '';
-      //               },
-      //             },
-      //             point: {
-      //               events: {
-      //                 click: function () {
-      //                   if (this.options.url) {
-      //                     window.open(this.options.url, '_blank');
-      //                   }
-      //                 },
-      //               },
-      //             },
-      //           },
-      //         },
-      //         series: [
-      //           {
-      //             name: '보호자 설문 결과',
-      //             data: data.guardianScores,
-      //             color: '#BEE6D9',
-      //           },
-      //           // { name: '부정', data: data.negative, color: '#FFB6C1' },
-      //         ],
-      //       }
-      //     );
-      //   }
 
       function calculateAverageResultScore(data) {
         if (!Array.isArray(data) || data.length === 0) {

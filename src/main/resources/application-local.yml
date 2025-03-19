@@ -14,8 +14,6 @@ spring:
       host: localhost
       port: 27017
       database: ilog
-      username:
-      password:
   jpa:
     properties:
       hibernate:

@@ -11,6 +11,7 @@ import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.dto.child.*;
 import com.scit.iLog.dto.dashboard.ParentDashboardChildListDTO;
 import com.scit.iLog.exception.ChildNotFoundException;
+import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.ChildRepository;
 import com.scit.iLog.repository.FamilyBackgroundRepository;
 import com.scit.iLog.repository.MemberRepository;
@@ -30,6 +31,7 @@ import java.text.Normalizer;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -200,7 +202,7 @@ public class ChildService {
         MultipartFile profileImg = childBasicInfoUpdateDTO.profileImg();
         // 이미지가 삭제된 경우 (빈 파일이 전송된 경우)
         if (ObjectUtils.isEmpty(profileImg)) {
-            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat(ChildEntity.DEFAULT_PROFILE_IMG);
+            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat("/").concat(ChildEntity.DEFAULT_PROFILE_IMG);
             FileManager.deleteFile(existingFilePath);
             child.setDefaultProfileImg();
             return;
@@ -238,7 +240,7 @@ public class ChildService {
         // 프로필 이미지 삭제 (기본 이미지가 아닌 경우에만)
         if (!child.getSavedProfileImgName().equals(ChildEntity.DEFAULT_PROFILE_IMG)) {
             // 저장된 이미지 파일의 전체 경로 생성
-            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat(child.getSavedProfileImgName());
+            String existingFilePath = filePathUtil.childProfileImgUploadPath().concat("/").concat(child.getSavedProfileImgName());
             FileManager.deleteFile(existingFilePath);
         }
         childRepository.deleteById(childId);
@@ -307,6 +309,51 @@ public class ChildService {
             default:
                 children = childRepository.findAll();
         }
+
+        return children.stream()
+                .map(child -> ChildBasicInfoDTO.builder()
+                        .id(child.getId())
+                        .name(child.getName())
+                        .birthDate(child.getBirthDate())
+                        .gender(child.getGender())
+                        .profileImgSrcUri(filePathUtil.childProfileImgUploadPath())
+                        .note(child.getNote())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChildBasicInfoDTO> getRelatedChildrenBasicInfo(Long memberId, SortOption sortOption) {
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        List<ChildEntity> children;
+        switch (sortOption) {
+            case NAME:
+                children = member.getRelationShips().stream()
+                        .map(relationShip -> relationShip.getChild())
+                        .sorted(Comparator.comparing(ChildEntity::getName))
+                        .collect(Collectors.toList());
+                break;
+            case BIRTH_DATE:
+                children = member.getRelationShips().stream()
+                        .map(relationShip -> relationShip.getChild())
+                        .sorted(Comparator.comparing(ChildEntity::getBirthDate))
+                        .collect(Collectors.toList());
+                break;
+            case REGISTER_DATE:
+                children = member.getRelationShips().stream()
+                        .map(relationShip -> relationShip.getChild())
+                        .sorted(Comparator.comparing(ChildEntity::getCreatedAt).reversed())
+                        .collect(Collectors.toList());
+                break;
+            default:
+                // 기본 정렬은 변경하지 않음
+                children = member.getRelationShips().stream()
+                        .map(relationShip -> relationShip.getChild())
+                        .toList();
+                break;
+        }
+
 
         return children.stream()
                 .map(child -> ChildBasicInfoDTO.builder()
