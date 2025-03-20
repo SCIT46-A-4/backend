@@ -15,7 +15,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: bldolphin96@gmail.com
-    password: "sntd omvd ohwa xpiq"
+    password:
     properties:
       mail:
         smtp:
@@ -27,6 +27,9 @@ spring:
       max-file-size: 50MB        # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
       max-request-size: 50MB     # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
       enabled: true             # 2025-02-28 / 김은진 / 파일 업로드 기능 활성화
+  ai:
+    openai:
+      api-key:
 
   thymeleaf:
     cache: false  # 캐시 비활성화
@@ -43,7 +46,11 @@ childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/images/
 childAnalysisFileImgWindowsPath: C:/ilog/childAnalysisFiles
 childAnalysisFileMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childAnalysisFiles
 
-openWeatherApiKey: 0b90f12718eec34cc5ec0be99c3030a3
+openWeatherApiKey:
+openAIKey:
+openAIUrl: https://api.openai.com/v1
+openAIApiModel: gpt-4-vision-preview
+openAIApiMaxTokens: 300
 #  Windows 경로를 사용할 때는 "file:///" (슬래시 3개)를 사용
 #  Unix/Linux 시스템에서는 "file://" (슬래시 2개)를 사용
 #  경로 구분자는 항상 forward slash(/)를 사용 (Windows의 백슬래시가 아님)

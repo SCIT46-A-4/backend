@@ -21,10 +21,12 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
 	set('springCloudVersion', "2024.0.0")
+	set('springAiVersion', "1.0.0-M6")
 }
 
 
@@ -44,11 +46,20 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// 파일 업로드 처리를 위한 라이브러리
+//	implementation 'commons-io:commons-io:2.11.0'
+
+	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
 }
 
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
 	}
 }
 

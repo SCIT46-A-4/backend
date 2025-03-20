@@ -13,6 +13,7 @@ import com.scit.iLog.domain.member.MemberRole;
 import com.scit.iLog.domain.mentalsurvey.*;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
 import com.scit.iLog.exception.FamilyBackgroundNotFoundException;
+import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.*;
 import com.scit.iLog.util.AgeCalculator;
 import jakarta.persistence.EntityNotFoundException;
@@ -346,10 +347,8 @@ public class DataInitializer implements CommandLineRunner {
         initializeAnalysisTypes();
 
         // 일반 회원(엄마) 및 자녀, 그리고 설문/분석/기록 데이터 생성
-        for (int i = 1; i <= 1; i++) {
-            MemberEntity mom = createMomAccount(random);
-            createChildrenForMom(mom, random, now);
-        }
+        MemberEntity mom = createMomAccount(random);
+        createChildrenForMom(mom, random, now);
 
         // 추가: 교사 계정 및 교사용 자녀, 관계 생성
         initializeTeacherAccounts(random, now);
@@ -391,17 +390,22 @@ public class DataInitializer implements CommandLineRunner {
                 .personalInformationCollectionAndUsageAgreement(true)
                 .build();
         this.testParentSignInId = signInId;
-        return memberRepository.save(mom);
+
+        MemberEntity saveMember = memberRepository.save(mom);
+
+        initializeClaims(mom);
+        return saveMember;
     }
 
     private void createChildrenForMom(MemberEntity mom, ThreadLocalRandom random, LocalDateTime now) {
         String[] locations = {"서울", "부산", "인천", "대구", "광주"};
         // 각 mom마다 2명의 자녀 생성
+        List<FamilyBackGroundEntity> familyBackGrounds = familyBackgroundRepository.findAll();
         for (int j = 0; j < 2; j++) {
-            String[] firstNames = {"김", "이"};
+            String[] firstNames = {"김", "김"};
             String[] lastNames = {"지호", "지영"};
-            String childName = firstNames[random.nextInt(firstNames.length)] + " " + lastNames[random.nextInt(lastNames.length)];
-            String birthLocation = locations[random.nextInt(locations.length)];
+            String childName = firstNames[j] + " " + lastNames[j];
+            String birthLocation = locations[j];
 
             ChildEntity child = ChildEntity.builder()
                     .name(childName)
@@ -414,6 +418,19 @@ public class DataInitializer implements CommandLineRunner {
                     .callName("엄마")
                     .build();
             childRepository.save(child);
+
+            ChildBackGroundEntity childBackground1 = ChildBackGroundEntity.builder()
+                    .familyBackGround(familyBackGrounds.get(j))
+                    .child(child)
+                    .build();
+
+            ChildBackGroundEntity childBackground2 = ChildBackGroundEntity.builder()
+                    .familyBackGround(familyBackGrounds.get(j+2))
+                    .child(child)
+                    .build();
+
+            List<ChildBackGroundEntity> childBackGrounds = List.of(childBackground1,childBackground2);
+            child.replaceAllChildBackGrounds(childBackGrounds);
 
             // Relationship 생성
             RelationShipEntity relationship = RelationShipEntity.builder()
@@ -619,9 +636,32 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void initializeClaims(ThreadLocalRandom random, LocalDateTime now) {
+    private void initializeClaims(MemberEntity member) {
         // 각 mom 당 한 건의 Claim 및 ClaimAnswer 생성
         // 이 메서드는 필요에 따라 별도로 분리할 수 있습니다.
+        MemberEntity admin = memberRepository.findBySignInId("ADMIN").orElseThrow(() -> new MemberNotFoundException("ADMIN"));
+        ClaimEntity claim1 = ClaimEntity.builder()
+                .author(member)
+                .title("감정 분석은 어떻게 동작하나요?")
+                .content("감정 분석 시스템의 원리를 알고싶어요.")
+                .type(ClaimType.USAGE)
+                .build();
+        claimRepository.save(claim1);
+
+        ClaimEntity claim2 = ClaimEntity.builder()
+                .author(member)
+                .title("정확한 날씨는 어떻게 조회하나요?")
+                .content("날씨 조회의 원리를 알고싶어요.")
+                .type(ClaimType.USAGE)
+                .build();
+        claimRepository.save(claim2);
+
+        ClaimAnswerEntity claimAnswer = ClaimAnswerEntity.builder()
+                .author(admin)
+                .claim(claim2)
+                .content("날씨는 OpenWeatherAPI의 정보를 바탕으로 조회하고 있습니다.")
+                .build();
+        claimAnswerRepository.save(claimAnswer);
     }
 
     private void initializeGuideEntities() {

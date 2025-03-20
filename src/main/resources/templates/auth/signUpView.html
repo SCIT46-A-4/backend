@@ -266,7 +266,7 @@
           }
           $.ajax({
             url: '/checkDuplicatedEmail',
-            method: 'GET',
+            method: 'POST',
             data: { email: email },
             success: function (isExists) {
               if (isExists == true) {

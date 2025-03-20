@@ -21,6 +21,11 @@
     <!-- jQuery -->
     <script src="/js/jquery-3.7.1.min.js"></script>
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+
     <style>
       /* ✅ 배경색 적용 */
       nav#mainNav {
@@ -31,6 +36,7 @@
       #logo {
         width: 100px;
         height: auto;
+        min-height: 50px;
       }
 
       .custom-container {
@@ -113,41 +119,52 @@
     </style>
   </head>
   <body>
-    <div id="mainNav" class="navbar-brand">
-      <a class="navbar-item" href="/dashboard">
-        <img
-          id="logo"
-          src="../../static/images/wilog.png"
-          th:src="@{/images/wilog.png}"
-          alt="iLog 로고"
-        />
-      </a>
-    </div>
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          <a class="button is-light" href="/guides"><span>이용안내</span></a>
-        </div>
+    <nav
+      id="mainNav"
+      class="navbar"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <img
+            id="logo"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="iLog 로고"
+          />
+        </a>
       </div>
-      <div class="navbar-item">
-        <div class="buttons">
-          <a class="button is-light" href="/auth/logout"
-            ><span>로그아웃</span></a
-          >
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/guides"><span>이용안내</span></a>
+          </div>
         </div>
-      </div>
-      <div class="navbar-item">
-        <div class="buttons">
-          <a class="button is-light" th:href="@{/members/myDetails}">
-            <span class="icon"><i class="fas fa-user"></i></span>
-            <span th:text="|${memberName}(${relationType})|"
-              >김미영(부모)</span
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/claims"><span>고객센터</span></a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/auth/logout"
+              ><span>로그아웃</span></a
             >
-          </a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(부모)</span
+              >
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </nav>
     <section class="section">
       <div class="container custom-container">
         <h2 class="title is-4">내 문의 목록 페이지</h2>

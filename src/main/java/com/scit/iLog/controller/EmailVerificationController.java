@@ -100,8 +100,8 @@ public class EmailVerificationController {
     }
 
     @ResponseBody
-    @GetMapping("/checkDuplicatedEmail")
-    public boolean handleGetCheckDuplicatedEmail(
+    @PostMapping("/checkDuplicatedEmail")
+    public boolean handlePostCheckDuplicatedEmail(
             @RequestParam("email") String email
     ) {
         return emailService.checkDuplicatedEmail(email);

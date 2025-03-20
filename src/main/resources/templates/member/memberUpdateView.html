@@ -7,7 +7,10 @@
     <script src="/js/sweetalert2.js"></script>
     <script src="/js/passwordVisibility.js"></script>
     <script th:src="@{/js/just-validate.production.min.js}"></script>
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <script>
       $(function () {
         document
@@ -109,29 +112,31 @@
             Swal.fire('유효한 이메일 주소를 입력해주세요.');
             return;
           }
-          $.post(
-            '/send-verification-code',
-            { email: email },
-            function (response) {
+          $.ajax({
+            url: '/send-verification-code',
+            method: 'POST',
+            data: { email: email },
+            success: function (response) {
               if (response.success) {
                 Swal.fire('인증 번호가 발송되었습니다. 이메일을 확인해주세요.');
               } else {
                 Swal.fire('인증 번호 발송에 실패했습니다. 다시 시도해주세요.');
               }
             },
-            function () {
+            error: function () {
               Swal.fire('서버 오류 발생. 다시 시도해주세요.');
-            }
-          );
+            },
+          });
         });
 
         $('#verifyCodeBtn').click(function () {
           const code = $('#verificationCode').val();
           const email = $('#email').val();
-          $.post(
-            '/verify-code',
-            { email: email, code: code },
-            function (response) {
+          $.post({
+            url: '/verify-code',
+            method: 'POST',
+            data: { email: email, code: code },
+            success: function (response) {
               if (response.success) {
                 Swal.fire('이메일이 인증되었습니다.');
                 emailVerified = true;
@@ -143,8 +148,16 @@
               } else {
                 Swal.fire('인증 번호가 올바르지 않습니다. 다시 시도해주세요.');
               }
-            }
-          );
+            },
+            error: function () {
+              Swal.fire({
+                html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
+                customClass: {
+                  htmlContainer: 'custom-swal-text',
+                },
+              });
+            },
+          });
         });
 
         $('#email').change(function () {

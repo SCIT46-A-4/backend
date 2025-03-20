@@ -12,12 +12,14 @@ import com.scit.iLog.dto.analysis.ai.AIAnalysisResponseDTO;
 import com.scit.iLog.dto.analysis.weather.WeatherData;
 import com.scit.iLog.dto.analysis.weather.WeatherResponse;
 import com.scit.iLog.dto.child.ChildRecordExtraction;
+import com.scit.iLog.dto.child.ChildRecordExtractionDTO;
 import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.*;
 import com.scit.iLog.util.FileManager;
 import com.scit.iLog.util.FilePathUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -46,11 +48,15 @@ public class AnalysisService {
     private final AnalysisTypeRepository analysisTypeRepository;
     private final FileManager fileManager;
     private final FilePathUtil filePathUtil;
+    private final OpenAIService openAIService;
 
     @Transactional
     public Long getAnalysisResult(Long analysisTargetId) {
         AnalysisTargetEntity analysisTarget = findAnalysisTargetById(analysisTargetId);
-        AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
+//        AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
+        String targetFilePath = filePathUtil.childAnalysisFileUploadPath().concat("/").concat(analysisTarget.getSavedTargetFileName());
+        AIAnalysisResponseDTO aiAnalysisResponse = openAIService.getAIAnalysisResponse(targetFilePath);
+
         if (StringUtils.hasText(aiAnalysisResponse.extractedText()))
             analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
 
@@ -195,7 +201,16 @@ public class AnalysisService {
     }
 
     public ChildRecordExtraction getExtractChildRecordData(MultipartFile healthCheckImg) {
-        return new FakeAnalysisClient.FakeChildRecordExtraction();
+        if (healthCheckImg.isEmpty() || StringUtils.hasText(healthCheckImg.getOriginalFilename())) {
+            return ChildRecordExtractionDTO.builder()
+                    .height(0)
+                    .weight(0)
+                    .leftEye(0)
+                    .rightEye(0)
+                    .diagnosis("")
+                    .build();
+        }
+        return openAIService.getChildRecordExtractionResponse(healthCheckImg);
     }
 
     @Transactional
