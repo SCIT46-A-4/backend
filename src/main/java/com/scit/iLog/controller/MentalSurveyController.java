@@ -45,12 +45,15 @@ public class MentalSurveyController {
      */
     @GetMapping("/responses/stats")
     public String handleGetSurveysListPage(
+            @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable("childId") Long childId,
             Model model
     ) {
         String childName = childService.getChildNameById(childId);
         model.addAttribute("childId", childId);
         model.addAttribute("childName", childName);
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         return "children/mentalSurvey/mentalSurveyStatsView";
     }
 
@@ -151,6 +154,8 @@ public class MentalSurveyController {
         List<MentalSurveySelectInfoDTO> mentalSurveySelectInfo = mentalSurveyService.getMentalSurveySelectInfo(childId);
         model.addAttribute("mentalSurveys", mentalSurveySelectInfo);
         model.addAttribute("userType", memberDetails.getRelationType()); // 2025-03-13 / 김은진 추가
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         return "children/mentalSurvey/mentalSurveySelectView";
     }
 
@@ -178,5 +183,10 @@ public class MentalSurveyController {
         else if (calendarNum <= 180) mentalSurveyResponseChartDTOList = mentalSurveyService.getLastYearData(childId);
 
         return mentalSurveyResponseChartDTOList;
+    }
+
+    @DeleteMapping("/responses/{responseId}")
+    public boolean handleDeleteMentalSurvey(@PathVariable("responseId") String responseId) {
+        return mentalSurveyService.deleteById(responseId);
     }
 }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>심리 설문 통계 보기 - iLog</title>
+    <title>심리 설문 추이 보기 - iLog</title>
     <link rel="stylesheet" href="/css/bulma.min.css" />
     <link
       rel="stylesheet"
@@ -326,6 +326,23 @@
               },
             },
             gridLineColor: '#f5f5f5',
+            plotLines: [
+              {
+                color: '#f55656',
+                width: 2,
+                dashStyle: 'shortdash',
+                value: totalSeriesDataAvg,
+                animation: {
+                  duration: 1000,
+                  defer: 4000,
+                },
+                label: {
+                  text: '평균',
+                  align: 'right',
+                  x: -20,
+                },
+              },
+            ],
           },
           rangeSelector: {
             selected: 1,
@@ -412,7 +429,7 @@
                 events: {
                   click: function () {
                     // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
-                    let pointData = seriesData.find(
+                    let pointData = parentSeriesData.find(
                       (item) => item[0] === this.x
                     );
                     if (pointData && pointData[2]) {
@@ -438,7 +455,7 @@
                 events: {
                   click: function () {
                     // 클릭한 포인트에 해당하는 링크를 찾아 새 탭에서 엽니다.
-                    let pointData = seriesData.find(
+                    let pointData = teacherSeriesData.find(
                       (item) => item[0] === this.x
                     );
                     if (pointData && pointData[2]) {
@@ -497,6 +514,16 @@
             </a>
           </div>
         </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(부모)</span
+              >
+            </a>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -505,7 +532,7 @@
       <div class="container">
         <h1 class="page-title title is-3">
           <span th:text="${childName}" id="child-name">아동</span>의 심리 설문
-          통계
+          추이
         </h1>
 
         <div class="box">

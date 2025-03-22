@@ -61,8 +61,8 @@
                   success: function (res) {
                     console.log(res);
                     //받아온 데이터를 입력창에 출력
-                    $('#weightInput').val(res.height);
-                    $('#heightInput').val(res.weight);
+                    $('#weightInput').val(res.weight);
+                    $('#heightInput').val(res.height);
                     $('#leftEyeInput').val(res.leftEye);
                     $('#rightEyeInput').val(res.rightEye);
                     $('#docterComment').val(res.docterComment);
@@ -111,6 +111,59 @@
         max-width: 200px;
         max-height: 200px;
         margin: 0 auto;
+      }
+
+      .loader,
+      .loader:before,
+      .loader:after {
+        border-radius: 50%;
+        width: 2.5em;
+        height: 2.5em;
+        animation-fill-mode: both;
+        animation: bblFadInOut 1.8s infinite ease-in-out;
+      }
+      .loader {
+        color: #fff;
+        font-size: 7px;
+        position: relative;
+        text-indent: -9999em;
+        transform: translateZ(0);
+        animation-delay: -0.16s;
+      }
+      .loader:before,
+      .loader:after {
+        content: '';
+        position: absolute;
+        top: 0;
+      }
+      .loader:before {
+        left: -3.5em;
+        animation-delay: -0.32s;
+      }
+      .loader:after {
+        left: 3.5em;
+      }
+
+      @keyframes bblFadInOut {
+        0%,
+        80%,
+        100% {
+          box-shadow: 0 2.5em 0 -1.3em;
+        }
+        40% {
+          box-shadow: 0 2.5em 0 0;
+        }
+      }
+
+      #loadingIndicator {
+        display: none;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
       }
     </style>
   </head>
@@ -223,7 +276,7 @@
                 id="filepond"
                 name="healthCheckImg"
                 data-allow-reorder="true"
-                data-max-file-size="50MB"
+                data-max-file-size="20MB"
                 data-max-files="1"
               />
 
@@ -250,6 +303,9 @@
         </div>
       </div>
     </section>
+    <div id="loadingIndicator">
+      <span class="loader"></span>
+    </div>
     <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

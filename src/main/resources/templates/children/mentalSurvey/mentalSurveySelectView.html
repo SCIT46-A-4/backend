@@ -71,20 +71,48 @@
   <!-- 2025-03-13 / 김은진 / 수정 -->
 
   <body>
+    <!-- 네비게이션 바 -->
     <nav class="navbar" role="navigation" aria-label="main navigation">
-      <!-- 로고 + dashboard 바로가기 -->
-      <div class="logo">
-        <a th:href="@{/dashboard}">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
           <img
             src="../../static/images/wilog.png"
             th:src="@{/images/wilog.png}"
-            alt="로고"
-            class="image"
-            style="width: 100px; height: auto"
+            alt="iLog 로고"
+            style="max-height: 60px"
           />
         </a>
       </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/dashboard">
+              <span class="icon"><i class="fas fa-home"></i></span>
+              <span>대시보드</span>
+            </a>
+            <a class="button is-light" href="/guides">
+              <span class="icon"><i class="fas fa-info-circle"></i></span>
+              <span>이용안내</span>
+            </a>
+            <a class="button is-light" href="/claims">
+              <span class="icon"><i class="fas fa-headset"></i></span>
+              <span>고객센터</span>
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(부모)</span
+              >
+            </a>
+          </div>
+        </div>
+      </div>
     </nav>
+
     <section class="section">
       <div class="container">
         <h1 class="title primary-color">설문 목록</h1>

@@ -3,6 +3,8 @@ package com.scit.iLog.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.scit.iLog.dto.InviteLinkDTO;
+import com.scit.iLog.service.PermissionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,8 +39,7 @@ import java.util.Map;
 public class EmailVerificationController {
     private final EmailService emailService;
     private final MemberService memberService;
-    private final ChildService childService;
-    private final CustomRequestCache requestCache;
+    private final PermissionService permissionService;
 
     /**
      * 인증번호 전송 API
@@ -110,14 +111,16 @@ public class EmailVerificationController {
 
     @PostMapping("/send-invite-link")
     @ResponseBody
-    public boolean sendEmailInviteLink(
+    public InviteLinkDTO sendEmailInviteLink(
             @RequestParam(name = "childId") Long childId,
             @RequestParam(name = "memberId") Long memberId,
             @RequestParam(name = "alias") String alias,
             @RequestParam(name = "inviteeEmail") String inviteeEmail
     ) {
+        if (permissionService.checkExists(childId, memberId, inviteeEmail)) {
+            return new InviteLinkDTO(false, "이미 권한이 부여된 아동입니다!");
+        }
         MemberDetailsDTO memberDto = memberService.getMemberDetailsById(memberId);
-
         emailService.sendAuthInviteEmail(
                 memberDto.email(),
                 memberDto.name(),
@@ -126,7 +129,7 @@ public class EmailVerificationController {
                 alias,
                 inviteeEmail,
                 "");
-        return true;
+        return new InviteLinkDTO(true, "요청이 전송되었습니다.");
     }
 
     /**

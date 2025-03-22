@@ -11,6 +11,8 @@ import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.member.MemberRole;
 import com.scit.iLog.domain.mentalsurvey.*;
+import com.scit.iLog.domain.permission.PermissionRequestEntity;
+import com.scit.iLog.domain.permission.PermissionRequestStatus;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
 import com.scit.iLog.exception.FamilyBackgroundNotFoundException;
 import com.scit.iLog.exception.MemberNotFoundException;
@@ -21,6 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.Store;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,8 +45,8 @@ import static com.scit.iLog.config.WebConfig.CHILD_PROFILE_REQUEST_ROOT_PATH;
 import static org.springframework.util.StringUtils.hasText;
 
 @Slf4j
-@Component
-@Profile("dev")
+//@Component
+@Profile("local")
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
     // 보충 설명 예시 (보호자가 관찰 시 제공하는 추가 정보)
@@ -118,6 +121,29 @@ public class DataInitializer implements CommandLineRunner {
             "그림에서는 중립적인 감정이 안정적으로 표현되어, 차분한 분위기를 전달합니다.",
             "사진 분석 결과, 불안과 호기심이 공존하는 모습을 보이며, 세밀한 감정 변화가 포착됩니다.",
             "작성한 글에서 수줍음과 내성적인 태도가 드러나, 조심스러운 심리 상태가 느껴집니다."
+    };
+
+    private static final String[] analysisResultTitles = {
+            "내 아이, 햇살 같은 미소",
+            "사랑스런 내 아이의 기쁨",
+            "조용한 눈물, 내 아이의 슬픔",
+            "두려움 속에서도 피어나는 용기",
+            "놀라움으로 가득 찬 오늘",
+            "평온한 마음, 내 아이의 이야기",
+            "혼란 속에서 피어난 작은 희망",
+            "불안함을 이겨낸 미소",
+            "지루함을 딛고 성장하는 모습",
+            "에너지 넘치는 활기찬 하루",
+            "수줍은 마음, 따뜻한 사랑",
+            "내 아이의 진심이 담긴 하루",
+            "슬픔 속에서도 반짝이는 빛",
+            "분노를 넘어선 사랑의 힘",
+            "두려움을 마주한 용감한 순간",
+            "놀라움과 호기심이 넘치는 하루",
+            "내면의 소리를 들려준 시간",
+            "조용하지만 따스한 마음의 기록",
+            "복잡한 감정, 사랑으로 풀어내며",
+            "수줍은 사랑, 진심이 담긴 이야기"
     };
 
     // 솔루션 예시 (20개 요소)
@@ -330,6 +356,7 @@ public class DataInitializer implements CommandLineRunner {
     private final ChildBackGroundRepository childBackGroundRepository;
     private String testParentSignInId;
     private String testTeacherSignInId;
+    private final PermissionRequestRepository permissionRequestRepository;
 
     @Transactional
     @Override
@@ -351,7 +378,7 @@ public class DataInitializer implements CommandLineRunner {
         createChildrenForMom(mom, random, now);
 
         // 추가: 교사 계정 및 교사용 자녀, 관계 생성
-        initializeTeacherAccounts(random, now);
+        initializeTeacherAccounts(mom);
 
         System.out.println("테스트용 기본 엔티티 저장 완료");
         System.out.println(String.format("테스트용 부모 아이디: %s", this.testParentSignInId));
@@ -376,13 +403,13 @@ public class DataInitializer implements CommandLineRunner {
         String[] lastNames = {"수연", "유진"};
         String firstName = firstNames[random.nextInt(firstNames.length)];
         String lastName = lastNames[random.nextInt(lastNames.length)];
-        String fullName = firstName + " " + lastName;
-        String signInId = (firstName + "_" + lastName).toLowerCase() + "_" + random.nextInt(1000);
+        String fullName = "이도훈";
+        String signInId = "ldh123";
         String email = firstName.toLowerCase() + lastName.toLowerCase() + random.nextInt(100) + "@parent.com";
 
         MemberEntity mom = MemberEntity.builder()
                 .name(fullName)
-                .password(passwordEncoder.encode("Password123!"))
+                .password(passwordEncoder.encode("a123!"))
                 .signInId(signInId)
                 .email(email)
                 .role(MemberRole.USER)
@@ -580,7 +607,7 @@ public class DataInitializer implements CommandLineRunner {
             AnalysisResultEntity analysisResult = AnalysisResultEntity.builder()
                     .emotionScore(random.nextDouble())
                     .analysisTarget(target)
-                    .title("감정 분석-".concat(UUID.randomUUID().toString()))
+                    .title(analysisResultTitles[k])
                     .analysisResultText(DataInitializer.analysisResults[k])
                     .suggestedSolution(DataInitializer.solutionTexts[k])
                     .emotionType(emotionTypes[k % 11])
@@ -675,11 +702,11 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void initializeTeacherAccounts(ThreadLocalRandom random, LocalDateTime now) {
+    private void initializeTeacherAccounts(MemberEntity requester) {
         // 교사 계정 생성
         MemberEntity teacher = MemberEntity.builder()
-                .signInId("teacherKim")
-                .password(passwordEncoder.encode("Teacher1!"))
+                .signInId("kim123")
+                .password(passwordEncoder.encode("a123!"))
                 .name("김선생님")
                 .email("bldolphin96@gmail.com")
                 .relationType(RelationType.TEACHER)
@@ -698,6 +725,18 @@ public class DataInitializer implements CommandLineRunner {
                 .relationType(RelationType.TEACHER)
                 .build();
         relationShipRepository.save(teacherChildRelation);
+
+        PermissionRequestEntity permissionRequest = PermissionRequestEntity.builder()
+                .alias("선생님")
+                .child(existingChildren.get(0))
+                .invitee(teacher)
+                .relationType(RelationType.TEACHER)
+                .permissionStatus(PermissionRequestStatus.ACCEPTED)
+                .requestLinkCode("sdfsdf")
+                .requester(requester)
+                .build();
+
+        permissionRequestRepository.save(permissionRequest);
 //            createMentalSurveyResponses(existingChild, teacher, random);
     }
 

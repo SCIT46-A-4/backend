@@ -78,7 +78,8 @@
       }
       #naverMap {
         width: 100%;
-        height: 200px;
+        height: 300px;
+        aspect-ratio: 16 / 9;
         background-color: #f0f0f0;
         margin-bottom: 1rem;
       }
@@ -106,6 +107,67 @@
         border-radius: 5px;
         padding: 10px;
         margin-top: 10px;
+      }
+
+      #reanalyzeLoader {
+        width: 100px;
+        height: 75px;
+        margin: 0 auto;
+        background: #fff;
+        position: relative;
+        border-radius: 100%;
+      }
+      #reanalyzeLoader:before {
+        content: '';
+        position: absolute;
+        box-sizing: border-box;
+        border: 15px solid transparent;
+        border-top: 25px solid #fff;
+        transform: rotate(45deg);
+        top: 50px;
+        left: -15px;
+      }
+
+      #reanalyzeLoader:after {
+        content: '';
+        width: 12px;
+        height: 12px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background-color: #ff3d00;
+        box-shadow: 20px 0 #ff3d00, -20px 0 #ff3d00;
+        animation: flash 0.5s ease-out infinite alternate;
+      }
+
+      @keyframes flash {
+        0% {
+          background-color: rgba(255, 60, 0, 0.25);
+          box-shadow: 20px 0 rgba(255, 60, 0, 0.25), -20px 0 #ff3d00;
+        }
+        50% {
+          background-color: #ff3d00;
+          box-shadow: 20px 0 rgba(255, 60, 0, 0.25),
+            -20px 0 rgba(255, 60, 0, 0.25);
+        }
+        100% {
+          background-color: rgba(255, 60, 0, 0.25);
+          box-shadow: 20px 0 #ff3d00, -20px 0 rgba(255, 60, 0, 0.25);
+        }
+      }
+
+      #reanalyzeLoadingIndicator {
+        display: none;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        place-items: center;
       }
     </style>
     <script
@@ -152,7 +214,12 @@
         var mapOptions = {
           // 초기 위치: 자기위치로 바꿔야함
           center: new naver.maps.LatLng(latitude, longitude),
-          zoom: 20,
+          zoom: 10,
+          zoomControl: true, //줌 컨트롤의 표시 여부
+          zoomControlOptions: {
+            //줌 컨트롤의 옵션
+            position: naver.maps.Position.TOP_RIGHT,
+          },
         };
 
         var map = new naver.maps.Map('naverMap', mapOptions);
@@ -410,6 +477,7 @@
 
         // 재분석 요청
         $('#reanalyzeBtn').click(function () {
+          $('#reanalyzeLoadingIndicator').css('display', 'grid');
           const datetime = $('#analysisDatetime').val();
           // const weather = $('#weatherData').val();
           const locationName = $('#locationName').val();
@@ -461,6 +529,7 @@
             method: 'POST',
             data: data,
             success: function (res) {
+              $('#reanalyzeLoadingIndicator').css('display', 'none');
               Swal.fire('재분석 요청이 완료되었습니다.');
               // 화면 갱신
               setTimeout(() => {
@@ -468,6 +537,7 @@
               }, 1000);
             },
             error: function (err) {
+              $('#reanalyzeLoadingIndicator').css('display', 'none');
               Swal.fire('재분석 요청 중 오류가 발생했습니다.');
             },
           });
@@ -626,7 +696,7 @@
             class="input"
             type="text"
             readonly
-            th:value="${analysisResultDetails.emotionScore}"
+            th:value="|${analysisResultDetails.emotionScore}점|"
           />
         </div>
       </div>
@@ -849,7 +919,9 @@
         </div>
       </div>
     </div>
-
+    <div id="reanalyzeLoadingIndicator">
+      <span id="reanalyzeLoader"></span>
+    </div>
     <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

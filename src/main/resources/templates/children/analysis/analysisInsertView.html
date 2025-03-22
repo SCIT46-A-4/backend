@@ -97,6 +97,129 @@
       #submitBtn {
         background-color: var(--third);
       }
+
+      #naverMap {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+      }
+
+      #loadingIndicator {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 1000;
+        place-items: center;
+      }
+
+      #requestLoader {
+        width: 100px;
+        height: 75px;
+        margin: 0 auto;
+        background: #fff;
+        position: relative;
+        border-radius: 100%;
+      }
+      #requestLoader:before {
+        content: '';
+        position: absolute;
+        box-sizing: border-box;
+        border: 15px solid transparent;
+        border-top: 25px solid #fff;
+        transform: rotate(45deg);
+        top: 50px;
+        left: -15px;
+      }
+
+      #requestLoader:after {
+        content: '';
+        width: 12px;
+        height: 12px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background-color: #ff3d00;
+        box-shadow: 20px 0 #ff3d00, -20px 0 #ff3d00;
+        animation: flash 0.5s ease-out infinite alternate;
+      }
+
+      @keyframes flash {
+        0% {
+          background-color: rgba(255, 60, 0, 0.25);
+          box-shadow: 20px 0 rgba(255, 60, 0, 0.25), -20px 0 #ff3d00;
+        }
+        50% {
+          background-color: #ff3d00;
+          box-shadow: 20px 0 rgba(255, 60, 0, 0.25),
+            -20px 0 rgba(255, 60, 0, 0.25);
+        }
+        100% {
+          background-color: rgba(255, 60, 0, 0.25);
+          box-shadow: 20px 0 #ff3d00, -20px 0 rgba(255, 60, 0, 0.25);
+        }
+      }
+
+      #weatherLoadingIndicator {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 10001;
+        place-items: center;
+      }
+
+      #weatherLoader {
+        width: 175px;
+        height: 80px;
+        display: block;
+        margin: auto;
+        background-image: radial-gradient(
+            circle 25px at 25px 25px,
+            #fff 100%,
+            transparent 0
+          ),
+          radial-gradient(circle 50px at 50px 50px, #fff 100%, transparent 0),
+          radial-gradient(circle 25px at 25px 25px, #fff 100%, transparent 0),
+          linear-gradient(#fff 50px, transparent 0);
+        background-size: 50px 50px, 100px 76px, 50px 50px, 120px 40px;
+        background-position: 0px 30px, 37px 0px, 122px 30px, 25px 40px;
+        background-repeat: no-repeat;
+        position: relative;
+        box-sizing: border-box;
+      }
+      #weatherLoader::after {
+        content: '';
+        left: 0;
+        right: 0;
+        margin: auto;
+        bottom: 20px;
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 5px solid transparent;
+        border-color: #ff3d00 transparent;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+      }
+
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <!-- FilePond JS -->
@@ -146,6 +269,11 @@
           // 초기 위치: 자기위치로 바꿔야함
           center: new naver.maps.LatLng(position.latitude, position.longitude),
           zoom: 10,
+          zoomControl: true, //줌 컨트롤의 표시 여부
+          zoomControlOptions: {
+            //줌 컨트롤의 옵션
+            position: naver.maps.Position.TOP_RIGHT,
+          },
         };
         var map = new naver.maps.Map('naverMap', mapOptions);
         map.setCursor('crosshair');
@@ -206,7 +334,14 @@
         // 파일 입력 요소가 DOM에 존재하는지 확인 후 FilePond 초기화
         const fileInput = document.querySelector('#fileInput');
         if (fileInput) {
-          const pond = FilePond.create(fileInput);
+          const pond = FilePond.create(fileInput, {
+            allowMultiple: false, // 하나의 파일만 업로드 가능
+            maxFileSize: '20MB',
+            acceptedFileTypes: ['image/*'],
+            labelIdle:
+              "파일을 여기로 드래그하거나 <span class='filepond--label-action'>찾아보기</span>",
+            credits: false, // FilePond 워터마크 제거
+          });
         } else {
           console.error('File input 요소(#fileInput)를 찾을 수 없습니다.');
         }
@@ -254,6 +389,7 @@
               Swal.fire('일시와 위치 정보를 먼저 입력해주세요.');
               return;
             }
+            $('#weatherLoadingIndicator').css('display', 'grid');
             // 예시: 날씨 API 호출 대신 더미 데이터 사용
             //여기에서 날씨 API를 호출해서, 맑음, 흐림, 습도 등의 주요 정보만 보여주고,
             //나머지 정보는 json.stringify로 hidden 필드에 저장
@@ -269,6 +405,7 @@
                 dt: datetimeInput,
               },
               success: function (res) {
+                $('#weatherLoadingIndicator').css('display', 'none');
                 const weather = res.data[0].weather[0].description;
                 const temperature = res.data[0].temp;
 
@@ -279,6 +416,7 @@
                 weatherJsonString = JSON.stringify(res);
               },
               error: function (err) {
+                $('#weatherLoadingIndicator').css('display', 'none');
                 Swal.fire('날씨 정보를 가져오는데 실패했습니다.');
               },
             });
@@ -288,11 +426,13 @@
           .getElementById('submitBtn')
           .addEventListener('click', function (e) {
             e.preventDefault();
+            $('#loadingIndicator').css('display', 'grid');
             const analysisTypes = document.querySelectorAll(
               'input[name="analysisTypes"]:checked'
             );
             if (analysisTypes.length === 0) {
               Swal.fire('분석 유형을 선택해주세요.');
+              $('#loadingIndicator').css('display', 'none');
               return;
             }
             //자바스크립트로 formData를 생성한후 ajax로 보내기
@@ -346,6 +486,7 @@
               processData: false,
               dataType: 'json', // JSON 응답을 받도록 설정
               success: function (response) {
+                $('#loadingIndicator').css('display', 'none');
                 if (response.success) {
                   // ✅ 성공 시 리다이렉트
                   console.log(
@@ -354,6 +495,7 @@
                   );
                   window.location.href = response.redirectUrl;
                 } else {
+                  $('#loadingIndicator').css('display', 'none');
                   // ❌ 실패 시 에러 메시지 출력
                   console.error('❌ 업로드 실패: 서버에서 success=false 응답');
                   Swal.fire('업로드에 실패했습니다. 다시 시도해 주세요.');
@@ -542,6 +684,14 @@
           </div>
         </div>
       </form>
+    </div>
+    <!-- 로딩 인디케이터 (기본은 숨김) -->
+    <div id="loadingIndicator">
+      <span id="requestLoader"></span>
+    </div>
+
+    <div id="weatherLoadingIndicator">
+      <span id="weatherLoader"></span>
     </div>
     <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>

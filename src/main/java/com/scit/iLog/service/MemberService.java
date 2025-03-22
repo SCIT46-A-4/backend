@@ -35,10 +35,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final RelationShipRepository relationShipRepository;
-    private final ChildDiaryRepository childDiaryRepository;
-    private final AnalysisTargetRepository analysisTargetRepository;
-    private final GuideRepository guideRepository;
-    private final ChildHealthCheckRepository childHealthCheckRepository;
 
     /**
      * 2025-02-17~20 이도훈

@@ -49,4 +49,9 @@ public class ChildRecordEntity extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "childRecord", fetch = LAZY, cascade = CascadeType.REMOVE)
     private HealthCheckEntity healthCheck;
+
+    public String getDescription() {
+        return String.format("등록 날짜: %s, 키: %f, 몸무게: %f, 왼쪽시력: %f, 오른쪽시력: %f, 진단소견: %s",
+                this.getCreatedAt().toString(), this.height, this.weight, this.leftEye, this.rightEye, this.note);
+    }
 }

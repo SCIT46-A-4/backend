@@ -1,6 +1,7 @@
 package com.scit.iLog.repository;
 
 import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.permission.PermissionRequestEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,6 @@ public interface PermissionRequestRepository extends JpaRepository<PermissionReq
     List<PermissionRequestEntity> findAllByInviteeId(Long inviteeId);
 
     Optional<PermissionRequestEntity> findByIdAndChildAndAlias(Long permissionId, ChildEntity child, String alias);
+
+    boolean existsByChildAndInvitee(ChildEntity child, MemberEntity invitee);
 }

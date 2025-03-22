@@ -32,79 +32,81 @@ public class OpenAIService {
     @Value("${openAIApiMaxTokens}")
     private Integer maxTokens;
 
-    public AIAnalysisResponseDTO getAIAnalysisResponse(final String filePath) {
+    public AIAnalysisResponseDTO getAIAnalysisResponse(final String childAdditionalInfo, final String filePath) {
         BeanOutputConverter<AIAnalysisResponseDTO> parser = new BeanOutputConverter<>(AIAnalysisResponseDTO.class);
         MimeType mimeType = (filePath.contains("jpeg") || filePath.contains("jpg")) ?
                 MimeTypeUtils.IMAGE_JPEG : MimeTypeUtils.IMAGE_PNG;
 
+        String promptText = """
+        <role>
+        너는 전문적인 아동 심리 분석가다.
+        아이의 그림이나 아이 사진을 주면,
+        해당 이미지를 분석하고,
+        아래의 JSON 포맷(**AIAnalysisResponseDTO**)으로만 답변해야 한다.
+        </role>
+        
+        <instruction>
+        1. 응답은 반드시 유효한 JSON 구조여야 한다.
+        2. 아래 5개 필드를 포함해야 한다:
+           - suggestedSolution (string)
+           - analysisResult (string)
+           - emotionScore (double)
+           - emotionType (enum: HAPPY, SAD, ANGRY, FEAR, SURPRISED, NEUTRAL, CONFUSED, ANXIOUS, BORED, EXCITED, SHY)
+           - extractedText (string)
+        3. emotionScore 는 0.00 ~ 1.00 범위로 (소수점 둘째 자리까지) 나타낸다.
+           예: 0.35, 0.99
+        4. emotionType 은 반드시 위 enum 목록 중 하나여야 한다.
+        5. analysisResult 에는 아이가 표현한 감정 상태에 대한 아동에 대한 추가정보를 포함한 상세한 설명을 5줄 이상의 한국어로 자유롭게 서술한다.
+        6. suggestedSolution 에는 보호자 또는 교사에게 해줄 수 있는 상세한 조언을 10줄 이상의 한국어로 서술하며,
+           최소 3가지 이상의 방법으로 어떤 말로 대응해야 하는지 구체적으로 안내한다.
+           그리고 그에 따른 추가 대응 방법도 함께 서술한다. 이 때, 반드시 아동에 대한 추가정보를 먼저 고려한다.
+        7. extractedText 에는 이미지에서 추출된 텍스트를 문자열로 적는다.
+           (추출된 텍스트가 없으면 빈 문자열 "")
+        8. **아동에 대한 추가정보**: %s
+        9. 절대로 JSON 외의 불필요한 문장을 추가하지 말라.
+           오직 순수 JSON만 출력하라.
+        </instruction>
+        
+        <example>
+        예시:
+        {
+          "suggestedSolution": "아이와 함께 그림 속 캐릭터에 대해 대화하며, 긍정적 감정 표현을 유도하세요.",
+          "analysisResult": "밝은 색상과 웃는 표정에서 아이의 즐거운 감정이 엿보인다.",
+          "emotionScore": 0.72,
+          "emotionType": "HAPPY",
+          "extractedText": "Happy day!"
+        }
+        </example>
+        
+        <format>
+        public record AIAnalysisResponseDTO(
+            String suggestedSolution,
+            String analysisResult,
+            double emotionScore,
+            EmotionType emotionType,
+            String extractedText
+        ) {}
+        
+        public enum EmotionType {
+            HAPPY("기쁨"),
+            SAD("슬픔"),
+            ANGRY("분노"),
+            FEAR("두려움"),
+            SURPRISED("놀람"),
+            NEUTRAL("중립"),
+            CONFUSED("혼란"),
+            ANXIOUS("불안"),
+            BORED("지루함"),
+            EXCITED("흥분"),
+            SHY("수줍음");
+        }
+        </format>
+        """.formatted(childAdditionalInfo);
+
         String response = chatClient.prompt()
                 .user(userSpec -> {
                     try {
-                        userSpec.text(
-                                        """
-                                                <role>
-                                                너는 전문적인 아동 심리 분석가다.\s
-                                                아이의 그림이나 아이 사진을 주면,\s
-                                                해당 이미지를 분석하고,\s
-                                                아래의 JSON 포맷(**AIAnalysisResponseDTO**)으로만 답변해야 한다.
-                                                </role>
-                                                
-                                                <instruction>
-                                                1. 응답은 반드시 유효한 JSON 구조여야 한다.
-                                                2. 아래 5개 필드를 포함해야 한다:
-                                                   - suggestedSolution (string)
-                                                   - analysisResult (string)
-                                                   - emotionScore (double)
-                                                   - emotionType (enum: HAPPY, SAD, ANGRY, FEAR, SURPRISED, NEUTRAL, CONFUSED, ANXIOUS, BORED, EXCITED, SHY)
-                                                   - extractedText (string)
-                                                3. emotionScore 는 0.00 ~ 1.00 범위로 (소수점 둘째 자리까지) 나타낸다.\s
-                                                   예: 0.35, 0.99
-                                                4. emotionType 은 반드시 위 enum 목록 중 하나여야 한다.\s
-                                                5. analysisResult 에는 아이가 표현한 감정 상태에 대한 설명을 2줄 이상의 한국어로 자유롭게 서술한다.
-                                                6. suggestedSolution 에는 보호자 또는 교사에게 해줄 수 있는 상세한 조언을 3줄 이상의 한국어로 서술한다.
-                                                7. extractedText 에는 이미지에서 추론하거나 인식된 텍스트를 문자열로 적는다.\s
-                                                   (만약 추출된 텍스트가 없다면 빈 문자열 "")
-                                                8. 절대로 JSON 외 불필요한 문장을 추가하지 말라.\s
-                                                   예) “다음과 같은 JSON 입니다:” 처럼 JSON 밖의 설명이 있으면 안 된다.\s
-                                                   오직 순수 JSON만 출력하라.
-                                                </instruction>
-                                                
-                                                <example>
-                                                예시 (값은 임의로 지어낸 것):
-                                                {
-                                                  "suggestedSolution": "아이와 함께 그림 속 캐릭터에 대해 이야기를 나누며 감정을 긍정적으로 표현하도록 유도해보세요.",
-                                                  "analysisResult": "밝은 색감 사용과 웃는 표정으로 보아 즐거워 보이는 분위기지만, 약간의 긴장감도 엿보임.",
-                                                  "emotionScore": 0.72,
-                                                  "emotionType": "HAPPY",
-                                                  "extractedText": "Happy day!"
-                                                }
-                                                </example>
-                                                
-                                                <format>
-                                                public record AIAnalysisResponseDTO(
-                                                        String suggestedSolution,
-                                                        String analysisResult,
-                                                        double emotionScore,
-                                                        EmotionType emotionType,
-                                                        String extractedText
-                                                ) {
-                                                }
-                                                
-                                                public enum EmotionType {
-                                                    HAPPY("기쁨"),
-                                                    SAD("슬픔"),
-                                                    ANGRY("분노"),
-                                                    FEAR("두려움"),
-                                                    SURPRISED("놀람"),
-                                                    NEUTRAL("중립"),
-                                                    CONFUSED("혼란"),
-                                                    ANXIOUS("불안"),
-                                                    BORED("지루함"),
-                                                    EXCITED("흥분"),
-                                                    SHY("수줍음");
-                                                }
-                                                </format>
-                                        """ + parser.getFormat())
+                        userSpec.text(promptText)
                                 .media(mimeType, convertFileToResource(filePath));
                     } catch (RuntimeException e) {
                         throw new BadImageUrlException();
@@ -128,6 +130,7 @@ public class OpenAIService {
                                                 <role>
                                                 너는 전문적인 아동 건강·발달 분석가다.
                                                 아이의 건강검진 기록이나 문진표 이미지를 제공하면,
+                                                이미지에서 필요한 데이터를 추출한 후,
                                                 다음 JSON 포맷(ChildRecordExtractionDTO) 형태로만 결과를 반환해야 한다.
                                                 </role>
                                                 

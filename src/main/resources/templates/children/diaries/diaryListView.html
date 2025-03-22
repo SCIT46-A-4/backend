@@ -8,6 +8,11 @@
       th:href="@{/css/bulma.min.css}"
       href="../../../static/css/bulma.min.css"
     />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/all.min.css}"
+      href="../../../static/css/all.min.css"
+    />
     <style>
       /* 프라이머리 컬러: #FDF5BF, 세컨더리 컬러: #BEE6D9 */
       .primary-color {
@@ -105,32 +110,41 @@
     <!-- 네비게이션 바 -->
     <nav class="navbar" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
-        <!-- 로고 + dashboard 바로가기 -->
-        <div class="logo">
-          <a th:href="@{/dashboard}">
-            <img
-              src="../../static/images/wilog.png"
-              th:src="@{/images/wilog.png}"
-              alt="로고"
-              class="image logo-image"
-            />
-          </a>
-        </div>
-        <a
-          role="button"
-          class="navbar-burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navMenu"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
+        <a class="navbar-item" href="/dashboard">
+          <img
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="iLog 로고"
+            style="max-height: 60px"
+          />
         </a>
       </div>
-      <div id="navMenu" class="navbar-menu">
-        <div class="navbar-start">
-          <!-- 추가 메뉴가 필요하면 이곳에 삽입 -->
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/dashboard">
+              <span class="icon"><i class="fas fa-home"></i></span>
+              <span>대시보드</span>
+            </a>
+            <a class="button is-light" href="/guides">
+              <span class="icon"><i class="fas fa-info-circle"></i></span>
+              <span>이용안내</span>
+            </a>
+            <a class="button is-light" href="/claims">
+              <span class="icon"><i class="fas fa-headset"></i></span>
+              <span>고객센터</span>
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(부모)</span
+              >
+            </a>
+          </div>
         </div>
       </div>
     </nav>
@@ -163,7 +177,7 @@
           <thead>
             <tr>
               <th>번호</th>
-              <th colspan="2">일기</th>
+              <th colspan="2">일기 제목</th>
               <th>작성일</th>
               <th>삭제</th>
             </tr>
@@ -172,13 +186,12 @@
             <!-- 일기 목록 반복문 -->
             <tr th:each="diary : ${list.content}">
               <td th:text="${diary.id}"></td>
-              <td>
-                <a
-                  th:href="@{/children/{childId}/diaries/{id}/details(childId=${childId},id=${diary.id})}"
-                  >보기</a
-                >
-              </td>
-              <td th:text="${diary.content}"></td>
+              <td></td>
+              <a
+                th:href="@{/children/{childId}/diaries/{id}/details(childId=${childId},id=${diary.id})}"
+              >
+                <td th:text="${diary.title}">일기 제목</td>
+              </a>
               <td
                 th:text="${#temporals.format(diary.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
               ></td>

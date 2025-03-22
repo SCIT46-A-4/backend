@@ -54,6 +54,7 @@ public class DiaryController {
      */
     @GetMapping("/diaryList")
     public String handleGetSelectAllDiaryList(
+            @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable(name="childId") Long childId,
             @PageableDefault(page=0, size=10) Pageable pageable,
             Model model
@@ -61,6 +62,8 @@ public class DiaryController {
     	Page<ChildDiaryEntity> childDiaryPage = childDiaryService.getChildDiaries(childId, pageable);
     	
     	model.addAttribute("list", childDiaryPage);
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         return "children/diaries/diaryListView";
     }
 

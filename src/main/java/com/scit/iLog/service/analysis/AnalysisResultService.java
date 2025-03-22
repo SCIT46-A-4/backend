@@ -10,6 +10,7 @@ import com.scit.iLog.dto.analysis.weather.WeatherData;
 import com.scit.iLog.dto.analysis.weather.WeatherResponse;
 import com.scit.iLog.repository.AnalysisResultRepository;
 import com.scit.iLog.repository.AnalysisTargetRepository;
+import com.scit.iLog.util.FilePathUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,9 @@ public class AnalysisResultService {
     private final AnalysisResultRepository analysisResultRepository;
     private final AnalysisTargetRepository analysisTargetRepository;
     private final WeatherService weatherService;
-    private final AnalysisClient fakeAnalysisClient;
+    private final OpenAIService openAIService;
+    private final FilePathUtil filePathUtil;
+    private final AnalysisService analysisService;
 
     @Transactional(readOnly = true)
     private AnalysisResultEntity findAnalysisResultById(Long analysisResultId) {
@@ -204,7 +207,15 @@ public class AnalysisResultService {
             analysisTarget.setWeather(weather);
         }
 
-        AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
+//        AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
+        String targetFilePath = filePathUtil.childAnalysisFileUploadPath().concat("/").concat(analysisTarget.getSavedTargetFileName());
+
+        String analysisDesc = analysisTarget.getDescription();
+        String weatherDesc = analysisTarget.getWeather().getDescription();
+        String childAdditionalInfo = analysisService.getChildAdditionalInfo(analysisTarget.getChild());
+        String totalAdditionalInfo = childAdditionalInfo + " " + analysisDesc + " " + weatherDesc;
+
+        AIAnalysisResponseDTO aiAnalysisResponse = openAIService.getAIAnalysisResponse(totalAdditionalInfo, targetFilePath);
         if (StringUtils.hasText(aiAnalysisResponse.extractedText())) {
             analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
         }

@@ -1,6 +1,7 @@
 package com.scit.iLog.service.analysis;
 
 import com.scit.iLog.domain.child.ChildEntity;
+import com.scit.iLog.domain.child.FamilyBackGround;
 import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
@@ -31,6 +32,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.scit.iLog.config.WebConfig.ANALYSIS_FILES_REQUEST_ROOT_PATH;
 
@@ -49,13 +51,19 @@ public class AnalysisService {
     private final FileManager fileManager;
     private final FilePathUtil filePathUtil;
     private final OpenAIService openAIService;
+    private final ChildRecordRepository childRecordRepository;
 
     @Transactional
     public Long getAnalysisResult(Long analysisTargetId) {
         AnalysisTargetEntity analysisTarget = findAnalysisTargetById(analysisTargetId);
 //        AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
         String targetFilePath = filePathUtil.childAnalysisFileUploadPath().concat("/").concat(analysisTarget.getSavedTargetFileName());
-        AIAnalysisResponseDTO aiAnalysisResponse = openAIService.getAIAnalysisResponse(targetFilePath);
+
+        String analysisDesc = analysisTarget.getDescription();
+        String weatherDesc = analysisTarget.getWeather().getDescription();
+        String childAdditionalInfo = getChildAdditionalInfo(analysisTarget.getChild());
+        String totalAdditionalInfo = childAdditionalInfo + " " + analysisDesc + " " + weatherDesc;
+        AIAnalysisResponseDTO aiAnalysisResponse = openAIService.getAIAnalysisResponse(totalAdditionalInfo, targetFilePath);
 
         if (StringUtils.hasText(aiAnalysisResponse.extractedText()))
             analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
@@ -82,6 +90,24 @@ public class AnalysisService {
         analysisResultRepository.save(analysisResult);
 
         return analysisResult.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public String getChildAdditionalInfo(ChildEntity child) {
+         String familyBackGrounds = "가정환경: " + child.getChildBackGrounds().stream()
+                .map(childBackGround -> childBackGround.getFamilyBackGround().getFamilyBackGround().getDescription())
+                .collect(Collectors.joining(", "));
+
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime dayAMonthAgo = today.minusMonths(1);
+        String childDescription = "최근 한달간 신체정보: " + childRecordRepository.findAllByCreatedAtBetween(child.getId(), dayAMonthAgo, today).stream()
+                .map(childRecord -> childRecord.getDescription())
+                .collect(Collectors.joining(", "));
+        String birthDate = "생일: " + child.getBirthDate().toString();
+        String gender = "성별: " + child.getGender().getTypeNameKr();
+        String note = "특이사항" + child.getNote();
+
+        return familyBackGrounds + "/" + childDescription + "/" + birthDate + "/" + gender + "/" + note;
     }
 
     @Transactional(readOnly = true)
@@ -201,7 +227,7 @@ public class AnalysisService {
     }
 
     public ChildRecordExtraction getExtractChildRecordData(MultipartFile healthCheckImg) {
-        if (healthCheckImg.isEmpty() || StringUtils.hasText(healthCheckImg.getOriginalFilename())) {
+        if (healthCheckImg.isEmpty() || !StringUtils.hasText(healthCheckImg.getOriginalFilename())) {
             return ChildRecordExtractionDTO.builder()
                     .height(0)
                     .weight(0)

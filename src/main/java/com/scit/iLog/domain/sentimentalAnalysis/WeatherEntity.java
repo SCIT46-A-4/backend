@@ -36,5 +36,9 @@ public class WeatherEntity extends BaseTimeEntity {
 
     @Column(name = "recorded_at")
     private LocalDateTime recordedAt;
+
+    public String getDescription() {
+        return "아이가 있던 곳의 날씨: " + this.weatherDesc;
+    }
 }
 

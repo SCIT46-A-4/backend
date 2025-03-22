@@ -78,4 +78,9 @@ public class AnalysisTargetEntity extends BaseTimeEntity {
             this.analysisTargetTypes.addAll(analysisTargetTypes);
         }
     }
+
+    public String getDescription() {
+        return String.format("아이가 있던 위치: %s, 아이의 동행자: %s, 이 분석에 대한 보충설명: %s",
+                this.locationName, this.companion, this.supplement);
+    }
 }

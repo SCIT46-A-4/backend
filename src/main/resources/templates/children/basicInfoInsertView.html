@@ -149,6 +149,15 @@
 
     <script>
       $(document).ready(function () {
+        // 오늘 날짜의 23:59로 max값을 설정
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+        const day = String(today.getDate()).padStart(2, '0');
+        // 23:59로 설정
+        const maxDateTime = `${year}-${month}-${day}`;
+        document.getElementById('birth-date').setAttribute('max', maxDateTime);
+
         // FilePond 초기화 (기존 코드 유지)
         FilePond.registerPlugin(
           FilePondPluginFileEncode,
@@ -408,6 +417,13 @@
                   id="birth-date"
                   name="birthDate"
                 />
+                <!-- <input
+                  name="targetDate"
+                  id="analysisDatetime"
+                  class="input"
+                  type="datetime-local"
+                  placeholder="2020-01-01T13:59"
+                /> -->
               </div>
 
               <!-- 출생지 입력창 -->

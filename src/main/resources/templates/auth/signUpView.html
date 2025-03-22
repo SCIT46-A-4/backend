@@ -107,6 +107,70 @@
         color: #333;
         text-align: center;
       }
+
+      #loadingIndicator {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 1000;
+        place-items: center;
+      }
+
+      .loader {
+        position: relative;
+        border-style: solid;
+        box-sizing: border-box;
+        border-width: 40px 60px 30px 60px;
+        border-color: #3760c9 #96ddfc #96ddfc #36bbf7;
+        animation: envFloating 1s ease-in infinite alternate;
+      }
+
+      .loader:after {
+        content: '';
+        position: absolute;
+        right: 62px;
+        top: -40px;
+        height: 70px;
+        width: 50px;
+        background-image: linear-gradient(#fff 45px, transparent 0),
+          linear-gradient(#fff 45px, transparent 0),
+          linear-gradient(#fff 45px, transparent 0);
+        background-repeat: no-repeat;
+        background-size: 30px 4px;
+        background-position: 0px 11px, 8px 35px, 0px 60px;
+        animation: envDropping 0.75s linear infinite;
+      }
+
+      @keyframes envFloating {
+        0% {
+          transform: translate(-2px, -5px);
+        }
+        100% {
+          transform: translate(0, 5px);
+        }
+      }
+
+      @keyframes envDropping {
+        0% {
+          background-position: 100px 11px, 115px 35px, 105px 60px;
+          opacity: 1;
+        }
+        50% {
+          background-position: 0px 11px, 20px 35px, 5px 60px;
+        }
+        60% {
+          background-position: -30px 11px, 0px 35px, -10px 60px;
+        }
+        75%,
+        100% {
+          background-position: -30px 11px, -30px 35px, -30px 60px;
+          opacity: 0;
+        }
+      }
     </style>
 
     <script>
@@ -264,12 +328,14 @@
             Swal.fire('유효한 이메일 주소를 입력해주세요.');
             return;
           }
+          $('#loadingIndicator').css('display', 'grid');
           $.ajax({
             url: '/checkDuplicatedEmail',
             method: 'POST',
             data: { email: email },
             success: function (isExists) {
               if (isExists == true) {
+                $('#loadingIndicator').css('display', 'none');
                 Swal.fire(
                   '이미 가입된 이메일 주소입니다. 다른 이메일을 입력해주세요.'
                 );
@@ -279,6 +345,7 @@
                   method: 'POST',
                   data: { email: email },
                   success: function (response) {
+                    $('#loadingIndicator').css('display', 'none');
                     console.log(response);
                     if (response.success) {
                       Swal.fire({
@@ -288,6 +355,7 @@
                         },
                       });
                     } else {
+                      $('#loadingIndicator').css('display', 'none');
                       Swal.fire({
                         html: '<p class="custom-swal-text">인증 번호 발송에 실패했습니다.<br>다시 시도해주세요.</p>',
                         customClass: {
@@ -297,6 +365,7 @@
                     }
                   },
                   error: function () {
+                    $('#loadingIndicator').css('display', 'none');
                     Swal.fire({
                       html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
                       customClass: {
@@ -308,6 +377,7 @@
               }
             },
             error: function () {
+              $('#loadingIndicator').css('display', 'none');
               Swal.fire({
                 html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
                 customClass: {
@@ -596,5 +666,8 @@
         </div>
       </div>
     </section>
+    <div id="loadingIndicator">
+      <span class="loader"></span>
+    </div>
   </body>
 </html>

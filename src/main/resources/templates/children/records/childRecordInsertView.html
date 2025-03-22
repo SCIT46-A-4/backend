@@ -63,6 +63,68 @@
         width: auto;
         display: block;
       }
+
+      #extractloadingIndicator {
+        display: none;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        place-items: center;
+      }
+
+      #extractLoader {
+        width: 100px;
+        height: 75px;
+        margin: 0 auto;
+        background: #fff;
+        position: relative;
+        border-radius: 100%;
+      }
+
+      #extractLoader:before {
+        content: '';
+        position: absolute;
+        box-sizing: border-box;
+        border: 15px solid transparent;
+        border-top: 25px solid #fff;
+        transform: rotate(45deg);
+        top: 50px;
+        left: -15px;
+      }
+
+      #extractLoader:after {
+        content: '';
+        width: 12px;
+        height: 12px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background-color: #ff3d00;
+        box-shadow: 20px 0 #ff3d00, -20px 0 #ff3d00;
+        animation: flash 0.5s ease-out infinite alternate;
+      }
+
+      @keyframes flash {
+        0% {
+          background-color: rgba(255, 60, 0, 0.25);
+          box-shadow: 20px 0 rgba(255, 60, 0, 0.25), -20px 0 #ff3d00;
+        }
+        50% {
+          background-color: #ff3d00;
+          box-shadow: 20px 0 rgba(255, 60, 0, 0.25),
+            -20px 0 rgba(255, 60, 0, 0.25);
+        }
+        100% {
+          background-color: rgba(255, 60, 0, 0.25);
+          box-shadow: 20px 0 #ff3d00, -20px 0 rgba(255, 60, 0, 0.25);
+        }
+      }
     </style>
 
     <script>
@@ -206,6 +268,7 @@
             cancelButtonText: '아니요',
           }).then((result) => {
             if (result.isConfirmed) {
+              $('#extractloadingIndicator').css('display', 'grid');
               let pondInstance = FilePond.find(
                 document.querySelector('.filepond')
               );
@@ -223,20 +286,23 @@
                   processData: false,
                   dataType: 'json',
                   success: function (res) {
+                    $('#extractloadingIndicator').css('display', 'none');
                     console.log(res);
                     //받아온 데이터를 입력창에 출력
-                    $('#weightInput').val(res.height);
-                    $('#heightInput').val(res.weight);
+                    $('#weightInput').val(res.weight);
+                    $('#heightInput').val(res.height);
                     $('#leftEyeInput').val(res.leftEye);
                     $('#rightEyeInput').val(res.rightEye);
                     $('#docterComment').val(res.docterComment);
                     Swal.fire('불러오기가 완료되었습니다.');
                   },
                   error: function (res) {
+                    $('#extractloadingIndicator').css('display', 'none');
                     Swal.fire('검진정보를 불러오는데 실패했습니다!');
                   },
                 });
               } else {
+                $('#extractloadingIndicator').css('display', 'none');
                 Swal.fire('파일이 제대로 업로드되지 않았습니다!');
               }
             }
@@ -344,7 +410,7 @@
                 class="filepond"
                 name="healthCheckImg"
                 data-allow-reorder="true"
-                data-max-file-size="50MB"
+                data-max-file-size="20MB"
                 data-max-files="1"
               />
 
@@ -362,6 +428,9 @@
         </div>
       </div>
     </section>
+    <div id="extractloadingIndicator">
+      <span id="extractLoader"></span>
+    </div>
     <div th:replace="fragments/footer :: ilogFooter"></div>
   </body>
 </html>

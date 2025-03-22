@@ -82,6 +82,10 @@
         /* 텍스트 줄바꿈 방지 */
         font-size: 1rem;
       }
+
+      .margin-bottom-10 {
+        margin-bottom: 10px;
+      }
     </style>
     <script
       src="../../../static/js/jquery-3.7.1.min.js"
@@ -260,7 +264,7 @@
           <!-- 각 섹션별 폼 출력 -->
           <div
             th:each="section, secStat : ${mentalSurvey.sections}"
-            class="section-box"
+            class="section-box margin-bottom-10"
           >
             <div class="box">
               <h2 class="subtitle" th:text="${section.sectionTitle}">

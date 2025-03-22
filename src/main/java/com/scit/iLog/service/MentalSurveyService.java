@@ -81,7 +81,7 @@ public class MentalSurveyService {
                         .sum())
                 .sum();
 
-        String resultComment = getResultComment(mentalSurveyResponseInsertDTO);
+        String resultComment = getResultComment(totalScore);
         List<SectionResponse> sectionResponses = sectionResponseInsertDTOS.stream()
                 .map(sectionResponse ->
                         new SectionResponse(
@@ -109,8 +109,16 @@ public class MentalSurveyService {
         return mentalSurveyResponseRepository.save(mentalSurveyResponse).getId();
     }
 
-    private String getResultComment(MentalSurveyResponseInsertDTO mentalSurveyResponseInsertDTO) {
-        return "아이가 평균보다 우울해해요";
+    private String getResultComment(int totalScore) {
+        if (totalScore < 15) {
+            return "아동의 심리가 위험한 상태입니다!";
+        } else if (totalScore < 30) {
+            return "현재 주의 필요가 필요한 상태입니다!";
+        } else if (totalScore < 45) {
+            return "아이의 마음이 건강하네요!";
+        } else {
+            return "마음이 건강한 아이로 잘 자라고 있어요!";
+        }
     }
 
     @Transactional(readOnly = true)
@@ -265,7 +273,10 @@ public class MentalSurveyService {
     public List<MentalSurveyResponseChartDTO> getLastYearData(Long childId) {
         return getSurveyData(childId, LocalDateTime.now().minusYears(1), LocalDateTime.now());
     }
-    // 끝 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
+    @Transactional
+    public boolean deleteById(String responseId) {
+        mentalSurveyResponseRepository.deleteById(responseId);
+        return true;
+    }
 }

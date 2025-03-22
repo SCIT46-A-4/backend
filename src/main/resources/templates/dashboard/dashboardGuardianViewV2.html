@@ -320,7 +320,8 @@
 
       function renderMentalStatsChart(childId, mentalStats) {
         // seriesData가 없거나 길이가 0인 경우 메시지와 버튼 표시.
-        if ((!mentalStats.parentSeriesData || mentalStats.parentSeriesData.length === 0) && (!mentalStats.teacherSeriesData || !mentalStats.teacherSeriesData.length === 0)) {
+        if ((!mentalStats.parentSeriesData || mentalStats.parentSeriesData.length === 0) && 
+        (!mentalStats.teacherSeriesData || mentalStats.teacherSeriesData.length === 0)) {
           document.getElementById('mentalSurveyScoreLineChart').innerHTML =
             '<div style="text-align: center;">' +
             '<h1 style="font-size: 36px; color: #FDF5BF;">실시한 설문이 없습니다.</h1>' +

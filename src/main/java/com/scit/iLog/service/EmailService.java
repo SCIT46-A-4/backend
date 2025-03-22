@@ -186,6 +186,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Transactional(readOnly = true)
     public boolean checkDuplicatedEmail(String email) {
         return memberRepository.existsByEmail(email);
     }
