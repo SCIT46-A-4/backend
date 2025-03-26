@@ -565,8 +565,10 @@
                     text: '성공적으로 삭제되었습니다.',
                     icon: 'success',
                   });
-                  // 목록 페이지로 이동
-                  window.location.href = `${analysisUrl}/resultList`;
+                  setTimeout(() => {
+                    // 삭제 후 목록 페이지로 이동
+                    window.location.href = `${analysisUrl}/resultList`;
+                  }, 1000);
                 },
                 error: function (err) {
                   Swal.fire('삭제 중 오류가 발생했습니다.');

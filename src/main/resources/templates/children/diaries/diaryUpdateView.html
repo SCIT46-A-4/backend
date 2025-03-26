@@ -77,38 +77,44 @@
 
   <body>
     <!-- 네비게이션 바 -->
-    <nav
-      class="navbar secondary-bg"
-      role="navigation"
-      aria-label="main navigation"
-    >
+    <nav class="navbar" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
-        <!-- 로고 + dashboard 바로가기 -->
-        <div class="logo">
-          <a th:href="@{/dashboard}">
-            <img
-              src="../../static/images/wilog.png"
-              th:src="@{/images/wilog.png}"
-              alt="로고"
-              class="image logo-image"
-            />
-          </a>
-        </div>
-        <a
-          role="button"
-          class="navbar-burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navMenu"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
+        <a class="navbar-item" href="/dashboard">
+          <img
+            id="logo"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+            alt="iLog 로고"
+          />
         </a>
       </div>
-      <div id="navMenu" class="navbar-menu">
-        <div class="navbar-start">
-          <!-- 추가 메뉴가 필요하면 이곳에 삽입 -->
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/guides"><span>이용안내</span></a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/claims"><span>고객센터</span></a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/auth/logout"
+              ><span>로그아웃</span></a
+            >
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(부모)</span
+              >
+            </a>
+          </div>
         </div>
       </div>
     </nav>

@@ -3,6 +3,7 @@ package com.scit.iLog.controller;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.PageResponse;
 import com.scit.iLog.dto.analysis.*;
+import com.scit.iLog.exception.AIResponseParseException;
 import com.scit.iLog.service.analysis.AnalysisResultService;
 import com.scit.iLog.service.analysis.AnalysisService;
 import com.scit.iLog.service.child.ChildService;
@@ -112,6 +113,16 @@ public class AnalysisController {
         return new AnalysisTargetInsertResponseDTO(
                 true,
                 String.format("/children/%d/analysis/%d/results/%d/details", childId, analysisTargetId, analysisResultId));
+    }
+
+    @ResponseBody
+    @ExceptionHandler(AIResponseParseException.class)
+    public AnalysisTargetInsertResponseDTO handleAIResponseParseException(
+            AIResponseParseException e
+    ) {
+        log.info(e.getMessage());
+        analysisService.deleteAnalysisTarget(e.getAnalysisTargetId());
+        return new AnalysisTargetInsertResponseDTO(false, e.getMessage());
     }
 
     /*

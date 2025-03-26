@@ -157,6 +157,7 @@ public class ChildService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public String getChildNameById(Long childId) {
         return childRepository
                 .findById(childId)

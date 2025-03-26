@@ -107,12 +107,15 @@ public class DiaryController {
 	*/
     @GetMapping("/{diaryId}/details")
     public String handleGetDiaryDetailView(
+            @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable("childId") Long childId,
             @PathVariable("diaryId") Long diaryId,
             Model model
     ) {
         DiaryDetailsDTO diaryDetails = childDiaryService.findDiaryDetailsById(diaryId);
         model.addAttribute("diaryDetails", diaryDetails);
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
         return "children/diaries/diaryDetailsView";
     }
 
@@ -128,6 +131,7 @@ public class DiaryController {
      */
     @GetMapping("/{diaryId}/edit")
     public String handleGetDiaryUpdateView(
+            @AuthenticationPrincipal MemberDetails memberDetails,
     		@PathVariable("childId") Long childId,
     		@PathVariable("diaryId") Long diaryId,
     		Model model
@@ -135,6 +139,8 @@ public class DiaryController {
     	DiaryUpdateDTO diary = childDiaryService.findDiaryUpdateInfoById(diaryId);
     	model.addAttribute("diary", diary);
     	model.addAttribute("child", childId);
+        model.addAttribute("memberName", memberDetails.getName());
+        model.addAttribute("relationType", memberDetails.getRelationType().getTypeNameKr());
     	return "children/diaries/diaryUpdateView";
     }
 

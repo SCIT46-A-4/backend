@@ -116,6 +116,7 @@ public class MemberService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public MemberEntity findById(Long memberId) {
         MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("회원 조회 실패: %d", memberId)));

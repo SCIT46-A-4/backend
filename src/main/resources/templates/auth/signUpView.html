@@ -120,7 +120,7 @@
         place-items: center;
       }
 
-      .loader {
+      #mailLoader {
         position: relative;
         border-style: solid;
         box-sizing: border-box;
@@ -129,7 +129,7 @@
         animation: envFloating 1s ease-in infinite alternate;
       }
 
-      .loader:after {
+      #mailLoader:after {
         content: '';
         position: absolute;
         right: 62px;
@@ -667,7 +667,7 @@
       </div>
     </section>
     <div id="loadingIndicator">
-      <span class="loader"></span>
+      <span id="mailLoader"></span>
     </div>
   </body>
 </html>

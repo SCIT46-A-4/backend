@@ -124,6 +124,7 @@
         position: relative;
         border-radius: 100%;
       }
+
       #requestLoader:before {
         content: '';
         position: absolute;
@@ -498,12 +499,14 @@
                   $('#loadingIndicator').css('display', 'none');
                   // ❌ 실패 시 에러 메시지 출력
                   console.error('❌ 업로드 실패: 서버에서 success=false 응답');
-                  Swal.fire('업로드에 실패했습니다. 다시 시도해 주세요.');
+                  Swal.fire(
+                    '감정 분석이 실패했습니다. 잠시 후 다시 시도해 주세요.'
+                  );
                 }
               },
               error: function (xhr, status, error) {
                 console.error('❌ AJAX 오류:', xhr.responseText);
-                Swal.fire('업로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                Swal.fire('분석 중 오류가 발생했습니다. 다시 시도해 주세요.');
               },
             });
           });

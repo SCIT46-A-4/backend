@@ -10,8 +10,7 @@
     />
     <link
       rel="stylesheet"
-      th:href="@{/css/all.min.css}"
-      href="../../../static/css/all.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
       /* 프라이머리 컬러: #FDF5BF, 세컨더리 컬러: #BEE6D9 */
@@ -162,7 +161,7 @@
           <div class="level-right">
             <div class="level-item">
               <a
-                class="button is-large secondary-bg"
+                class="button is-medium secondary-bg"
                 th:href="@{/children/{childId}/diaries/new(childId=${childId})}"
               >
                 일기 쓰기
@@ -177,7 +176,7 @@
           <thead>
             <tr>
               <th>번호</th>
-              <th colspan="2">일기 제목</th>
+              <th>일기 제목</th>
               <th>작성일</th>
               <th>삭제</th>
             </tr>
@@ -186,12 +185,14 @@
             <!-- 일기 목록 반복문 -->
             <tr th:each="diary : ${list.content}">
               <td th:text="${diary.id}"></td>
-              <td></td>
-              <a
-                th:href="@{/children/{childId}/diaries/{id}/details(childId=${childId},id=${diary.id})}"
-              >
-                <td th:text="${diary.title}">일기 제목</td>
-              </a>
+              <td>
+                <a
+                  th:text="${diary.title}"
+                  th:href="@{/children/{childId}/diaries/{id}/details(childId=${childId},id=${diary.id})}"
+                >
+                  일기 제목
+                </a>
+              </td>
               <td
                 th:text="${#temporals.format(diary.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
               ></td>

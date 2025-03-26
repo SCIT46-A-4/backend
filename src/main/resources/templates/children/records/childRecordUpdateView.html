@@ -292,11 +292,18 @@
                 <button type="submit" class="button is-dark is-medium">
                   수정하기
                 </button>
-                <a
+                <!-- <a
                   th:href="@{/children/{childId}/recordList(childId=${childId})}"
                   class="button is-light is-medium"
                   >취소하기</a
+                > -->
+                <button
+                  type="button"
+                  class="button is-light is-medium"
+                  onclick="history.back()"
                 >
+                  취소하기
+                </button>
               </div>
             </form>
           </div>

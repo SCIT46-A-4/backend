@@ -71,6 +71,30 @@
         align-items: center;
         border-radius: 0 5px 5px 0;
       }
+
+      #gridView {
+        min-height: 60vh;
+      }
+
+      #noContentMessageGrid {
+        text-align: center;
+        width: 100%;
+        display: grid;
+        place-items: center;
+        font-size: xx-large;
+      }
+
+      #noContentMessageList {
+        text-align: center;
+        min-height: 60vh;
+        display: grid;
+        place-items: center;
+        font-size: x-large;
+      }
+
+      #mainNav {
+        background-color: var(--primary);
+      }
     </style>
     <script
       th:src="@{/js/jquery-3.7.1.min.js}"
@@ -176,6 +200,16 @@
             pageResponse['totalElements'] = totalElements;
             pageResponse['pageSize'] = pageSize;
             pageResponse['last'] = last;
+
+            // 데이터가 없으면 메시지 표시 후 종료
+            if (!content || content.length === 0) {
+              document.getElementById('gridView').innerHTML =
+                '<div id="noContentMessageGrid" style="text-align: center;"><h1>분석한 결과가 없습니다.</h1></div>';
+              document.getElementById('listView').innerHTML =
+                '<div id="noContentMessageList" style="text-align: center;"><h1>분석한 결과가 없습니다.</h1></div>';
+              updatePagination(1, 1);
+              return;
+            }
 
             // Grid View
             const gridView = document.getElementById('gridView');
@@ -336,7 +370,12 @@
     </script>
   </head>
   <body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav
+      id="mainNav"
+      class="navbar"
+      role="navigation"
+      aria-label="main navigation"
+    >
       <!-- 로고 + dashboard 바로가기 -->
       <div class="logo">
         <a th:href="@{/dashboard}">
@@ -442,20 +481,6 @@
           </table>
         </div>
 
-        <!-- Pagination -->
-        <!-- 동적으로 자바 Page 객체를 받아서 페이징 인터페이스 생성 -->
-        <!-- private List<AnalysisResultListItemDTO> content;
-          private int pageNumber;
-          private int pageSize;
-          private long totalElements;
-          private int totalPages;
-          private boolean last; -->
-        <!-- public record AnalysisResultListItemDTO(
-            String analysisTargetFileSrcUri,
-            String analysisResultTitle,
-            LocalDateTime analysisDate
-    ) {
-    } -->
         <nav
           class="pagination is-centered mt-6"
           role="navigation"
