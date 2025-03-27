@@ -1,155 +1,155 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8"/>
     <title>아동 기본정보 조회 페이지</title>
 
     <!-- jquery -->
     <script
-      src="../../static/js/jquery-3.7.1.min.js"
-      th:src="@{/js/jquery-3.7.1.min.js}"
+            src="../../static/js/jquery-3.7.1.min.js"
+            th:src="@{/js/jquery-3.7.1.min.js}"
     ></script>
     <script src="/js/sweetalert2.js"></script>
 
     <!-- bulma -->
     <link
-      rel="stylesheet"
-      href="../../static/css/bulma.min.css"
-      th:href="@{/css/bulma.min.css}"
+            href="../../static/css/bulma.min.css"
+            rel="stylesheet"
+            th:href="@{/css/bulma.min.css}"
     />
 
     <!-- customColors -->
     <link
-      rel="stylesheet"
-      href="../../static/css/customColors.css"
-      th:href="@{/css/customColors.css}"
+            href="../../static/css/customColors.css"
+            rel="stylesheet"
+            th:href="@{/css/customColors.css}"
     />
 
     <style>
-      /* 전체 배경색 */
-      body {
-        margin: 0;
-        background-color: #fdf5bf;
-      }
+        /* 전체 배경색 */
+        body {
+          margin: 0;
+          background-color: #fdf5bf;
+        }
 
-      /* 좌우 div 간격 유지 */
-      .columns {
-        gap: 1rem;
-      }
-
-      /* 좌측 상단(프로필 박스)과 하단(정보 박스)의 간격 줄이기 */
-      .column > .columns {
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-
-      /* 기본 박스 간격 줄이기 */
-      .column.box {
-        margin-bottom: 0.5rem;
-      }
-
-      /* 반응형 컬럼 정렬 */
-      @media (max-width: 1024px) {
+        /* 좌우 div 간격 유지 */
         .columns {
-          flex-direction: column;
-          align-items: center;
+          gap: 1rem;
         }
+
+        /* 좌측 상단(프로필 박스)과 하단(정보 박스)의 간격 줄이기 */
+        .column > .columns {
+          gap: 0.5rem;
+          margin-bottom: 0.5rem;
+        }
+
+        /* 기본 박스 간격 줄이기 */
+        .column.box {
+          margin-bottom: 0.5rem;
+        }
+
+        /* 반응형 컬럼 정렬 */
+        @media (max-width: 1024px) {
+          .columns {
+            flex-direction: column;
+            align-items: center;
+          }
+          .column {
+            width: 90%;
+            margin-bottom: 1.5rem;
+          }
+        }
+
         .column {
-          width: 90%;
-          margin-bottom: 1.5rem;
+          flex-basis: 50%;
+          min-width: 300px;
         }
-      }
 
-      .column {
-        flex-basis: 50%;
-        min-width: 300px;
-      }
+        /* 프로필사진 등록 배경 설정 */
+        .profile-background {
+          background-image: url('/images/bb.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
 
-      /* 프로필사진 등록 배경 설정 */
-      .profile-background {
-        background-image: url('/images/bb.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-      }
+        /* 로고 설정 */
+        .logo a {
+          display: inline-block;
+        }
+        .logo img {
+          cursor: pointer;
+        }
 
-      /* 로고 설정 */
-      .logo a {
-        display: inline-block;
-      }
-      .logo img {
-        cursor: pointer;
-      }
+        .profile-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+        .profile-container {
+          width: 200px;
+          height: 200px;
+          border-radius: 50%;
+          overflow: hidden;
+          margin: 0 auto;
+          position: relative;
+        }
+        .profile-container img {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          min-width: 100%;
+          min-height: 100%;
+        }
 
-      .profile-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-      }
-      .profile-container {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        overflow: hidden;
-        margin: 0 auto;
-        position: relative;
-      }
-      .profile-container img {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        min-width: 100%;
-        min-height: 100%;
-      }
-
-      /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
-      .logo-image {
-        width: 100px;
-        height: auto;
-      }
-      .custom-container {
-        max-width: 1200px;
-        margin: auto;
-      }
-      .min-height-300 {
-        min-height: 300px;
-      }
-      .profile-background-box {
-        border-radius: 15px;
-        padding: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-      }
-      .profile-box-custom {
-        border-radius: 50%;
-        width: 220px;
-        height: 220px;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: white;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      .button-gap {
-        gap: 5rem;
-      }
+        /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
+        .logo-image {
+          width: 100px;
+          height: auto;
+        }
+        .custom-container {
+          max-width: 1200px;
+          margin: auto;
+        }
+        .min-height-300 {
+          min-height: 300px;
+        }
+        .profile-background-box {
+          border-radius: 15px;
+          padding: 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+        }
+        .profile-box-custom {
+          border-radius: 50%;
+          width: 220px;
+          height: 220px;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: white;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .button-gap {
+          gap: 5rem;
+        }
     </style>
 
     <!-- FilePond CSS -->
     <link
-      rel="stylesheet"
-      href="/css/filepond.css"
-      th:href="@{/css/filepond.css}"
+            href="/css/filepond.css"
+            rel="stylesheet"
+            th:href="@{/css/filepond.css}"
     />
     <link
-      rel="stylesheet"
-      href="/css/filepond-plugin-image-preview.css"
-      th:href="@{/css/filepond-plugin-image-preview.css}"
+            href="/css/filepond-plugin-image-preview.css"
+            rel="stylesheet"
+            th:href="@{/css/filepond-plugin-image-preview.css}"
     />
     <!-- FilePond JS 및 플러그인 -->
     <script src="/js/filepond/filepond.min.js"></script>
@@ -161,212 +161,212 @@
     <script src="/js/filepond-plugin-image-transform.min.js"></script>
 
     <script>
-      // 아동 삭제 기능
-      function deleteChild(childId) {
-        if (!confirm('정말로 삭제하시겠습니까?')) return;
-        fetch(`/children/${childId}`, {
-          method: 'DELETE',
-        })
-          .then((response) => {
-            if (!response.ok) {
-              return response.text().then((errMsg) => {
-                throw new Error(errMsg);
-              });
-            }
-            alert('삭제되었습니다.');
-            window.location.href = '/dashboard/guardian';
+        // 아동 삭제 기능
+        function deleteChild(childId) {
+          if (!confirm('정말로 삭제하시겠습니까?')) return;
+          fetch(`/children/${childId}`, {
+            method: 'DELETE',
           })
-          .catch((error) => {
-            console.error('삭제 오류:', error);
-            alert('삭제 실패: ' + error.message);
-          });
-      }
+            .then((response) => {
+              if (!response.ok) {
+                return response.text().then((errMsg) => {
+                  throw new Error(errMsg);
+                });
+              }
+              alert('삭제되었습니다.');
+              window.location.href = '/dashboard/guardian';
+            })
+            .catch((error) => {
+              console.error('삭제 오류:', error);
+              alert('삭제 실패: ' + error.message);
+            });
+        }
     </script>
-  </head>
+</head>
 
-  <body>
-    <section class="section">
-      <!-- 로고 + dashboard 바로가기 -->
-      <div class="logo">
+<body>
+<section class="section">
+    <!-- 로고 + dashboard 바로가기 -->
+    <div class="logo">
         <a th:href="@{/dashboard}">
-          <img
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="로고"
-            class="image logo-image"
-          />
+            <img
+                    alt="로고"
+                    class="image logo-image"
+                    src="../../static/images/wilog.png"
+                    th:src="@{/images/wilog.png}"
+            />
         </a>
-      </div>
+    </div>
 
-      <!-- 조회 페이지 폼 -->
-      <div class="container custom-container">
+    <!-- 조회 페이지 폼 -->
+    <div class="container custom-container">
         <!-- 페이지 이름 -->
         <h1 class="title is-3 has-text-centered mb-6">아동 기본정보 조회</h1>
         <div class="columns is-align-items-center mt-6">
-          <!-- 좌측 큰 div -->
-          <div class="column">
-            <div class="columns is-flex-direction-column">
-              <!-- 좌측상단/프로필 이미지 -->
-              <div class="column box has-text-centered min-height-300">
-                <div class="box profile-background profile-background-box">
-                  <div class="profile-box-custom">
-                    <div class="field">
-                      <div class="file is-large has-name is-boxed">
-                        <div class="profile-container">
-                          <img
-                            th:src="${childBasicInfo.profileImgSrcUri}"
-                            class="profile-image"
-                            alt="프로필 이미지"
-                          />
+            <!-- 좌측 큰 div -->
+            <div class="column">
+                <div class="columns is-flex-direction-column">
+                    <!-- 좌측상단/프로필 이미지 -->
+                    <div class="column box has-text-centered min-height-300">
+                        <div class="box profile-background profile-background-box">
+                            <div class="profile-box-custom">
+                                <div class="field">
+                                    <div class="file is-large has-name is-boxed">
+                                        <div class="profile-container">
+                                            <img
+                                                    alt="프로필 이미지"
+                                                    class="profile-image"
+                                                    th:src="${childBasicInfo.profileImgSrcUri}"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              <!-- 좌측하단/이름, 성별, 생년월일 -->
-              <div class="column box">
-                <!-- 이름 창 -->
-                <div class="field">
-                  <label class="label">이름</label>
-                  <div class="control">
-                    <input
-                      class="input"
-                      type="text"
-                      th:value="${childBasicInfo.name}"
-                      readonly
-                    />
-                  </div>
-                </div>
+                    <!-- 좌측하단/이름, 성별, 생년월일 -->
+                    <div class="column box">
+                        <!-- 이름 창 -->
+                        <div class="field">
+                            <label class="label">이름</label>
+                            <div class="control">
+                                <input
+                                        class="input"
+                                        readonly
+                                        th:value="${childBasicInfo.name}"
+                                        type="text"
+                                />
+                            </div>
+                        </div>
 
-                <!-- 성별 창 -->
-                <div class="field">
-                  <label class="label">성별</label>
-                  <div class="control">
-                    <input
-                      class="input"
-                      type="text"
-                      th:value="${childBasicInfo.gender.name() == 'MAN' ? '남자' : '여자'}"
-                      readonly
-                    />
-                  </div>
-                </div>
+                        <!-- 성별 창 -->
+                        <div class="field">
+                            <label class="label">성별</label>
+                            <div class="control">
+                                <input
+                                        class="input"
+                                        readonly
+                                        th:value="${childBasicInfo.gender.name() == 'MAN' ? '남자' : '여자'}"
+                                        type="text"
+                                />
+                            </div>
+                        </div>
 
-                <!-- 생년월일 창 -->
-                <div class="field">
-                  <label class="label">생년월일</label>
-                  <div class="control">
-                    <input
-                      class="input"
-                      type="text"
-                      th:value="${#temporals.format(childBasicInfo.birthDate, 'yyyy년 MM월 dd일')}"
-                      readonly
-                    />
-                  </div>
+                        <!-- 생년월일 창 -->
+                        <div class="field">
+                            <label class="label">생년월일</label>
+                            <div class="control">
+                                <input
+                                        class="input"
+                                        readonly
+                                        th:value="${#temporals.format(childBasicInfo.birthDate, 'yyyy년 MM월 dd일')}"
+                                        type="text"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
 
-          <!-- 우측 큰 div -->
-          <div class="column">
-            <div class="columns is-flex-direction-column">
-              <!-- 우측 상단/관계, 출생지, 가정환경, 특이사항-->
-              <div class="column box">
-                <!-- 관계 창 -->
-                <div class="field">
-                  <label class="label">관계</label>
-                  <div class="control">
-                    <input
-                      class="input"
-                      type="text"
-                      th:value="${childBasicInfo.callName}"
-                      readonly
-                    />
-                  </div>
-                </div>
+            <!-- 우측 큰 div -->
+            <div class="column">
+                <div class="columns is-flex-direction-column">
+                    <!-- 우측 상단/관계, 출생지, 가정환경, 특이사항-->
+                    <div class="column box">
+                        <!-- 관계 창 -->
+                        <div class="field">
+                            <label class="label">관계</label>
+                            <div class="control">
+                                <input
+                                        class="input"
+                                        readonly
+                                        th:value="${childBasicInfo.callName}"
+                                        type="text"
+                                />
+                            </div>
+                        </div>
 
-                <!-- 출생지 창 -->
-                <div class="field">
-                  <label class="label">출생지</label>
-                  <div class="control">
-                    <input
-                      class="input"
-                      type="text"
-                      th:value="${childBasicInfo.birthLocation}"
-                      readonly
-                    />
-                  </div>
-                </div>
+                        <!-- 출생지 창 -->
+                        <div class="field">
+                            <label class="label">출생지</label>
+                            <div class="control">
+                                <input
+                                        class="input"
+                                        readonly
+                                        th:value="${childBasicInfo.birthLocation}"
+                                        type="text"
+                                />
+                            </div>
+                        </div>
 
-                <!-- 가정환경 창 -->
-                <div class="field">
-                  <label class="label">가정환경</label>
-                  <div class="control">
+                        <!-- 가정환경 창 -->
+                        <div class="field">
+                            <label class="label">가정환경</label>
+                            <div class="control">
                     <textarea
-                      class="textarea"
-                      readonly
-                      th:text="${childBasicInfo.familyBackGrounds != null ?
+                            class="textarea"
+                            readonly
+                            th:text="${childBasicInfo.familyBackGrounds != null ?
                         #strings.listJoin(childBasicInfo.familyBackGrounds.![description], ', ') :
                         '선택된 가정환경 없음'}"
                     ></textarea>
-                  </div>
-                </div>
+                            </div>
+                        </div>
 
-                <!-- 특이사항 창 -->
-                <div class="field">
-                  <label class="label">특이사항</label>
-                  <div class="control">
+                        <!-- 특이사항 창 -->
+                        <div class="field">
+                            <label class="label">특이사항</label>
+                            <div class="control">
                     <textarea
-                      class="textarea"
-                      readonly
-                      th:text="${childBasicInfo.note}"
+                            class="textarea"
+                            readonly
+                            th:text="${childBasicInfo.note}"
                     ></textarea>
-                  </div>
-                </div>
+                            </div>
+                        </div>
 
-                <!-- 성장정보/심리설문 작성 바로가기 버튼 -->
-                <div class="buttons is-centered mt-4">
-                  <a
-                    th:href="@{/children/{childId}/records/new(childId=${childBasicInfo.id})}"
-                    class="button is-info"
-                    >성장 정보 작성하기</a
-                  >
-                  <a
-                    th:href="@{/children/{childId}/mentalSurveys/selects(childId=${childBasicInfo.id})}"
-                    class="button is-info"
-                    >심리 설문 작성하기</a
-                  >
+                        <!-- 성장정보/심리설문 작성 바로가기 버튼 -->
+                        <div class="buttons is-centered mt-4">
+                            <a
+                                    class="button is-info"
+                                    th:href="@{/children/{childId}/records/new(childId=${childBasicInfo.id})}"
+                            >성장 정보 작성하기</a
+                            >
+                            <a
+                                    class="button is-info"
+                                    th:href="@{/children/{childId}/mentalSurveys/selects(childId=${childBasicInfo.id})}"
+                            >심리 설문 작성하기</a
+                            >
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
 
         <!-- 수정/삭제 버튼 -->
         <div
-          class="
+                class="
             buttons
             is-centered is-flex is-justify-content-center
             mt-3
             button-gap
           "
         >
-          <a
-            th:href="@{/children/{childId}/basicInfo/edit(childId=${childBasicInfo.id})}"
-            class="button is-primary"
+            <a
+                    class="button is-primary"
+                    th:href="@{/children/{childId}/basicInfo/edit(childId=${childBasicInfo.id})}"
             >수정하기</a
-          >
-          <a
-            href="javascript:void(0);"
-            class="button is-danger"
-            th:onclick="|deleteChild(${childBasicInfo.id})|"
+            >
+            <a
+                    class="button is-danger"
+                    href="javascript:void(0);"
+                    th:onclick="|deleteChild(${childBasicInfo.id})|"
             >삭제하기</a
-          >
+            >
         </div>
-      </div>
-    </section>
-    <div th:replace="fragments/footer :: ilogFooter"></div>
-  </body>
+    </div>
+</section>
+<div th:replace="fragments/footer :: ilogFooter"></div>
+</body>
 </html>

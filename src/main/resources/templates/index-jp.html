@@ -2,12 +2,12 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>iLog - 子どもの発達追跡サービス</title>
     <link
-      rel="stylesheet" href="../../static/css/footer.css" th:href="@{/css/footer.css}" />
-    <link rel="stylesheet" href="../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
-    <link rel="stylesheet" href="../static/css/customColors.css" th:href="@{/css/customColors.css}">
+            href="../../static/css/footer.css" rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <link href="../static/css/bulma.min.css" rel="stylesheet" th:href="@{/css/bulma.min.css}">
+    <link href="../static/css/customColors.css" rel="stylesheet" th:href="@{/css/customColors.css}">
     <script src="../static/js/jquery-3.6.0.min.js" th:src="@{/js/jquery-3.6.0.min.js}"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
     <style>
@@ -97,8 +97,8 @@
 		.button.is-white:hover {
 		    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* 호버 시 강조 */
 		}
-        
-		
+
+
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -138,18 +138,18 @@
 </head>
 <body>
 <!-- Navigation -->
-<nav class="navbar is-white" role="navigation" aria-label="main navigation">
+<nav aria-label="main navigation" class="navbar is-white" role="navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="/">
-            <img id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="iLog 로고"/>
+            <img alt="iLog 로고" id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}"/>
         </a>
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
+        <a aria-expanded="false" aria-label="menu" class="navbar-burger" data-target="navbarBasic" role="button">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
         </a>
     </div>
-    <div id="navbarBasic" class="navbar-menu">
+    <div class="navbar-menu" id="navbarBasic">
         <div class="navbar-end">
             <a class="navbar-item" href="#features">機能</a>
             <a class="navbar-item" th:href="@{/claims/new}">お問い合わせ</a>
@@ -167,7 +167,7 @@
                     <select id="languageSelect" onchange="changeLanguage(this.value)">
                         <option value="kr">한국어</option>
                         <option value="en">English</option>
-                        <option value="jp"selected>日本語</option>
+                        <option selected value="jp">日本語</option>
                     </select>
                 </div>
             </div>
@@ -274,54 +274,54 @@
 </section>
 
 <!-- 공통 footer -->
-    <footer>
-      <div class="container">
+<footer>
+    <div class="container">
         <div class="columns">
-          <div class="column is-4">
-            <div class="logo-container">
-              <img
-                class="footer-logo"
-                src="../../static/images/wilog.png"
-                th:src="@{/images/wilog.png}"
-                alt="iLog 로고"
-              />
-              <span class="footer-title">iLog</span>
+            <div class="column is-4">
+                <div class="logo-container">
+                    <img
+                            alt="iLog 로고"
+                            class="footer-logo"
+                            src="../../static/images/wilog.png"
+                            th:src="@{/images/wilog.png}"
+                    />
+                    <span class="footer-title">iLog</span>
+                </div>
+                <p>
+                    子どもの感情と発達を体系的に記録・分析し <br> 健やかな成長をサポートするサービスです。
+                </p>
             </div>
-            <p>
-              子どもの感情と発達を体系的に記録・分析し <br> 健やかな成長をサポートするサービスです。
-            </p>
-          </div>
-          <div class="column is-4"></div>
-          <div class="column is-4">
-            <h3 class="title is-5">連絡先</h3>
-            <div class="contact-info">
-              <p>
-                <i class="fas fa-map-marker-alt"></i> 韓国 ソウル特別市 江南区 テヘラン路 123
-              </p>
-              <p><i class="fas fa-phone"></i> 02-123-4567</p>
-              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
-              <p>
-                <i class="fas fa-clock"></i> 平日 09:00 - 18:00 (祝日を除く)
-              </p>
+            <div class="column is-4"></div>
+            <div class="column is-4">
+                <h3 class="title is-5">連絡先</h3>
+                <div class="contact-info">
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i> 韓国 ソウル特別市 江南区 テヘラン路 123
+                    </p>
+                    <p><i class="fas fa-phone"></i> 02-123-4567</p>
+                    <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
+                    <p>
+                        <i class="fas fa-clock"></i> 平日 09:00 - 18:00 (祝日を除く)
+                    </p>
+                </div>
             </div>
-          </div>
         </div>
         <div class="footer-bottom">
-		  <div class="columns is-vcentered">
-		    <div class="column is-4"></div>
-		    <div class="column is-4 has-text-centered">
-		      <p>
-		        <a href="/terms">利用規約</a> |
-		        <a href="/privacy"><strong>個人情報取扱方針</strong></a> |
-		        <a href="/youth-policy">青少年保護方針</a>
-		      </p>
-		    </div>
-		    <div class="column is-4 has-text-right">
-		      <p>&copy; 2025 iLog. All rights reserved.</p>
-		    </div>
-		  </div>
-		</div>
-      </div>
-    </footer>
+            <div class="columns is-vcentered">
+                <div class="column is-4"></div>
+                <div class="column is-4 has-text-centered">
+                    <p>
+                        <a href="/terms">利用規約</a> |
+                        <a href="/privacy"><strong>個人情報取扱方針</strong></a> |
+                        <a href="/youth-policy">青少年保護方針</a>
+                    </p>
+                </div>
+                <div class="column is-4 has-text-right">
+                    <p>&copy; 2025 iLog. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 </body>
 </html>

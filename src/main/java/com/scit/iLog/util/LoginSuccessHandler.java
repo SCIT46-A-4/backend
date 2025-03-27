@@ -1,18 +1,16 @@
 package com.scit.iLog.util;
 
-import java.io.IOException;
-
+import com.scit.iLog.config.SecurityConfig.MemberDetails;
+import com.scit.iLog.domain.RelationType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
-import com.scit.iLog.config.SecurityConfig.MemberDetails;
-import com.scit.iLog.domain.RelationType;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 /**
  * 2025-02-17~20 이도훈 LoginSuccessHandler클래스 생성
@@ -21,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-	// 특정 URL요청으로 접속시 해당 URL저장
-	private final CustomRequestCache requestCache = new CustomRequestCache();
+    // 특정 URL요청으로 접속시 해당 URL저장
+    private final CustomRequestCache requestCache = new CustomRequestCache();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -62,7 +60,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 //                }
 //                redirectUrl.append("success=true");
 
-                log.info("targetUrl 파라미터 발견: {} - 해당 URL로 리다이렉트", redirectUrl.toString());
+                log.info("targetUrl 파라미터 발견: {} - 해당 URL로 리다이렉트", redirectUrl);
                 response.sendRedirect(redirectUrl.toString());
                 return;
             } else {

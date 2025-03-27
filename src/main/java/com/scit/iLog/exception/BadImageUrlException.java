@@ -1,4 +1,4 @@
 package com.scit.iLog.exception;
 
-public class BadImageUrlException extends RuntimeException{
+public class BadImageUrlException extends RuntimeException {
 }

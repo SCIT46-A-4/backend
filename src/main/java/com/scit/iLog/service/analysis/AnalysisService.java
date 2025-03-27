@@ -97,7 +97,7 @@ public class AnalysisService {
 
     @Transactional(readOnly = true)
     public String getChildAdditionalInfo(ChildEntity child) {
-         String familyBackGrounds = "가정환경: " + child.getChildBackGrounds().stream()
+        String familyBackGrounds = "가정환경: " + child.getChildBackGrounds().stream()
                 .map(childBackGround -> childBackGround.getFamilyBackGround().getFamilyBackGround().getDescription())
                 .collect(Collectors.joining(", "));
 

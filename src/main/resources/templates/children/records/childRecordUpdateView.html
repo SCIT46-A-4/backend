@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>아동 신체정보 수정</title>
 
     <!-- Bulma 스타일 -->
-    <link rel="stylesheet" href="/css/bulma.min.css" />
-    <link rel="stylesheet" href="/css/customColors.css" />
+    <link href="/css/bulma.min.css" rel="stylesheet"/>
+    <link href="/css/customColors.css" rel="stylesheet"/>
 
     <!-- FilePond CSS -->
-    <link rel="stylesheet" href="/css/filepond.css" />
-    <link rel="stylesheet" href="/css/filepond-plugin-image-preview.css" />
+    <link href="/css/filepond.css" rel="stylesheet"/>
+    <link href="/css/filepond-plugin-image-preview.css" rel="stylesheet"/>
 
     <!-- jQuery -->
     <script src="/js/jquery-3.7.1.min.js"></script>
@@ -30,289 +30,289 @@
     <script src="/js/filepond/filepond-plugin-image-exif-orientation.min.js"></script>
     <script src="/js/filepond/filepond-plugin-image-edit.js"></script>
     <script>
-      $(function () {
-        $('#getChildRecordFromImgBtn').on('click', function (e) {
-          e.preventDefault();
-          Swal.fire({
-            title: '건강 문진표 이미지로부터 신체정보를 불러오시겠습니까?',
-            text: '업로드된 건강 문진표에 키, 몸무게, 시력 정보가 명확하게 보이는지 다시한번 확인해주세요.',
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: '네',
-            cancelButtonText: '아니요',
-          }).then((result) => {
-            if (result.isConfirmed) {
-              let pondInstance = FilePond.find(
-                document.querySelector('.filepond')
-              );
-              let files = pondInstance.getFiles();
+        $(function () {
+          $('#getChildRecordFromImgBtn').on('click', function (e) {
+            e.preventDefault();
+            Swal.fire({
+              title: '건강 문진표 이미지로부터 신체정보를 불러오시겠습니까?',
+              text: '업로드된 건강 문진표에 키, 몸무게, 시력 정보가 명확하게 보이는지 다시한번 확인해주세요.',
+              icon: 'info',
+              showCancelButton: true,
+              confirmButtonText: '네',
+              cancelButtonText: '아니요',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                let pondInstance = FilePond.find(
+                  document.querySelector('.filepond')
+                );
+                let files = pondInstance.getFiles();
 
-              if (files.length > 0) {
-                const healthCheckImg = files[0].file;
-                const formData = new FormData();
-                formData.append('healthCheckImg', healthCheckImg);
-                $.ajax({
-                  url: '/children/healthCheck/recordData',
-                  type: 'POST',
-                  data: formData,
-                  contentType: false,
-                  processData: false,
-                  dataType: 'json',
-                  success: function (res) {
-                    console.log(res);
-                    //받아온 데이터를 입력창에 출력
-                    $('#weightInput').val(res.weight);
-                    $('#heightInput').val(res.height);
-                    $('#leftEyeInput').val(res.leftEye);
-                    $('#rightEyeInput').val(res.rightEye);
-                    $('#docterComment').val(res.docterComment);
-                    Swal.fire('불러오기가 완료되었습니다.');
-                  },
-                  error: function (res) {
-                    Swal.fire('검진정보를 불러오는데 실패했습니다!');
-                  },
-                });
-              } else {
-                Swal.fire('파일이 제대로 업로드되지 않았습니다!');
+                if (files.length > 0) {
+                  const healthCheckImg = files[0].file;
+                  const formData = new FormData();
+                  formData.append('healthCheckImg', healthCheckImg);
+                  $.ajax({
+                    url: '/children/healthCheck/recordData',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function (res) {
+                      console.log(res);
+                      //받아온 데이터를 입력창에 출력
+                      $('#weightInput').val(res.weight);
+                      $('#heightInput').val(res.height);
+                      $('#leftEyeInput').val(res.leftEye);
+                      $('#rightEyeInput').val(res.rightEye);
+                      $('#docterComment').val(res.docterComment);
+                      Swal.fire('불러오기가 완료되었습니다.');
+                    },
+                    error: function (res) {
+                      Swal.fire('검진정보를 불러오는데 실패했습니다!');
+                    },
+                  });
+                } else {
+                  Swal.fire('파일이 제대로 업로드되지 않았습니다!');
+                }
               }
-            }
+            });
           });
         });
-      });
     </script>
     <style>
-      .fixed-size-box {
-        width: 100px; /* 원하는 크기로 조정 */
-        height: 100px; /* 정사각형으로 설정 */
-        border-radius: 50%; /* 원형으로 만듦 */
-        overflow: hidden; /* 넘치는 부분 제거 */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: transparent; /* 배경 제거 */
-      }
-
-      .div-size-cust {
-        /* padding: 0; */
-        box-shadow: none;
-        background-image: url('/images/ilog.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-      }
-
-      #getChildRecordFromImgBtn {
-        margin: 10px auto;
-        width: auto;
-        display: block;
-      }
-      /* FilePond의 전체 영역에 최대 너비와 높이 제한 */
-      .filepond--root {
-        max-width: 200px;
-        max-height: 200px;
-        margin: 0 auto;
-      }
-
-      .loader,
-      .loader:before,
-      .loader:after {
-        border-radius: 50%;
-        width: 2.5em;
-        height: 2.5em;
-        animation-fill-mode: both;
-        animation: bblFadInOut 1.8s infinite ease-in-out;
-      }
-      .loader {
-        color: #fff;
-        font-size: 7px;
-        position: relative;
-        text-indent: -9999em;
-        transform: translateZ(0);
-        animation-delay: -0.16s;
-      }
-      .loader:before,
-      .loader:after {
-        content: '';
-        position: absolute;
-        top: 0;
-      }
-      .loader:before {
-        left: -3.5em;
-        animation-delay: -0.32s;
-      }
-      .loader:after {
-        left: 3.5em;
-      }
-
-      @keyframes bblFadInOut {
-        0%,
-        80%,
-        100% {
-          box-shadow: 0 2.5em 0 -1.3em;
+        .fixed-size-box {
+          width: 100px; /* 원하는 크기로 조정 */
+          height: 100px; /* 정사각형으로 설정 */
+          border-radius: 50%; /* 원형으로 만듦 */
+          overflow: hidden; /* 넘치는 부분 제거 */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: transparent; /* 배경 제거 */
         }
-        40% {
-          box-shadow: 0 2.5em 0 0;
-        }
-      }
 
-      #loadingIndicator {
-        display: none;
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-      }
+        .div-size-cust {
+          /* padding: 0; */
+          box-shadow: none;
+          background-image: url('/images/ilog.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+
+        #getChildRecordFromImgBtn {
+          margin: 10px auto;
+          width: auto;
+          display: block;
+        }
+        /* FilePond의 전체 영역에 최대 너비와 높이 제한 */
+        .filepond--root {
+          max-width: 200px;
+          max-height: 200px;
+          margin: 0 auto;
+        }
+
+        .loader,
+        .loader:before,
+        .loader:after {
+          border-radius: 50%;
+          width: 2.5em;
+          height: 2.5em;
+          animation-fill-mode: both;
+          animation: bblFadInOut 1.8s infinite ease-in-out;
+        }
+        .loader {
+          color: #fff;
+          font-size: 7px;
+          position: relative;
+          text-indent: -9999em;
+          transform: translateZ(0);
+          animation-delay: -0.16s;
+        }
+        .loader:before,
+        .loader:after {
+          content: '';
+          position: absolute;
+          top: 0;
+        }
+        .loader:before {
+          left: -3.5em;
+          animation-delay: -0.32s;
+        }
+        .loader:after {
+          left: 3.5em;
+        }
+
+        @keyframes bblFadInOut {
+          0%,
+          80%,
+          100% {
+            box-shadow: 0 2.5em 0 -1.3em;
+          }
+          40% {
+            box-shadow: 0 2.5em 0 0;
+          }
+        }
+
+        #loadingIndicator {
+          display: none;
+          position: fixed;
+          width: 100vw;
+          height: 100vh;
+          top: 0;
+          left: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 1000;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
-    <input
-      type="hidden"
-      id="myHealthCheckImageSrc"
-      th:value="${childRecord.healthCheckImage.healthCheckImageSrc}"
-    />
-    <section class="section">
-      <div class="container">
+<body>
+<input
+        id="myHealthCheckImageSrc"
+        th:value="${childRecord.healthCheckImage.healthCheckImageSrc}"
+        type="hidden"
+/>
+<section class="section">
+    <div class="container">
         <div class="columns is-centered">
-          <div class="column is-half">
-            <div class="columns is-vcentered">
-              <!-- vertically centered -->
-              <a th:href="@{/dashboard/guardian}">
-                <div
-                  class="box fixed-size-box div-size-cust"
-                  bis_skin_checked="1"
-                ></div>
-              </a>
+            <div class="column is-half">
+                <div class="columns is-vcentered">
+                    <!-- vertically centered -->
+                    <a th:href="@{/dashboard/guardian}">
+                        <div
+                                bis_skin_checked="1"
+                                class="box fixed-size-box div-size-cust"
+                        ></div>
+                    </a>
 
-              <div>
-                <h1 class="title has-text-centered">아동 신체정보 수정</h1>
-              </div>
-            </div>
-
-            <!-- 수정 폼: childRecord 객체에서 값을 바인딩 -->
-            <form
-              id="childRecordForm"
-              th:data-child-id="${childRecord.childId}"
-              th:data-record-id="${childRecord.id}"
-              method="post"
-              enctype="multipart/form-data"
-            >
-              <div class="box">
-                <div class="columns is-multiline">
-                  <div class="column is-half">
-                    <label class="label">키*</label>
-                    <input
-                      id="heightInput"
-                      class="input"
-                      type="number"
-                      step="0.1"
-                      name="height"
-                      required
-                      placeholder="000.0cm 단위"
-                      th:value="${childRecord.height}"
-                    />
-                  </div>
-
-                  <div class="column is-half">
-                    <label class="label">몸무게*</label>
-                    <input
-                      id="weightInput"
-                      class="input"
-                      type="number"
-                      step="0.1"
-                      name="weight"
-                      required
-                      placeholder="00.0kg 단위"
-                      th:value="${childRecord.weight}"
-                    />
-                  </div>
-
-                  <div class="column is-half">
-                    <label class="label">시력_좌</label>
-                    <input
-                      id="leftEyeInput"
-                      class="input"
-                      type="number"
-                      step="0.1"
-                      name="leftEye"
-                      placeholder="0.0 형식"
-                      th:value="${childRecord.leftEye}"
-                    />
-                  </div>
-
-                  <div class="column is-half">
-                    <label class="label">시력_우</label>
-                    <input
-                      id="rightEyeInput"
-                      class="input"
-                      type="number"
-                      step="0.1"
-                      name="rightEye"
-                      placeholder="0.0 형식"
-                      th:value="${childRecord.rightEye}"
-                    />
-                  </div>
-
-                  <div class="column is-full">
-                    <label class="label">소견</label>
-                    <textarea
-                      id="docterComment"
-                      class="textarea"
-                      name="note"
-                      placeholder="추가 소견 입력"
-                      th:text="${childRecord.note}"
-                    ></textarea>
-                  </div>
+                    <div>
+                        <h1 class="title has-text-centered">아동 신체정보 수정</h1>
+                    </div>
                 </div>
-              </div>
 
-              <!-- 파일 업로드 -->
-              <input
-                type="file"
-                class="filepond"
-                id="filepond"
-                name="healthCheckImg"
-                data-allow-reorder="true"
-                data-max-file-size="20MB"
-                data-max-files="1"
-              />
+                <!-- 수정 폼: childRecord 객체에서 값을 바인딩 -->
+                <form
+                        enctype="multipart/form-data"
+                        id="childRecordForm"
+                        method="post"
+                        th:data-child-id="${childRecord.childId}"
+                        th:data-record-id="${childRecord.id}"
+                >
+                    <div class="box">
+                        <div class="columns is-multiline">
+                            <div class="column is-half">
+                                <label class="label">키*</label>
+                                <input
+                                        class="input"
+                                        id="heightInput"
+                                        name="height"
+                                        placeholder="000.0cm 단위"
+                                        required
+                                        step="0.1"
+                                        th:value="${childRecord.height}"
+                                        type="number"
+                                />
+                            </div>
 
-              <!-- 버튼 -->
-              <div class="has-text-centered">
-                <button
-                  type="button"
-                  id="getChildRecordFromImgBtn"
-                  class="button is-medium"
-                >
-                  업로드한 파일로부터 신체정보 불러오기
-                </button>
-                <button type="submit" class="button is-dark is-medium">
-                  수정하기
-                </button>
-                <!-- <a
-                  th:href="@{/children/{childId}/recordList(childId=${childId})}"
-                  class="button is-light is-medium"
-                  >취소하기</a
-                > -->
-                <button
-                  type="button"
-                  class="button is-light is-medium"
-                  onclick="history.back()"
-                >
-                  취소하기
-                </button>
-              </div>
-            </form>
-          </div>
+                            <div class="column is-half">
+                                <label class="label">몸무게*</label>
+                                <input
+                                        class="input"
+                                        id="weightInput"
+                                        name="weight"
+                                        placeholder="00.0kg 단위"
+                                        required
+                                        step="0.1"
+                                        th:value="${childRecord.weight}"
+                                        type="number"
+                                />
+                            </div>
+
+                            <div class="column is-half">
+                                <label class="label">시력_좌</label>
+                                <input
+                                        class="input"
+                                        id="leftEyeInput"
+                                        name="leftEye"
+                                        placeholder="0.0 형식"
+                                        step="0.1"
+                                        th:value="${childRecord.leftEye}"
+                                        type="number"
+                                />
+                            </div>
+
+                            <div class="column is-half">
+                                <label class="label">시력_우</label>
+                                <input
+                                        class="input"
+                                        id="rightEyeInput"
+                                        name="rightEye"
+                                        placeholder="0.0 형식"
+                                        step="0.1"
+                                        th:value="${childRecord.rightEye}"
+                                        type="number"
+                                />
+                            </div>
+
+                            <div class="column is-full">
+                                <label class="label">소견</label>
+                                <textarea
+                                        class="textarea"
+                                        id="docterComment"
+                                        name="note"
+                                        placeholder="추가 소견 입력"
+                                        th:text="${childRecord.note}"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 파일 업로드 -->
+                    <input
+                            class="filepond"
+                            data-allow-reorder="true"
+                            data-max-file-size="20MB"
+                            data-max-files="1"
+                            id="filepond"
+                            name="healthCheckImg"
+                            type="file"
+                    />
+
+                    <!-- 버튼 -->
+                    <div class="has-text-centered">
+                        <button
+                                class="button is-medium"
+                                id="getChildRecordFromImgBtn"
+                                type="button"
+                        >
+                            업로드한 파일로부터 신체정보 불러오기
+                        </button>
+                        <button class="button is-dark is-medium" type="submit">
+                            수정하기
+                        </button>
+                        <!-- <a
+                          th:href="@{/children/{childId}/recordList(childId=${childId})}"
+                          class="button is-light is-medium"
+                          >취소하기</a
+                        > -->
+                        <button
+                                class="button is-light is-medium"
+                                onclick="history.back()"
+                                type="button"
+                        >
+                            취소하기
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
-    </section>
-    <div id="loadingIndicator">
-      <span class="loader"></span>
     </div>
-    <div th:replace="fragments/footer :: ilogFooter"></div>
-  </body>
+</section>
+<div id="loadingIndicator">
+    <span class="loader"></span>
+</div>
+<div th:replace="fragments/footer :: ilogFooter"></div>
+</body>
 </html>

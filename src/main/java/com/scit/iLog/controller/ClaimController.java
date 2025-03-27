@@ -1,6 +1,5 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.config.SecurityConfig;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.dto.claims.ClaimAnswerDTO;
 import com.scit.iLog.dto.claims.ClaimDetailsDTO;
@@ -63,8 +62,8 @@ public class ClaimController {
      * ADMIN 계정일 경우 모든 사용자의 문의를 조회할 수 있습니다.
      *
      * @param memberDetails - 현재 로그인한 사용자 정보
-     * @param pageable    - 페이지네이션 정보
-     * @param model       - 조회된 문의 목록을 뷰로 전달하기 위한 모델 객체
+     * @param pageable      - 페이지네이션 정보
+     * @param model         - 조회된 문의 목록을 뷰로 전달하기 위한 모델 객체
      * @return "/claims/claimsListView" (문의 목록 페이지 경로)
      * <p>
      * CL-1

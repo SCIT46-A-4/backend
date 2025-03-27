@@ -1,313 +1,313 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>이용약관</title>
     <link
-      rel="stylesheet"
-      href="../static/css/bulma.min.css"
-      th:href="@{/css/bulma.min.css}"
+            href="../static/css/bulma.min.css"
+            rel="stylesheet"
+            th:href="@{/css/bulma.min.css}"
     />
     <link
-      rel="stylesheet"
-      href="../static/css/customColors.css"
-      th:href="@{/css/customColors.css}"
+            href="../static/css/customColors.css"
+            rel="stylesheet"
+            th:href="@{/css/customColors.css}"
     />
     <script
-      src="../static/js/jquery-3.6.0.min.js"
-      th:href="@{/js/jquery-3.6.0.min.js}"
+            src="../static/js/jquery-3.6.0.min.js"
+            th:href="@{/js/jquery-3.6.0.min.js}"
     ></script>
     <script
-      defer
-      src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
+            defer
+            src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
     ></script>
 
     <style>
-      body {
-        background-color: #fdf5bf;
-        font-family: 'Arial', sans-serif;
-      }
-      .container {
-        max-width: 900px;
-        margin: 40px auto;
-        background: white;
-        padding: 50px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
-      h2 {
-        text-align: center;
-        font-size: 28px;
-        margin-bottom: 20px;
-      }
-      .toc {
-        background: #f8f8f8;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 30px;
-      }
-      .toc h3 {
-        font-size: 20px;
-        margin-bottom: 10px;
-      }
-      .toc ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      .toc ul li {
-        padding: 5px 0;
-      }
-      .toc ul li a {
-        text-decoration: none;
-        color: #333;
-        font-weight: bold;
-      }
-      h3 {
-        margin-top: 10px;
-        font-size: 22px;
-        border-bottom: 2px solid #333;
-        padding-bottom: 10px;
-      }
-      p,
-      ul {
-        font-size: 16px;
-        line-height: 1.8;
-      }
-      ul {
-        padding-left: 20px;
-      }
-      #logo {
-        width: 70px;
-        height: auto;
-        max-height: 80px;
-      }
+        body {
+          background-color: #fdf5bf;
+          font-family: 'Arial', sans-serif;
+        }
+        .container {
+          max-width: 900px;
+          margin: 40px auto;
+          background: white;
+          padding: 50px;
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+          text-align: center;
+          font-size: 28px;
+          margin-bottom: 20px;
+        }
+        .toc {
+          background: #f8f8f8;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 30px;
+        }
+        .toc h3 {
+          font-size: 20px;
+          margin-bottom: 10px;
+        }
+        .toc ul {
+          list-style-type: none;
+          padding: 0;
+        }
+        .toc ul li {
+          padding: 5px 0;
+        }
+        .toc ul li a {
+          text-decoration: none;
+          color: #333;
+          font-weight: bold;
+        }
+        h3 {
+          margin-top: 10px;
+          font-size: 22px;
+          border-bottom: 2px solid #333;
+          padding-bottom: 10px;
+        }
+        p,
+        ul {
+          font-size: 16px;
+          line-height: 1.8;
+        }
+        ul {
+          padding-left: 20px;
+        }
+        #logo {
+          width: 70px;
+          height: auto;
+          max-height: 80px;
+        }
     </style>
-  </head>
-  <body>
-    <!-- Navigation -->
-    <nav class="navbar is-white" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
+</head>
+<body>
+<!-- Navigation -->
+<nav aria-label="main navigation" class="navbar is-white" role="navigation">
+    <div class="navbar-brand">
         <a class="navbar-item" href="/">
-          <img
-            id="logo"
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="iLog 로고"
-          />
+            <img
+                    alt="iLog 로고"
+                    id="logo"
+                    src="../../static/images/wilog.png"
+                    th:src="@{/images/wilog.png}"
+            />
         </a>
 
         <a
-          role="button"
-          class="navbar-burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarBasic"
+                aria-expanded="false"
+                aria-label="menu"
+                class="navbar-burger"
+                data-target="navbarBasic"
+                role="button"
         >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
         </a>
-      </div>
+    </div>
 
-      <div id="navbarBasic" class="navbar-menu">
+    <div class="navbar-menu" id="navbarBasic">
         <div class="navbar-end">
-          <div class="navbar-item">
-            <div class="buttons">
-              <a
-                class="button is-primary-custom has-text-black"
-                th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-              >
-                <strong
-                  th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'"
-                >
-                  이용하기
-                </strong>
-              </a>
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a
+                            class="button is-primary-custom has-text-black"
+                            th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
+                    >
+                        <strong
+                                th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : '이용하기'"
+                        >
+                            이용하기
+                        </strong>
+                    </a>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </nav>
-    <section class="section">
-      <div class="container">
+    </div>
+</nav>
+<section class="section">
+    <div class="container">
         <h2><strong>이용약관</strong></h2>
 
         <!-- 목차 -->
         <div class="toc">
-          <h3>목차</h3>
-          <br />
-          <h4>※ 클릭 시 해당 조항으로 이동됩니다. ※</h4>
-          <br />
-          <ul>
-            <li><a href="#service">제1조: 서비스 제공</a></li>
-            <li><a href="#content_management">제2조: 콘텐츠의 관리</a></li>
-            <li><a href="#signup">제3조: 회원가입 및 이용 제한</a></li>
-            <li><a href="#accuracy">제4조: 데이터의 정확성 및 책임</a></li>
-            <li><a href="#limitations">제5조: 서비스 제공의 한계</a></li>
-            <li><a href="#copyright">제6조: 콘텐츠의 저작권</a></li>
-            <li><a href="#storage">제7조: 데이터 저장 및 삭제 정책</a></li>
-          </ul>
+            <h3>목차</h3>
+            <br/>
+            <h4>※ 클릭 시 해당 조항으로 이동됩니다. ※</h4>
+            <br/>
+            <ul>
+                <li><a href="#service">제1조: 서비스 제공</a></li>
+                <li><a href="#content_management">제2조: 콘텐츠의 관리</a></li>
+                <li><a href="#signup">제3조: 회원가입 및 이용 제한</a></li>
+                <li><a href="#accuracy">제4조: 데이터의 정확성 및 책임</a></li>
+                <li><a href="#limitations">제5조: 서비스 제공의 한계</a></li>
+                <li><a href="#copyright">제6조: 콘텐츠의 저작권</a></li>
+                <li><a href="#storage">제7조: 데이터 저장 및 삭제 정책</a></li>
+            </ul>
         </div>
 
         <div class="content">
-          <ul>
-            <li>
-              '콘텐츠'란 정보통신망법의 규정에 따라 정보통신망에서 사용되는 부호
-              .문자.음성.음 향.이미지 또는 영상 등으로 정보 형태의 글, 사진,
-              동영상 및 각종 파일과 링크 등을 말합니다.
-            </li>
-            <ul style="list-style-type: none; margin-left: -10px">
-              <li>
-                가. 전항에도 불구하고, 다음 각호의 사유에 해당하는 경우 회사는
-                회원가입을 보류 하거나 거절하는 등 제한할 수 있습니다.
-              </li>
+            <ul>
+                <li>
+                    '콘텐츠'란 정보통신망법의 규정에 따라 정보통신망에서 사용되는 부호
+                    .문자.음성.음 향.이미지 또는 영상 등으로 정보 형태의 글, 사진,
+                    동영상 및 각종 파일과 링크 등을 말합니다.
+                </li>
+                <ul style="list-style-type: none; margin-left: -10px">
+                    <li>
+                        가. 전항에도 불구하고, 다음 각호의 사유에 해당하는 경우 회사는
+                        회원가입을 보류 하거나 거절하는 등 제한할 수 있습니다.
+                    </li>
+                </ul>
+                <li>
+                    가입신청자가 이 약관에 의하여 이전에 회원자격을 상실한 적이 있는
+                    경우(단, 회사 의 재가입 승낙을 얻은 경우에는 예외로 함)
+                </li>
+                <li>실명이 아니거나 타인의 명의를 도용한 경우</li>
+                <li>회사가 정하는 필수정보를 누락하거나 허위로 기재한 경우</li>
+                <li>
+                    만 14세 미만의 아동, 만 19세 미만의 미성년자, 피한정후견인,
+                    피성년후견인이 법정 대리인의 동의를 얻지 않은 경우
+                </li>
+                <li>
+                    이용자의 귀책사유로 인하여 승인이 불가능하거나 기타 이 약관
+                    등회사가 규정한운 영원칙을 위반한 경우
+                </li>
+                <li>
+                    신용정보의 이용과 보호에 관한 법률에 따라 PC통신, 인터넷서비스의
+                    신용불량자로 등록되어 있는 경우
+                </li>
+                <li>
+                    정보통신윤리위원회에 PC통신, 인터넷서비스의 불량이용자로 등록되어
+                    있는 경우
+                </li>
+                <li>
+                    이미 사용 중인 회원정보 또는 공서양속을 저해하는 아이디를
+                    사용하고자 하는 경우 가. 회사가 제공하는 서비스의 내용은 다음과
+                    같습니다.
+                </li>
+                <li>
+                    Al 감정분석 및 솔루션 제안: 사용자가 업로드한 아동 데이터를
+                    기반으로 시를 활용 한 감정 분석을 수행하고, 이에 따른 맞춤험
+                    솔루션을 제공합니다.
+                </li>
+                <li>
+                    아동 심리 설문 서비스 : 비정기적인 자가진단 설문을 통해 아동의
+                    심리 상태를 평가 하고, 의에 대한 분석 결과를 제공합니다.
+                </li>
+                <li>
+                    아동 성장 정보 관리 : 아동의 건강 문진표 및 관련 정보를 업로드하여
+                    성장 과정을 기 록 및 관리할 수 있도록 지원합니다.
+                </li>
+                <li>
+                    신체 및 심리 진단 결과 제공: 아동의 신체 및 심리 건강 상태에 대한
+                    분석 결과를 제 공하며, 이에 대한 통계 및 이력을 확인할 수 있도록
+                    합니다.
+                </li>
+                <ul style="list-style-type: none; margin-left: -10px">
+                    <li>
+                        가. 제1항의 규정에도 불구하고 이용자가 직접 작성한 콘텐츠 및
+                        회사의 제휴계약에 따라 제공된 저작물에 대한 지식재산권은 회사에
+                        귀속되지 않습니다.
+                    </li>
+                </ul>
             </ul>
-            <li>
-              가입신청자가 이 약관에 의하여 이전에 회원자격을 상실한 적이 있는
-              경우(단, 회사 의 재가입 승낙을 얻은 경우에는 예외로 함)
-            </li>
-            <li>실명이 아니거나 타인의 명의를 도용한 경우</li>
-            <li>회사가 정하는 필수정보를 누락하거나 허위로 기재한 경우</li>
-            <li>
-              만 14세 미만의 아동, 만 19세 미만의 미성년자, 피한정후견인,
-              피성년후견인이 법정 대리인의 동의를 얻지 않은 경우
-            </li>
-            <li>
-              이용자의 귀책사유로 인하여 승인이 불가능하거나 기타 이 약관
-              등회사가 규정한운 영원칙을 위반한 경우
-            </li>
-            <li>
-              신용정보의 이용과 보호에 관한 법률에 따라 PC통신, 인터넷서비스의
-              신용불량자로 등록되어 있는 경우
-            </li>
-            <li>
-              정보통신윤리위원회에 PC통신, 인터넷서비스의 불량이용자로 등록되어
-              있는 경우
-            </li>
-            <li>
-              이미 사용 중인 회원정보 또는 공서양속을 저해하는 아이디를
-              사용하고자 하는 경우 가. 회사가 제공하는 서비스의 내용은 다음과
-              같습니다.
-            </li>
-            <li>
-              Al 감정분석 및 솔루션 제안: 사용자가 업로드한 아동 데이터를
-              기반으로 시를 활용 한 감정 분석을 수행하고, 이에 따른 맞춤험
-              솔루션을 제공합니다.
-            </li>
-            <li>
-              아동 심리 설문 서비스 : 비정기적인 자가진단 설문을 통해 아동의
-              심리 상태를 평가 하고, 의에 대한 분석 결과를 제공합니다.
-            </li>
-            <li>
-              아동 성장 정보 관리 : 아동의 건강 문진표 및 관련 정보를 업로드하여
-              성장 과정을 기 록 및 관리할 수 있도록 지원합니다.
-            </li>
-            <li>
-              신체 및 심리 진단 결과 제공: 아동의 신체 및 심리 건강 상태에 대한
-              분석 결과를 제 공하며, 이에 대한 통계 및 이력을 확인할 수 있도록
-              합니다.
-            </li>
-            <ul style="list-style-type: none; margin-left: -10px">
-              <li>
-                가. 제1항의 규정에도 불구하고 이용자가 직접 작성한 콘텐츠 및
-                회사의 제휴계약에 따라 제공된 저작물에 대한 지식재산권은 회사에
-                귀속되지 않습니다.
-              </li>
+            <br/>
+
+            <h3 id="service">제1조 (서비스 제공)</h3>
+            <p>회사는 다음과 같은 서비스를 제공합니다.</p>
+            <ul>
+                <li>AI 감정분석 및 솔루션 제안</li>
+                <li>아동 심리 설문 (비정기적 자가진단)</li>
+                <li>아동 성장 정보 관리 (건강 문진표 업로드)</li>
+                <li>아동의 신체 및 심리 분석 결과 제공</li>
+                <li>분석 결과 열람 및 공유 기능 제공</li>
             </ul>
-          </ul>
-          <br />
+            <br/>
 
-          <h3 id="service">제1조 (서비스 제공)</h3>
-          <p>회사는 다음과 같은 서비스를 제공합니다.</p>
-          <ul>
-            <li>AI 감정분석 및 솔루션 제안</li>
-            <li>아동 심리 설문 (비정기적 자가진단)</li>
-            <li>아동 성장 정보 관리 (건강 문진표 업로드)</li>
-            <li>아동의 신체 및 심리 분석 결과 제공</li>
-            <li>분석 결과 열람 및 공유 기능 제공</li>
-          </ul>
-          <br />
-
-          <h3 id="content_management">제2조 (콘텐츠의 관리)</h3>
-          <ul>
-            <li>
-              회원이 작성 또는 창작한 콘텐츠가 '개인정보보호법' 및 '저작권법' 등
-              관련 법에 위반 되는 내용을 포함하는 경우, 관리자는 관련 법이 정한
-              절차에 따라 해당 콘텐츠의 게 시중단 및 삭제 등을 요청할 수 있으며,
-              회사는 관련 법에 따라 조치를 취하여야 합니다.
-            </li>
-            <li>
-              회사는 전항에 따른 권리자의 요청이 없는 경우라도 권리침해가 인정될
-              만한 사유가 있거나 기타 회사 정책 및 관련 법에 위반되는 경우에는
-              관련 법에 따라 해당 콘텐츠 에 대해 임시조치 등을 취할 수 있습니다.
-            </li>
-          </ul>
-          <br />
-
-          <h3 id="signup">제3조 (회원가입 및 이용 제한)</h3>
-          <ul>
-            <li>
-              만 14세 미만 아동은 법정대리인의 동의를 받아야 회원가입이
-              가능합니다.
-            </li>
-            <li>
-              회원가입 시 허위 정보 입력이 확인될 경우 서비스 이용이 제한될 수
-              있습니다.
-            </li>
-          </ul>
-          <br />
-
-          <h3 id="accuracy">제4조 (데이터의 정확성 및 책임)</h3>
-          <p>
-            회원이 업로드하는 아동 데이터 및 건강 문진표는 정확해야 하며, 허위
-            데이터 입력으로 인해 발생하는 문제는 회원에게 책임이 있습니다.
-          </p>
-          <br />
-
-          <h3 id="limitations">제5조 (서비스 제공의 한계)</h3>
-          <p>
-            본 서비스는 AI 기반 분석 결과를 제공하지만, 의학적 진단이나 심리
-            상담을 대신하지 않습니다.
-          </p>
-          <br />
-
-          <h3 id="copyright">제6조 (콘텐츠의 저작권)</h3>
-          <ul>
-            <li>
-              이용자가 서비스 내에 게시한 콘텐츠의 저작권은 해당 콘텐츠의
-              저작자에게 귀속됩니다.
-            </li>
-            <li>
-              제1항에 불구하고 회사는 서비스의 운영, 전시, 전송, 배포, 홍보 등의
-              목적으로 별도 의 허락 없이 무상으로 저작권법 및 공정한 거래관행에
-              합치되는 범위 내에서 다음 각 호와 같이 회원이 등록한 콘텐츠를
-              사용할 수 있습니다.
-            </li>
-            <ul style="list-style-type: none; margin-left: -10px">
-              <li>
-                가. 서비스의 운영, 홍보, 서비스 개선 및 새로운 서비스 개발을
-                위한 범위 내의 사용
-              </li>
-              <li>
-                나. 미디어, 통신사 등을 통한 홍보목적으로 이용자의 콘텐츠를
-                제공, 전시하도록 하는 등의 사용.
-              </li>
+            <h3 id="content_management">제2조 (콘텐츠의 관리)</h3>
+            <ul>
+                <li>
+                    회원이 작성 또는 창작한 콘텐츠가 '개인정보보호법' 및 '저작권법' 등
+                    관련 법에 위반 되는 내용을 포함하는 경우, 관리자는 관련 법이 정한
+                    절차에 따라 해당 콘텐츠의 게 시중단 및 삭제 등을 요청할 수 있으며,
+                    회사는 관련 법에 따라 조치를 취하여야 합니다.
+                </li>
+                <li>
+                    회사는 전항에 따른 권리자의 요청이 없는 경우라도 권리침해가 인정될
+                    만한 사유가 있거나 기타 회사 정책 및 관련 법에 위반되는 경우에는
+                    관련 법에 따라 해당 콘텐츠 에 대해 임시조치 등을 취할 수 있습니다.
+                </li>
             </ul>
-          </ul>
-          <br />
+            <br/>
 
-          <h3 id="storage">제7조 (데이터 저장 및 삭제 정책)</h3>
-          <ul>
-            <li>회원 탈퇴 시 데이터는 삭제됩니다.</li>
-            <li>
-              보호자는 요청을 통해 언제든 데이터 삭제를 요청할 수 있습니다.
-            </li>
-          </ul>
-          <br />
+            <h3 id="signup">제3조 (회원가입 및 이용 제한)</h3>
+            <ul>
+                <li>
+                    만 14세 미만 아동은 법정대리인의 동의를 받아야 회원가입이
+                    가능합니다.
+                </li>
+                <li>
+                    회원가입 시 허위 정보 입력이 확인될 경우 서비스 이용이 제한될 수
+                    있습니다.
+                </li>
+            </ul>
+            <br/>
+
+            <h3 id="accuracy">제4조 (데이터의 정확성 및 책임)</h3>
+            <p>
+                회원이 업로드하는 아동 데이터 및 건강 문진표는 정확해야 하며, 허위
+                데이터 입력으로 인해 발생하는 문제는 회원에게 책임이 있습니다.
+            </p>
+            <br/>
+
+            <h3 id="limitations">제5조 (서비스 제공의 한계)</h3>
+            <p>
+                본 서비스는 AI 기반 분석 결과를 제공하지만, 의학적 진단이나 심리
+                상담을 대신하지 않습니다.
+            </p>
+            <br/>
+
+            <h3 id="copyright">제6조 (콘텐츠의 저작권)</h3>
+            <ul>
+                <li>
+                    이용자가 서비스 내에 게시한 콘텐츠의 저작권은 해당 콘텐츠의
+                    저작자에게 귀속됩니다.
+                </li>
+                <li>
+                    제1항에 불구하고 회사는 서비스의 운영, 전시, 전송, 배포, 홍보 등의
+                    목적으로 별도 의 허락 없이 무상으로 저작권법 및 공정한 거래관행에
+                    합치되는 범위 내에서 다음 각 호와 같이 회원이 등록한 콘텐츠를
+                    사용할 수 있습니다.
+                </li>
+                <ul style="list-style-type: none; margin-left: -10px">
+                    <li>
+                        가. 서비스의 운영, 홍보, 서비스 개선 및 새로운 서비스 개발을
+                        위한 범위 내의 사용
+                    </li>
+                    <li>
+                        나. 미디어, 통신사 등을 통한 홍보목적으로 이용자의 콘텐츠를
+                        제공, 전시하도록 하는 등의 사용.
+                    </li>
+                </ul>
+            </ul>
+            <br/>
+
+            <h3 id="storage">제7조 (데이터 저장 및 삭제 정책)</h3>
+            <ul>
+                <li>회원 탈퇴 시 데이터는 삭제됩니다.</li>
+                <li>
+                    보호자는 요청을 통해 언제든 데이터 삭제를 요청할 수 있습니다.
+                </li>
+            </ul>
+            <br/>
         </div>
-      </div>
-    </section>
-    <div th:replace="fragments/footer :: ilogFooter"></div>
-  </body>
+    </div>
+</section>
+<div th:replace="fragments/footer :: ilogFooter"></div>
+</body>
 </html>
