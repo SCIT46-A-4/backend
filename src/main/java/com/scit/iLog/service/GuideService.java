@@ -19,17 +19,7 @@ public class GuideService {
         return guideRepository.findAll();
     }
 
-    public List<GuideDTO> selectAll(// Pageable pageable,
-                                    String searchItem, String searchWord) {
-        // 1) -1: DB의 [age의 위치의 값은 0부터시작하고, 사용자에게는 0페이지가 없이 1페이지를 요청하기 때문에
-        // 사용자가 1페이지를 요청하면 DB에서 0 페이지의 데이터를 가져와야 한다.
-        // int page = pageable.getPageNumber()-1;
-
-        // 2) 페이징이 추가된 조회
-        // Page<GuideEntity> temp = null;
-
-        // 3) 대소문자 구분없이 검색가능한 기능 구현
-        //findByTitleContainingIgnoreCase, findByContentContainingIgnoreCase 사용
+    public List<GuideDTO> selectAll(String searchItem, String searchWord) {
         List<GuideEntity> guideEntityList = null;
 
         switch (searchItem) {
@@ -42,11 +32,8 @@ public class GuideService {
                 break;
         }
 
-        // Page<GuideDTO> list = null;
         List<GuideDTO> GuideDTOList = new ArrayList<>();
 
-        // 람다식, 스트림(목록을 가지고 변경(map)할 때 주로 사용)
-        // map을 이용해서 DTO 생성자를 이용해 목록을 만들겠다.
         for (var t : guideEntityList) {
             GuideDTO _data = GuideDTO.builder()
                     .id(t.getId())
@@ -59,6 +46,4 @@ public class GuideService {
 
         return GuideDTOList;
     }
-
-
 }

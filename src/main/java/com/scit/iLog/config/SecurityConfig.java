@@ -95,8 +95,6 @@ public class SecurityConfig {
                                 .failureHandler(loginFailureHandler) //(추가) 로그인 실패시 처리할 핸들러 등록
                                 .usernameParameter("signInId")
                                 .passwordParameter("userPwd")
-//                        .defaultSuccessUrl("/")
-//                        .failureUrl("/member/login?error=true") //핸들러를 등록하면 필요없음
         );
         http.logout(logout ->
                 logout

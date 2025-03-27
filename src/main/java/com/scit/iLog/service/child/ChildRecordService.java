@@ -91,12 +91,6 @@ public class ChildRecordService {
                 .build();
     }
 
-    public String findHealthCheckFileNameByChildRecordId(Long childRecordId) {
-        return healthCheckRepository.findByChildRecordId(childRecordId)
-                .orElseThrow(() -> new EntityNotFoundException("Health Check를 찾지 못했습니다."))
-                .getSavedFileName();
-    }
-
     /**
      * 아이 신체 정보를 저장하는 메서드
      */
@@ -243,9 +237,6 @@ public class ChildRecordService {
         }
         childRecord.setHealthCheck(null);
         healthCheckRepository.delete(healthCheck);
-        // 파일 관련 정보를 null 처리하여 삭제 효과 반영
-//        healthCheck.setOriginalFileName(null);
-//        healthCheck.setSavedFileName(null);
     }
 
     private void processHealthCheckFileUpdate(ChildEntity child, MemberEntity member, ChildRecordEntity childRecord, ChildRecordUpdateRequestDTO request) {
@@ -277,13 +268,5 @@ public class ChildRecordService {
                 .savedFileName(newSavedFileName)
                 .build());
         childRecord.setHealthCheck(healthCheck);
-    }
-
-    @Transactional
-    public void inValidateByMember(Long memberId) {
-        MemberEntity member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-        healthCheckRepository.findAllByMember(member)
-                .forEach(healthCheck -> healthCheck.setMember(null));
     }
 }

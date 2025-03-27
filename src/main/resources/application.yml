@@ -24,8 +24,8 @@ spring:
             enable: true
   servlet:
     multipart:
-      max-file-size: 50MB        # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
-      max-request-size: 50MB     # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
+      max-file-size: 20MB        # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
+      max-request-size: 20MB     # 2025-02-28 / 김은진 / 파일 업로드 크기 50MB로 설정
       enabled: true             # 2025-02-28 / 김은진 / 파일 업로드 기능 활성화
   ai:
     openai:
@@ -47,7 +47,6 @@ childAnalysisFileImgWindowsPath: C:/ilog/childAnalysisFiles
 childAnalysisFileMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childAnalysisFiles
 
 openWeatherApiKey:
-openAIKey:
 openAIUrl: https://api.openai.com/v1
 openAIApiModel: gpt-4-vision-preview
 openAIApiMaxTokens: 300

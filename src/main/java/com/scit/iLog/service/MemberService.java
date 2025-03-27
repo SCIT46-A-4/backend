@@ -90,13 +90,6 @@ public class MemberService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public MemberDashboardProfileDTO findMemberProfileDataById(String signUpId) {
-        MemberEntity member = memberRepository.findBySignInId(signUpId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("대시보드 프로필 데이터 조회 실패: %d", signUpId)));
-        return new MemberDashboardProfileDTO(member.getName(), member.getRelationType());
-    }
-
     @Transactional
     public void inValidateMember(Long memberId) {
         // 1. 삭제할 MemberEntity를 조회 (없으면 예외 발생)
@@ -142,11 +135,6 @@ public class MemberService {
             relationShipRepository.deleteAll(relationships);
         }
         memberRepository.delete(member);
-    }
-
-    @Transactional
-    public void deleteMemberById(Long memberId) {
-        memberRepository.deleteById(memberId);
     }
 
     public boolean isDuplicatedPassword(Long memberId, String password) {

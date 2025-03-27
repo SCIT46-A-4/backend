@@ -82,13 +82,6 @@ public class ChildDiaryService {
                 .content(childDiaryInsertDTO.content()).child(child).build()).getId();
     }
 
-    @Transactional
-    public void inValidateByMember(Long memberId) {
-        MemberEntity member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-        childDiaryRepository.findAllByAuthor(member).forEach(childDiary -> childDiary.setAuthor(null));
-    }
-
     public boolean existsDiary(Long diaryId) {
         return childDiaryRepository.existsById(diaryId);
     }
@@ -100,5 +93,4 @@ public class ChildDiaryService {
         }
         childDiaryRepository.deleteById(diaryId);
     }
-
 }

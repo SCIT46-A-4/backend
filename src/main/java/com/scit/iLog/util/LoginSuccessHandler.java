@@ -39,26 +39,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             // targetUrl이 "/auth/permissionTeacher" 인 경우, token과 requestId 등 추가 파라미터 보존
             if ("/auth/permissionTeacher".equals(targetUrlParam)) {
                 String token = request.getParameter("token");
-//                String requestId = request.getParameter("requestId");
                 StringBuilder redirectUrl = new StringBuilder(targetUrlParam);
                 redirectUrl.append("?");
-//                boolean first = true;
                 if (token != null) {
                     redirectUrl.append("token=").append(token);
-//                    first = false;
                 }
-//                if (requestId != null) {
-//                    if (!first) {
-//                        redirectUrl.append("&");
-//                    }
-//                    redirectUrl.append("requestId=").append(requestId);
-//                    first = false;
-//                }
-                // success 파라미터 추가
-//                if (!first) {
-//                    redirectUrl.append("&");
-//                }
-//                redirectUrl.append("success=true");
 
                 log.info("targetUrl 파라미터 발견: {} - 해당 URL로 리다이렉트", redirectUrl);
                 response.sendRedirect(redirectUrl.toString());

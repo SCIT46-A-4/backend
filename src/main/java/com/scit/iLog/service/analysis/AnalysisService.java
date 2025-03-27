@@ -39,9 +39,6 @@ import static com.scit.iLog.config.WebConfig.ANALYSIS_FILES_REQUEST_ROOT_PATH;
 @Service
 @RequiredArgsConstructor
 public class AnalysisService {
-    private static final String childDataExtractionPrompt =
-            "please extract height, weight, leftEye, rightEye, diagnosis of this child from this img";
-    private final AnalysisClient fakeAnalysisClient;
     private final WeatherService weatherService;
     private final AnalysisResultRepository analysisResultRepository;
     private final AnalysisTargetRepository analysisTargetRepository;
@@ -56,7 +53,6 @@ public class AnalysisService {
     @Transactional
     public Long getAnalysisResult(Long analysisTargetId) {
         AnalysisTargetEntity analysisTarget = findAnalysisTargetById(analysisTargetId);
-//        AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
         String targetFilePath = filePathUtil.childAnalysisFileUploadPath().concat("/").concat(analysisTarget.getSavedTargetFileName());
 
         String analysisDesc = analysisTarget.getDescription();
@@ -210,25 +206,6 @@ public class AnalysisService {
         return analysisTargetRepository.save(analysisTarget).getId();
     }
 
-    @Transactional
-    public String saveHealthCheckImage(MultipartFile healthCheckImg) {
-        // 1. 업로드 경로 결정 (OS에 따라)
-        String uploadPath = filePathUtil.childHealthCheckImgUploadPath();
-
-        // 2. 원본 파일명이 있는지 확인 후, 안전한 저장 파일명 생성
-        String originalFilename = healthCheckImg.getOriginalFilename();
-        if (!StringUtils.hasText(originalFilename)) {
-            throw new IllegalArgumentException("업로드 파일에 원본 파일명이 존재하지 않습니다.");
-        }
-        String savedFileName = FileManager.getSavedFileName(originalFilename);
-
-        // 3. 파일 저장 (FileManager.saveFile 메서드 사용)
-        fileManager.saveFile(healthCheckImg, uploadPath, savedFileName);
-
-        // 4. 저장된 파일의 전체 경로를 반환하거나 DB에 저장할 때 사용할 파일명을 반환
-        return savedFileName;
-    }
-
     public ChildRecordExtraction getExtractChildRecordData(MultipartFile healthCheckImg) {
         if (healthCheckImg.isEmpty() || !StringUtils.hasText(healthCheckImg.getOriginalFilename())) {
             return ChildRecordExtractionDTO.builder()
@@ -240,15 +217,6 @@ public class AnalysisService {
                     .build();
         }
         return openAIService.getChildRecordExtractionResponse(healthCheckImg);
-    }
-
-    @Transactional
-    public void inValidateByMember(Long memberId) {
-        MemberEntity member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-        analysisTargetRepository.findAllByUploadedBy(member)
-                .forEach(analysisTarget ->
-                        analysisTarget.setUploadedBy(null));
     }
 
     @Transactional
