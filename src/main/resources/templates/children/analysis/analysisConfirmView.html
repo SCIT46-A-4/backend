@@ -1,132 +1,132 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>글 분석 결과 컨펌 페이지</title>
     <link
-      rel="stylesheet"
-      href="../../../static/css/bulma.min.css"
-      th:href="@{/css/bulma.min.css}"
+            href="../../../static/css/bulma.min.css"
+            rel="stylesheet"
+            th:href="@{/css/bulma.min.css}"
     />
     <link
-      rel="stylesheet"
-      href="../../../static/css/customColors.css"
-      th:href="@{/css/customColors.css}"
+            href="../../../static/css/customColors.css"
+            rel="stylesheet"
+            th:href="@{/css/customColors.css}"
     />
     <style>
-      body {
-        background-color: var(--primary-color);
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 1rem;
-      }
-      .title {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        text-align: center;
-      }
-      .field:not(:last-child) {
-        margin-bottom: 1rem;
-      }
-      .file-preview {
-        width: 100%;
-        height: 200px;
-        background-color: #f0f0f0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      .analysis-result {
-        background-color: #f5f5f5;
-        padding: 1rem;
-        margin-bottom: 1rem;
-      }
+        body {
+          background-color: var(--primary-color);
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 1rem;
+        }
+        .title {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+          text-align: center;
+        }
+        .field:not(:last-child) {
+          margin-bottom: 1rem;
+        }
+        .file-preview {
+          width: 100%;
+          height: 200px;
+          background-color: #f0f0f0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+        .analysis-result {
+          background-color: #f5f5f5;
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="title">000 군<br />글 분석 결과 컨펌 페이지</h1>
+</head>
+<body>
+<div class="container">
+    <h1 class="title">000 군<br/>글 분석 결과 컨펌 페이지</h1>
 
-      <div class="field">
+    <div class="field">
         <label class="label">등록한 글 사진 미리보기</label>
         <div class="file-preview">
-          <p>등록한 글 사진 미리보기</p>
+            <p>등록한 글 사진 미리보기</p>
         </div>
-      </div>
+    </div>
 
-      <div class="field">
+    <div class="field">
         <label class="label">일시 입력</label>
         <div class="control">
-          <input class="input" type="datetime-local" value="2020-01-01T13:59" />
+            <input class="input" type="datetime-local" value="2020-01-01T13:59"/>
         </div>
-      </div>
+    </div>
 
-      <div class="field">
+    <div class="field">
         <label class="label">날씨 가져오기?</label>
         <div class="control">
-          <div class="select is-fullwidth">
-            <select>
-              <option>날씨 선택</option>
-              <option>맑음</option>
-              <option>흐림</option>
-              <option>비</option>
-              <option>눈</option>
-            </select>
-          </div>
+            <div class="select is-fullwidth">
+                <select>
+                    <option>날씨 선택</option>
+                    <option>맑음</option>
+                    <option>흐림</option>
+                    <option>비</option>
+                    <option>눈</option>
+                </select>
+            </div>
         </div>
-      </div>
+    </div>
 
-      <div class="field">
+    <div class="field">
         <label class="label">누구와 함께 있었나요? : (엄마/교사/기타)</label>
         <div class="control">
-          <div class="select is-fullwidth">
-            <select>
-              <option>선택해주세요</option>
-              <option>엄마</option>
-              <option>교사</option>
-              <option>기타</option>
-            </select>
-          </div>
+            <div class="select is-fullwidth">
+                <select>
+                    <option>선택해주세요</option>
+                    <option>엄마</option>
+                    <option>교사</option>
+                    <option>기타</option>
+                </select>
+            </div>
         </div>
-      </div>
+    </div>
 
-      <div class="field">
+    <div class="field">
         <label class="label">데이터에 대한 보충 설명을 작성해주세요</label>
         <div class="control">
           <textarea
-            class="textarea"
-            placeholder="추가 설명을 입력하세요"
+                  class="textarea"
+                  placeholder="추가 설명을 입력하세요"
           ></textarea>
         </div>
-      </div>
+    </div>
 
-      <div class="field">
+    <div class="field">
         <label class="label">글 추출 결과 (수정할 수 있게)</label>
         <div class="control">
           <textarea
-            class="textarea"
-            rows="10"
-            placeholder="글 추출 결과가 여기에 표시됩니다. 수정 가능합니다."
+                  class="textarea"
+                  placeholder="글 추출 결과가 여기에 표시됩니다. 수정 가능합니다."
+                  rows="10"
           ></textarea>
         </div>
-      </div>
+    </div>
 
-      <div class="field">
+    <div class="field">
         <label class="label">글 분석 결과</label>
         <div class="analysis-result">
-          <p>글 분석 결과가 여기에 표시됩니다.</p>
+            <p>글 분석 결과가 여기에 표시됩니다.</p>
         </div>
-      </div>
-
-      <div class="field is-grouped is-grouped-centered">
-        <div class="control">
-          <button class="button is-primary">분석 진행하기</button>
-        </div>
-      </div>
     </div>
-  </body>
+
+    <div class="field is-grouped is-grouped-centered">
+        <div class="control">
+            <button class="button is-primary">분석 진행하기</button>
+        </div>
+    </div>
+</div>
+</body>
 </html>

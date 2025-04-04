@@ -1,8 +1,9 @@
 package com.scit.iLog;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scit.iLog.domain.*;
+import com.scit.iLog.domain.GuideEntity;
+import com.scit.iLog.domain.PermissionLevel;
+import com.scit.iLog.domain.RelationShipEntity;
+import com.scit.iLog.domain.RelationType;
 import com.scit.iLog.domain.child.*;
 import com.scit.iLog.domain.claim.ClaimAnswerEntity;
 import com.scit.iLog.domain.claim.ClaimEntity;
@@ -14,90 +15,72 @@ import com.scit.iLog.domain.mentalsurvey.*;
 import com.scit.iLog.domain.permission.PermissionRequestEntity;
 import com.scit.iLog.domain.permission.PermissionRequestStatus;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
-import com.scit.iLog.exception.FamilyBackgroundNotFoundException;
 import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.*;
 import com.scit.iLog.util.AgeCalculator;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.Store;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
-import java.io.InputStream;
-import java.text.Normalizer;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
-import static com.scit.iLog.config.WebConfig.CHILD_PROFILE_REQUEST_ROOT_PATH;
-import static org.springframework.util.StringUtils.hasText;
 
 @Slf4j
 //@Component
 @Profile("local")
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
-    // 보충 설명 예시 (보호자가 관찰 시 제공하는 추가 정보)
-    // 예: 관찰 시각, 장소, 식사 여부, 환경 등 자세한 내용을 기술
-    private static String[] supplementaryComments = {
-            "오후 3시 30분, 집 근처 공원에서 아이가 뛰어놀며 간식을 먹은 후 활발한 모습을 보였습니다.",
-            "식사 후 약 10분, 조용한 거실에서 아이가 혼자 놀면서도 집중력이 떨어지는 모습이 관찰되었습니다.",
-            "오전 10시, 학교 앞에서 만난 아이가 아침 식사를 마친 후 에너지가 넘치는 모습을 보였습니다.",
-            "저녁 식사 전, 아이가 놀이방에서 장난감을 조립하며 창의력을 발휘하는 모습이 인상적이었습니다.",
-            "낮잠 후, 아이가 피곤한 표정을 지으며 활동에 참여하는 모습이 확인되었습니다.",
-            "집안에서 가족과 함께 시간을 보내며 편안한 분위기 속에서 아이가 즐겁게 놀았습니다.",
-            "오후 2시, 식사 전후의 에너지 변화가 뚜렷하게 나타난 모습을 보였습니다.",
-            "아이의 식사 습관이 건강하며, 간식 시간 후에도 기운이 넘치는 모습을 확인했습니다.",
-            "주변 소음이 적은 환경에서 아이가 집중하며 놀이에 몰입하는 모습이 인상적이었습니다.",
-            "보호자와 함께 있을 때 아이가 더 안정되고 편안한 모습을 보였습니다.",
-            "실내에서의 활동 후, 아이가 충분히 에너지를 발산한 후 차분해진 모습을 보였습니다.",
-            "집 근처 도서관에서 조용히 책을 읽는 등 차분한 환경에서 긍정적인 정서가 나타났습니다.",
-            "아이의 활동 전후 식사 상태에 따라 에너지 변화가 뚜렷하게 관찰되었습니다.",
-            "오후 4시, 햇살 좋은 날씨에 야외에서 활동한 후 아이가 만족스러운 표정을 보였습니다.",
-            "보호자의 주의 깊은 관찰 하에 아이가 안전하게 놀면서도 스스로를 잘 조절하는 모습을 보였습니다.",
-            "아이의 식사 후 활동에서 활발한 움직임과 함께 집중력도 상승하는 것을 확인했습니다.",
-            "정서 상태가 안정적이며, 주위 환경이 차분해 아이의 심리적 안정에 도움이 되었습니다.",
-            "아이가 가족과 함께 있을 때 보다 혼자 놀 때 더 창의적이고 활발한 모습을 보였습니다.",
-            "보호자가 관찰한 결과, 아이가 식사 후 기분 좋은 에너지를 발산하는 모습이 인상적이었습니다.",
-            "아이의 놀이 시간 동안 주변 상황(소음, 온도 등)이 안정되어 정서적 안정이 유지되었습니다."
+    private static final String[] analysisResultTitles = {
+            "내 아이, 햇살 같은 미소",
+            "사랑스런 내 아이의 기쁨",
+            "조용한 눈물, 내 아이의 슬픔",
+            "두려움 속에서도 피어나는 용기",
+            "놀라움으로 가득 찬 오늘",
+            "평온한 마음, 내 아이의 이야기",
+            "혼란 속에서 피어난 작은 희망",
+            "불안함을 이겨낸 미소",
+            "지루함을 딛고 성장하는 모습",
+            "에너지 넘치는 활기찬 하루",
+            "수줍은 마음, 따뜻한 사랑",
+            "내 아이의 진심이 담긴 하루",
+            "슬픔 속에서도 반짝이는 빛",
+            "분노를 넘어선 사랑의 힘",
+            "두려움을 마주한 용감한 순간",
+            "놀라움과 호기심이 넘치는 하루",
+            "내면의 소리를 들려준 시간",
+            "조용하지만 따스한 마음의 기록",
+            "복잡한 감정, 사랑으로 풀어내며",
+            "수줍은 사랑, 진심이 담긴 이야기"
     };
-
-    // 함께 있던 사람에 대한 설명 예시 (단어 혹은 짧은 구절로 누구인지만 명시)
-    private static String[] companionDescriptions = {
-            "할머니",
-            "할아버지",
-            "선생님",
-            "친구 어머니",
-            "친구 아버지",
-            "이모",
-            "삼촌",
-            "언니",
-            "오빠",
-            "형제",
-            "자매",
-            "보호자",
-            "교사",
-            "아줌마",
-            "친구",
-            "친척",
-            "돌보미",
-            "가족",
-            "상담사",
-            "도우미"
+    // 위도 배열 (예시 값: 실제 상황에 맞게 수정 가능)
+    private static final double[] LATITUDES = {
+            37.5665, 35.1796, 35.1595, 37.4563, 35.8714,
+            36.3504, 35.5384, 36.3504, 35.8401, 35.1550,
+            37.4563, 35.1796, 35.1595, 37.5665, 36.3504,
+            35.8401, 35.5384, 35.1550, 35.8714, 37.4563
     };
-
+    // 경도 배열 (예시 값: 실제 상황에 맞게 수정 가능)
+    private static final double[] LONGITUDES = {
+            126.9780, 129.0756, 129.0756, 126.7052, 129.0756,
+            127.3845, 126.8494, 127.3845, 128.5918, 126.7848,
+            126.7052, 129.0756, 129.0756, 126.9780, 127.3845,
+            128.5918, 126.8494, 126.7848, 129.0756, 126.7052
+    };
+    // 위치 이름 배열 (예시: "서울", "부산", 등)
+    private static final String[] LOCATION_NAMES = {
+            "서울", "부산", "대구", "인천", "광주",
+            "대전", "울산", "세종", "경기", "강원",
+            "충북", "충남", "전북", "전남", "경북",
+            "경남", "제주", "부산1", "대구1", "서울1"
+    };
     // 분석 결과 예시 (20개 요소)
     // 각 요소는 아이의 작품에서 드러난 감정과 그에 따른 구체적인 관찰 내용을 한두 문장으로 설명합니다.
     public static String[] analysisResults = {
@@ -122,30 +105,6 @@ public class DataInitializer implements CommandLineRunner {
             "사진 분석 결과, 불안과 호기심이 공존하는 모습을 보이며, 세밀한 감정 변화가 포착됩니다.",
             "작성한 글에서 수줍음과 내성적인 태도가 드러나, 조심스러운 심리 상태가 느껴집니다."
     };
-
-    private static final String[] analysisResultTitles = {
-            "내 아이, 햇살 같은 미소",
-            "사랑스런 내 아이의 기쁨",
-            "조용한 눈물, 내 아이의 슬픔",
-            "두려움 속에서도 피어나는 용기",
-            "놀라움으로 가득 찬 오늘",
-            "평온한 마음, 내 아이의 이야기",
-            "혼란 속에서 피어난 작은 희망",
-            "불안함을 이겨낸 미소",
-            "지루함을 딛고 성장하는 모습",
-            "에너지 넘치는 활기찬 하루",
-            "수줍은 마음, 따뜻한 사랑",
-            "내 아이의 진심이 담긴 하루",
-            "슬픔 속에서도 반짝이는 빛",
-            "분노를 넘어선 사랑의 힘",
-            "두려움을 마주한 용감한 순간",
-            "놀라움과 호기심이 넘치는 하루",
-            "내면의 소리를 들려준 시간",
-            "조용하지만 따스한 마음의 기록",
-            "복잡한 감정, 사랑으로 풀어내며",
-            "수줍은 사랑, 진심이 담긴 이야기"
-    };
-
     // 솔루션 예시 (20개 요소)
     // 각 요소는 아이의 작품에서 나타난 감정을 토대로, 보호자가 아이와 어떻게 대화하고 지원해야 하는지 두세 문장으로 제시합니다.
     public static String[] solutionTexts = {
@@ -170,8 +129,54 @@ public class DataInitializer implements CommandLineRunner {
             "불안과 호기심이 공존하는 경우, 아이의 감정을 공감하며 동시에 안정적인 환경을 제공해 주세요. 규칙적인 일상과 신뢰할 수 있는 대화가 필요합니다.",
             "수줍음이 표현된 아이에게는 부드러운 격려와 함께 점진적으로 사회적 도전에 참여할 수 있도록 지원해 주세요. 작은 성공을 통해 자신감을 키울 수 있습니다."
     };
-
-    private static String[] guardianFeedback = {
+    // 보충 설명 예시 (보호자가 관찰 시 제공하는 추가 정보)
+    // 예: 관찰 시각, 장소, 식사 여부, 환경 등 자세한 내용을 기술
+    private static final String[] supplementaryComments = {
+            "오후 3시 30분, 집 근처 공원에서 아이가 뛰어놀며 간식을 먹은 후 활발한 모습을 보였습니다.",
+            "식사 후 약 10분, 조용한 거실에서 아이가 혼자 놀면서도 집중력이 떨어지는 모습이 관찰되었습니다.",
+            "오전 10시, 학교 앞에서 만난 아이가 아침 식사를 마친 후 에너지가 넘치는 모습을 보였습니다.",
+            "저녁 식사 전, 아이가 놀이방에서 장난감을 조립하며 창의력을 발휘하는 모습이 인상적이었습니다.",
+            "낮잠 후, 아이가 피곤한 표정을 지으며 활동에 참여하는 모습이 확인되었습니다.",
+            "집안에서 가족과 함께 시간을 보내며 편안한 분위기 속에서 아이가 즐겁게 놀았습니다.",
+            "오후 2시, 식사 전후의 에너지 변화가 뚜렷하게 나타난 모습을 보였습니다.",
+            "아이의 식사 습관이 건강하며, 간식 시간 후에도 기운이 넘치는 모습을 확인했습니다.",
+            "주변 소음이 적은 환경에서 아이가 집중하며 놀이에 몰입하는 모습이 인상적이었습니다.",
+            "보호자와 함께 있을 때 아이가 더 안정되고 편안한 모습을 보였습니다.",
+            "실내에서의 활동 후, 아이가 충분히 에너지를 발산한 후 차분해진 모습을 보였습니다.",
+            "집 근처 도서관에서 조용히 책을 읽는 등 차분한 환경에서 긍정적인 정서가 나타났습니다.",
+            "아이의 활동 전후 식사 상태에 따라 에너지 변화가 뚜렷하게 관찰되었습니다.",
+            "오후 4시, 햇살 좋은 날씨에 야외에서 활동한 후 아이가 만족스러운 표정을 보였습니다.",
+            "보호자의 주의 깊은 관찰 하에 아이가 안전하게 놀면서도 스스로를 잘 조절하는 모습을 보였습니다.",
+            "아이의 식사 후 활동에서 활발한 움직임과 함께 집중력도 상승하는 것을 확인했습니다.",
+            "정서 상태가 안정적이며, 주위 환경이 차분해 아이의 심리적 안정에 도움이 되었습니다.",
+            "아이가 가족과 함께 있을 때 보다 혼자 놀 때 더 창의적이고 활발한 모습을 보였습니다.",
+            "보호자가 관찰한 결과, 아이가 식사 후 기분 좋은 에너지를 발산하는 모습이 인상적이었습니다.",
+            "아이의 놀이 시간 동안 주변 상황(소음, 온도 등)이 안정되어 정서적 안정이 유지되었습니다."
+    };
+    // 함께 있던 사람에 대한 설명 예시 (단어 혹은 짧은 구절로 누구인지만 명시)
+    private static final String[] companionDescriptions = {
+            "할머니",
+            "할아버지",
+            "선생님",
+            "친구 어머니",
+            "친구 아버지",
+            "이모",
+            "삼촌",
+            "언니",
+            "오빠",
+            "형제",
+            "자매",
+            "보호자",
+            "교사",
+            "아줌마",
+            "친구",
+            "친척",
+            "돌보미",
+            "가족",
+            "상담사",
+            "도우미"
+    };
+    private static final String[] guardianFeedback = {
             "솔루션을 적용한 후, 아이가 밝게 웃으며 자신감을 되찾은 것 같아요.",
             "아이의 표정이 한결 편안해졌고, 대화할 때도 자연스러워졌습니다.",
             "슬픔에 잠겼던 아이가 점차 미소를 되찾아 마음이 놓입니다.",
@@ -193,8 +198,7 @@ public class DataInitializer implements CommandLineRunner {
             "불안감이 크게 완화되어 아이가 더욱 자유롭게 생활하는 모습을 보입니다.",
             "수줍음이 극복되어, 아이가 자신있게 친구들과 교류하는 모습이 매우 기쁩니다."
     };
-
-    private static String[] diaryEntries = {
+    private static final String[] diaryEntries = {
             "오늘은 맑은 하늘 아래에서 아이와 함께 공원에 다녀왔어요. 아이가 신나게 뛰어놀며 즐거워하는 모습이 너무 보기 좋았어요.",
             "날씨가 쌀쌀한 아침, 아이와 따뜻한 커피 한 잔을 나누며 집에서 조용한 시간을 보냈습니다. 아이가 숙제를 스스로 하려는 모습이 인상적이었어요.",
             "오늘은 아이가 학교에서 돌아와 집안에서 조용히 책을 읽고, 숙제도 스스로 하는 등 자립심을 키워가는 모습이 자랑스러웠습니다.",
@@ -216,8 +220,7 @@ public class DataInitializer implements CommandLineRunner {
             "오늘은 아이가 작은 실수에도 낙담하는 모습을 보았어요. 따뜻한 격려와 관심으로 아이를 위로해주었습니다.",
             "아이와 함께 웃고, 때로는 함께 고민하며 보낸 하루였습니다. 아이의 성장을 응원하며 앞으로도 늘 사랑할 거예요."
     };
-
-    private static String[] diaryTitles = {
+    private static final String[] diaryTitles = {
             "맑은 날의 공원 나들이",
             "따뜻한 아침의 시작",
             "자립심이 돋보인 하루",
@@ -239,8 +242,7 @@ public class DataInitializer implements CommandLineRunner {
             "작은 실수, 큰 배움",
             "웃음과 고민의 하루"
     };
-
-    private static String[] doctorOpinions = {
+    private static final String[] doctorOpinions = {
             "성장 발달 양호",
             "예방 접종 일정 확인 필요",
             "철분 섭취 권장",
@@ -262,8 +264,7 @@ public class DataInitializer implements CommandLineRunner {
             "정상 체온 유지",
             "다음 검진 일정 안내"
     };
-
-    private static String[] guideTitles = {
+    private static final String[] guideTitles = {
             "iLog 서비스 소개",
             "회원가입 및 로그인 방법",
             "아동 정보 등록하기",
@@ -285,9 +286,8 @@ public class DataInitializer implements CommandLineRunner {
             "결제 및 구독 관리",
             "고객 지원 및 문의하기"
     };
-
     // 이용안내글 내용 배열 (크기 20)
-    private static String[] guideContents = {
+    private static final String[] guideContents = {
             "iLog는 아동의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을 돕는 서비스입니다. 글, 그림, 표정 분석을 통해 아이의 심리 상태를 파악하고, 맞춤형 솔루션을 제공합니다.",
             "iLog 서비스 이용을 위해서는 회원가입이 필요합니다. 홈페이지 우측 상단의 '회원가입' 버튼을 클릭하여 이메일, 비밀번호, 이름 등의 정보를 입력하세요. 가입 후 로그인하여 서비스를 이용할 수 있습니다.",
             "로그인 후 '아동 관리' 메뉴에서 '아동 등록' 버튼을 클릭하여 아동의 이름, 생년월일, 성별 등의 기본 정보를 입력합니다. 아동 정보는 언제든지 수정할 수 있습니다.",
@@ -309,31 +309,6 @@ public class DataInitializer implements CommandLineRunner {
             "결제 및 구독 관리는 '설정' 메뉴의 '구독 관리'에서 할 수 있습니다. 현재 구독 상태 확인, 플랜 변경, 결제 수단 관리, 영수증 확인 등의 기능을 이용할 수 있습니다.",
             "고객 지원이 필요한 경우 '고객 지원' 메뉴에서 문의하기 기능을 이용하세요. 이메일(support@ilog.co.kr) 또는 전화(02-123-4567)로도 문의할 수 있으며, 평일 09:00-18:00에 실시간 채팅 상담도 가능합니다."
     };
-
-    // 위도 배열 (예시 값: 실제 상황에 맞게 수정 가능)
-    private static final double[] LATITUDES = {
-            37.5665, 35.1796, 35.1595, 37.4563, 35.8714,
-            36.3504, 35.5384, 36.3504, 35.8401, 35.1550,
-            37.4563, 35.1796, 35.1595, 37.5665, 36.3504,
-            35.8401, 35.5384, 35.1550, 35.8714, 37.4563
-    };
-
-    // 경도 배열 (예시 값: 실제 상황에 맞게 수정 가능)
-    private static final double[] LONGITUDES = {
-            126.9780, 129.0756, 129.0756, 126.7052, 129.0756,
-            127.3845, 126.8494, 127.3845, 128.5918, 126.7848,
-            126.7052, 129.0756, 129.0756, 126.9780, 127.3845,
-            128.5918, 126.8494, 126.7848, 129.0756, 126.7052
-    };
-
-    // 위치 이름 배열 (예시: "서울", "부산", 등)
-    private static final String[] LOCATION_NAMES = {
-            "서울", "부산", "대구", "인천", "광주",
-            "대전", "울산", "세종", "경기", "강원",
-            "충북", "충남", "전북", "전남", "경북",
-            "경남", "제주", "부산1", "대구1", "서울1"
-    };
-
     private final MemberRepository memberRepository;
     private final ChildRepository childRepository;
     private final AnalysisTargetRepository analysisTargetRepository;
@@ -354,9 +329,9 @@ public class DataInitializer implements CommandLineRunner {
     private final AnalysisTargetTypeRepository analysisTargetTypeRepository;
     private final MentalSurveyRepository mentalSurveyRepository;
     private final ChildBackGroundRepository childBackGroundRepository;
+    private final PermissionRequestRepository permissionRequestRepository;
     private String testParentSignInId;
     private String testTeacherSignInId;
-    private final PermissionRequestRepository permissionRequestRepository;
 
     @Transactional
     @Override
@@ -381,8 +356,8 @@ public class DataInitializer implements CommandLineRunner {
         initializeTeacherAccounts(mom);
 
         System.out.println("테스트용 기본 엔티티 저장 완료");
-        System.out.println(String.format("테스트용 부모 아이디: %s", this.testParentSignInId));
-        System.out.println(String.format("테스트용 교사 아이디: %s", this.testTeacherSignInId));
+        System.out.printf("테스트용 부모 아이디: %s%n", this.testParentSignInId);
+        System.out.printf("테스트용 교사 아이디: %s%n", this.testTeacherSignInId);
     }
 
     private MemberEntity createAdminAccount() {
@@ -452,11 +427,11 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
 
             ChildBackGroundEntity childBackground2 = ChildBackGroundEntity.builder()
-                    .familyBackGround(familyBackGrounds.get(j+2))
+                    .familyBackGround(familyBackGrounds.get(j + 2))
                     .child(child)
                     .build();
 
-            List<ChildBackGroundEntity> childBackGrounds = List.of(childBackground1,childBackground2);
+            List<ChildBackGroundEntity> childBackGrounds = List.of(childBackground1, childBackground2);
             child.replaceAllChildBackGrounds(childBackGrounds);
 
             // Relationship 생성
@@ -500,7 +475,7 @@ public class DataInitializer implements CommandLineRunner {
                         new QuestionResponse(questions1.get(0).getItem(), questions1.get(0).getExample(), random.nextInt(1, 6)),
                         new QuestionResponse(questions1.get(1).getItem(), questions1.get(1).getExample(), random.nextInt(1, 6)),
                         new QuestionResponse(questions1.get(2).getItem(), questions1.get(2).getExample(), random.nextInt(1, 6)),
-                        new QuestionResponse(questions1.get(3).getItem(),questions1.get(3).getExample(), random.nextInt(1, 6))
+                        new QuestionResponse(questions1.get(3).getItem(), questions1.get(3).getExample(), random.nextInt(1, 6))
                 );
                 int section1Score = qResponses1.stream().mapToInt(QuestionResponse::getScore).sum();
                 sectionResponses.add(new SectionResponse(section1.getTitle(), qResponses1, section1Score));
@@ -512,7 +487,7 @@ public class DataInitializer implements CommandLineRunner {
                         new QuestionResponse(questions2.get(0).getItem(), questions2.get(0).getExample(), random.nextInt(1, 6)),
                         new QuestionResponse(questions2.get(1).getItem(), questions2.get(1).getExample(), random.nextInt(1, 6)),
                         new QuestionResponse(questions2.get(2).getItem(), questions2.get(2).getExample(), random.nextInt(1, 6)),
-                        new QuestionResponse(questions2.get(3).getItem(),questions2.get(3).getExample(), random.nextInt(1, 6))
+                        new QuestionResponse(questions2.get(3).getItem(), questions2.get(3).getExample(), random.nextInt(1, 6))
                 );
                 int section2Score = qResponses2.stream().mapToInt(QuestionResponse::getScore).sum();
                 sectionResponses.add(new SectionResponse(section2.getTitle(), qResponses2, section2Score));
@@ -524,7 +499,7 @@ public class DataInitializer implements CommandLineRunner {
                         new QuestionResponse(questions3.get(0).getItem(), questions3.get(0).getExample(), random.nextInt(1, 6)),
                         new QuestionResponse(questions3.get(1).getItem(), questions3.get(1).getExample(), random.nextInt(1, 6)),
                         new QuestionResponse(questions3.get(2).getItem(), questions3.get(2).getExample(), random.nextInt(1, 6)),
-                        new QuestionResponse(questions3.get(3).getItem(),questions3.get(3).getExample(), random.nextInt(1, 6))
+                        new QuestionResponse(questions3.get(3).getItem(), questions3.get(3).getExample(), random.nextInt(1, 6))
                 );
                 int section3Score = qResponses3.stream().mapToInt(QuestionResponse::getScore).sum();
                 sectionResponses.add(new SectionResponse(section3.getTitle(), qResponses3, section3Score));
@@ -540,11 +515,10 @@ public class DataInitializer implements CommandLineRunner {
                 } else {
                     diagnosisComment = "양호";
                 }
-                String comment = new StringBuilder()
-                        .append("심리 평가 결과 총점 ")
-                        .append(totalScore)
-                        .append(" ")
-                        .append(diagnosisComment).toString();
+                String comment = "심리 평가 결과 총점 " +
+                        totalScore +
+                        " " +
+                        diagnosisComment;
 
                 MentalSurveyResponseEntity response = MentalSurveyResponseEntity.builder()
                         .surveyId(mentalSurvey.getId())
@@ -656,8 +630,8 @@ public class DataInitializer implements CommandLineRunner {
                     .child(child)
                     .childRecord(record)
                     .member(author)
-                    .originalFileName(String.format("test-healthCheck-%d.jpeg",k % 4))
-                    .savedFileName(String.format("test-healthCheck-%d.jpeg",k % 4))
+                    .originalFileName(String.format("test-healthCheck-%d.jpeg", k % 4))
+                    .savedFileName(String.format("test-healthCheck-%d.jpeg", k % 4))
                     .build();
             childHealthCheckRepository.save(healthCheck);
         }

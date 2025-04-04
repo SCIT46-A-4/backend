@@ -157,6 +157,7 @@ public class ChildService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public String getChildNameById(Long childId) {
         return childRepository
                 .findById(childId)
@@ -268,60 +269,6 @@ public class ChildService {
         return new ParentDashboardChildListDTO(childProfiles.size(), childProfiles);
     }
 
-
-    /*
-     * 2024-02-27 김보경
-     * getFamilyBackgrounds 정보 담기?
-     */
-    @Transactional(readOnly = true)
-    public List<FamilyBackGround> getFamilyBackgrounds(Long childId) {
-        ChildEntity child = childRepository.findById(childId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Child 조회 실패: %d", childId)));
-
-        // 기존의 가정환경 데이터를 리스트로 변환하여 반환
-        return child.getChildBackGrounds().stream()
-                .map(ChildBackGroundEntity::getFamilyBackGround)
-                .map(FamilyBackGroundEntity::getFamilyBackGround)
-                .toList();
-    }
-
-
-    //-------------------------------------------------------------------------------------
-    /*
-     * v1.x.x-11
-     * D-2
-     * handleGetTeacherDashboardView
-     * 2025-03-04 / 김은진 / 교사용 대시보드에서 모든 아이들의 기본 정보 조회
-     */
-    @Transactional(readOnly = true)
-    public List<ChildBasicInfoDTO> getAllChildrenBasicInfo(SortOption sortOption) {
-        List<ChildEntity> children;
-        switch (sortOption) {
-            case NAME:
-                children = childRepository.findAllByOrderByNameAsc();
-                break;
-            case BIRTH_DATE:
-                children = childRepository.findAllByOrderByBirthDateAsc();
-                break;
-            case REGISTER_DATE:
-                children = childRepository.findAllByOrderByCreatedAtDesc();
-                break;
-            default:
-                children = childRepository.findAll();
-        }
-
-        return children.stream()
-                .map(child -> ChildBasicInfoDTO.builder()
-                        .id(child.getId())
-                        .name(child.getName())
-                        .birthDate(child.getBirthDate())
-                        .gender(child.getGender())
-                        .profileImgSrcUri(filePathUtil.childProfileImgUploadPath())
-                        .note(child.getNote())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
     @Transactional(readOnly = true)
     public List<ChildBasicInfoDTO> getRelatedChildrenBasicInfo(Long memberId, SortOption sortOption) {
         MemberEntity member = memberRepository.findById(memberId)
@@ -347,7 +294,6 @@ public class ChildService {
                         .collect(Collectors.toList());
                 break;
             default:
-                // 기본 정렬은 변경하지 않음
                 children = member.getRelationShips().stream()
                         .map(relationShip -> relationShip.getChild())
                         .toList();
@@ -399,9 +345,7 @@ public class ChildService {
                 .note(child.getNote())
                 .build();
     }
-    //김은진 끝 -----------------------------------------------------------------
 
-    //2025-03-11 이도훈 작성
     public ChildEntity findById(Long childId) {
         return childRepository.findById(childId)
                 .orElseThrow(() -> new ChildNotFoundException(childId));

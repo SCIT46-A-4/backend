@@ -207,7 +207,6 @@ public class AnalysisResultService {
             analysisTarget.setWeather(weather);
         }
 
-//        AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
         String targetFilePath = filePathUtil.childAnalysisFileUploadPath().concat("/").concat(analysisTarget.getSavedTargetFileName());
 
         String analysisDesc = analysisTarget.getDescription();

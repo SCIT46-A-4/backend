@@ -1,487 +1,487 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>권한 관리 페이지 (교사) - iLog</title>
-    <link rel="stylesheet" href="/css/bulma.min.css" />
-    <link rel="stylesheet" href="/css/customColors.css" />
+    <link href="/css/bulma.min.css" rel="stylesheet"/>
+    <link href="/css/customColors.css" rel="stylesheet"/>
     <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            rel="stylesheet"
     />
 
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
 
     <style>
-      :root {
-        --background-yellow: #fff8dc;
-        --button-mint: #98d8d8;
-        --button-pink: #ffb6c1;
-        --text-dark: #333333;
-      }
-
-      body {
-        background-color: var(--primary);
-      }
-
-      .container {
-        min-height: 90vh;
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .status-box {
-        background-color: #f5f5f5;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-      }
-
-      .table-container {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .table {
-        width: 100%;
-      }
-
-      .table thead th {
-        text-align: center !important;
-        background-color: var(--secondary);
-        color: var(--text-dark);
-      }
-
-      /* .table th {
-        background-color: var(--secondary);
-        color: var(--text-dark);
-      } */
-
-      .button.is-mint {
-        background-color: var(--secondary);
-        color: var(--text-dark);
-        border: none;
-      }
-
-      .button.is-pink {
-        background-color: var(--third);
-        color: var(--text-dark);
-        border: none;
-      }
-
-      .tabs:not(:last-child) {
-        margin-bottom: 1.5rem;
-      }
-
-      .tab-content {
-        display: none;
-      }
-
-      .tab-content.is-active {
-        display: block;
-      }
-
-      /* 로고 설정 */
-      .logo a {
-        display: inline-block;
-      }
-
-      .logo img {
-        cursor: pointer;
-      }
-
-      /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
-      .logo-image {
-        width: 100px;
-        height: auto;
-      }
-
-      #mainNav {
-        background-color: white;
-      }
-    </style>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // 탭 전환 기능
-        const tabs = document.querySelectorAll('.tabs li');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabs.forEach((tab) => {
-          tab.addEventListener('click', () => {
-            // 탭 활성화
-            tabs.forEach((t) => t.classList.remove('is-active'));
-            tab.classList.add('is-active');
-
-            // 탭 콘텐츠 활성화
-            const tabId = tab.getAttribute('data-tab');
-            tabContents.forEach((content) => {
-              content.classList.remove('is-active');
-              if (content.id === tabId) {
-                content.classList.add('is-active');
-              }
-            });
-          });
-        });
-
-        // 승인 버튼 이벤트
-        document.querySelectorAll('.approve-button').forEach((button) => {
-          button.addEventListener('click', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            Swal.fire({
-              title: '이 요청을 승인하시겠습니까?',
-              text: '정보 열람 권한이 활성화됩니다',
-              icon: 'info',
-              showCancelButton: true,
-              confirmButtonText: '승인',
-              cancelButtonText: '취소',
-              reverseButtons: false,
-            }).then((result) => {
-              if (result.isConfirmed) {
-                // TODO: 승인 API 호출
-                const permissionId = this.getAttribute('data-id');
-                $.ajax({
-                  url: `/auth/permission/approve/${permissionId}`,
-                  type: 'PUT',
-                  success: function (response) {
-                    if (response == true) {
-                      Swal.fire('승인 완료', '', 'success');
-                      window.location.reload();
-                    } else {
-                      Swal.fire('승인 실패', '승인에 실패했습니다.', 'error');
-                    }
-                  },
-                  error: function (xhr, status, error) {
-                    console.error('승인 요청 중 오류 발생:', error);
-                    Swal.fire('승인 실패', '승인에 실패했습니다.', 'error');
-                  },
-                });
-                const row = this.closest('tr');
-                row.style.backgroundColor = '#e6fffa';
-                setTimeout(() => {
-                  row.remove();
-                  // 승인 완료 카운트 업데이트
-                  updateCounts();
-                }, 500);
-              }
-            });
-          });
-        });
-
-        // 요청 거부 버튼 이벤트
-        document.querySelectorAll('.request-abort-button').forEach((button) => {
-          button.addEventListener('click', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            const permissionId = this.getAttribute('data-id');
-            Swal.fire({
-              title: '이 요청을 거부하시겠습니까?',
-              text: '이 항목은 복구할 수 없습니다.',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: '거부',
-              cancelButtonText: '취소',
-              reverseButtons: false,
-            }).then((result) => {
-              if (result.isConfirmed) {
-                // AJAX 요청 (아래 4번에서 구현)
-                abortPermission(permissionId);
-              }
-            });
-          });
-        });
-
-        function abortPermission(permissionId) {
-          $.ajax({
-            url: `/auth/permission/abort/${permissionId}`,
-            type: 'PUT',
-            success: function (response) {
-              if (response == true) {
-                Swal.fire('거부 완료', '', 'success').then(() => {
-                  window.location.reload();
-                });
-              } else {
-                Swal.fire('거부 실패', '거부에 실패했습니다.', 'error');
-              }
-            },
-            error: function (xhr, status, error) {
-              console.error('거부 요청 중 오류 발생:', error);
-              Swal.fire('거부 실패', '거부에 실패했습니다.', 'error');
-            },
-          });
+        :root {
+          --background-yellow: #fff8dc;
+          --button-mint: #98d8d8;
+          --button-pink: #ffb6c1;
+          --text-dark: #333333;
         }
 
-        // 삭제 버튼 이벤트
-        document
-          .querySelectorAll('.request-delete-button')
-          .forEach((button) => {
-            button.addEventListener('click', function (e) {
-              e.stopPropagation();
-              e.preventDefault();
-              const permissionId = this.getAttribute('data-id');
-              Swal.fire({
-                title: '열람 권한을 삭제하시겠습니까?',
-                text: '더 이상 아이의 정보를 열람할 수 없습니다.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '삭제',
-                cancelButtonText: '취소',
-                reverseButtons: false,
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  // AJAX 삭제 요청 (아래 4번에서 구현)
-                  deletePermission(permissionId);
+        body {
+          background-color: var(--primary);
+        }
+
+        .container {
+          min-height: 90vh;
+          padding: 2rem;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .status-box {
+          background-color: #f5f5f5;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 2rem;
+        }
+
+        .table-container {
+          background-color: white;
+          padding: 1.5rem;
+          border-radius: 8px;
+          margin-bottom: 2rem;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+          width: 100%;
+        }
+
+        .table thead th {
+          text-align: center !important;
+          background-color: var(--secondary);
+          color: var(--text-dark);
+        }
+
+        /* .table th {
+          background-color: var(--secondary);
+          color: var(--text-dark);
+        } */
+
+        .button.is-mint {
+          background-color: var(--secondary);
+          color: var(--text-dark);
+          border: none;
+        }
+
+        .button.is-pink {
+          background-color: var(--third);
+          color: var(--text-dark);
+          border: none;
+        }
+
+        .tabs:not(:last-child) {
+          margin-bottom: 1.5rem;
+        }
+
+        .tab-content {
+          display: none;
+        }
+
+        .tab-content.is-active {
+          display: block;
+        }
+
+        /* 로고 설정 */
+        .logo a {
+          display: inline-block;
+        }
+
+        .logo img {
+          cursor: pointer;
+        }
+
+        /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
+        .logo-image {
+          width: 100px;
+          height: auto;
+        }
+
+        #mainNav {
+          background-color: white;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // 탭 전환 기능
+          const tabs = document.querySelectorAll('.tabs li');
+          const tabContents = document.querySelectorAll('.tab-content');
+
+          tabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+              // 탭 활성화
+              tabs.forEach((t) => t.classList.remove('is-active'));
+              tab.classList.add('is-active');
+
+              // 탭 콘텐츠 활성화
+              const tabId = tab.getAttribute('data-tab');
+              tabContents.forEach((content) => {
+                content.classList.remove('is-active');
+                if (content.id === tabId) {
+                  content.classList.add('is-active');
                 }
               });
             });
           });
 
-        function deletePermission(permissionId) {
-          $.ajax({
-            url: `/auth/permission/delete/${permissionId}`,
-            type: 'DELETE',
-            success: function (response) {
-              if (response == true) {
-                // 삭제 성공 시 페이지 리로드
-                Swal.fire('삭제 완료', '', 'success').then(() => {
-                  window.location.reload();
-                });
-              } else {
-                Swal.fire('삭제 실패', '삭제에 실패했습니다.', 'error');
-              }
-            },
-            error: function (xhr, status, error) {
-              console.error('삭제 요청 중 오류 발생:', error);
-              Swal.fire('삭제 실패', '삭제에 실패했습니다.', 'error');
-            },
+          // 승인 버튼 이벤트
+          document.querySelectorAll('.approve-button').forEach((button) => {
+            button.addEventListener('click', function (e) {
+              e.stopPropagation();
+              e.preventDefault();
+              Swal.fire({
+                title: '이 요청을 승인하시겠습니까?',
+                text: '정보 열람 권한이 활성화됩니다',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: '승인',
+                cancelButtonText: '취소',
+                reverseButtons: false,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // TODO: 승인 API 호출
+                  const permissionId = this.getAttribute('data-id');
+                  $.ajax({
+                    url: `/auth/permission/approve/${permissionId}`,
+                    type: 'PUT',
+                    success: function (response) {
+                      if (response == true) {
+                        Swal.fire('승인 완료', '', 'success');
+                        window.location.reload();
+                      } else {
+                        Swal.fire('승인 실패', '승인에 실패했습니다.', 'error');
+                      }
+                    },
+                    error: function (xhr, status, error) {
+                      console.error('승인 요청 중 오류 발생:', error);
+                      Swal.fire('승인 실패', '승인에 실패했습니다.', 'error');
+                    },
+                  });
+                  const row = this.closest('tr');
+                  row.style.backgroundColor = '#e6fffa';
+                  setTimeout(() => {
+                    row.remove();
+                    // 승인 완료 카운트 업데이트
+                    updateCounts();
+                  }, 500);
+                }
+              });
+            });
           });
-        }
 
-        // 카운트 업데이트 함수
-        function updateCounts() {
-          const requestCount = document.querySelector('#request-list tbody')
-            .children.length;
-          const approvedCount = document.querySelector('#approved-list tbody')
-            .children.length;
+          // 요청 거부 버튼 이벤트
+          document.querySelectorAll('.request-abort-button').forEach((button) => {
+            button.addEventListener('click', function (e) {
+              e.stopPropagation();
+              e.preventDefault();
+              const permissionId = this.getAttribute('data-id');
+              Swal.fire({
+                title: '이 요청을 거부하시겠습니까?',
+                text: '이 항목은 복구할 수 없습니다.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '거부',
+                cancelButtonText: '취소',
+                reverseButtons: false,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // AJAX 요청 (아래 4번에서 구현)
+                  abortPermission(permissionId);
+                }
+              });
+            });
+          });
 
-          document.querySelector(
-            '.status-box p:first-child'
-          ).textContent = `승인 요청: ${requestCount}건`;
-          document.querySelector(
-            '.status-box p:last-child'
-          ).textContent = `승인 완료: ${approvedCount}건`;
-        }
+          function abortPermission(permissionId) {
+            $.ajax({
+              url: `/auth/permission/abort/${permissionId}`,
+              type: 'PUT',
+              success: function (response) {
+                if (response == true) {
+                  Swal.fire('거부 완료', '', 'success').then(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  Swal.fire('거부 실패', '거부에 실패했습니다.', 'error');
+                }
+              },
+              error: function (xhr, status, error) {
+                console.error('거부 요청 중 오류 발생:', error);
+                Swal.fire('거부 실패', '거부에 실패했습니다.', 'error');
+              },
+            });
+          }
 
-        // ✅ success=true 감지 후 SweetAlert2 사용
-        // const urlParams = new URLSearchParams(window.location.search);
-        // if (urlParams.has('success')) {
-        //   Swal.fire({
-        //     icon: 'success',
-        //     title: '권한부여 되었습니다.',
-        //     showConfirmButton: true,
-        //   });
-        //   // URL에서 success 파라미터 제거 (새로고침 시 중복 방지)
-        //   window.history.replaceState(
-        //     {},
-        //     document.title,
-        //     window.location.pathname
-        //   );
-        // }
-      });
+          // 삭제 버튼 이벤트
+          document
+            .querySelectorAll('.request-delete-button')
+            .forEach((button) => {
+              button.addEventListener('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                const permissionId = this.getAttribute('data-id');
+                Swal.fire({
+                  title: '열람 권한을 삭제하시겠습니까?',
+                  text: '더 이상 아이의 정보를 열람할 수 없습니다.',
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonText: '삭제',
+                  cancelButtonText: '취소',
+                  reverseButtons: false,
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    // AJAX 삭제 요청 (아래 4번에서 구현)
+                    deletePermission(permissionId);
+                  }
+                });
+              });
+            });
+
+          function deletePermission(permissionId) {
+            $.ajax({
+              url: `/auth/permission/delete/${permissionId}`,
+              type: 'DELETE',
+              success: function (response) {
+                if (response == true) {
+                  // 삭제 성공 시 페이지 리로드
+                  Swal.fire('삭제 완료', '', 'success').then(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  Swal.fire('삭제 실패', '삭제에 실패했습니다.', 'error');
+                }
+              },
+              error: function (xhr, status, error) {
+                console.error('삭제 요청 중 오류 발생:', error);
+                Swal.fire('삭제 실패', '삭제에 실패했습니다.', 'error');
+              },
+            });
+          }
+
+          // 카운트 업데이트 함수
+          function updateCounts() {
+            const requestCount = document.querySelector('#request-list tbody')
+              .children.length;
+            const approvedCount = document.querySelector('#approved-list tbody')
+              .children.length;
+
+            document.querySelector(
+              '.status-box p:first-child'
+            ).textContent = `승인 요청: ${requestCount}건`;
+            document.querySelector(
+              '.status-box p:last-child'
+            ).textContent = `승인 완료: ${approvedCount}건`;
+          }
+
+          // ✅ success=true 감지 후 SweetAlert2 사용
+          // const urlParams = new URLSearchParams(window.location.search);
+          // if (urlParams.has('success')) {
+          //   Swal.fire({
+          //     icon: 'success',
+          //     title: '권한부여 되었습니다.',
+          //     showConfirmButton: true,
+          //   });
+          //   // URL에서 success 파라미터 제거 (새로고침 시 중복 방지)
+          //   window.history.replaceState(
+          //     {},
+          //     document.title,
+          //     window.location.pathname
+          //   );
+          // }
+        });
     </script>
-  </head>
+</head>
 
-  <body>
-    <nav
-      id="mainNav"
-      class="navbar"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div class="navbar-brand">
+<body>
+<nav
+        aria-label="main navigation"
+        class="navbar"
+        id="mainNav"
+        role="navigation"
+>
+    <div class="navbar-brand">
         <a class="navbar-item" href="/dashboard/teacher">
-          <img
-            id="logo"
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="iLog 로고"
-          />
+            <img
+                    alt="iLog 로고"
+                    id="logo"
+                    src="../../static/images/wilog.png"
+                    th:src="@{/images/wilog.png}"
+            />
         </a>
-      </div>
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/guides"><span>이용안내</span></a>
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/claims"><span>고객센터</span></a>
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/auth/logout"
-              ><span>로그아웃</span></a
-            >
-          </div>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" th:href="@{/members/myDetails}">
-              <span class="icon"><i class="fas fa-user"></i></span>
-              <span th:text="|${memberName}(${relationType})|"
-                >김미영(부모)</span
-              >
-            </a>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <div class="container">
-      <!-- 로고 + dashboard 바로가기 -->
-      <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (교사)</h1>
-
-      <div class="status-box">
-        <div class="columns">
-          <div class="column is-half has-text-centered">
-            <p th:text="'승인 대기: ' + ${waitRequestList.size()} + '건'"></p>
-          </div>
-          <div class="column is-half has-text-centered">
-            <p th:text="'승인 완료: ' + ${permissionList.size()} + '건'"></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="tabs">
-        <ul>
-          <li class="is-active" data-tab="request-list">
-            <a>승인 대기 리스트</a>
-          </li>
-          <li data-tab="approved-list"><a>승인된 리스트</a></li>
-        </ul>
-      </div>
-
-      <div id="request-list" class="tab-content is-active">
-        <div class="table-container">
-          <table class="table is-fullwidth">
-            <thead>
-              <tr>
-                <th>아동 이름</th>
-                <th>생년월일</th>
-                <th>보호자 이름</th>
-                <th>승인 요청 날짜</th>
-                <th>자녀와의 관계</th>
-                <th>관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:if="${#lists.isEmpty(waitRequestList)}">
-                <td colspan="6">승인 대기가 존재하지 않습니다.</td>
-              </tr>
-              <tr
-                th:each="wait : ${waitRequestList}"
-                th:data-id="${wait.id}"
-                class="has-text-centered"
-              >
-                <td th:text="${wait.childName}">자녀 이름</td>
-                <td
-                  th:text="${#temporals.format(wait.birthDate, 'yyyy/MM/dd')}"
-                >
-                  생년월일
-                </td>
-                <td th:text="${wait.guardianName}">보호자 이름</td>
-                <td
-                  th:text="${#temporals.format(wait.approvalDate, 'yyyy년 MM월 dd일')}"
-                >
-                  승인 요청 날짜
-                </td>
-                <td th:text="${wait.inviteeRelationType.typeNameKr}">
-                  아이와의 관계
-                </td>
-                <td>
-                  <!-- 승인하기 버튼 추가 -->
-                  <button
-                    class="button is-mint is-small approve-button"
-                    th:data-id="${wait.id}"
-                  >
-                    승인하기
-                  </button>
-                  <button
-                    class="button is-small is-pink request-abort-button"
-                    th:data-id="${wait.id}"
-                  >
-                    요청 거부
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="approved-list" class="tab-content">
-        <div class="table-container">
-          <h2 class="title is-4 mb-4 has-text-centered">승인된 리스트</h2>
-          <table class="table is-fullwidth">
-            <thead>
-              <tr>
-                <th>아동 이름</th>
-                <th>생년월일</th>
-                <th>보호자 이름</th>
-                <th>승인된 날짜</th>
-                <th>아동과의 관계</th>
-                <th>관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td th:if="${#lists.isEmpty(permissionList)}">
-                  승인된 아이가 존재하지 않습니다.
-                </td>
-              </tr>
-
-              <tr
-                th:each="permission : ${permissionList}"
-                th:data-id="${permission.id}"
-                class="has-text-centered"
-              >
-                <td th:text="${permission.childName}">아이 이름</td>
-                <td
-                  th:text="${#temporals.format(permission.birthDate, 'yyyy/MM/dd')}"
-                >
-                  생년월일
-                </td>
-                <td th:text="${permission.guardianName}">보호자 이름</td>
-                <td
-                  th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}"
-                >
-                  승인한 날짜
-                </td>
-                <td th:text="${permission.inviteeRelationType.typeNameKr}">
-                  아이와의 관계
-                </td>
-                <td>
-                  <button
-                    class="button is-small is-pink request-delete-button"
-                    th:data-id="${permission.id}"
-                  >
-                    권한 삭제
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
-    <div th:replace="fragments/footer :: ilogFooter"></div>
-  </body>
+    <div class="navbar-end">
+        <div class="navbar-item">
+            <div class="buttons">
+                <a class="button is-light" href="/guides"><span>이용안내</span></a>
+            </div>
+        </div>
+        <div class="navbar-item">
+            <div class="buttons">
+                <a class="button is-light" href="/claims"><span>고객센터</span></a>
+            </div>
+        </div>
+        <div class="navbar-item">
+            <div class="buttons">
+                <a class="button is-light" href="/auth/logout"
+                ><span>로그아웃</span></a
+                >
+            </div>
+        </div>
+        <div class="navbar-item">
+            <div class="buttons">
+                <a class="button is-light" th:href="@{/members/myDetails}">
+                    <span class="icon"><i class="fas fa-user"></i></span>
+                    <span th:text="|${memberName}(${relationType})|"
+                    >김미영(부모)</span
+                    >
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- 로고 + dashboard 바로가기 -->
+    <h1 class="title is-3 has-text-centered mb-6">권한 관리 페이지 (교사)</h1>
+
+    <div class="status-box">
+        <div class="columns">
+            <div class="column is-half has-text-centered">
+                <p th:text="'승인 대기: ' + ${waitRequestList.size()} + '건'"></p>
+            </div>
+            <div class="column is-half has-text-centered">
+                <p th:text="'승인 완료: ' + ${permissionList.size()} + '건'"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <ul>
+            <li class="is-active" data-tab="request-list">
+                <a>승인 대기 리스트</a>
+            </li>
+            <li data-tab="approved-list"><a>승인된 리스트</a></li>
+        </ul>
+    </div>
+
+    <div class="tab-content is-active" id="request-list">
+        <div class="table-container">
+            <table class="table is-fullwidth">
+                <thead>
+                <tr>
+                    <th>아동 이름</th>
+                    <th>생년월일</th>
+                    <th>보호자 이름</th>
+                    <th>승인 요청 날짜</th>
+                    <th>자녀와의 관계</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(waitRequestList)}">
+                    <td colspan="6">승인 대기가 존재하지 않습니다.</td>
+                </tr>
+                <tr
+                        class="has-text-centered"
+                        th:data-id="${wait.id}"
+                        th:each="wait : ${waitRequestList}"
+                >
+                    <td th:text="${wait.childName}">자녀 이름</td>
+                    <td
+                            th:text="${#temporals.format(wait.birthDate, 'yyyy/MM/dd')}"
+                    >
+                        생년월일
+                    </td>
+                    <td th:text="${wait.guardianName}">보호자 이름</td>
+                    <td
+                            th:text="${#temporals.format(wait.approvalDate, 'yyyy년 MM월 dd일')}"
+                    >
+                        승인 요청 날짜
+                    </td>
+                    <td th:text="${wait.inviteeRelationType.typeNameKr}">
+                        아이와의 관계
+                    </td>
+                    <td>
+                        <!-- 승인하기 버튼 추가 -->
+                        <button
+                                class="button is-mint is-small approve-button"
+                                th:data-id="${wait.id}"
+                        >
+                            승인하기
+                        </button>
+                        <button
+                                class="button is-small is-pink request-abort-button"
+                                th:data-id="${wait.id}"
+                        >
+                            요청 거부
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tab-content" id="approved-list">
+        <div class="table-container">
+            <h2 class="title is-4 mb-4 has-text-centered">승인된 리스트</h2>
+            <table class="table is-fullwidth">
+                <thead>
+                <tr>
+                    <th>아동 이름</th>
+                    <th>생년월일</th>
+                    <th>보호자 이름</th>
+                    <th>승인된 날짜</th>
+                    <th>아동과의 관계</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td th:if="${#lists.isEmpty(permissionList)}">
+                        승인된 아이가 존재하지 않습니다.
+                    </td>
+                </tr>
+
+                <tr
+                        class="has-text-centered"
+                        th:data-id="${permission.id}"
+                        th:each="permission : ${permissionList}"
+                >
+                    <td th:text="${permission.childName}">아이 이름</td>
+                    <td
+                            th:text="${#temporals.format(permission.birthDate, 'yyyy/MM/dd')}"
+                    >
+                        생년월일
+                    </td>
+                    <td th:text="${permission.guardianName}">보호자 이름</td>
+                    <td
+                            th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}"
+                    >
+                        승인한 날짜
+                    </td>
+                    <td th:text="${permission.inviteeRelationType.typeNameKr}">
+                        아이와의 관계
+                    </td>
+                    <td>
+                        <button
+                                class="button is-small is-pink request-delete-button"
+                                th:data-id="${permission.id}"
+                        >
+                            권한 삭제
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: ilogFooter"></div>
+</body>
 </html>

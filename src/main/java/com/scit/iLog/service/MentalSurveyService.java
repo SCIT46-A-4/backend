@@ -33,16 +33,6 @@ public class MentalSurveyService {
     private final MentalSurveyRepository mentalSurveyRepository;
     private final MentalSurveyResponseRepository mentalSurveyResponseRepository;
 
-    public MentalSurveyListDTO getAllMentalSurveys() {
-        List<MentalSurveyEntity> mentalSurveys = mentalSurveyRepository.findAll();
-        return new MentalSurveyListDTO(
-                mentalSurveys.stream()
-                        .map(mentalSurvey ->
-                                new MentalSurveyListItemDTO(mentalSurvey.getId(), mentalSurvey.getTitle()))
-                        .toList()
-        );
-    }
-
     public MentalSurveyDetailsDTO getMetalSurveyDetails(String mentalSurveyId) {
         MentalSurveyEntity mentalSurvey = mentalSurveyRepository.findById(mentalSurveyId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -216,9 +206,6 @@ public class MentalSurveyService {
                 .toList();
     }
 
-    // 시작>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // ------------------------ MentalSurveyResponse 25/3/5 준성 작업 -----------------------
-
     /**
      * v1.x.x-10
      * getMentalScores
@@ -229,21 +216,17 @@ public class MentalSurveyService {
      * @param endDate
      * @return
      */
-    private List<MentalSurveyResponseChartDTO> getSurveyData(Long childId, LocalDateTime startDate, LocalDateTime endDate) {
-        System.out.println("-------------------------------------------");
+    private List<MentalSurveyResponseChartDTO> getSurveyData(
+            Long childId,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    ) {
         Sort sort = Sort.by(asc("createdAt"));
 
         List<MentalSurveyResponseEntity> mentalSurveyResponseEntity
-                // = mentalSurveyResponseRepository.findAllByCreatedAtBetween(startDate, endDate, sort);
                 = mentalSurveyResponseRepository.findAllByChildIdAndCreatedAtBetween(childId, startDate, endDate, sort);
 
         List<MentalSurveyResponseChartDTO> chartDtoList = new ArrayList<>();
-//        System.out.println("childId: " + childId);
-//        System.out.println("start: " + startDate);
-//        System.out.println("end: " + endDate);
-//        for (int i = 0; i < mentalSurveyResponseEntity.size(); i++)
-//            System.out.println(mentalSurveyResponseEntity.get(i).getId());
-
 
         for (var data : mentalSurveyResponseEntity) {
             MentalSurveyResponseChartDTO _dto = MentalSurveyResponseChartDTO.builder()
@@ -255,7 +238,6 @@ public class MentalSurveyService {
                     .build();
             chartDtoList.add(_dto);
         }
-        System.out.println("-------------------------------------------");
         return chartDtoList;
     }
 

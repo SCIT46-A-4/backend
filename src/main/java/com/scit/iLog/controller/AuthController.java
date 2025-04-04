@@ -1,6 +1,5 @@
 package com.scit.iLog.controller;
 
-import com.scit.iLog.config.SecurityConfig;
 import com.scit.iLog.config.SecurityConfig.MemberDetails;
 import com.scit.iLog.domain.child.ChildEntity;
 import com.scit.iLog.domain.member.MemberEntity;
@@ -12,7 +11,6 @@ import com.scit.iLog.service.PermissionService;
 import com.scit.iLog.service.child.ChildService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;

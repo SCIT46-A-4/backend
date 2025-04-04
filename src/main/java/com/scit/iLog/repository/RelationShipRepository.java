@@ -18,7 +18,7 @@ public interface RelationShipRepository extends JpaRepository<RelationShipEntity
 
     void deleteAllByMember(MemberEntity member);
 
-	Optional<RelationShipEntity> findByMemberAndChild(MemberEntity member, ChildEntity child);
+    Optional<RelationShipEntity> findByMemberAndChild(MemberEntity member, ChildEntity child);
 
     boolean existsByChildAndMember(ChildEntity child, MemberEntity invitee);
 }

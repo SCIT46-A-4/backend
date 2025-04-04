@@ -1,8 +1,6 @@
 package com.scit.iLog.service.analysis;
 
 import com.scit.iLog.domain.child.ChildEntity;
-import com.scit.iLog.domain.child.FamilyBackGround;
-import com.scit.iLog.domain.healthCheck.HealthCheckEntity;
 import com.scit.iLog.domain.member.MemberEntity;
 import com.scit.iLog.domain.sentimentalAnalysis.*;
 import com.scit.iLog.dto.analysis.AnalysisResultDetailsDTO;
@@ -14,13 +12,14 @@ import com.scit.iLog.dto.analysis.weather.WeatherData;
 import com.scit.iLog.dto.analysis.weather.WeatherResponse;
 import com.scit.iLog.dto.child.ChildRecordExtraction;
 import com.scit.iLog.dto.child.ChildRecordExtractionDTO;
+import com.scit.iLog.exception.AIResponseParseException;
 import com.scit.iLog.exception.MemberNotFoundException;
 import com.scit.iLog.repository.*;
 import com.scit.iLog.util.FileManager;
 import com.scit.iLog.util.FilePathUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -36,12 +35,10 @@ import java.util.stream.Collectors;
 
 import static com.scit.iLog.config.WebConfig.ANALYSIS_FILES_REQUEST_ROOT_PATH;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnalysisService {
-    private static final String childDataExtractionPrompt =
-            "please extract height, weight, leftEye, rightEye, diagnosis of this child from this img";
-    private final AnalysisClient fakeAnalysisClient;
     private final WeatherService weatherService;
     private final AnalysisResultRepository analysisResultRepository;
     private final AnalysisTargetRepository analysisTargetRepository;
@@ -56,45 +53,47 @@ public class AnalysisService {
     @Transactional
     public Long getAnalysisResult(Long analysisTargetId) {
         AnalysisTargetEntity analysisTarget = findAnalysisTargetById(analysisTargetId);
-//        AIAnalysisResponseDTO aiAnalysisResponse = fakeAnalysisClient.getAIAnalysisResponse(analysisTarget);
         String targetFilePath = filePathUtil.childAnalysisFileUploadPath().concat("/").concat(analysisTarget.getSavedTargetFileName());
 
         String analysisDesc = analysisTarget.getDescription();
         String weatherDesc = analysisTarget.getWeather().getDescription();
         String childAdditionalInfo = getChildAdditionalInfo(analysisTarget.getChild());
         String totalAdditionalInfo = childAdditionalInfo + " " + analysisDesc + " " + weatherDesc;
-        AIAnalysisResponseDTO aiAnalysisResponse = openAIService.getAIAnalysisResponse(totalAdditionalInfo, targetFilePath);
+        try {
+            AIAnalysisResponseDTO aiAnalysisResponse = openAIService.getAIAnalysisResponse(totalAdditionalInfo, targetFilePath);
 
-        if (StringUtils.hasText(aiAnalysisResponse.extractedText()))
-            analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
+            if (StringUtils.hasText(aiAnalysisResponse.extractedText()))
+                analysisTarget.setAnalyzedText(aiAnalysisResponse.extractedText());
 
-        AnalysisResultEntity analysisResult = AnalysisResultEntity.builder()
-                .title("Analysis-".concat(UUID.randomUUID().toString()))
-                .analysisTarget(analysisTarget)
-                .analysisResultText(aiAnalysisResponse.analysisResult())
-                .suggestedSolution(aiAnalysisResponse.suggestedSolution())
-                .emotionType(aiAnalysisResponse.emotionType())
-                .emotionScore(aiAnalysisResponse.emotionScore())
-                .build();
+            AnalysisResultEntity analysisResult = AnalysisResultEntity.builder()
+                    .title("Analysis-".concat(UUID.randomUUID().toString()))
+                    .analysisTarget(analysisTarget)
+                    .analysisResultText(aiAnalysisResponse.analysisResult())
+                    .suggestedSolution(aiAnalysisResponse.suggestedSolution())
+                    .emotionType(aiAnalysisResponse.emotionType())
+                    .emotionScore(aiAnalysisResponse.emotionScore())
+                    .build();
 
-        AnalysisResultNoteEntity analysisResultNote = AnalysisResultNoteEntity.builder()
-                .analysisResult(analysisResult)
-                .content("")
-                .build();
-        AnalysisSatisfactionEntity analysisSatisfaction = AnalysisSatisfactionEntity.builder()
-                .analysisResult(analysisResult)
-                .satisfactionScore(0)
-                .build();
-        analysisResult.setAnalysisResultNote(analysisResultNote);
-        analysisResult.setSatisfaction(analysisSatisfaction);
-        analysisResultRepository.save(analysisResult);
-
-        return analysisResult.getId();
+            AnalysisResultNoteEntity analysisResultNote = AnalysisResultNoteEntity.builder()
+                    .analysisResult(analysisResult)
+                    .content("")
+                    .build();
+            AnalysisSatisfactionEntity analysisSatisfaction = AnalysisSatisfactionEntity.builder()
+                    .analysisResult(analysisResult)
+                    .satisfactionScore(0)
+                    .build();
+            analysisResult.setAnalysisResultNote(analysisResultNote);
+            analysisResult.setSatisfaction(analysisSatisfaction);
+            analysisResultRepository.save(analysisResult);
+            return analysisResult.getId();
+        } catch (RuntimeException e) {
+            throw new AIResponseParseException(analysisTargetId, e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
     public String getChildAdditionalInfo(ChildEntity child) {
-         String familyBackGrounds = "가정환경: " + child.getChildBackGrounds().stream()
+        String familyBackGrounds = "가정환경: " + child.getChildBackGrounds().stream()
                 .map(childBackGround -> childBackGround.getFamilyBackGround().getFamilyBackGround().getDescription())
                 .collect(Collectors.joining(", "));
 
@@ -107,7 +106,7 @@ public class AnalysisService {
         String gender = "성별: " + child.getGender().getTypeNameKr();
         String note = "특이사항" + child.getNote();
 
-        return familyBackGrounds + "/" + childDescription + "/" + birthDate + "/" + gender + "/" + note;
+        return familyBackGrounds + " " + childDescription + " " + birthDate + " " + gender + " " + note;
     }
 
     @Transactional(readOnly = true)
@@ -207,25 +206,6 @@ public class AnalysisService {
         return analysisTargetRepository.save(analysisTarget).getId();
     }
 
-    @Transactional
-    public String saveHealthCheckImage(MultipartFile healthCheckImg) {
-        // 1. 업로드 경로 결정 (OS에 따라)
-        String uploadPath = filePathUtil.childHealthCheckImgUploadPath();
-
-        // 2. 원본 파일명이 있는지 확인 후, 안전한 저장 파일명 생성
-        String originalFilename = healthCheckImg.getOriginalFilename();
-        if (!StringUtils.hasText(originalFilename)) {
-            throw new IllegalArgumentException("업로드 파일에 원본 파일명이 존재하지 않습니다.");
-        }
-        String savedFileName = FileManager.getSavedFileName(originalFilename);
-
-        // 3. 파일 저장 (FileManager.saveFile 메서드 사용)
-        fileManager.saveFile(healthCheckImg, uploadPath, savedFileName);
-
-        // 4. 저장된 파일의 전체 경로를 반환하거나 DB에 저장할 때 사용할 파일명을 반환
-        return savedFileName;
-    }
-
     public ChildRecordExtraction getExtractChildRecordData(MultipartFile healthCheckImg) {
         if (healthCheckImg.isEmpty() || !StringUtils.hasText(healthCheckImg.getOriginalFilename())) {
             return ChildRecordExtractionDTO.builder()
@@ -240,11 +220,7 @@ public class AnalysisService {
     }
 
     @Transactional
-    public void inValidateByMember(Long memberId) {
-        MemberEntity member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-        analysisTargetRepository.findAllByUploadedBy(member)
-                .forEach(analysisTarget ->
-                        analysisTarget.setUploadedBy(null));
+    public void deleteAnalysisTarget(Long analysisTargetId) {
+        analysisTargetRepository.deleteById(analysisTargetId);
     }
 }

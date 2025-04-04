@@ -1,179 +1,180 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iLog - Child Development Tracking Service</title>
-  <link
-      rel="stylesheet" href="../../static/css/footer.css" th:href="@{/css/footer.css}" />
-  <link rel="stylesheet" href="../static/css/bulma.min.css" th:href="@{/css/bulma.min.css}">
-  <link rel="stylesheet" href="../static/css/customColors.css" th:href="@{/css/customColors.css}">
-  <script src="../static/js/jquery-3.6.0.min.js" th:src="@{/js/jquery-3.6.0.min.js}"></script>
-  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
-  <style>
-    :root {
-        --primary-color: #FDF5BF;
-        --secondary-color: #BEE6D9;
-    }
-    .has-text-primary-custom {
-        color: var(--primary-color) !important;
-    }
-    .has-background-primary-custom {
-        background-color: var(--primary-color) !important;
-    }
-    .button.is-primary-custom {
-        background-color: var(--primary-color);
-        color: white;
-    }
-    .button.is-primary-custom:hover {
-        background-color: var(--secondary-color);
-    }
-    .feature-icon {
-        font-size: 3rem;
-        color: var(--primary-color);
-    }
-    .hero.is-primary-custom {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-    }
-    .floating-shapes {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: 0;
-    }
-    .shape {
-        position: absolute;
-        opacity: 0.1;
-    }
-    .hero-content {
-        position: relative;
-        z-index: 1;
-    }
-    .h-100 {
-        min-height: 200px;
-    }
-    #logo {
-		    width: 70px;
-		    height: auto;
-		    max-height: 80px;
-		}
-		
-		
-		
-	.hero.is-primary-custom {
-	        background-image: url('[[@{/images/background.png}]]');
-	        background-size: cover;
-	        background-position: center;
-	        color: black; /* 글자색 변경 (배경 이미지에 따라 조절 가능) */
-	    }
-	
-	    .hero-content {
-	        position: relative;
-	        z-index: 1;
-	        text-align: left; /* 텍스트 왼쪽 정렬 */
-	    }
-	
-	    .hero-body {
-	        display: flex;
-	        align-items: center; /* 세로 중앙 정렬 */
-	    }
-	
-	    .hero-text-container {
-	        max-width: 650px; /* 텍스트 박스 최대 너비 제한 */
-	    }
-        
-        /* 푸터 배경색 변경 */
-		  .footer {
-		    background-color: #FDF5BF; /* 원하는 색상 */
-		    padding: 2rem 0;
-		  }
-		  
-		  .button.is-white {
-		    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15); /* 그림자 추가 */
-		    border-radius: 12px; /* 둥근 모서리 */
-		    transition: all 0.2s ease-in-out; /* 부드러운 애니메이션 */
-		}
-		
-		.button.is-white:hover {
-		    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* 호버 시 강조 */
-		}	
-		
-  </style>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const navbarBurgers = Array.from(document.querySelectorAll('.navbar-burger'));
-        if (navbarBurgers.length > 0) {
-            navbarBurgers.forEach(el => {
-                el.addEventListener('click', () => {
-                    const target = el.dataset.target;
-                    const targetEl = document.getElementById(target);
-                    el.classList.toggle('is-active');
-                    targetEl.classList.toggle('is-active');
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>iLog - Child Development Tracking Service</title>
+    <link
+            href="../../static/css/footer.css" rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <link href="../static/css/bulma.min.css" rel="stylesheet" th:href="@{/css/bulma.min.css}">
+    <link href="../static/css/customColors.css" rel="stylesheet" th:href="@{/css/customColors.css}">
+    <script src="../static/js/jquery-3.6.0.min.js" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+    <style>
+        :root {
+            --primary-color: #FDF5BF;
+            --secondary-color: #BEE6D9;
+        }
+        .has-text-primary-custom {
+            color: var(--primary-color) !important;
+        }
+        .has-background-primary-custom {
+            background-color: var(--primary-color) !important;
+        }
+        .button.is-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .button.is-primary-custom:hover {
+            background-color: var(--secondary-color);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+        .hero.is-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        .h-100 {
+            min-height: 200px;
+        }
+        #logo {
+                width: 70px;
+                height: auto;
+                max-height: 80px;
+            }
+
+
+
+        .hero.is-primary-custom {
+                background-image: url('[[@{/images/background.png}]]');
+                background-size: cover;
+                background-position: center;
+                color: black; /* 글자색 변경 (배경 이미지에 따라 조절 가능) */
+            }
+
+            .hero-content {
+                position: relative;
+                z-index: 1;
+                text-align: left; /* 텍스트 왼쪽 정렬 */
+            }
+
+            .hero-body {
+                display: flex;
+                align-items: center; /* 세로 중앙 정렬 */
+            }
+
+            .hero-text-container {
+                max-width: 650px; /* 텍스트 박스 최대 너비 제한 */
+            }
+
+            /* 푸터 배경색 변경 */
+              .footer {
+                background-color: #FDF5BF; /* 원하는 색상 */
+                padding: 2rem 0;
+              }
+
+              .button.is-white {
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15); /* 그림자 추가 */
+                border-radius: 12px; /* 둥근 모서리 */
+                transition: all 0.2s ease-in-out; /* 부드러운 애니메이션 */
+            }
+
+            .button.is-white:hover {
+                box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* 호버 시 강조 */
+            }
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navbarBurgers = Array.from(document.querySelectorAll('.navbar-burger'));
+            if (navbarBurgers.length > 0) {
+                navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+                        const target = el.dataset.target;
+                        const targetEl = document.getElementById(target);
+                        el.classList.toggle('is-active');
+                        targetEl.classList.toggle('is-active');
+                    });
                 });
-            });
-        }
+            }
 
-        // Floating shapes
-        const shapes = ['■', '●', '▲', '★'];
-        const colors = ['#FF9F43', '#FFC085', '#FFD700', '#FFA07A'];
-        const floatingShapes = document.querySelector('.floating-shapes');
-        for (let i = 0; i < 20; i++) {
-            const shape = document.createElement('div');
-            shape.className = 'shape';
-            shape.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-            shape.style.color = colors[Math.floor(Math.random() * colors.length)];
-            shape.style.left = Math.random() * 100 + '%';
-            shape.style.top = Math.random() * 100 + '%';
-            shape.style.fontSize = (Math.random() * 30 + 10) + 'px';
-            shape.style.transform = `rotate(${Math.random() * 360}deg)`;
-            floatingShapes.appendChild(shape);
-        }
-    });
+            // Floating shapes
+            const shapes = ['■', '●', '▲', '★'];
+            const colors = ['#FF9F43', '#FFC085', '#FFD700', '#FFA07A'];
+            const floatingShapes = document.querySelector('.floating-shapes');
+            for (let i = 0; i < 20; i++) {
+                const shape = document.createElement('div');
+                shape.className = 'shape';
+                shape.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                shape.style.color = colors[Math.floor(Math.random() * colors.length)];
+                shape.style.left = Math.random() * 100 + '%';
+                shape.style.top = Math.random() * 100 + '%';
+                shape.style.fontSize = (Math.random() * 30 + 10) + 'px';
+                shape.style.transform = `rotate(${Math.random() * 360}deg)`;
+                floatingShapes.appendChild(shape);
+            }
+        });
 
-    function changeLanguage(lang) {
-        window.location.href = '/?lang=' + lang;
-    }
-  </script>
+        function changeLanguage(lang) {
+            window.location.href = '/?lang=' + lang;
+        }
+    </script>
 </head>
 <body>
 <!-- Navigation -->
-<nav class="navbar is-white" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="/">
-      <img id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}" alt="iLog 로고"/>
-    </a>
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div id="navbarBasic" class="navbar-menu">
-    <div class="navbar-end">
-      <a class="navbar-item" href="#features">Features</a>
-      <a class="navbar-item" th:href="@{/claims/new}">Contact</a>
-      <div class="navbar-item">
-        <div class="buttons">
-          <a class="button is-primary-custom has-text-black"
-             th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
-            <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'Go to Dashboard' : 'Get Started'">Get Started</strong>
-          </a>
-        </div>
-      </div>
-      <!-- Language Switch Dropdown -->
-      <div class="navbar-item">
-		<div class="select is-small">
-			<select id="languageSelect" onchange="changeLanguage(this.value)">
-				<option value="kr">한국어</option>
-				<option value="en" selected>English</option>
-				<option value="jp">日本語</option>
-			</select>
-		</div>
-	  </div>
+<nav aria-label="main navigation" class="navbar is-white" role="navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img alt="iLog 로고" id="logo" src="../../static/images/wilog.png" th:src="@{/images/wilog.png}"/>
+        </a>
+        <a aria-expanded="false" aria-label="menu" class="navbar-burger" data-target="navbarBasic" role="button">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
     </div>
-  </div>
+    <div class="navbar-menu" id="navbarBasic">
+        <div class="navbar-end">
+            <a class="navbar-item" href="#features">Features</a>
+            <a class="navbar-item" th:href="@{/claims/new}">Contact</a>
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary-custom has-text-black"
+                       th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
+                        <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'Go to Dashboard' : 'Get Started'">Get
+                            Started</strong>
+                    </a>
+                </div>
+            </div>
+            <!-- Language Switch Dropdown -->
+            <div class="navbar-item">
+                <div class="select is-small">
+                    <select id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="kr">한국어</option>
+                        <option selected value="en">English</option>
+                        <option value="jp">日本語</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
 </nav>
 
 <!-- Hero Section -->
@@ -192,7 +193,8 @@
                         <div class="buttons">
                             <a class="button is-white is-large mr-3"
                                th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}">
-                                <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : 'Get Started'"> Get Started </strong>
+                                <strong th:text="${#authorization.expression('isAuthenticated()')} ? '대시보드 바로가기' : 'Get Started'">
+                                    Get Started </strong>
                             </a>
                             <a class="button is-primary-custom is-large has-text-black" href="#features">
                                 Learn More
@@ -208,123 +210,125 @@
 
 <!-- Features Section -->
 <section class="section" id="features">
-  <div class="container">
-    <h2 class="title is-2 has-text-centered mb-6">Features</h2>
-    <div class="columns is-multiline">
-      <div class="column is-one-third">
-        <div class="box has-text-centered h-100">
-          <span class="icon feature-icon mb-4"><i class="fas fa-robot"></i></span>
-          <h3 class="title is-4">AI Emotion Analysis</h3>
-          <p>Analyze your child's emotions through AI-powered analysis of diaries and drawings.</p>
+    <div class="container">
+        <h2 class="title is-2 has-text-centered mb-6">Features</h2>
+        <div class="columns is-multiline">
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                    <span class="icon feature-icon mb-4"><i class="fas fa-robot"></i></span>
+                    <h3 class="title is-4">AI Emotion Analysis</h3>
+                    <p>Analyze your child's emotions through AI-powered analysis of diaries and drawings.</p>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                    <span class="icon feature-icon mb-4"><i class="fas fa-heart"></i></span>
+                    <h3 class="title is-4">Psychological Surveys</h3>
+                    <p>Regular surveys help you track your child's emotional well-being.</p>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                    <span class="icon feature-icon mb-4"><i class="fas fa-child"></i></span>
+                    <h3 class="title is-4">Growth Records</h3>
+                    <p>Monitor your child's growth—from measurements to health check-ups—all in one place.</p>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                    <span class="icon feature-icon mb-4"><i class="fas fa-chart-line"></i></span>
+                    <h3 class="title is-4">Statistics & History</h3>
+                    <p>View your child's progress over time with detailed charts and records.</p>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                    <span class="icon feature-icon mb-4"><i class="fas fa-users"></i></span>
+                    <h3 class="title is-4">Information Sharing</h3>
+                    <p>Securely share your child's growth data with teachers and experts.</p>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="box has-text-centered h-100">
+                    <span class="icon feature-icon mb-4"><i class="fas fa-lock"></i></span>
+                    <h3 class="title is-4">Access Control</h3>
+                    <p>Manage permissions carefully to keep your child's information safe.</p>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="column is-one-third">
-        <div class="box has-text-centered h-100">
-          <span class="icon feature-icon mb-4"><i class="fas fa-heart"></i></span>
-          <h3 class="title is-4">Psychological Surveys</h3>
-          <p>Regular surveys help you track your child's emotional well-being.</p>
-        </div>
-      </div>
-      <div class="column is-one-third">
-        <div class="box has-text-centered h-100">
-          <span class="icon feature-icon mb-4"><i class="fas fa-child"></i></span>
-          <h3 class="title is-4">Growth Records</h3>
-          <p>Monitor your child's growth—from measurements to health check-ups—all in one place.</p>
-        </div>
-      </div>
-      <div class="column is-one-third">
-        <div class="box has-text-centered h-100">
-          <span class="icon feature-icon mb-4"><i class="fas fa-chart-line"></i></span>
-          <h3 class="title is-4">Statistics & History</h3>
-          <p>View your child's progress over time with detailed charts and records.</p>
-        </div>
-      </div>
-      <div class="column is-one-third">
-        <div class="box has-text-centered h-100">
-          <span class="icon feature-icon mb-4"><i class="fas fa-users"></i></span>
-          <h3 class="title is-4">Information Sharing</h3>
-          <p>Securely share your child's growth data with teachers and experts.</p>
-        </div>
-      </div>
-      <div class="column is-one-third">
-        <div class="box has-text-centered h-100">
-          <span class="icon feature-icon mb-4"><i class="fas fa-lock"></i></span>
-          <h3 class="title is-4">Access Control</h3>
-          <p>Manage permissions carefully to keep your child's information safe.</p>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
 
 <!-- CTA Section -->
 <section class="section has-background-light">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8 has-text-centered">
-        <h2 class="title is-2 mb-6">Start Now</h2>
-        <p class="subtitle is-5 mb-6">
-          Capture every special moment of your child's growth.
-        </p>
-        <a class="button is-primary-custom is-large has-text-black"
-           th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
-        >
-          <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'Go to Dashboard' : 'Get Started'">Get Started</strong>
-        </a>
-      </div>
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-8 has-text-centered">
+                <h2 class="title is-2 mb-6">Start Now</h2>
+                <p class="subtitle is-5 mb-6">
+                    Capture every special moment of your child's growth.
+                </p>
+                <a class="button is-primary-custom is-large has-text-black"
+                   th:href="${#authorization.expression('isAuthenticated()')} ? @{/dashboard} : @{/auth/signIn}"
+                >
+                    <strong th:text="${#authorization.expression('isAuthenticated()')} ? 'Go to Dashboard' : 'Get Started'">Get
+                        Started</strong>
+                </a>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
 <!-- 공통 footer -->
-    <footer>
-      <div class="container">
+<footer>
+    <div class="container">
         <div class="columns">
-          <div class="column is-4">
-            <div class="logo-container">
-              <img
-                class="footer-logo"
-                src="../../static/images/wilog.png"
-                th:src="@{/images/wilog.png}"
-                alt="iLog 로고"
-              />
-              <span class="footer-title">iLog</span>
+            <div class="column is-4">
+                <div class="logo-container">
+                    <img
+                            alt="iLog 로고"
+                            class="footer-logo"
+                            src="../../static/images/wilog.png"
+                            th:src="@{/images/wilog.png}"
+                    />
+                    <span class="footer-title">iLog</span>
+                </div>
+                <p>
+                    This service systematically records and analyzes a child's emotions and development to support
+                    healthy growth.
+                </p>
             </div>
-            <p>
-              This service systematically records and analyzes a child's emotions and development to support healthy growth.
-            </p>
-          </div>
-          <div class="column is-4"></div>
-          <div class="column is-4">
-            <h3 class="title is-5">Contact</h3>
-            <div class="contact-info">
-              <p>
-                <i class="fas fa-map-marker-alt"></i> 123, Teheran-ro, Gangnam-gu, Seoul, South Korea
-              </p>
-              <p><i class="fas fa-phone"></i> 02-123-4567</p>
-              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
-              <p>
-                <i class="fas fa-clock"></i> weekday 09:00 - 18:00 (except public holidays)
-              </p>
+            <div class="column is-4"></div>
+            <div class="column is-4">
+                <h3 class="title is-5">Contact</h3>
+                <div class="contact-info">
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i> 123, Teheran-ro, Gangnam-gu, Seoul, South Korea
+                    </p>
+                    <p><i class="fas fa-phone"></i> 02-123-4567</p>
+                    <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
+                    <p>
+                        <i class="fas fa-clock"></i> weekday 09:00 - 18:00 (except public holidays)
+                    </p>
+                </div>
             </div>
-          </div>
         </div>
         <div class="footer-bottom">
-		  <div class="columns is-vcentered">
-		    <div class="column is-4"></div> <!-- 왼쪽 공백 -->
-		    <div class="column is-4 has-text-centered">
-		      <p>
-		        <a href="/terms">Terms of Service</a> |
-		        <a href="/privacy"><strong>Privacy Policy</strong></a> |
-		        <a href="/youth-policy">Youth Protection Policy</a>
-		      </p>
-		    </div>
-		    <div class="column is-4 has-text-right">
-		      <p>&copy; 2025 iLog. All rights reserved.</p>
-		    </div>
-		  </div>
-		</div>
-      </div>
-    </footer>
+            <div class="columns is-vcentered">
+                <div class="column is-4"></div> <!-- 왼쪽 공백 -->
+                <div class="column is-4 has-text-centered">
+                    <p>
+                        <a href="/terms">Terms of Service</a> |
+                        <a href="/privacy"><strong>Privacy Policy</strong></a> |
+                        <a href="/youth-policy">Youth Protection Policy</a>
+                    </p>
+                </div>
+                <div class="column is-4 has-text-right">
+                    <p>&copy; 2025 iLog. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 </body>
 </html>

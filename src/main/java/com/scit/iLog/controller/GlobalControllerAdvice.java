@@ -44,7 +44,7 @@ public class GlobalControllerAdvice {
     public String handleChildNotFoundException(
             ChildNotFoundException ex
     ) {
-        return String.format("redirect:/dashboard");
+        return "redirect:/dashboard";
     }
 
     @ExceptionHandler({FileDeleteFailException.class, HealthCheckFileDeleteFailException.class})
@@ -63,9 +63,9 @@ public class GlobalControllerAdvice {
     }
 
     public static class ErrorResponse {
-        private LocalDateTime timestamp;
-        private String message;
-        private String details;
+        private final LocalDateTime timestamp;
+        private final String message;
+        private final String details;
 
         public ErrorResponse(LocalDateTime timestamp, String message, String details) {
             this.timestamp = timestamp;

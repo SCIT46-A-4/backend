@@ -230,10 +230,7 @@ public class EmailService {
     public boolean checkInTimeLimit(LocalDateTime time, long limitTime) {
         // 제한 시간 안이면 true, 제한시간 오버됐으면 false
         boolean result = false;
-        if (Duration.between(time, LocalDateTime.now()).toMinutes() <= limitTime)
-            result = true;
-        else
-            result = false;
+        result = Duration.between(time, LocalDateTime.now()).toMinutes() <= limitTime;
 
         return result;
     }
@@ -241,6 +238,7 @@ public class EmailService {
     /**
      * 2025-03-10~12 이도훈
      * 부모용
+     *
      * @param memberId
      * @return
      */
@@ -274,15 +272,16 @@ public class EmailService {
     /**
      * 2025-03-10~12 정준성
      * 교사용
+     *
      * @param inviteeId
      * @param _waitRequestList
      * @param _permissionList
      */
     @Transactional(readOnly = true)
     public void findAllByPermissionEntity(
-    		Long inviteeId,
-    		List<PermissionTeacherDTO> _waitRequestList,
-    		List<PermissionTeacherDTO> _permissionList
+            Long inviteeId,
+            List<PermissionTeacherDTO> _waitRequestList,
+            List<PermissionTeacherDTO> _permissionList
     ) {
         // 25/3/11 jun : requester 기준으로 db 찾아서 반환하는 함수 교사용
         List<PermissionRequestEntity> list = permissionRequestRepository.findAllByInviteeId(inviteeId);
@@ -291,8 +290,7 @@ public class EmailService {
             // accept 상태라면 permissionList에 넣기 아니라면 pending
             if (_entity.getPermissionStatus().equals(PermissionRequestStatus.ACCEPTED)) {
                 _permissionList.add(entityToPermissionTeacherDTO(_entity));
-            }
-            else if (_entity.getPermissionStatus() == PermissionRequestStatus.PENDING) {
+            } else if (_entity.getPermissionStatus() == PermissionRequestStatus.PENDING) {
                 _waitRequestList.add(entityToPermissionTeacherDTO(_entity));
             }
         }
@@ -301,6 +299,7 @@ public class EmailService {
     /**
      * 2025-03-10~12 정준성
      * 교사용
+     *
      * @param _entity
      * @return
      */
@@ -318,9 +317,11 @@ public class EmailService {
 
     // 나중에 옮겨야 할 함수
     // permission table의 record 삭제 함수
+
     /**
-	 * 2025-03-10~12
-	 * 삭제 메서드(부모, 교사 공용)
+     * 2025-03-10~12
+     * 삭제 메서드(부모, 교사 공용)
+     *
      * @param permissionId
      * @return
      */

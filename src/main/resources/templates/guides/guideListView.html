@@ -1,189 +1,189 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>게시판 목록</title>
-    <link rel="stylesheet" href="/css/bulma.min.css" />
-    <link rel="stylesheet" href="/css/customColors.css" />
-    <link rel="stylesheet" href="/css/footer.css" />
+    <link href="/css/bulma.min.css" rel="stylesheet"/>
+    <link href="/css/customColors.css" rel="stylesheet"/>
+    <link href="/css/footer.css" rel="stylesheet"/>
 
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script th:src="@{/js/sweetalert2.js}"></script>
 
     <!-- 폰트어썸 -->
     <script
-      src="https://kit.fontawesome.com/def97ee41b.js"
-      crossorigin="anonymous"
+            crossorigin="anonymous"
+            src="https://kit.fontawesome.com/def97ee41b.js"
     ></script>
 
     <style>
-      /* ✅ 디테일뷰 배경색 적용 */
-      html {
-        background-color: var(--primary);
-        /* #FDF5BF */
-      }
+        /* ✅ 디테일뷰 배경색 적용 */
+        html {
+          background-color: var(--primary);
+          /* #FDF5BF */
+        }
 
-      /* ✅ 제목과 검색창 사이 간격 증가 */
-      .title.is-3 {
-        margin-bottom: 20px;
-        /* 기존보다 여유롭게 간격 조정 */
-      }
+        /* ✅ 제목과 검색창 사이 간격 증가 */
+        .title.is-3 {
+          margin-bottom: 20px;
+          /* 기존보다 여유롭게 간격 조정 */
+        }
     </style>
 
     <script>
-      $(function () {
-        init();
-        // 페이지 로드 시 초기 데이터를 불러옴 (초기검색: isInitialLoad=true)
-        performSearch(true);
-      });
-
-      function init() {
-        $('#searchBtn').on('click', function () {
-          performSearch(false);
-        });
-        // 초기화 버튼: 검색어를 지우고 기본 데이터를 로드
-        $('#resetBtn').on('click', function () {
-          $('#searchWord').val('');
+        $(function () {
+          init();
+          // 페이지 로드 시 초기 데이터를 불러옴 (초기검색: isInitialLoad=true)
           performSearch(true);
         });
-        $('#searchWord').on('keypress', function (e) {
-          if (e.key === 'Enter') {
-            e.preventDefault();
+
+        function init() {
+          $('#searchBtn').on('click', function () {
             performSearch(false);
-          }
-        });
-      }
-
-      // 검색 로직: isInitialLoad가 true면 검색어 체크 없이 기본 데이터를 불러옴
-      function performSearch(isInitialLoad) {
-        let searchItem = $('#searchItem').val();
-        let searchWord = $('#searchWord').val().trim();
-
-        if (!isInitialLoad && searchWord === '') {
-          Swal.fire('검색어를 입력하세요.');
-          return;
-        }
-
-        $.ajax({
-          url: '/guides',
-          method: 'POST',
-          data: { searchItem: searchItem, searchWord: searchWord },
-          success: function (response) {
-            updateSearchResults(response);
-          },
-          error: function () {
-            Swal.fire('검색 중 오류가 발생했습니다.');
-          },
-        });
-      }
-
-      function updateSearchResults(results) {
-        let outputHtml = '';
-        if (results.length === 0) {
-          outputHtml = `<p class="has-text-centered">검색 결과가 없습니다.</p>`;
-        } else {
-          $.each(results, function (index, item) {
-            outputHtml += `
-                    <div class="box" style="margin-bottom: 10px;">
-                        <div class="level" style="display: flex; justify-content: space-between; align-items: center;">
-                            <p class="title is-5">${item.title}</p>
-                            <button type="button" class="button is-white contentBtn">
-                                <span class="icon"><i class="fas fa-caret-down"></i></span>
-                            </button>
-                        </div>
-                        <div class="content-section" style="display: none; padding: 10px; border-top: 1px solid #ddd;">
-                            <p>${item.content}</p>
-                        </div>
-                    </div>
-                    `;
           });
-        }
-        $('#searchResults').html(outputHtml);
-        bindContentToggle();
-      }
-
-      function bindContentToggle() {
-        $('.contentBtn')
-          .off('click')
-          .on('click', function () {
-            let contentDiv = $(this).closest('.box').find('.content-section');
-            contentDiv.toggle();
-            let icon = $(this).find('i');
-            if (icon.hasClass('fa-caret-down')) {
-              icon.removeClass('fa-caret-down').addClass('fa-caret-up');
-            } else {
-              icon.removeClass('fa-caret-up').addClass('fa-caret-down');
+          // 초기화 버튼: 검색어를 지우고 기본 데이터를 로드
+          $('#resetBtn').on('click', function () {
+            $('#searchWord').val('');
+            performSearch(true);
+          });
+          $('#searchWord').on('keypress', function (e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              performSearch(false);
             }
           });
-      }
+        }
+
+        // 검색 로직: isInitialLoad가 true면 검색어 체크 없이 기본 데이터를 불러옴
+        function performSearch(isInitialLoad) {
+          let searchItem = $('#searchItem').val();
+          let searchWord = $('#searchWord').val().trim();
+
+          if (!isInitialLoad && searchWord === '') {
+            Swal.fire('검색어를 입력하세요.');
+            return;
+          }
+
+          $.ajax({
+            url: '/guides',
+            method: 'POST',
+            data: { searchItem: searchItem, searchWord: searchWord },
+            success: function (response) {
+              updateSearchResults(response);
+            },
+            error: function () {
+              Swal.fire('검색 중 오류가 발생했습니다.');
+            },
+          });
+        }
+
+        function updateSearchResults(results) {
+          let outputHtml = '';
+          if (results.length === 0) {
+            outputHtml = `<p class="has-text-centered">검색 결과가 없습니다.</p>`;
+          } else {
+            $.each(results, function (index, item) {
+              outputHtml += `
+                      <div class="box" style="margin-bottom: 10px;">
+                          <div class="level" style="display: flex; justify-content: space-between; align-items: center;">
+                              <p class="title is-5">${item.title}</p>
+                              <button type="button" class="button is-white contentBtn">
+                                  <span class="icon"><i class="fas fa-caret-down"></i></span>
+                              </button>
+                          </div>
+                          <div class="content-section" style="display: none; padding: 10px; border-top: 1px solid #ddd;">
+                              <p>${item.content}</p>
+                          </div>
+                      </div>
+                      `;
+            });
+          }
+          $('#searchResults').html(outputHtml);
+          bindContentToggle();
+        }
+
+        function bindContentToggle() {
+          $('.contentBtn')
+            .off('click')
+            .on('click', function () {
+              let contentDiv = $(this).closest('.box').find('.content-section');
+              contentDiv.toggle();
+              let icon = $(this).find('i');
+              if (icon.hasClass('fa-caret-down')) {
+                icon.removeClass('fa-caret-down').addClass('fa-caret-up');
+              } else {
+                icon.removeClass('fa-caret-up').addClass('fa-caret-down');
+              }
+            });
+        }
     </script>
-  </head>
+</head>
 
-  <body>
-    <section class="section">
-      <!-- 로고 + dashboard 바로가기 -->
-      <div class="logo">
+<body>
+<section class="section">
+    <!-- 로고 + dashboard 바로가기 -->
+    <div class="logo">
         <a th:href="@{/dashboard}">
-          <img
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="로고"
-            class="image"
-            style="width: 100px; height: auto"
-          />
+            <img
+                    alt="로고"
+                    class="image"
+                    src="../../static/images/wilog.png"
+                    style="width: 100px; height: auto"
+                    th:src="@{/images/wilog.png}"
+            />
         </a>
-      </div>
+    </div>
 
-      <div class="container">
+    <div class="container">
         <div class="has-text-centered">
-          <h1 class="title is-3">이용안내</h1>
-          <h2 class="title is-3">무엇을 도와드릴까요?</h2>
+            <h1 class="title is-3">이용안내</h1>
+            <h2 class="title is-3">무엇을 도와드릴까요?</h2>
         </div>
         <!-- 검색 창 -->
         <div class="box">
-          <form id="searchForm">
-            <div class="field is-grouped">
-              <!-- 검색 기준 선택 -->
-              <div class="control">
-                <div class="select">
-                  <select name="searchItem" id="searchItem">
-                    <option value="title">제목</option>
-                    <option value="content">본문</option>
-                  </select>
+            <form id="searchForm">
+                <div class="field is-grouped">
+                    <!-- 검색 기준 선택 -->
+                    <div class="control">
+                        <div class="select">
+                            <select id="searchItem" name="searchItem">
+                                <option value="title">제목</option>
+                                <option value="content">본문</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- 검색어 입력 -->
+                    <div class="control is-expanded">
+                        <input
+                                class="input"
+                                id="searchWord"
+                                name="searchWord"
+                                placeholder="검색어를 입력하세요"
+                                type="text"
+                        />
+                    </div>
+                    <!-- 검색 버튼 -->
+                    <div class="control">
+                        <button class="button is-primary" id="searchBtn" type="button">
+                            <span class="icon"><i class="fas fa-search"></i></span>
+                        </button>
+                    </div>
+                    <!-- 초기화 버튼 -->
+                    <div class="control">
+                        <button class="button is-light" id="resetBtn" type="button">
+                            초기화
+                        </button>
+                    </div>
                 </div>
-              </div>
-              <!-- 검색어 입력 -->
-              <div class="control is-expanded">
-                <input
-                  class="input"
-                  type="text"
-                  name="searchWord"
-                  id="searchWord"
-                  placeholder="검색어를 입력하세요"
-                />
-              </div>
-              <!-- 검색 버튼 -->
-              <div class="control">
-                <button type="button" class="button is-primary" id="searchBtn">
-                  <span class="icon"><i class="fas fa-search"></i></span>
-                </button>
-              </div>
-              <!-- 초기화 버튼 -->
-              <div class="control">
-                <button type="button" class="button is-light" id="resetBtn">
-                  초기화
-                </button>
-              </div>
-            </div>
-          </form>
+            </form>
         </div>
         <!-- 검색 결과 리스트 -->
         <div id="searchResults">
-          <!-- AJAX로 결과가 추가될 공간 -->
+            <!-- AJAX로 결과가 추가될 공간 -->
         </div>
-      </div>
-    </section>
-    <div th:replace="fragments/footer :: ilogFooter"></div>
-  </body>
+    </div>
+</section>
+<div th:replace="fragments/footer :: ilogFooter"></div>
+</body>
 </html>

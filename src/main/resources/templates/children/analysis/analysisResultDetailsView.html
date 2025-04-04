@@ -1,927 +1,929 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>분석 결과 확인 - iLog</title>
     <link
-      rel="stylesheet"
-      th:href="@{/css/bulma.min.css}"
-      href="../../../static/css/bulma.min.css"
+            href="../../../static/css/bulma.min.css"
+            rel="stylesheet"
+            th:href="@{/css/bulma.min.css}"
     />
     <!-- FilePond CSS -->
     <link
-      th:href="@{/css/filepond.css}"
-      href="../../../static/css/filepond.css"
-      rel="stylesheet"
+            href="../../../static/css/filepond.css"
+            rel="stylesheet"
+            th:href="@{/css/filepond.css}"
     />
     <!-- FilePond Image Preview CSS -->
     <link
-      th:href="@{/css/filepond-plugin-image-preview.css}"
-      href="../../../static/css/filepond-plugin-image-preview.css"
-      rel="stylesheet"
+            href="../../../static/css/filepond-plugin-image-preview.css"
+            rel="stylesheet"
+            th:href="@{/css/filepond-plugin-image-preview.css}"
     />
     <!-- customColors -->
     <link
-      rel="stylesheet"
-      href="../../static/css/customColors.css"
-      th:href="@{/css/customColors.css}"
+            href="../../static/css/customColors.css"
+            rel="stylesheet"
+            th:href="@{/css/customColors.css}"
     />
     <link
-      rel="stylesheet"
-      href="../../static/css/footer.css"
-      th:href="@{/css/footer.css}"
+            href="../../static/css/footer.css"
+            rel="stylesheet"
+            th:href="@{/css/footer.css}"
     />
     <style>
-      body {
-        background-color: var(--primary);
-      }
-      .container {
-        max-width: 700px;
-        margin: 0 auto;
-        padding: 1rem;
-      }
-      .title {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        text-align: center;
-      }
-      .subtitle {
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-      }
-      .field:not(:last-child) {
-        margin-bottom: 1rem;
-      }
-      .file-preview {
-        width: 100%;
-        background-color: var(--primary);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      .satisfaction-rating {
-        display: flex;
-        justify-content: center;
-        margin-top: 1rem;
-      }
-      .satisfaction-rating .button {
-        margin: 0 0.25rem;
-      }
-      .ajax-save-btn {
-        margin-top: 0.5rem;
-      }
-      .separator {
-        margin: 1rem 0;
-        border-bottom: 1px solid #ccc;
-      }
-      #naverMap {
-        width: 100%;
-        height: 300px;
-        aspect-ratio: 16 / 9;
-        background-color: #f0f0f0;
-        margin-bottom: 1rem;
-      }
-      #naverMap:hover {
-        cursor: crosshair;
-      }
-      .analysis-types {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-      }
-      .analysis-types label {
-        flex: 1;
-        text-align: center;
-      }
-      #preview-img {
-        width: 300px;
-        height: auto;
-        border-radius: 5px;
-      }
-      #weatherInfo {
-        font-weight: bold;
-        font-size: larger;
-        border: 3px solid black;
-        border-radius: 5px;
-        padding: 10px;
-        margin-top: 10px;
-      }
-
-      #reanalyzeLoader {
-        width: 100px;
-        height: 75px;
-        margin: 0 auto;
-        background: #fff;
-        position: relative;
-        border-radius: 100%;
-      }
-      #reanalyzeLoader:before {
-        content: '';
-        position: absolute;
-        box-sizing: border-box;
-        border: 15px solid transparent;
-        border-top: 25px solid #fff;
-        transform: rotate(45deg);
-        top: 50px;
-        left: -15px;
-      }
-
-      #reanalyzeLoader:after {
-        content: '';
-        width: 12px;
-        height: 12px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        border-radius: 50%;
-        background-color: #ff3d00;
-        box-shadow: 20px 0 #ff3d00, -20px 0 #ff3d00;
-        animation: flash 0.5s ease-out infinite alternate;
-      }
-
-      @keyframes flash {
-        0% {
-          background-color: rgba(255, 60, 0, 0.25);
-          box-shadow: 20px 0 rgba(255, 60, 0, 0.25), -20px 0 #ff3d00;
+        body {
+          background-color: var(--primary);
         }
-        50% {
+        .container {
+          max-width: 700px;
+          margin: 0 auto;
+          padding: 1rem;
+        }
+        .title {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+          text-align: center;
+        }
+        .subtitle {
+          font-size: 1.2rem;
+          margin-bottom: 0.5rem;
+        }
+        .field:not(:last-child) {
+          margin-bottom: 1rem;
+        }
+        .file-preview {
+          width: 100%;
+          background-color: var(--primary);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+        .satisfaction-rating {
+          display: flex;
+          justify-content: center;
+          margin-top: 1rem;
+        }
+        .satisfaction-rating .button {
+          margin: 0 0.25rem;
+        }
+        .ajax-save-btn {
+          margin-top: 0.5rem;
+        }
+        .separator {
+          margin: 1rem 0;
+          border-bottom: 1px solid #ccc;
+        }
+        #naverMap {
+          width: 100%;
+          height: 300px;
+          aspect-ratio: 16 / 9;
+          background-color: #f0f0f0;
+          margin-bottom: 1rem;
+        }
+        #naverMap:hover {
+          cursor: crosshair;
+        }
+        .analysis-types {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+        }
+        .analysis-types label {
+          flex: 1;
+          text-align: center;
+        }
+        #preview-img {
+          width: 300px;
+          height: auto;
+          border-radius: 5px;
+        }
+        #weatherInfo {
+          font-weight: bold;
+          font-size: larger;
+          border: 3px solid black;
+          border-radius: 5px;
+          padding: 10px;
+          margin-top: 10px;
+        }
+
+        #reanalyzeLoader {
+          width: 100px;
+          height: 75px;
+          margin: 0 auto;
+          background: #fff;
+          position: relative;
+          border-radius: 100%;
+        }
+        #reanalyzeLoader:before {
+          content: '';
+          position: absolute;
+          box-sizing: border-box;
+          border: 15px solid transparent;
+          border-top: 25px solid #fff;
+          transform: rotate(45deg);
+          top: 50px;
+          left: -15px;
+        }
+
+        #reanalyzeLoader:after {
+          content: '';
+          width: 12px;
+          height: 12px;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
           background-color: #ff3d00;
-          box-shadow: 20px 0 rgba(255, 60, 0, 0.25),
-            -20px 0 rgba(255, 60, 0, 0.25);
+          box-shadow: 20px 0 #ff3d00, -20px 0 #ff3d00;
+          animation: flash 0.5s ease-out infinite alternate;
         }
-        100% {
-          background-color: rgba(255, 60, 0, 0.25);
-          box-shadow: 20px 0 #ff3d00, -20px 0 rgba(255, 60, 0, 0.25);
-        }
-      }
 
-      #reanalyzeLoadingIndicator {
-        display: none;
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        place-items: center;
-      }
+        @keyframes flash {
+          0% {
+            background-color: rgba(255, 60, 0, 0.25);
+            box-shadow: 20px 0 rgba(255, 60, 0, 0.25), -20px 0 #ff3d00;
+          }
+          50% {
+            background-color: #ff3d00;
+            box-shadow: 20px 0 rgba(255, 60, 0, 0.25),
+              -20px 0 rgba(255, 60, 0, 0.25);
+          }
+          100% {
+            background-color: rgba(255, 60, 0, 0.25);
+            box-shadow: 20px 0 #ff3d00, -20px 0 rgba(255, 60, 0, 0.25);
+          }
+        }
+
+        #reanalyzeLoadingIndicator {
+          display: none;
+          position: fixed;
+          width: 100vw;
+          height: 100vh;
+          top: 0;
+          left: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 1000;
+          place-items: center;
+        }
     </style>
     <script
-      th:src="@{/js/jquery-3.7.1.min.js}"
-      src="../../../static/js/jquery-3.7.1.min.js"
+            src="../../../static/js/jquery-3.7.1.min.js"
+            th:src="@{/js/jquery-3.7.1.min.js}"
     ></script>
     <script src="/js/sweetalert2.js"></script>
     <script src="/js/just-validate.production.min.js"></script>
 
     <script
-      type="text/javascript"
-      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rjbh1smfnw&callback=onNaverMapLoad&submodules=geocoder"
+            src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rjbh1smfnw&callback=onNaverMapLoad&submodules=geocoder"
+            type="text/javascript"
     ></script>
     <script>
-      function getCurrentLocation() {
-        return new Promise((resolve, reject) => {
-          if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const { latitude, longitude } = position.coords;
-                resolve({ latitude, longitude });
+        function getCurrentLocation() {
+          return new Promise((resolve, reject) => {
+            if ('geolocation' in navigator) {
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  const { latitude, longitude } = position.coords;
+                  resolve({ latitude, longitude });
+                },
+                (error) => {
+                  reject(
+                    new Error(
+                      '위치 정보를 가져오는데 실패했습니다: ' + error.message
+                    )
+                  );
+                }
+              );
+            } else {
+              reject(new Error('이 브라우저는 위치 정보를 지원하지 않습니다.'));
+            }
+          });
+        }
+
+        // 네이버 지도 로딩 및 클릭 이벤트 처리
+        async function onNaverMapLoad() {
+          const position = await getCurrentLocation();
+          const latitude =
+            document.getElementById('latitude').value || position.latitude;
+          const longitude =
+            document.getElementById('longitude').value || position.longitude;
+          var mapOptions = {
+            // 초기 위치: 자기위치로 바꿔야함
+            center: new naver.maps.LatLng(latitude, longitude),
+            zoom: 10,
+            zoomControl: true, //줌 컨트롤의 표시 여부
+            zoomControlOptions: {
+              //줌 컨트롤의 옵션
+              position: naver.maps.Position.TOP_RIGHT,
+            },
+          };
+
+          var map = new naver.maps.Map('naverMap', mapOptions);
+          map.setCursor('crosshair');
+          // 지도 클릭 시 좌표를 가져와 역지오코딩 수행
+          naver.maps.Event.addListener(map, 'click', function (e) {
+            var latlng = e.coord; // naver.maps.LatLng 객체
+            // hidden 필드에 위도, 경도 저장
+            document.getElementById('latitude').value = latlng.y;
+            document.getElementById('longitude').value = latlng.x;
+            // 역지오코딩을 통해 주소 가져오기
+            naver.maps.Service.reverseGeocode(
+              {
+                location: latlng,
               },
-              (error) => {
-                reject(
-                  new Error(
-                    '위치 정보를 가져오는데 실패했습니다: ' + error.message
-                  )
-                );
+              function (status, response) {
+                if (status === naver.maps.Service.Status.OK) {
+                  var items = response.result.items;
+                  if (items.length > 0) {
+                    var address = items[0].address;
+                    // hidden 필드와 선택된 위치 표시 업데이트
+                    document.getElementById('locationName').value = address;
+                    document.getElementById('selectedLocation').innerText =
+                      address +
+                      ' (위도: ' +
+                      latlng.y +
+                      ', 경도: ' +
+                      latlng.x +
+                      ')';
+                    // 위치가 변경되었으므로 날씨 조회 버튼 활성화
+                    $('#weatherBtn').prop('disabled', false);
+                  }
+                } else {
+                  Swal.fire('역지오코딩에 실패했습니다.');
+                }
               }
             );
-          } else {
-            reject(new Error('이 브라우저는 위치 정보를 지원하지 않습니다.'));
-          }
-        });
-      }
+          });
+        }
 
-      // 네이버 지도 로딩 및 클릭 이벤트 처리
-      async function onNaverMapLoad() {
-        const position = await getCurrentLocation();
-        const latitude =
-          document.getElementById('latitude').value || position.latitude;
-        const longitude =
-          document.getElementById('longitude').value || position.longitude;
-        var mapOptions = {
-          // 초기 위치: 자기위치로 바꿔야함
-          center: new naver.maps.LatLng(latitude, longitude),
-          zoom: 10,
-          zoomControl: true, //줌 컨트롤의 표시 여부
-          zoomControlOptions: {
-            //줌 컨트롤의 옵션
-            position: naver.maps.Position.TOP_RIGHT,
-          },
+        window.navermap_authFailure = function () {
+          Swal.fire('지도 API 인증에 실패했습니다.');
         };
 
-        var map = new naver.maps.Map('naverMap', mapOptions);
-        map.setCursor('crosshair');
-        // 지도 클릭 시 좌표를 가져와 역지오코딩 수행
-        naver.maps.Event.addListener(map, 'click', function (e) {
-          var latlng = e.coord; // naver.maps.LatLng 객체
-          // hidden 필드에 위도, 경도 저장
-          document.getElementById('latitude').value = latlng.y;
-          document.getElementById('longitude').value = latlng.x;
-          // 역지오코딩을 통해 주소 가져오기
-          naver.maps.Service.reverseGeocode(
-            {
-              location: latlng,
-            },
-            function (status, response) {
-              if (status === naver.maps.Service.Status.OK) {
-                var items = response.result.items;
-                if (items.length > 0) {
-                  var address = items[0].address;
-                  // hidden 필드와 선택된 위치 표시 업데이트
-                  document.getElementById('locationName').value = address;
-                  document.getElementById('selectedLocation').innerText =
-                    address +
-                    ' (위도: ' +
-                    latlng.y +
-                    ', 경도: ' +
-                    latlng.x +
-                    ')';
-                  // 위치가 변경되었으므로 날씨 조회 버튼 활성화
-                  $('#weatherBtn').prop('disabled', false);
-                }
-              } else {
-                Swal.fire('역지오코딩에 실패했습니다.');
+        $(document).ready(function () {
+          // 초기값 저장
+          var originalTitle = $('#titleInput').val();
+          var originalDatetime = $('#analysisDatetime').val();
+          var originalLocationName = $('#locationName').val();
+          var originalCompanion = $('#companionInput').val();
+          var originalSupplement = $('#supplementTextarea').val();
+          var originalExtractedText = $('#extractedText').length
+            ? $('#extractedText').val()
+            : null;
+          var originalMemo = $('#analysisMemo').val();
+          var originalSatisfaction = $('#satisfactionScore').val();
+
+          var weatherJsonString;
+
+          // 제목 필드 변경 감지
+          $('#titleInput').on('input', function () {
+            if ($(this).val() !== originalTitle) {
+              $('#saveTitleBtn').prop('disabled', false);
+            } else {
+              $('#saveTitleBtn').prop('disabled', true);
+            }
+          });
+
+          // 일시나 위치가 변경되면 날씨 조회 버튼 활성화
+          $('#analysisDatetime').on('input', function () {
+            const currentDatetime = $('#analysisDatetime').val();
+            if (currentDatetime !== originalDatetime) {
+              $('#weatherBtn').prop('disabled', false);
+            } else {
+              $('#weatherBtn').prop('disabled', true);
+            }
+          });
+
+          // 재분석 요청 버튼 활성화: 일시, 위치, companion, supplement, extractedText 중 하나라도 변경되면 활성화
+          $(
+            '#analysisDatetime, #locationName, #companionInput, #supplementTextarea, #extractedText'
+          ).on('input', function () {
+            const currentDatetime = $('#analysisDatetime').val();
+            const currentLocation = $('#locationName').val();
+            const currentCompanion = $('#companionInput').val();
+            const currentSupplement = $('#supplementTextarea').val();
+            let currentExtractedText = '';
+            if ($('#extractedText').length) {
+              currentExtractedText = $('#extractedText').val();
+            }
+
+            // 원래 값들 (페이지 로드시 저장한 값)
+            const isDateChanged = currentDatetime !== originalDatetime;
+            const isLocationChanged = currentLocation !== originalLocationName;
+            const dateOrLocationChanged = isDateChanged || isLocationChanged;
+            const isWeatherRetrieved =
+              typeof weatherJsonString !== 'undefined' &&
+              weatherJsonString !== null &&
+              weatherJsonString.trim() !== '';
+            const condition1 = dateOrLocationChanged && isWeatherRetrieved;
+
+            // 조건 2: 동행자가 변경된 경우
+            const condition2 = currentCompanion !== originalCompanion;
+
+            // 조건 3: 보충설명이 변경된 경우
+            const condition3 = currentSupplement !== originalSupplement;
+
+            // 조건 4: 추출된 텍스트가 있을 경우 변경된 경우 (원래 추출 텍스트가 없으면 이 조건은 무시)
+            let condition4 = false;
+            if (originalExtractedText) {
+              condition4 = currentExtractedText !== originalExtractedText;
+            }
+
+            if (condition1 || condition2 || condition3 || condition4) {
+              $('#reanalyzeBtn').prop('disabled', false);
+            } else {
+              $('#reanalyzeBtn').prop('disabled', true);
+            }
+          });
+
+          // 분석 결과에 대한 메모 변경 감지
+          $('#analysisMemo').on('input', function () {
+            if ($(this).val() !== originalMemo) {
+              $('#saveMemoBtn').prop('disabled', false);
+            } else {
+              $('#saveMemoBtn').prop('disabled', true);
+            }
+          });
+
+          // 만족도 저장 버튼 활성화 (별점 클릭 이벤트 내에서 처리됨)
+          // 별 클릭 시 satisfactionScoreInput.value가 변경되므로, 비교 후 활성화
+          // 이미 별 클릭 이벤트에서 satisfactionScoreInput.value가 변경되면 아래와 같이 처리할 수 있음.
+          // 예를 들어, 별 클릭 이벤트 내에서:
+
+          var analysisUrl = `/children/${getChildIdFromUrl()}/analysis`;
+          // 날씨 조회하기 버튼 클릭 처리
+          document
+            .getElementById('weatherBtn')
+            .addEventListener('click', function () {
+              const datetimeInput =
+                document.getElementById('analysisDatetime').value;
+              const locationName = document.getElementById('locationName').value;
+              if (!datetimeInput || !locationName) {
+                Swal.fire('일시와 위치 정보를 먼저 입력해주세요.');
+                return;
               }
-            }
-          );
-        });
-      }
-
-      window.navermap_authFailure = function () {
-        Swal.fire('지도 API 인증에 실패했습니다.');
-      };
-
-      $(document).ready(function () {
-        // 초기값 저장
-        var originalTitle = $('#titleInput').val();
-        var originalDatetime = $('#analysisDatetime').val();
-        var originalLocationName = $('#locationName').val();
-        var originalCompanion = $('#companionInput').val();
-        var originalSupplement = $('#supplementTextarea').val();
-        var originalExtractedText = $('#extractedText').length
-          ? $('#extractedText').val()
-          : null;
-        var originalMemo = $('#analysisMemo').val();
-        var originalSatisfaction = $('#satisfactionScore').val();
-
-        var weatherJsonString;
-
-        // 제목 필드 변경 감지
-        $('#titleInput').on('input', function () {
-          if ($(this).val() !== originalTitle) {
-            $('#saveTitleBtn').prop('disabled', false);
-          } else {
-            $('#saveTitleBtn').prop('disabled', true);
-          }
-        });
-
-        // 일시나 위치가 변경되면 날씨 조회 버튼 활성화
-        $('#analysisDatetime').on('input', function () {
-          const currentDatetime = $('#analysisDatetime').val();
-          if (currentDatetime !== originalDatetime) {
-            $('#weatherBtn').prop('disabled', false);
-          } else {
-            $('#weatherBtn').prop('disabled', true);
-          }
-        });
-
-        // 재분석 요청 버튼 활성화: 일시, 위치, companion, supplement, extractedText 중 하나라도 변경되면 활성화
-        $(
-          '#analysisDatetime, #locationName, #companionInput, #supplementTextarea, #extractedText'
-        ).on('input', function () {
-          const currentDatetime = $('#analysisDatetime').val();
-          const currentLocation = $('#locationName').val();
-          const currentCompanion = $('#companionInput').val();
-          const currentSupplement = $('#supplementTextarea').val();
-          let currentExtractedText = '';
-          if ($('#extractedText').length) {
-            currentExtractedText = $('#extractedText').val();
-          }
-
-          // 원래 값들 (페이지 로드시 저장한 값)
-          const isDateChanged = currentDatetime !== originalDatetime;
-          const isLocationChanged = currentLocation !== originalLocationName;
-          const dateOrLocationChanged = isDateChanged || isLocationChanged;
-          const isWeatherRetrieved =
-            typeof weatherJsonString !== 'undefined' &&
-            weatherJsonString !== null &&
-            weatherJsonString.trim() !== '';
-          const condition1 = dateOrLocationChanged && isWeatherRetrieved;
-
-          // 조건 2: 동행자가 변경된 경우
-          const condition2 = currentCompanion !== originalCompanion;
-
-          // 조건 3: 보충설명이 변경된 경우
-          const condition3 = currentSupplement !== originalSupplement;
-
-          // 조건 4: 추출된 텍스트가 있을 경우 변경된 경우 (원래 추출 텍스트가 없으면 이 조건은 무시)
-          let condition4 = false;
-          if (originalExtractedText) {
-            condition4 = currentExtractedText !== originalExtractedText;
-          }
-
-          if (condition1 || condition2 || condition3 || condition4) {
-            $('#reanalyzeBtn').prop('disabled', false);
-          } else {
-            $('#reanalyzeBtn').prop('disabled', true);
-          }
-        });
-
-        // 분석 결과에 대한 메모 변경 감지
-        $('#analysisMemo').on('input', function () {
-          if ($(this).val() !== originalMemo) {
-            $('#saveMemoBtn').prop('disabled', false);
-          } else {
-            $('#saveMemoBtn').prop('disabled', true);
-          }
-        });
-
-        // 만족도 저장 버튼 활성화 (별점 클릭 이벤트 내에서 처리됨)
-        // 별 클릭 시 satisfactionScoreInput.value가 변경되므로, 비교 후 활성화
-        // 이미 별 클릭 이벤트에서 satisfactionScoreInput.value가 변경되면 아래와 같이 처리할 수 있음.
-        // 예를 들어, 별 클릭 이벤트 내에서:
-
-        var analysisUrl = `/children/${getChildIdFromUrl()}/analysis`;
-        // 날씨 조회하기 버튼 클릭 처리
-        document
-          .getElementById('weatherBtn')
-          .addEventListener('click', function () {
-            const datetimeInput =
-              document.getElementById('analysisDatetime').value;
-            const locationName = document.getElementById('locationName').value;
-            if (!datetimeInput || !locationName) {
-              Swal.fire('일시와 위치 정보를 먼저 입력해주세요.');
-              return;
-            }
-            // 예시: 날씨 API 호출 대신 더미 데이터 사용
-            //여기에서 날씨 API를 호출해서, 맑음, 흐림, 습도 등의 주요 정보만 보여주고,
-            //나머지 정보는 json.stringify로 hidden 필드에 저장
-            const lat = document.getElementById('latitude').value;
-            const lon = document.getElementById('longitude').value;
-            $.ajax({
-              url: '/weather',
-              method: 'GET',
-              data: {
-                lat: lat,
-                lon: lon,
-                dt: datetimeInput,
-              },
-              success: function (res) {
-                const weather = res.data[0].weather[0].description;
-                const temperature = res.data[0].temp;
-
-                // 날씨 정보 표시
-                document.getElementById('weatherInfo').textContent =
-                  '날씨: ' + weather + ', 온도: ' + temperature + '°C';
-                weatherJsonString = JSON.stringify(res);
-              },
-              error: function (err) {
-                Swal.fire('날씨 정보를 가져오는데 실패했습니다.');
-              },
-            });
-          });
-
-        // 별점 초기화
-        const stars = document.querySelectorAll('.satisfaction-rating .button');
-        const satisfactionScoreInput =
-          document.getElementById('satisfactionScore');
-        const initialScore = Number(satisfactionScoreInput.value);
-
-        // 초기 별점 반영
-        stars.forEach((star, index) => {
-          if (index < initialScore) {
-            star.textContent = '⭐';
-          } else {
-            star.textContent = '☆';
-          }
-        });
-
-        // 별 클릭 시 현재 인덱스까지 별 채우기
-        stars.forEach((star, index) => {
-          star.addEventListener('click', () => {
-            stars.forEach((s, i) => {
-              s.textContent = i <= index ? '⭐' : '☆';
-            });
-            // 선택된 별 개수를 hidden 필드에 저장
-            satisfactionScoreInput.value = index + 1;
-            $('#saveSatisfactionBtn').prop(
-              'disabled',
-              satisfactionScoreInput.value == originalSatisfaction
-            );
-          });
-        });
-        const analysisResultId = $('#analysisResultId').val();
-
-        // 제목 저장 (AJAX)
-        $('#saveTitleBtn').click(function () {
-          const newTitle = $('#titleInput').val();
-          $.ajax({
-            url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/title`,
-            method: 'PUT',
-            data: { title: newTitle },
-            success: function (res) {
-              Swal.fire('제목이 저장되었습니다.');
-            },
-            error: function (err) {
-              Swal.fire('제목 저장 중 오류가 발생했습니다.');
-            },
-          });
-        });
-
-        // 메모 저장 (AJAX)
-        $('#saveMemoBtn').click(function () {
-          const noteId = $('#analysisResultNoteId').val();
-          const content = $('#analysisMemo').val();
-          $.ajax({
-            url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/note`,
-            method: 'PUT',
-            data: { content: content },
-            success: function (res) {
-              Swal.fire('메모가 저장되었습니다.');
-            },
-            error: function (err) {
-              Swal.fire('메모 저장 중 오류가 발생했습니다.');
-            },
-          });
-        });
-
-        // 만족도 저장 (AJAX)
-        $('#saveSatisfactionBtn').click(function () {
-          const satisfactionId = $('#analysisResultSatisfactionId').val();
-          const score = $('#satisfactionScore').val();
-          $.ajax({
-            url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/satisfaction`,
-            method: 'PUT',
-            data: { score: score },
-            success: function (res) {
-              Swal.fire('만족도가 저장되었습니다.');
-            },
-            error: function (err) {
-              Swal.fire('만족도 저장 중 오류가 발생했습니다.');
-            },
-          });
-        });
-
-        // 재분석 요청
-        $('#reanalyzeBtn').click(function () {
-          $('#reanalyzeLoadingIndicator').css('display', 'grid');
-          const datetime = $('#analysisDatetime').val();
-          // const weather = $('#weatherData').val();
-          const locationName = $('#locationName').val();
-          const longitude = $('#longitude').val();
-          const latitude = $('#latitude').val();
-          const companion = $('#companionInput').val();
-          const supplement = $('#supplementTextarea').val();
-          // 재분석 요청전에 일시, 위치, 날씨, 동반자 필드에 값이 있는지 확인
-          // if (
-          //   !datetime ||
-          //   !weatherJsonString ||
-          //   !locationName ||
-          //   !longitude ||
-          //   !latitude
-          // ) {
-          //   Swal.fire('일시, 위치, 날씨 정보를 먼저 입력해주세요.');
-          //   return;
-          // }
-
-          // 전송할 data 객체를 빈 객체로 초기화하고, 값이 존재하는 경우에만 키를 추가
-          const data = {};
-          if (datetime) {
-            data.datetime = datetime;
-          }
-          if (
-            typeof weatherJsonString !== 'undefined' &&
-            weatherJsonString.trim() !== ''
-          ) {
-            data.weather = weatherJsonString;
-          }
-          if (locationName) {
-            data.locationName = locationName;
-          }
-          if (longitude) {
-            data.longitude = longitude;
-          }
-          if (latitude) {
-            data.latitude = latitude;
-          }
-          if (companion) {
-            data.companion = companion;
-          }
-          if (supplement) {
-            data.supplement = supplement;
-          }
-
-          $.ajax({
-            url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/reanalyze`,
-            method: 'POST',
-            data: data,
-            success: function (res) {
-              $('#reanalyzeLoadingIndicator').css('display', 'none');
-              Swal.fire('재분석 요청이 완료되었습니다.');
-              // 화면 갱신
-              setTimeout(() => {
-                window.location.reload();
-              }, 1000);
-            },
-            error: function (err) {
-              $('#reanalyzeLoadingIndicator').css('display', 'none');
-              Swal.fire('재분석 요청 중 오류가 발생했습니다.');
-            },
-          });
-        });
-
-        // 삭제하기
-        $('#deleteBtn').click(function () {
-          Swal.fire({
-            title: '정말 삭제하시겠어요?',
-            text: '복원할 수 없습니다!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '삭제할게요',
-            cancelButtonText: '아니요',
-          }).then((result) => {
-            if (result.isConfirmed) {
+              // 예시: 날씨 API 호출 대신 더미 데이터 사용
+              //여기에서 날씨 API를 호출해서, 맑음, 흐림, 습도 등의 주요 정보만 보여주고,
+              //나머지 정보는 json.stringify로 hidden 필드에 저장
+              const lat = document.getElementById('latitude').value;
+              const lon = document.getElementById('longitude').value;
               $.ajax({
-                url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}`,
-                method: 'DELETE',
+                url: '/weather',
+                method: 'GET',
+                data: {
+                  lat: lat,
+                  lon: lon,
+                  dt: datetimeInput,
+                },
                 success: function (res) {
-                  Swal.fire({
-                    title: '삭제되었습니다!',
-                    text: '성공적으로 삭제되었습니다.',
-                    icon: 'success',
-                  });
-                  // 목록 페이지로 이동
-                  window.location.href = `${analysisUrl}/resultList`;
+                  const weather = res.data[0].weather[0].description;
+                  const temperature = res.data[0].temp;
+
+                  // 날씨 정보 표시
+                  document.getElementById('weatherInfo').textContent =
+                    '날씨: ' + weather + ', 온도: ' + temperature + '°C';
+                  weatherJsonString = JSON.stringify(res);
                 },
                 error: function (err) {
-                  Swal.fire('삭제 중 오류가 발생했습니다.');
+                  Swal.fire('날씨 정보를 가져오는데 실패했습니다.');
                 },
               });
+            });
+
+          // 별점 초기화
+          const stars = document.querySelectorAll('.satisfaction-rating .button');
+          const satisfactionScoreInput =
+            document.getElementById('satisfactionScore');
+          const initialScore = Number(satisfactionScoreInput.value);
+
+          // 초기 별점 반영
+          stars.forEach((star, index) => {
+            if (index < initialScore) {
+              star.textContent = '⭐';
+            } else {
+              star.textContent = '☆';
             }
           });
+
+          // 별 클릭 시 현재 인덱스까지 별 채우기
+          stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+              stars.forEach((s, i) => {
+                s.textContent = i <= index ? '⭐' : '☆';
+              });
+              // 선택된 별 개수를 hidden 필드에 저장
+              satisfactionScoreInput.value = index + 1;
+              $('#saveSatisfactionBtn').prop(
+                'disabled',
+                satisfactionScoreInput.value == originalSatisfaction
+              );
+            });
+          });
+          const analysisResultId = $('#analysisResultId').val();
+
+          // 제목 저장 (AJAX)
+          $('#saveTitleBtn').click(function () {
+            const newTitle = $('#titleInput').val();
+            $.ajax({
+              url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/title`,
+              method: 'PUT',
+              data: { title: newTitle },
+              success: function (res) {
+                Swal.fire('제목이 저장되었습니다.');
+              },
+              error: function (err) {
+                Swal.fire('제목 저장 중 오류가 발생했습니다.');
+              },
+            });
+          });
+
+          // 메모 저장 (AJAX)
+          $('#saveMemoBtn').click(function () {
+            const noteId = $('#analysisResultNoteId').val();
+            const content = $('#analysisMemo').val();
+            $.ajax({
+              url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/note`,
+              method: 'PUT',
+              data: { content: content },
+              success: function (res) {
+                Swal.fire('메모가 저장되었습니다.');
+              },
+              error: function (err) {
+                Swal.fire('메모 저장 중 오류가 발생했습니다.');
+              },
+            });
+          });
+
+          // 만족도 저장 (AJAX)
+          $('#saveSatisfactionBtn').click(function () {
+            const satisfactionId = $('#analysisResultSatisfactionId').val();
+            const score = $('#satisfactionScore').val();
+            $.ajax({
+              url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/satisfaction`,
+              method: 'PUT',
+              data: { score: score },
+              success: function (res) {
+                Swal.fire('만족도가 저장되었습니다.');
+              },
+              error: function (err) {
+                Swal.fire('만족도 저장 중 오류가 발생했습니다.');
+              },
+            });
+          });
+
+          // 재분석 요청
+          $('#reanalyzeBtn').click(function () {
+            $('#reanalyzeLoadingIndicator').css('display', 'grid');
+            const datetime = $('#analysisDatetime').val();
+            // const weather = $('#weatherData').val();
+            const locationName = $('#locationName').val();
+            const longitude = $('#longitude').val();
+            const latitude = $('#latitude').val();
+            const companion = $('#companionInput').val();
+            const supplement = $('#supplementTextarea').val();
+            // 재분석 요청전에 일시, 위치, 날씨, 동반자 필드에 값이 있는지 확인
+            // if (
+            //   !datetime ||
+            //   !weatherJsonString ||
+            //   !locationName ||
+            //   !longitude ||
+            //   !latitude
+            // ) {
+            //   Swal.fire('일시, 위치, 날씨 정보를 먼저 입력해주세요.');
+            //   return;
+            // }
+
+            // 전송할 data 객체를 빈 객체로 초기화하고, 값이 존재하는 경우에만 키를 추가
+            const data = {};
+            if (datetime) {
+              data.datetime = datetime;
+            }
+            if (
+              typeof weatherJsonString !== 'undefined' &&
+              weatherJsonString.trim() !== ''
+            ) {
+              data.weather = weatherJsonString;
+            }
+            if (locationName) {
+              data.locationName = locationName;
+            }
+            if (longitude) {
+              data.longitude = longitude;
+            }
+            if (latitude) {
+              data.latitude = latitude;
+            }
+            if (companion) {
+              data.companion = companion;
+            }
+            if (supplement) {
+              data.supplement = supplement;
+            }
+
+            $.ajax({
+              url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}/reanalyze`,
+              method: 'POST',
+              data: data,
+              success: function (res) {
+                $('#reanalyzeLoadingIndicator').css('display', 'none');
+                Swal.fire('재분석 요청이 완료되었습니다.');
+                // 화면 갱신
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
+              },
+              error: function (err) {
+                $('#reanalyzeLoadingIndicator').css('display', 'none');
+                Swal.fire('재분석 요청 중 오류가 발생했습니다.');
+              },
+            });
+          });
+
+          // 삭제하기
+          $('#deleteBtn').click(function () {
+            Swal.fire({
+              title: '정말 삭제하시겠어요?',
+              text: '복원할 수 없습니다!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: '삭제할게요',
+              cancelButtonText: '아니요',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                $.ajax({
+                  url: `${analysisUrl}/${getAnalysisTargetIdFromUrl()}/results/${analysisResultId}`,
+                  method: 'DELETE',
+                  success: function (res) {
+                    Swal.fire({
+                      title: '삭제되었습니다!',
+                      text: '성공적으로 삭제되었습니다.',
+                      icon: 'success',
+                    });
+                    setTimeout(() => {
+                      // 삭제 후 목록 페이지로 이동
+                      window.location.href = `${analysisUrl}/resultList`;
+                    }, 1000);
+                  },
+                  error: function (err) {
+                    Swal.fire('삭제 중 오류가 발생했습니다.');
+                  },
+                });
+              }
+            });
+          });
         });
-      });
 
-      function getChildIdFromUrl() {
-        // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
-        const pathParts = window.location.pathname.split('/');
-        // pathParts 예시: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
-        if (pathParts.length > 2 && pathParts[1] === 'children') {
-          return pathParts[2]; // 인덱스 2가 childId입니다.
+        function getChildIdFromUrl() {
+          // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
+          const pathParts = window.location.pathname.split('/');
+          // pathParts 예시: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
+          if (pathParts.length > 2 && pathParts[1] === 'children') {
+            return pathParts[2]; // 인덱스 2가 childId입니다.
+          }
+          return null;
         }
-        return null;
-      }
 
-      function getAnalysisTargetIdFromUrl() {
-        // 예: URL 형식 - /children/{childId}/analysis/{analysisTargetId}/results/{analysisResultId}
-        const pathParts = window.location.pathname.split('/');
-        // pathParts 예시: ["", "children", "{childId}", "analysis", "{analysisTargetId}", "results", "{analysisResultId}"]
-        if (pathParts.length > 4 && pathParts[3] === 'analysis') {
-          return pathParts[4];
+        function getAnalysisTargetIdFromUrl() {
+          // 예: URL 형식 - /children/{childId}/analysis/{analysisTargetId}/results/{analysisResultId}
+          const pathParts = window.location.pathname.split('/');
+          // pathParts 예시: ["", "children", "{childId}", "analysis", "{analysisTargetId}", "results", "{analysisResultId}"]
+          if (pathParts.length > 4 && pathParts[3] === 'analysis') {
+            return pathParts[4];
+          }
+          return null;
         }
-        return null;
-      }
     </script>
-  </head>
-  <body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <!-- 로고 + dashboard 바로가기 -->
-      <div class="logo">
+</head>
+<body>
+<nav aria-label="main navigation" class="navbar" role="navigation">
+    <!-- 로고 + dashboard 바로가기 -->
+    <div class="logo">
         <a th:href="@{/dashboard}">
-          <img
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="로고"
-            class="image"
-            style="width: 100px; height: auto"
-          />
+            <img
+                    alt="로고"
+                    class="image"
+                    src="../../static/images/wilog.png"
+                    style="width: 100px; height: auto"
+                    th:src="@{/images/wilog.png}"
+            />
         </a>
-      </div>
-      <div class="navbar-end">
+    </div>
+    <div class="navbar-end">
         <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/guides"><span>이용안내</span></a>
-          </div>
+            <div class="buttons">
+                <a class="button is-light" href="/guides"><span>이용안내</span></a>
+            </div>
         </div>
         <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/claims"><span>고객센터</span></a>
-          </div>
+            <div class="buttons">
+                <a class="button is-light" href="/claims"><span>고객센터</span></a>
+            </div>
         </div>
-      </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="container">
-      <!-- 페이지 헤더 -->
-      <h2 class="subtitle">
+<div class="container">
+    <!-- 페이지 헤더 -->
+    <h2 class="subtitle">
         [[${analysisResultDetails.childName}]]글 분석 결과 조회 및 수정 페이지
-      </h2>
+    </h2>
 
-      <!-- (필요 시) hidden: 분석 결과 ID, childId 등 식별자 -->
-      <input
-        type="hidden"
-        id="analysisResultId"
-        th:value="${analysisResultDetails.analysisResultId}"
-      />
+    <!-- (필요 시) hidden: 분석 결과 ID, childId 등 식별자 -->
+    <input
+            id="analysisResultId"
+            th:value="${analysisResultDetails.analysisResultId}"
+            type="hidden"
+    />
 
-      <!-- 제목 입력 (AJAX 비동기 저장) -->
-      <div class="field">
+    <!-- 제목 입력 (AJAX 비동기 저장) -->
+    <div class="field">
         <label class="label">제목</label>
         <div class="control">
-          <input
-            id="titleInput"
-            class="input"
-            type="text"
-            placeholder="제목을 입력해주세요"
-            th:value="${analysisResultDetails.analysisResultTitle}"
-          />
+            <input
+                    class="input"
+                    id="titleInput"
+                    placeholder="제목을 입력해주세요"
+                    th:value="${analysisResultDetails.analysisResultTitle}"
+                    type="text"
+            />
         </div>
-        <button class="button is-info ajax-save-btn" id="saveTitleBtn" disabled>
-          제목 저장
+        <button class="button is-info ajax-save-btn" disabled id="saveTitleBtn">
+            제목 저장
         </button>
-      </div>
+    </div>
 
-      <!-- 분석 유형 표시 -->
-      <div class="field">
+    <!-- 분석 유형 표시 -->
+    <div class="field">
         <label class="label">분석 유형</label>
         <div class="control">
-          <th:block th:each="type : ${analysisResultDetails.analysisTypes}">
-            <label class="checkbox">
-              <input
-                type="checkbox"
-                disabled="disabled"
-                checked="checked"
-                th:value="${type.name()}"
-              />
-              <span th:text="${type.krName}"></span>
-            </label>
-          </th:block>
+            <th:block th:each="type : ${analysisResultDetails.analysisTypes}">
+                <label class="checkbox">
+                    <input
+                            checked="checked"
+                            disabled="disabled"
+                            th:value="${type.name()}"
+                            type="checkbox"
+                    />
+                    <span th:text="${type.krName}"></span>
+                </label>
+            </th:block>
         </div>
-      </div>
+    </div>
 
-      <div class="separator"></div>
+    <div class="separator"></div>
 
-      <!-- 등록 파일 미리보기 (수정불가) -->
-      <div class="field">
+    <!-- 등록 파일 미리보기 (수정불가) -->
+    <div class="field">
         <label class="label">등록 파일 미리보기</label>
         <div class="file-preview">
-          <!-- 실제로는 이미지 태그 or canvas 등을 이용해 미리보기 -->
-          <img
-            id="preview-img"
-            th:src="${analysisResultDetails.targetFileSrc}"
-          />
+            <!-- 실제로는 이미지 태그 or canvas 등을 이용해 미리보기 -->
+            <img
+                    id="preview-img"
+                    th:src="${analysisResultDetails.targetFileSrc}"
+            />
         </div>
-      </div>
+    </div>
 
-      <!-- 감정 점수 / 감정 타입 (읽기 전용) -->
-      <div class="field">
+    <!-- 감정 점수 / 감정 타입 (읽기 전용) -->
+    <div class="field">
         <label class="label">감정 점수</label>
         <div class="control">
-          <input
-            class="input"
-            type="text"
-            readonly
-            th:value="|${analysisResultDetails.emotionScore}점|"
-          />
+            <input
+                    class="input"
+                    readonly
+                    th:value="|${analysisResultDetails.emotionScore}점|"
+                    type="text"
+            />
         </div>
-      </div>
-      <div class="field">
+    </div>
+    <div class="field">
         <label class="label">감정 타입</label>
         <div class="control">
-          <input
-            class="input"
-            type="text"
-            readonly
-            th:value="${analysisResultDetails.emotionDescription}"
-          />
+            <input
+                    class="input"
+                    readonly
+                    th:value="${analysisResultDetails.emotionDescription}"
+                    type="text"
+            />
         </div>
-      </div>
-      <div class="separator"></div>
+    </div>
+    <div class="separator"></div>
 
-      <!-- 일시 (수정가능, 재분석 시 사용) -->
-      <div class="field">
+    <!-- 일시 (수정가능, 재분석 시 사용) -->
+    <div class="field">
         <label class="label">일시</label>
         <div class="control">
-          <input
-            id="analysisDatetime"
-            class="input"
-            type="datetime-local"
-            th:value="${#temporals.format(analysisResultDetails.targetDateTime, 'yyyy-MM-dd''T''HH:mm:ss')}"
-          />
+            <input
+                    class="input"
+                    id="analysisDatetime"
+                    th:value="${#temporals.format(analysisResultDetails.targetDateTime, 'yyyy-MM-dd''T''HH:mm:ss')}"
+                    type="datetime-local"
+            />
         </div>
-      </div>
+    </div>
 
-      <!-- 분석 대상의 위치 -->
-      <div class="field">
+    <!-- 분석 대상의 위치 -->
+    <div class="field">
         <label class="label">분석 대상의 위치</label>
         <div id="naverMap"></div>
         <!-- 선택된 위치 표시 -->
         <p
-          id="selectedLocation"
-          style="font-weight: bold"
-          th:text="${analysisResultDetails.locationName}"
+                id="selectedLocation"
+                style="font-weight: bold"
+                th:text="${analysisResultDetails.locationName}"
         ></p>
         <!-- hidden 필드: 위치 이름, 위도, 경도 -->
         <input
-          type="hidden"
-          id="locationName"
-          name="locationName"
-          th:value="${analysisResultDetails.locationName}"
+                id="locationName"
+                name="locationName"
+                th:value="${analysisResultDetails.locationName}"
+                type="hidden"
         />
         <input
-          type="hidden"
-          id="latitude"
-          name="latitude"
-          th:value="${analysisResultDetails.latitude}"
+                id="latitude"
+                name="latitude"
+                th:value="${analysisResultDetails.latitude}"
+                type="hidden"
         />
         <input
-          type="hidden"
-          id="longitude"
-          name="longitude"
-          th:value="${analysisResultDetails.longitude}"
+                id="longitude"
+                name="longitude"
+                th:value="${analysisResultDetails.longitude}"
+                type="hidden"
         />
-      </div>
+    </div>
 
-      <!-- 날씨 가져오기 -->
-      <div class="field">
+    <!-- 날씨 가져오기 -->
+    <div class="field">
         <label class="label">날씨 가져오기</label>
         <div class="control">
-          <button
-            type="button"
-            id="weatherBtn"
-            class="button is-info is-fullwidth"
-            disabled
-          >
-            <!-- 위치 혹은 일시가 수정되었을 경우에만 활성화 되어야함. -->
-            해당 일시와 위치의 날씨 조회하기
-          </button>
+            <button
+                    class="button is-info is-fullwidth"
+                    disabled
+                    id="weatherBtn"
+                    type="button"
+            >
+                <!-- 위치 혹은 일시가 수정되었을 경우에만 활성화 되어야함. -->
+                해당 일시와 위치의 날씨 조회하기
+            </button>
         </div>
         <p
-          id="weatherInfo"
-          style="margin-top: 0.5rem; font-weight: bold"
-          th:text="${analysisResultDetails.weather}"
+                id="weatherInfo"
+                style="margin-top: 0.5rem; font-weight: bold"
+                th:text="${analysisResultDetails.weather}"
         ></p>
-        <input type="hidden" id="weatherData" name="weatherResponse" />
-      </div>
+        <input id="weatherData" name="weatherResponse" type="hidden"/>
+    </div>
 
-      <!-- 함께 있었던 사람 (수정가능, 재분석 시 사용) -->
-      <div class="field">
+    <!-- 함께 있었던 사람 (수정가능, 재분석 시 사용) -->
+    <div class="field">
         <label class="label">누구와 함께 있었나요?</label>
         <div class="control">
-          <input
-            id="companionInput"
-            class="input"
-            type="text"
-            name="companion"
-            placeholder="예: 엄마, 아빠, 친구"
-            th:value="${analysisResultDetails.companion}"
-          />
+            <input
+                    class="input"
+                    id="companionInput"
+                    name="companion"
+                    placeholder="예: 엄마, 아빠, 친구"
+                    th:value="${analysisResultDetails.companion}"
+                    type="text"
+            />
         </div>
-      </div>
+    </div>
 
-      <!-- 보충설명 (수정가능, 재분석 시 사용) -->
-      <div class="field">
+    <!-- 보충설명 (수정가능, 재분석 시 사용) -->
+    <div class="field">
         <label class="label">데이터에 대한 보충설명</label>
         <div class="control">
           <textarea
-            id="supplementTextarea"
-            class="textarea"
-            placeholder="추가 설명을 입력하세요"
-            th:text="${analysisResultDetails.supplement}"
+                  class="textarea"
+                  id="supplementTextarea"
+                  placeholder="추가 설명을 입력하세요"
+                  th:text="${analysisResultDetails.supplement}"
           ></textarea>
         </div>
-      </div>
+    </div>
 
-      <!-- 글 추출 결과 (수정가능) - extractedText가 빈 문자열이면 렌더링하지 않음 -->
-      <th:block
-        th:if="${analysisResultDetails.extractedText != null and #strings.length(analysisResultDetails.extractedText) > 0}"
-      >
+    <!-- 글 추출 결과 (수정가능) - extractedText가 빈 문자열이면 렌더링하지 않음 -->
+    <th:block
+            th:if="${analysisResultDetails.extractedText != null and #strings.length(analysisResultDetails.extractedText) > 0}"
+    >
         <div class="field">
-          <label class="label">추출된 텍스트</label>
-          <div class="control">
+            <label class="label">추출된 텍스트</label>
+            <div class="control">
             <textarea
-              id="extractedText"
-              class="textarea"
-              th:text="${analysisResultDetails.extractedText}"
+                    class="textarea"
+                    id="extractedText"
+                    th:text="${analysisResultDetails.extractedText}"
             ></textarea>
-          </div>
+            </div>
         </div>
-      </th:block>
+    </th:block>
 
-      <!-- 재분석 요청 버튼 (비활성화: 입력값이 하나라도 변경되면 활성화) -->
-      <button class="button is-warning" id="reanalyzeBtn" disabled>
+    <!-- 재분석 요청 버튼 (비활성화: 입력값이 하나라도 변경되면 활성화) -->
+    <button class="button is-warning" disabled id="reanalyzeBtn">
         재분석 요청하기
-      </button>
-      <div class="separator"></div>
+    </button>
+    <div class="separator"></div>
 
-      <!-- 분석 결과 (analysisResult) -->
-      <div class="field">
+    <!-- 분석 결과 (analysisResult) -->
+    <div class="field">
         <label class="label">분석 결과</label>
         <div class="control">
           <textarea
-            class="textarea"
-            readonly
-            th:text="${analysisResultDetails.analysisResult}"
+                  class="textarea"
+                  readonly
+                  th:text="${analysisResultDetails.analysisResult}"
           ></textarea>
         </div>
-      </div>
+    </div>
 
-      <!-- 솔루션 (suggestedSolution) -->
-      <div class="field">
+    <!-- 솔루션 (suggestedSolution) -->
+    <div class="field">
         <label class="label">솔루션</label>
         <div class="control">
           <textarea
-            class="textarea"
-            readonly
-            th:text="${analysisResultDetails.suggestedSolution}"
+                  class="textarea"
+                  readonly
+                  th:text="${analysisResultDetails.suggestedSolution}"
           ></textarea>
         </div>
-      </div>
-      <div class="separator"></div>
+    </div>
+    <div class="separator"></div>
 
-      <!-- 분석 결과에 대한 메모 (AJAX 비동기 저장) -->
-      <div class="field">
+    <!-- 분석 결과에 대한 메모 (AJAX 비동기 저장) -->
+    <div class="field">
         <label class="label">분석 결과에 대해 메모 남기기</label>
         <div class="control">
           <textarea
-            id="analysisMemo"
-            class="textarea"
-            placeholder="메모를 입력하세요"
-            th:text="${analysisResultDetails.analysisResultNote != null ? analysisResultDetails.analysisResultNote.content : ''}"
+                  class="textarea"
+                  id="analysisMemo"
+                  placeholder="메모를 입력하세요"
+                  th:text="${analysisResultDetails.analysisResultNote != null ? analysisResultDetails.analysisResultNote.content : ''}"
           ></textarea>
         </div>
-        <button class="button is-info ajax-save-btn" id="saveMemoBtn" disabled>
-          메모 저장
+        <button class="button is-info ajax-save-btn" disabled id="saveMemoBtn">
+            메모 저장
         </button>
-      </div>
-      <input
-        type="hidden"
-        id="analysisResultNoteId"
-        th:value="${analysisResultDetails.analysisResultNote != null ? analysisResultDetails.analysisResultNote.id : ''}"
-      />
-      <div class="separator"></div>
+    </div>
+    <input
+            id="analysisResultNoteId"
+            th:value="${analysisResultDetails.analysisResultNote != null ? analysisResultDetails.analysisResultNote.id : ''}"
+            type="hidden"
+    />
+    <div class="separator"></div>
 
-      <!-- 만족도 점수 (AJAX 비동기 저장) -->
-      <label class="label">분석 결과 만족도</label>
-      <div class="satisfaction-rating">
+    <!-- 만족도 점수 (AJAX 비동기 저장) -->
+    <label class="label">분석 결과 만족도</label>
+    <div class="satisfaction-rating">
         <button class="button is-small">☆</button>
         <button class="button is-small">☆</button>
         <button class="button is-small">☆</button>
         <button class="button is-small">☆</button>
         <button class="button is-small">☆</button>
-      </div>
-      <input
-        type="hidden"
-        id="satisfactionScore"
-        th:value="${analysisResultDetails.analysisResultSatisfaction != null ? analysisResultDetails.analysisResultSatisfaction.satisfactionScore : 0}"
-      />
-      <input
-        type="hidden"
-        id="analysisResultSatisfactionId"
-        th:value="${analysisResultDetails.analysisResultSatisfaction != null ? analysisResultDetails.analysisResultSatisfaction.id : ''}"
-      />
-      <button
-        class="button is-info ajax-save-btn"
-        id="saveSatisfactionBtn"
-        disabled
-      >
+    </div>
+    <input
+            id="satisfactionScore"
+            th:value="${analysisResultDetails.analysisResultSatisfaction != null ? analysisResultDetails.analysisResultSatisfaction.satisfactionScore : 0}"
+            type="hidden"
+    />
+    <input
+            id="analysisResultSatisfactionId"
+            th:value="${analysisResultDetails.analysisResultSatisfaction != null ? analysisResultDetails.analysisResultSatisfaction.id : ''}"
+            type="hidden"
+    />
+    <button
+            class="button is-info ajax-save-btn"
+            disabled
+            id="saveSatisfactionBtn"
+    >
         만족도 저장
-      </button>
+    </button>
 
-      <div class="separator"></div>
+    <div class="separator"></div>
 
-      <!-- 삭제 버튼 -->
-      <div class="field is-grouped is-grouped-centered">
+    <!-- 삭제 버튼 -->
+    <div class="field is-grouped is-grouped-centered">
         <div class="control">
-          <button class="button is-danger" id="deleteBtn">삭제하기</button>
+            <button class="button is-danger" id="deleteBtn">삭제하기</button>
         </div>
         <div class="control">
-          <a
-            th:href="@{/children/{childId}/analysis/resultList(childId=${analysisResultDetails.childId})}"
-          >
-            <button class="button is-success">감정분석결과 목록보기</button>
-          </a>
+            <a
+                    th:href="@{/children/{childId}/analysis/resultList(childId=${analysisResultDetails.childId})}"
+            >
+                <button class="button is-success">감정분석결과 목록보기</button>
+            </a>
         </div>
-      </div>
     </div>
-    <div id="reanalyzeLoadingIndicator">
-      <span id="reanalyzeLoader"></span>
-    </div>
-    <div th:replace="fragments/footer :: ilogFooter"></div>
-  </body>
+</div>
+<div id="reanalyzeLoadingIndicator">
+    <span id="reanalyzeLoader"></span>
+</div>
+<div th:replace="fragments/footer :: ilogFooter"></div>
+</body>
 </html>

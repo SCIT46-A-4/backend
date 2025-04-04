@@ -1,27 +1,11 @@
 package com.scit.iLog.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.scit.iLog.dto.InviteLinkDTO;
-import com.scit.iLog.service.PermissionService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.scit.iLog.domain.member.MemberEntity;
+import com.scit.iLog.dto.InviteLinkDTO;
 import com.scit.iLog.dto.member.MemberDetailsDTO;
 import com.scit.iLog.service.EmailService;
 import com.scit.iLog.service.MemberService;
-import com.scit.iLog.service.child.ChildService;
-import com.scit.iLog.util.CustomRequestCache;
-
+import com.scit.iLog.service.PermissionService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +36,7 @@ public class EmailVerificationController {
         Map<String, Object> response = new HashMap<>();
 
         // 인증번호 생성
-        String code = emailService.generateVerificationCode();
+        String code = EmailService.generateVerificationCode();
         // 생성된 인증번호를 세션에 저장 (실제 서비스에서는 Redis 등 캐시나 DB에 저장할 수도 있음)
         session.setAttribute("verificationCode", code);
         session.setAttribute("verificationEmail", email);
@@ -153,11 +137,8 @@ public class EmailVerificationController {
             // 서비스에서 취소 요청을 처리하는 메서드 호출
             boolean result = emailService.cancelEmailInviteLink(permissionId, childId, alias);
 
-            if (!result) {
-                return false; // 취소 실패 시 false 반환
-            }
-
-            return true; // 취소 성공 시 true 반환
+            return result; // 취소 실패 시 false 반환
+// 취소 성공 시 true 반환
 
         } catch (Exception e) {
             throw new Exception("취소 처리 도중 문제가 발생했습니다.");
@@ -168,8 +149,7 @@ public class EmailVerificationController {
     // 스프링 시큐리티에 걸려 로그인 페이지로 이동과 요청 받은 URL저장.
     // 로그인 하면 저장된 URL로 이동(return). 위치 LoginSuccessHandler
     @GetMapping("/verifyLink")
-    public void verifyEmail(@RequestParam(name = "token") String token, HttpServletResponse response) throws Exception
-    {
+    public void verifyEmail(@RequestParam(name = "token") String token, HttpServletResponse response) throws Exception {
         log.info("받은 token: " + token);
         MemberEntity teacher = emailService.findInviteCodeAndUpdate(token);
 

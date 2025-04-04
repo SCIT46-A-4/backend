@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.UUID;
 
-//Multipart 파일 저장을 돕는 컴포넌트
 @Slf4j
 @Getter
 @Component
@@ -71,45 +70,6 @@ public final class FileManager {
             log.error("파일 삭제 중 오류 발생: {}", filePath, e);
             throw new FileDeleteFailException(String.format("파일 삭제 실패: %s", filePath));
         }
-    }
-
-    /**
-     * 파일이나 디렉토리를 재귀적으로 삭제합니다.
-     * 디렉토리인 경우 하위 항목들을 모두 삭제합니다.
-     *
-     * @param path 삭제할 경로
-     * @return 삭제 성공 여부
-     */
-    public static boolean deleteRecursively(String path) {
-        try {
-            Path directoryPath = Paths.get(path);
-            if (Files.exists(directoryPath)) {
-                Files.walk(directoryPath)
-                        .sorted(Comparator.reverseOrder())
-                        .forEach(p -> {
-                            try {
-                                Files.delete(p);
-                                log.info("항목 삭제 완료: {}", p);
-                            } catch (IOException e) {
-                                log.error("항목 삭제 실패: {}", p, e);
-                            }
-                        });
-                return true;
-            }
-            return false;
-        } catch (IOException e) {
-            log.error("재귀적 삭제 중 오류 발생: {}", path, e);
-            return false;
-        }
-    }
-
-    public static String joinFilePath(String uploadPath, String savedFileName) {
-        File directory = new File(uploadPath);
-        if (!directory.exists() && !directory.mkdirs()) {
-            throw new IllegalStateException("디렉토리 생성 실패: " + uploadPath);
-        }
-        File savedFile = new File(directory, savedFileName);
-        return savedFile.getAbsolutePath();
     }
 
     /*

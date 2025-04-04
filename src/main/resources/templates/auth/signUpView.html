@@ -1,673 +1,673 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8"/>
     <title>회원가입 페이지</title>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
     <script src="/js/passwordVisibility.js"></script>
     <link
-      rel="stylesheet"
-      href="/css/bulma.min.css"
-      th:href="@{/css/bulma.min.css}"
+            href="/css/bulma.min.css"
+            rel="stylesheet"
+            th:href="@{/css/bulma.min.css}"
     />
     <link
-      rel="stylesheet"
-      href="../../static/css/customColors.css"
-      th:href="@{/css/customColors.css}"
+            href="../../static/css/customColors.css"
+            rel="stylesheet"
+            th:href="@{/css/customColors.css}"
     />
     <script th:src="@{/js/just-validate.production.min.js}"></script>
 
     <style>
-      /* 전체 배경색 */
-      body {
-        margin: 0;
-        background-color: #fdf5bf;
-      }
-      /* section 기본 패딩 제거 */
-      section.section {
-        padding: 0;
-        margin: 0;
-      }
-      /* .regist-container: 전체 높이+가로 중앙정렬 */
-      .regist-container {
-        height: 100vh;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      /* columns가 부모 높이를 꽉 채우도록 */
-      .columns.is-fullheight {
-        min-height: 100%;
-        margin: 0;
-      }
-      /* 왼쪽/오른쪽 컬럼 */
-      .left-half,
-      .right-half {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      /* 오른쪽 컬럼 배경색 */
-      .right-half {
-        background-color: #fdf5bf;
-      }
-      /* 회원가입 박스 */
-      .regist-box {
-        box-shadow: none !important;
-        border: none !important;
-        background-color: #fdf5bf !important;
-        width: 500px;
-        max-height: 100%;
-        overflow-y: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-      /* 에러 메시지가 추가될 경우에만 스크롤 활성화 */
-      .regist-box:has(.just-validate-error-label) {
-        max-height: 600px;
-        overflow-y: auto;
-      }
-      /* 왼쪽 이미지 영역 */
-      .left-half figure {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-      }
-      .left-half figure img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      /* 이메일 인증 관련 스타일 */
-      .verification-container {
-        margin-top: 10px;
-      }
-      .verification-container input {
-        width: 60%;
-        display: inline-block;
-      }
-      .verification-container button {
-        display: inline-block;
-      }
-      .verified-icon {
-        color: green;
-        margin-left: 10px;
-        display: none;
-      }
-      #emailVerifiedIcon {
-        display: grid;
-      }
-      #verificationCode {
-        width: 100%;
-      }
-      .custom-swal-text {
-        font-size: 2rem !important;
-        font-weight: bold;
-        color: #333;
-        text-align: center;
-      }
+        /* 전체 배경색 */
+        body {
+          margin: 0;
+          background-color: #fdf5bf;
+        }
+        /* section 기본 패딩 제거 */
+        section.section {
+          padding: 0;
+          margin: 0;
+        }
+        /* .regist-container: 전체 높이+가로 중앙정렬 */
+        .regist-container {
+          height: 100vh;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        /* columns가 부모 높이를 꽉 채우도록 */
+        .columns.is-fullheight {
+          min-height: 100%;
+          margin: 0;
+        }
+        /* 왼쪽/오른쪽 컬럼 */
+        .left-half,
+        .right-half {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        /* 오른쪽 컬럼 배경색 */
+        .right-half {
+          background-color: #fdf5bf;
+        }
+        /* 회원가입 박스 */
+        .regist-box {
+          box-shadow: none !important;
+          border: none !important;
+          background-color: #fdf5bf !important;
+          width: 500px;
+          max-height: 100%;
+          overflow-y: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+        /* 에러 메시지가 추가될 경우에만 스크롤 활성화 */
+        .regist-box:has(.just-validate-error-label) {
+          max-height: 600px;
+          overflow-y: auto;
+        }
+        /* 왼쪽 이미지 영역 */
+        .left-half figure {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+        }
+        .left-half figure img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        /* 이메일 인증 관련 스타일 */
+        .verification-container {
+          margin-top: 10px;
+        }
+        .verification-container input {
+          width: 60%;
+          display: inline-block;
+        }
+        .verification-container button {
+          display: inline-block;
+        }
+        .verified-icon {
+          color: green;
+          margin-left: 10px;
+          display: none;
+        }
+        #emailVerifiedIcon {
+          display: grid;
+        }
+        #verificationCode {
+          width: 100%;
+        }
+        .custom-swal-text {
+          font-size: 2rem !important;
+          font-weight: bold;
+          color: #333;
+          text-align: center;
+        }
 
-      #loadingIndicator {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(255, 255, 255, 0.8);
-        z-index: 1000;
-        place-items: center;
-      }
+        #loadingIndicator {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(255, 255, 255, 0.8);
+          z-index: 1000;
+          place-items: center;
+        }
 
-      .loader {
-        position: relative;
-        border-style: solid;
-        box-sizing: border-box;
-        border-width: 40px 60px 30px 60px;
-        border-color: #3760c9 #96ddfc #96ddfc #36bbf7;
-        animation: envFloating 1s ease-in infinite alternate;
-      }
+        #mailLoader {
+          position: relative;
+          border-style: solid;
+          box-sizing: border-box;
+          border-width: 40px 60px 30px 60px;
+          border-color: #3760c9 #96ddfc #96ddfc #36bbf7;
+          animation: envFloating 1s ease-in infinite alternate;
+        }
 
-      .loader:after {
-        content: '';
-        position: absolute;
-        right: 62px;
-        top: -40px;
-        height: 70px;
-        width: 50px;
-        background-image: linear-gradient(#fff 45px, transparent 0),
-          linear-gradient(#fff 45px, transparent 0),
-          linear-gradient(#fff 45px, transparent 0);
-        background-repeat: no-repeat;
-        background-size: 30px 4px;
-        background-position: 0px 11px, 8px 35px, 0px 60px;
-        animation: envDropping 0.75s linear infinite;
-      }
+        #mailLoader:after {
+          content: '';
+          position: absolute;
+          right: 62px;
+          top: -40px;
+          height: 70px;
+          width: 50px;
+          background-image: linear-gradient(#fff 45px, transparent 0),
+            linear-gradient(#fff 45px, transparent 0),
+            linear-gradient(#fff 45px, transparent 0);
+          background-repeat: no-repeat;
+          background-size: 30px 4px;
+          background-position: 0px 11px, 8px 35px, 0px 60px;
+          animation: envDropping 0.75s linear infinite;
+        }
 
-      @keyframes envFloating {
-        0% {
-          transform: translate(-2px, -5px);
+        @keyframes envFloating {
+          0% {
+            transform: translate(-2px, -5px);
+          }
+          100% {
+            transform: translate(0, 5px);
+          }
         }
-        100% {
-          transform: translate(0, 5px);
-        }
-      }
 
-      @keyframes envDropping {
-        0% {
-          background-position: 100px 11px, 115px 35px, 105px 60px;
-          opacity: 1;
+        @keyframes envDropping {
+          0% {
+            background-position: 100px 11px, 115px 35px, 105px 60px;
+            opacity: 1;
+          }
+          50% {
+            background-position: 0px 11px, 20px 35px, 5px 60px;
+          }
+          60% {
+            background-position: -30px 11px, 0px 35px, -10px 60px;
+          }
+          75%,
+          100% {
+            background-position: -30px 11px, -30px 35px, -30px 60px;
+            opacity: 0;
+          }
         }
-        50% {
-          background-position: 0px 11px, 20px 35px, 5px 60px;
-        }
-        60% {
-          background-position: -30px 11px, 0px 35px, -10px 60px;
-        }
-        75%,
-        100% {
-          background-position: -30px 11px, -30px 35px, -30px 60px;
-          opacity: 0;
-        }
-      }
     </style>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        document
-          .getElementById('showPassword')
-          .addEventListener('change', function () {
-            togglePasswordVisibility('userPwd', 'showPassword');
+        document.addEventListener('DOMContentLoaded', function () {
+          document
+            .getElementById('showPassword')
+            .addEventListener('change', function () {
+              togglePasswordVisibility('userPwd', 'showPassword');
+            });
+          const signUpForm = document.querySelector('#signUpForm');
+          const userName = document.querySelector('#userName');
+          const signInIdInput = document.querySelector('#signInId');
+          const userPwdInput = document.querySelector('#userPwd');
+          const userPwdCheckInput = document.querySelector('#userPwdCheck');
+          const userEmailInput = document.querySelector('#userEmail');
+          const relationTypeRadioGroup =
+            document.querySelector('#relationTypeRadio');
+          const agreementCheckbox = document.querySelector(
+            '#personalInformationCollectionAndUsageAgreement'
+          );
+          const idCheckBtn = document.querySelector('#idCheckBtn');
+
+          // 이메일 인증 관련 요소
+          const sendVerificationBtn = document.querySelector(
+            '#sendVerificationBtn'
+          );
+          const verifyCodeBtn = document.querySelector('#verifyCodeBtn');
+          const verificationCodeInput =
+            document.querySelector('#verificationCode');
+          const emailVerifiedIcon = document.querySelector('#emailVerifiedIcon');
+          const emailVerifiedField = document.querySelector('#emailVerified');
+
+          // 페이지 로드 시 원래 이메일 값 저장
+          const originalEmail = userEmailInput.value;
+          let emailVerified = false;
+          let isIdChecked = false; // 아이디 중복 체크 여부
+
+          // JustValidate 설정 (기존 코드 유지)
+          const validator = new JustValidate(signUpForm, {
+            validateOnInput: true,
+            validateOnChange: true,
+            validateOnBlur: true,
+            focusInvalidField: false,
+            validateBeforeSubmitting: true,
           });
-        const signUpForm = document.querySelector('#signUpForm');
-        const userName = document.querySelector('#userName');
-        const signInIdInput = document.querySelector('#signInId');
-        const userPwdInput = document.querySelector('#userPwd');
-        const userPwdCheckInput = document.querySelector('#userPwdCheck');
-        const userEmailInput = document.querySelector('#userEmail');
-        const relationTypeRadioGroup =
-          document.querySelector('#relationTypeRadio');
-        const agreementCheckbox = document.querySelector(
-          '#personalInformationCollectionAndUsageAgreement'
-        );
-        const idCheckBtn = document.querySelector('#idCheckBtn');
 
-        // 이메일 인증 관련 요소
-        const sendVerificationBtn = document.querySelector(
-          '#sendVerificationBtn'
-        );
-        const verifyCodeBtn = document.querySelector('#verifyCodeBtn');
-        const verificationCodeInput =
-          document.querySelector('#verificationCode');
-        const emailVerifiedIcon = document.querySelector('#emailVerifiedIcon');
-        const emailVerifiedField = document.querySelector('#emailVerified');
+          const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).*$/;
 
-        // 페이지 로드 시 원래 이메일 값 저장
-        const originalEmail = userEmailInput.value;
-        let emailVerified = false;
-        let isIdChecked = false; // 아이디 중복 체크 여부
-
-        // JustValidate 설정 (기존 코드 유지)
-        const validator = new JustValidate(signUpForm, {
-          validateOnInput: true,
-          validateOnChange: true,
-          validateOnBlur: true,
-          focusInvalidField: false,
-          validateBeforeSubmitting: true,
-        });
-
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).*$/;
-
-        validator
-          .addField(userName, [
-            { rule: 'required', errorMessage: '이름을 입력해주세요' },
-          ])
-          .addField(signInIdInput, [
-            { rule: 'required', errorMessage: '아이디를 입력해주세요' },
-            { rule: 'minLength', value: 5, errorMessage: '아이디는 5~12자' },
-            { rule: 'maxLength', value: 12, errorMessage: '아이디는 5~12자' },
-            {
-              validator: function () {
-                return isIdChecked;
-              },
-              errorMessage: '아이디 중복 체크를 진행해주세요.',
-            },
-          ])
-          .addField(userPwdInput, [
-            { rule: 'required', errorMessage: '비밀번호를 입력해주세요' },
-            { rule: 'minLength', value: 5, errorMessage: '비밀번호는 5~12자' },
-            { rule: 'maxLength', value: 12, errorMessage: '비밀번호는 5~12자' },
-            {
-              rule: 'customRegexp',
-              value: passwordRegex,
-              errorMessage:
-                '비밀번호는 5~12자의 영문, 숫자, 특수문자를 포함해야 합니다.',
-            },
-          ])
-          .addField(userPwdCheckInput, [
-            { rule: 'required', errorMessage: '비밀번호 확인을 입력해주세요' },
-            {
-              validator: function (value) {
-                return value === userPwdInput.value;
-              },
-              errorMessage: '비밀번호가 일치하지 않습니다.',
-            },
-          ])
-          .addField(userEmailInput, [
-            { rule: 'required', errorMessage: '이메일을 입력하세요.' },
-            { rule: 'email', errorMessage: '이메일 형식이 아닙니다.' },
-          ])
-          .addRequiredGroup(relationTypeRadioGroup, '관계를 선택해주세요.')
-          .addField(agreementCheckbox, [
-            { rule: 'required', errorMessage: '약관 동의 필수.' },
-          ]) // Just-Validate를 이용한 form 검증
-          .onSuccess(function (event) {
-            event.preventDefault();
-            // 이메일 인증이 완료되지 않았다면 폼 제출을 막음
-            if (!emailVerified) {
-              Swal.fire('이메일 인증이 필요합니다.');
-              return;
-            }
-            event.target.submit();
-          });
-        signInIdInput.addEventListener('input', function () {
-          isIdChecked = false;
-          validator.revalidateField(signInIdInput);
-        });
-        userPwdInput.addEventListener('input', function () {
-          validator.revalidateField(userPwdInput);
-        });
-        userPwdCheckInput.addEventListener('input', function () {
-          validator.revalidateField(userPwdCheckInput);
-        });
-        userEmailInput.addEventListener('input', function () {
-          validator.revalidateField(userEmailInput);
-          // 이메일 변경 시, 원래 값과 다르면 인증 상태 초기화
-          if (userEmailInput.value !== originalEmail) {
-            emailVerified = false;
-            emailVerifiedField.value = 'false';
-            emailVerifiedIcon.style.display = 'none';
-          } else {
-            // 원래 이메일과 동일하면 자동 인증 상태 유지
-            emailVerified = true;
-            emailVerifiedField.value = 'true';
-            emailVerifiedIcon.style.display = 'inline';
-          }
-        });
-        agreementCheckbox.addEventListener('change', function () {
-          validator.revalidateField(agreementCheckbox);
-        });
-
-        idCheckBtn.addEventListener('click', function () {
-          let signInId = signInIdInput.value;
-          $.ajax({
-            url: '/auth/checkSignInIdExists',
-            method: 'GET',
-            data: { signInId: signInId },
-            success: function (isExists) {
-              isIdChecked = !isExists;
-              validator.revalidateField(signInIdInput);
-            },
-            error: function () {
-              Swal.fire({
-                html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
-                customClass: {
-                  htmlContainer: 'custom-swal-text',
+          validator
+            .addField(userName, [
+              { rule: 'required', errorMessage: '이름을 입력해주세요' },
+            ])
+            .addField(signInIdInput, [
+              { rule: 'required', errorMessage: '아이디를 입력해주세요' },
+              { rule: 'minLength', value: 5, errorMessage: '아이디는 5~12자' },
+              { rule: 'maxLength', value: 12, errorMessage: '아이디는 5~12자' },
+              {
+                validator: function () {
+                  return isIdChecked;
                 },
-              });
-            },
-          });
-        });
-
-        // 이메일 인증번호 전송
-        sendVerificationBtn.addEventListener('click', function (e) {
-          e.preventDefault();
-          const email = userEmailInput.value;
-          if (!isValidEmail(email)) {
-            Swal.fire('유효한 이메일 주소를 입력해주세요.');
-            return;
-          }
-          $('#loadingIndicator').css('display', 'grid');
-          $.ajax({
-            url: '/checkDuplicatedEmail',
-            method: 'POST',
-            data: { email: email },
-            success: function (isExists) {
-              if (isExists == true) {
-                $('#loadingIndicator').css('display', 'none');
-                Swal.fire(
-                  '이미 가입된 이메일 주소입니다. 다른 이메일을 입력해주세요.'
-                );
-              } else {
-                $.ajax({
-                  url: '/send-verification-code',
-                  method: 'POST',
-                  data: { email: email },
-                  success: function (response) {
-                    $('#loadingIndicator').css('display', 'none');
-                    console.log(response);
-                    if (response.success) {
-                      Swal.fire({
-                        html: '<p class="custom-swal-text">인증 번호가 발송되었습니다.<br>이메일을 확인해주세요.</p>',
-                        customClass: {
-                          htmlContainer: 'custom-swal-text',
-                        },
-                      });
-                    } else {
-                      $('#loadingIndicator').css('display', 'none');
-                      Swal.fire({
-                        html: '<p class="custom-swal-text">인증 번호 발송에 실패했습니다.<br>다시 시도해주세요.</p>',
-                        customClass: {
-                          htmlContainer: 'custom-swal-text',
-                        },
-                      });
-                    }
-                  },
-                  error: function () {
-                    $('#loadingIndicator').css('display', 'none');
-                    Swal.fire({
-                      html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
-                      customClass: {
-                        htmlContainer: 'custom-swal-text',
-                      },
-                    });
-                  },
-                });
+                errorMessage: '아이디 중복 체크를 진행해주세요.',
+              },
+            ])
+            .addField(userPwdInput, [
+              { rule: 'required', errorMessage: '비밀번호를 입력해주세요' },
+              { rule: 'minLength', value: 5, errorMessage: '비밀번호는 5~12자' },
+              { rule: 'maxLength', value: 12, errorMessage: '비밀번호는 5~12자' },
+              {
+                rule: 'customRegexp',
+                value: passwordRegex,
+                errorMessage:
+                  '비밀번호는 5~12자의 영문, 숫자, 특수문자를 포함해야 합니다.',
+              },
+            ])
+            .addField(userPwdCheckInput, [
+              { rule: 'required', errorMessage: '비밀번호 확인을 입력해주세요' },
+              {
+                validator: function (value) {
+                  return value === userPwdInput.value;
+                },
+                errorMessage: '비밀번호가 일치하지 않습니다.',
+              },
+            ])
+            .addField(userEmailInput, [
+              { rule: 'required', errorMessage: '이메일을 입력하세요.' },
+              { rule: 'email', errorMessage: '이메일 형식이 아닙니다.' },
+            ])
+            .addRequiredGroup(relationTypeRadioGroup, '관계를 선택해주세요.')
+            .addField(agreementCheckbox, [
+              { rule: 'required', errorMessage: '약관 동의 필수.' },
+            ]) // Just-Validate를 이용한 form 검증
+            .onSuccess(function (event) {
+              event.preventDefault();
+              // 이메일 인증이 완료되지 않았다면 폼 제출을 막음
+              if (!emailVerified) {
+                Swal.fire('이메일 인증이 필요합니다.');
+                return;
               }
-            },
-            error: function () {
-              $('#loadingIndicator').css('display', 'none');
-              Swal.fire({
-                html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
-                customClass: {
-                  htmlContainer: 'custom-swal-text',
-                },
-              });
-            },
+              event.target.submit();
+            });
+          signInIdInput.addEventListener('input', function () {
+            isIdChecked = false;
+            validator.revalidateField(signInIdInput);
           });
-        });
+          userPwdInput.addEventListener('input', function () {
+            validator.revalidateField(userPwdInput);
+          });
+          userPwdCheckInput.addEventListener('input', function () {
+            validator.revalidateField(userPwdCheckInput);
+          });
+          userEmailInput.addEventListener('input', function () {
+            validator.revalidateField(userEmailInput);
+            // 이메일 변경 시, 원래 값과 다르면 인증 상태 초기화
+            if (userEmailInput.value !== originalEmail) {
+              emailVerified = false;
+              emailVerifiedField.value = 'false';
+              emailVerifiedIcon.style.display = 'none';
+            } else {
+              // 원래 이메일과 동일하면 자동 인증 상태 유지
+              emailVerified = true;
+              emailVerifiedField.value = 'true';
+              emailVerifiedIcon.style.display = 'inline';
+            }
+          });
+          agreementCheckbox.addEventListener('change', function () {
+            validator.revalidateField(agreementCheckbox);
+          });
 
-        // 인증번호 검증
-        verifyCodeBtn.addEventListener('click', function () {
-          const code = verificationCodeInput.value;
-          const email = userEmailInput.value;
-          $.ajax({
-            url: '/verify-code',
-            method: 'POST',
-            data: { email: email, code: code },
-            success: function (response) {
-              if (response.success) {
-                Swal.fire('이메일이 인증되었습니다.');
-                emailVerified = true;
-                emailVerifiedField.value = 'true';
-                emailVerifiedIcon.style.display = 'grid';
-                emailVerifiedIcon.style.color = 'green';
-                $('#saveChangesBtn').prop('disabled', false);
-              } else {
+          idCheckBtn.addEventListener('click', function () {
+            let signInId = signInIdInput.value;
+            $.ajax({
+              url: '/auth/checkSignInIdExists',
+              method: 'GET',
+              data: { signInId: signInId },
+              success: function (isExists) {
+                isIdChecked = !isExists;
+                validator.revalidateField(signInIdInput);
+              },
+              error: function () {
                 Swal.fire({
-                  html: '<p class="custom-swal-text">인증 번호가 올바르지 않습니다.<br>다시 시도해주세요.</p>',
+                  html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
                   customClass: {
                     htmlContainer: 'custom-swal-text',
                   },
                 });
-              }
-            },
-            error: function () {
-              Swal.fire({
-                html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
-                customClass: {
-                  htmlContainer: 'custom-swal-text',
-                },
-              });
-            },
+              },
+            });
           });
-        });
 
-        // 폼 제출 시 이메일 인증 검사
-        signUpForm.addEventListener('submit', function (e) {
-          if (userEmailInput.value !== originalEmail && !emailVerified) {
+          // 이메일 인증번호 전송
+          sendVerificationBtn.addEventListener('click', function (e) {
             e.preventDefault();
-            Swal.fire('이메일 인증이 필요합니다.');
+            const email = userEmailInput.value;
+            if (!isValidEmail(email)) {
+              Swal.fire('유효한 이메일 주소를 입력해주세요.');
+              return;
+            }
+            $('#loadingIndicator').css('display', 'grid');
+            $.ajax({
+              url: '/checkDuplicatedEmail',
+              method: 'POST',
+              data: { email: email },
+              success: function (isExists) {
+                if (isExists == true) {
+                  $('#loadingIndicator').css('display', 'none');
+                  Swal.fire(
+                    '이미 가입된 이메일 주소입니다. 다른 이메일을 입력해주세요.'
+                  );
+                } else {
+                  $.ajax({
+                    url: '/send-verification-code',
+                    method: 'POST',
+                    data: { email: email },
+                    success: function (response) {
+                      $('#loadingIndicator').css('display', 'none');
+                      console.log(response);
+                      if (response.success) {
+                        Swal.fire({
+                          html: '<p class="custom-swal-text">인증 번호가 발송되었습니다.<br>이메일을 확인해주세요.</p>',
+                          customClass: {
+                            htmlContainer: 'custom-swal-text',
+                          },
+                        });
+                      } else {
+                        $('#loadingIndicator').css('display', 'none');
+                        Swal.fire({
+                          html: '<p class="custom-swal-text">인증 번호 발송에 실패했습니다.<br>다시 시도해주세요.</p>',
+                          customClass: {
+                            htmlContainer: 'custom-swal-text',
+                          },
+                        });
+                      }
+                    },
+                    error: function () {
+                      $('#loadingIndicator').css('display', 'none');
+                      Swal.fire({
+                        html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
+                        customClass: {
+                          htmlContainer: 'custom-swal-text',
+                        },
+                      });
+                    },
+                  });
+                }
+              },
+              error: function () {
+                $('#loadingIndicator').css('display', 'none');
+                Swal.fire({
+                  html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
+                  customClass: {
+                    htmlContainer: 'custom-swal-text',
+                  },
+                });
+              },
+            });
+          });
+
+          // 인증번호 검증
+          verifyCodeBtn.addEventListener('click', function () {
+            const code = verificationCodeInput.value;
+            const email = userEmailInput.value;
+            $.ajax({
+              url: '/verify-code',
+              method: 'POST',
+              data: { email: email, code: code },
+              success: function (response) {
+                if (response.success) {
+                  Swal.fire('이메일이 인증되었습니다.');
+                  emailVerified = true;
+                  emailVerifiedField.value = 'true';
+                  emailVerifiedIcon.style.display = 'grid';
+                  emailVerifiedIcon.style.color = 'green';
+                  $('#saveChangesBtn').prop('disabled', false);
+                } else {
+                  Swal.fire({
+                    html: '<p class="custom-swal-text">인증 번호가 올바르지 않습니다.<br>다시 시도해주세요.</p>',
+                    customClass: {
+                      htmlContainer: 'custom-swal-text',
+                    },
+                  });
+                }
+              },
+              error: function () {
+                Swal.fire({
+                  html: '<p class="custom-swal-text">서버 오류 발생.<br>다시 시도해주세요.</p>',
+                  customClass: {
+                    htmlContainer: 'custom-swal-text',
+                  },
+                });
+              },
+            });
+          });
+
+          // 폼 제출 시 이메일 인증 검사
+          signUpForm.addEventListener('submit', function (e) {
+            if (userEmailInput.value !== originalEmail && !emailVerified) {
+              e.preventDefault();
+              Swal.fire('이메일 인증이 필요합니다.');
+            }
+          });
+
+          function isValidEmail(email) {
+            const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            return regex.test(email);
           }
         });
-
-        function isValidEmail(email) {
-          const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-          return regex.test(email);
-        }
-      });
     </script>
-  </head>
+</head>
 
-  <body>
-    <section class="section">
-      <div class="container regist-container">
+<body>
+<section class="section">
+    <div class="container regist-container">
         <div class="columns is-gapless is-fullheight">
-          <!-- 왼쪽 이미지 영역 -->
-          <div class="column is-half left-half">
-            <figure>
-              <img
-                src="../../static/images/A2.jpg"
-                th:src="@{/images/A2.jpg}"
-                alt="옆면이미지"
-              />
-            </figure>
-          </div>
-
-          <!-- 오른쪽 회원가입 폼 영역 -->
-          <div class="column is-half right-half">
-            <form
-              th:action="@{/auth/signUp}"
-              method="POST"
-              id="signUpForm"
-              class="box regist-box"
-            >
-              <!-- 회원가입 타이틀 -->
-              <h2 class="title has-text-centered mb-5">회원 가입</h2>
-
-              <!-- 이름 입력 -->
-              <div class="field mb-2">
-                <label class="label">이름</label>
-                <div class="control">
-                  <input
-                    class="input"
-                    type="text"
-                    name="userName"
-                    id="userName"
-                    placeholder="이름(실명)을 입력해주세요"
-                  />
-                </div>
-              </div>
-
-              <!-- 아이디 입력 + 중복 확인 버튼 -->
-              <div class="field mb-2">
-                <label class="label">아이디</label>
-                <div class="field has-addons">
-                  <div class="control is-expanded">
-                    <input
-                      class="input"
-                      type="text"
-                      name="signInId"
-                      id="signInId"
-                      placeholder="아이디를 입력해주세요"
+            <!-- 왼쪽 이미지 영역 -->
+            <div class="column is-half left-half">
+                <figure>
+                    <img
+                            alt="옆면이미지"
+                            src="../../static/images/A2.jpg"
+                            th:src="@{/images/A2.jpg}"
                     />
-                  </div>
-                  <div class="control">
-                    <button
-                      class="button is-info"
-                      type="button"
-                      id="idCheckBtn"
-                    >
-                      중복확인
-                    </button>
-                  </div>
-                </div>
-              </div>
+                </figure>
+            </div>
 
-              <!-- 비밀번호 입력 -->
-              <div class="field mb-2">
-                <label class="label">비밀번호</label>
-                <div class="control has-icons-left">
-                  <input
-                    id="userPwd"
-                    class="input"
-                    name="userPwd"
-                    type="password"
-                    placeholder="비밀번호를 입력해주세요"
-                  />
-                  <span class="icon is-small is-left">🔒</span>
-                </div>
-                <div class="form-check mt-2">
-                  <input
-                    type="checkbox"
-                    id="showPassword"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="showPassword"
-                    >비밀번호 표시</label
-                  >
-                </div>
-              </div>
-
-              <!-- 비밀번호 확인 입력 -->
-              <div class="field mb-2">
-                <label class="label">비밀번호 확인</label>
-                <div class="control has-icons-left">
-                  <input
-                    id="userPwdCheck"
-                    class="input"
-                    type="password"
-                    placeholder="비밀번호를 다시 한 번 입력해주세요"
-                  />
-                  <span class="icon is-small is-left">🔒</span>
-                </div>
-              </div>
-
-              <!-- 이메일 입력 및 인증 -->
-              <div class="field mb-1">
-                <label class="label">이메일</label>
-                <div class="control has-icons-left has-icons-right">
-                  <input
-                    class="input"
-                    type="email"
-                    name="userEmail"
-                    id="userEmail"
-                    placeholder="이메일 주소를 입력해주세요"
-                  />
-                  <span class="icon is-small is-left">📩</span>
-                  <span
-                    id="emailVerifiedIcon"
-                    class="icon is-small is-right verified-icon"
-                    >✓
-                  </span>
-                </div>
-                <!-- 인증 상태를 저장하는 필드 -->
-                <input
-                  type="hidden"
-                  id="emailVerified"
-                  name="emailVerified"
-                  value="false"
-                />
-              </div>
-
-              <!-- 이메일 인증 관련 버튼 및 입력 필드: 한 줄에 배치 -->
-              <div class="field has-addons mb-2 verification-container">
-                <!-- 인증번호 전송 버튼 -->
-                <div class="control">
-                  <button
-                    type="button"
-                    class="button is-info"
-                    id="sendVerificationBtn"
-                  >
-                    인증번호 전송
-                  </button>
-                </div>
-                <!-- 인증번호 입력 필드 (초기에는 숨김) -->
-                <div class="control container" id="verificationInputControl">
-                  <input
-                    class="input"
-                    type="text"
-                    id="verificationCode"
-                    placeholder="인증번호 입력"
-                  />
-                </div>
-                <!-- 인증 버튼 (초기에는 숨김) -->
-                <div class="control" id="verificationButtonControl">
-                  <button
-                    type="button"
-                    class="button is-success"
-                    id="verifyCodeBtn"
-                  >
-                    인증
-                  </button>
-                </div>
-              </div>
-
-              <!-- 관계(라디오) 선택 -->
-              <div class="field m-2 has-text-centered">
-                <div class="control" id="relationTypeRadio">
-                  <label class="radio mr-6">
-                    <input
-                      type="radio"
-                      name="relationType"
-                      id="relationTypeGuadian"
-                      value="GUARDIAN"
-                    />
-                    보호자
-                  </label>
-                  <label class="radio">
-                    <input
-                      type="radio"
-                      name="relationType"
-                      id="relationTypeTeacher"
-                      value="TEACHER"
-                    />
-                    교사
-                  </label>
-                </div>
-              </div>
-
-              <hr />
-
-              <!-- 개인정보 동의 체크 -->
-              <div class="field mb-2 has-text-centered">
-                <div class="control">
-                  <label class="checkbox">
-                    <input
-                      type="checkbox"
-                      name="personalInformationCollectionAndUsageAgreement"
-                      id="personalInformationCollectionAndUsageAgreement"
-                      value="true"
-                    />
-                    개인정보 수집 및 이용 동의 (필수)
-                  </label>
-                </div>
-              </div>
-
-              <!-- 회원가입 버튼 -->
-              <div class="field mb-4">
-                <button
-                  class="button is-primary is-fullwidth is-medium"
-                  type="submit"
-                  id="signUpSubmitBtn"
+            <!-- 오른쪽 회원가입 폼 영역 -->
+            <div class="column is-half right-half">
+                <form
+                        class="box regist-box"
+                        id="signUpForm"
+                        method="POST"
+                        th:action="@{/auth/signUp}"
                 >
-                  회원 가입
-                </button>
-              </div>
+                    <!-- 회원가입 타이틀 -->
+                    <h2 class="title has-text-centered mb-5">회원 가입</h2>
 
-              <!-- 로그인 바로가기 -->
-              <p class="has-text-centered">
-                이미 계정이 있으신가요?
-                <a th:href="@{/auth/signIn}" class="has-text-link">로그인</a>
-              </p>
-            </form>
-          </div>
+                    <!-- 이름 입력 -->
+                    <div class="field mb-2">
+                        <label class="label">이름</label>
+                        <div class="control">
+                            <input
+                                    class="input"
+                                    id="userName"
+                                    name="userName"
+                                    placeholder="이름(실명)을 입력해주세요"
+                                    type="text"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- 아이디 입력 + 중복 확인 버튼 -->
+                    <div class="field mb-2">
+                        <label class="label">아이디</label>
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input
+                                        class="input"
+                                        id="signInId"
+                                        name="signInId"
+                                        placeholder="아이디를 입력해주세요"
+                                        type="text"
+                                />
+                            </div>
+                            <div class="control">
+                                <button
+                                        class="button is-info"
+                                        id="idCheckBtn"
+                                        type="button"
+                                >
+                                    중복확인
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 비밀번호 입력 -->
+                    <div class="field mb-2">
+                        <label class="label">비밀번호</label>
+                        <div class="control has-icons-left">
+                            <input
+                                    class="input"
+                                    id="userPwd"
+                                    name="userPwd"
+                                    placeholder="비밀번호를 입력해주세요"
+                                    type="password"
+                            />
+                            <span class="icon is-small is-left">🔒</span>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input
+                                    class="form-check-input"
+                                    id="showPassword"
+                                    type="checkbox"
+                            />
+                            <label class="form-check-label" for="showPassword"
+                            >비밀번호 표시</label
+                            >
+                        </div>
+                    </div>
+
+                    <!-- 비밀번호 확인 입력 -->
+                    <div class="field mb-2">
+                        <label class="label">비밀번호 확인</label>
+                        <div class="control has-icons-left">
+                            <input
+                                    class="input"
+                                    id="userPwdCheck"
+                                    placeholder="비밀번호를 다시 한 번 입력해주세요"
+                                    type="password"
+                            />
+                            <span class="icon is-small is-left">🔒</span>
+                        </div>
+                    </div>
+
+                    <!-- 이메일 입력 및 인증 -->
+                    <div class="field mb-1">
+                        <label class="label">이메일</label>
+                        <div class="control has-icons-left has-icons-right">
+                            <input
+                                    class="input"
+                                    id="userEmail"
+                                    name="userEmail"
+                                    placeholder="이메일 주소를 입력해주세요"
+                                    type="email"
+                            />
+                            <span class="icon is-small is-left">📩</span>
+                            <span
+                                    class="icon is-small is-right verified-icon"
+                                    id="emailVerifiedIcon"
+                            >✓
+                  </span>
+                        </div>
+                        <!-- 인증 상태를 저장하는 필드 -->
+                        <input
+                                id="emailVerified"
+                                name="emailVerified"
+                                type="hidden"
+                                value="false"
+                        />
+                    </div>
+
+                    <!-- 이메일 인증 관련 버튼 및 입력 필드: 한 줄에 배치 -->
+                    <div class="field has-addons mb-2 verification-container">
+                        <!-- 인증번호 전송 버튼 -->
+                        <div class="control">
+                            <button
+                                    class="button is-info"
+                                    id="sendVerificationBtn"
+                                    type="button"
+                            >
+                                인증번호 전송
+                            </button>
+                        </div>
+                        <!-- 인증번호 입력 필드 (초기에는 숨김) -->
+                        <div class="control container" id="verificationInputControl">
+                            <input
+                                    class="input"
+                                    id="verificationCode"
+                                    placeholder="인증번호 입력"
+                                    type="text"
+                            />
+                        </div>
+                        <!-- 인증 버튼 (초기에는 숨김) -->
+                        <div class="control" id="verificationButtonControl">
+                            <button
+                                    class="button is-success"
+                                    id="verifyCodeBtn"
+                                    type="button"
+                            >
+                                인증
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 관계(라디오) 선택 -->
+                    <div class="field m-2 has-text-centered">
+                        <div class="control" id="relationTypeRadio">
+                            <label class="radio mr-6">
+                                <input
+                                        id="relationTypeGuadian"
+                                        name="relationType"
+                                        type="radio"
+                                        value="GUARDIAN"
+                                />
+                                보호자
+                            </label>
+                            <label class="radio">
+                                <input
+                                        id="relationTypeTeacher"
+                                        name="relationType"
+                                        type="radio"
+                                        value="TEACHER"
+                                />
+                                교사
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <!-- 개인정보 동의 체크 -->
+                    <div class="field mb-2 has-text-centered">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input
+                                        id="personalInformationCollectionAndUsageAgreement"
+                                        name="personalInformationCollectionAndUsageAgreement"
+                                        type="checkbox"
+                                        value="true"
+                                />
+                                개인정보 수집 및 이용 동의 (필수)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 회원가입 버튼 -->
+                    <div class="field mb-4">
+                        <button
+                                class="button is-primary is-fullwidth is-medium"
+                                id="signUpSubmitBtn"
+                                type="submit"
+                        >
+                            회원 가입
+                        </button>
+                    </div>
+
+                    <!-- 로그인 바로가기 -->
+                    <p class="has-text-centered">
+                        이미 계정이 있으신가요?
+                        <a class="has-text-link" th:href="@{/auth/signIn}">로그인</a>
+                    </p>
+                </form>
+            </div>
         </div>
-      </div>
-    </section>
-    <div id="loadingIndicator">
-      <span class="loader"></span>
     </div>
-  </body>
+</section>
+<div id="loadingIndicator">
+    <span id="mailLoader"></span>
+</div>
+</body>
 </html>

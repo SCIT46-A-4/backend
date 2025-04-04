@@ -1,587 +1,563 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>권한 관리 페이지 (부모) - iLog</title>
-    <link rel="stylesheet" href="/css/bulma.min.css" />
-    <link rel="stylesheet" href="/css/customColors.css" />
+    <link href="/css/bulma.min.css" rel="stylesheet"/>
+    <link href="/css/customColors.css" rel="stylesheet"/>
     <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            rel="stylesheet"
     />
 
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
 
     <style>
-      :root {
-        --background-yellow: #fff8dc;
-        --button-mint: #98d8d8;
-        --button-pink: #ffb6c1;
-        --text-dark: #333333;
-      }
+        :root {
+          --background-yellow: #fff8dc;
+          --button-mint: #98d8d8;
+          --button-pink: #ffb6c1;
+          --text-dark: #333333;
+        }
 
-      body {
-        background-color: var(--primary);
-        min-height: 100vh;
-      }
+        body {
+          background-color: var(--primary);
+          min-height: 100vh;
+        }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
 
-      .status-box {
-        background-color: #f5f5f5;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-      }
+        .status-box {
+          background-color: #f5f5f5;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 2rem;
+        }
 
-      .table-container {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
+        .table-container {
+          background-color: white;
+          padding: 1.5rem;
+          border-radius: 8px;
+          margin-bottom: 2rem;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-      .table {
-        width: 100%;
-      }
+        .table {
+          width: 100%;
+        }
 
-      .table th {
-        background-color: var(--secondary);
-        color: var(--text-dark);
-        text-align: center;
-      }
+        .table th {
+          background-color: var(--secondary);
+          color: var(--text-dark);
+          text-align: center;
+        }
 
-      .button.is-mint {
-        background-color: var(--secondary);
-        color: var(--text-dark);
-        border: none;
-      }
+        .button.is-mint {
+          background-color: var(--secondary);
+          color: var(--text-dark);
+          border: none;
+        }
 
-      .button.is-pink {
-        background-color: var(--third);
-        color: var(--text-dark);
-        border: none;
-      }
+        .button.is-pink {
+          background-color: var(--third);
+          color: var(--text-dark);
+          border: none;
+        }
 
-      .permission-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-      }
-
-      @media screen and (max-width: 768px) {
         .permission-header {
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .permission-header .buttons {
-          width: 100%;
           display: flex;
-          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
         }
 
-        .permission-header .button {
-          width: 100%;
-          margin-bottom: 0.5rem;
+        @media screen and (max-width: 768px) {
+          .permission-header {
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .permission-header .buttons {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .permission-header .button {
+            width: 100%;
+            margin-bottom: 0.5rem;
+          }
+
+          /* 로고 설정 */
+          .logo a {
+            display: inline-block;
+          }
+
+          .logo img {
+            cursor: pointer;
+          }
+
+          /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
+          .logo-image {
+            width: 100px;
+            height: auto;
+          }
         }
 
-        /* 로고 설정 */
-        .logo a {
-          display: inline-block;
+        #permissionInputs {
+          display: flex;
         }
 
-        .logo img {
-          cursor: pointer;
+        #mainNav {
+          background-color: white;
+          margin-bottom: 20px;
         }
 
-        /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
-        .logo-image {
-          width: 100px;
-          height: auto;
-        }
-      }
-
-      #permissionInputs {
-        display: flex;
-      }
-
-      #mainNav {
-        background-color: white;
-        margin-bottom: 20px;
-      }
-
-      #loadingIndicator {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(255, 255, 255, 0.8);
-        z-index: 1000;
-        place-items: center;
-      }
-
-      .loader {
-        position: relative;
-        width: 120px;
-        height: 55px;
-        background-repeat: no-repeat;
-        background-image: radial-gradient(
-            circle 2.5px,
-            #ff3d00 100%,
-            transparent 0
-          ),
-          linear-gradient(#525252 90px, transparent 0),
-          linear-gradient(#ececec 120px, transparent 0),
-          linear-gradient(to right, #eee 10%, #333 10%, #333 90%, #eee 90%);
-
-        background-size: 5px 5px, 90px 10px, 120px 45px, 100px 15px;
-        background-position: 110px 15px, center bottom, center bottom, center 0;
-      }
-      .loader:before {
-        content: '';
-        width: 70px;
-        background-color: #fff;
-        box-shadow: 0 0 10px #0003;
-        position: absolute;
-        left: 50%;
-        transform: translatex(-50%);
-        bottom: calc(100% - 10px);
-        animation: printerPaper 4s ease-in infinite;
-      }
-      .loader:after {
-        content: '';
-        width: 70px;
-        height: 80px;
-        background-color: #fff;
-        background-image: linear-gradient(to bottom, #fff 50%, #ff3d00 51%),
-          linear-gradient(to bottom, #bbb 50%, #0000 51%);
-        background-size: 60px 20px, 60px 10px;
-        background-repeat: no-repeat, repeat-y;
-        background-position: center 55px, center 0;
-        position: absolute;
-        left: 50%;
-        transform: translatex(-50%) rotate(180deg);
-        box-shadow: 0 10px #fff inset;
-        top: calc(100% - 8px);
-        animation: PrintedPaper 4s ease-in infinite;
-      }
-
-      @keyframes printerPaper {
-        0%,
-        25% {
-          height: 50px;
-        }
-        75%,
-        100% {
-          height: 0;
-        }
-      }
-
-      @keyframes PrintedPaper {
-        0%,
-        30% {
-          height: 0px;
-          top: calc(100% - 8px);
+        #loadingIndicator {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(255, 255, 255, 0.8);
+          z-index: 1000;
+          place-items: center;
         }
 
-        80% {
-          height: 80px;
-          top: calc(100% - 8px);
-          opacity: 1;
+        #mailLoader {
+          position: relative;
+          border-style: solid;
+          box-sizing: border-box;
+          border-width: 40px 60px 30px 60px;
+          border-color: #3760c9 #96ddfc #96ddfc #36bbf7;
+          animation: envFloating 1s ease-in infinite alternate;
         }
-        100% {
-          height: 80px;
-          top: calc(100% + 10px);
-          opacity: 0;
+
+        #mailLoader:after {
+          content: '';
+          position: absolute;
+          right: 62px;
+          top: -40px;
+          height: 70px;
+          width: 50px;
+          background-image: linear-gradient(#fff 45px, transparent 0),
+            linear-gradient(#fff 45px, transparent 0),
+            linear-gradient(#fff 45px, transparent 0);
+          background-repeat: no-repeat;
+          background-size: 30px 4px;
+          background-position: 0px 11px, 8px 35px, 0px 60px;
+          animation: envDropping 0.75s linear infinite;
         }
-      }
+
+        @keyframes envFloating {
+          0% {
+            transform: translate(-2px, -5px);
+          }
+          100% {
+            transform: translate(0, 5px);
+          }
+        }
+
+        @keyframes envDropping {
+          0% {
+            background-position: 100px 11px, 115px 35px, 105px 60px;
+            opacity: 1;
+          }
+          50% {
+            background-position: 0px 11px, 20px 35px, 5px 60px;
+          }
+          60% {
+            background-position: -30px 11px, 0px 35px, -10px 60px;
+          }
+          75%,
+          100% {
+            background-position: -30px 11px, -30px 35px, -30px 60px;
+            opacity: 0;
+          }
+        }
     </style>
     <script>
-      $(document).ready(function () {
-        $('#inviteBtn').on('click', function () {
-          const alias = $('input[name="alias"]').val();
-          const inviteeEmail = $('input[name="inviteeEmail"]').val();
-          const childId = $('input[name="childId"]').val();
-          const memberId = $('input[name="memberId"]').val();
+        $(document).ready(function () {
+          $('#inviteBtn').on('click', function () {
+            const alias = $('input[name="alias"]').val();
+            const inviteeEmail = $('input[name="inviteeEmail"]').val();
+            const childId = $('input[name="childId"]').val();
+            const memberId = $('input[name="memberId"]').val();
 
-          // 필수 입력값 검증
-          if (alias.length === 0) {
-            Swal.fire({
-              icon: 'error',
-              title: '호칭',
-              text: '호칭을 입력해 주세요.',
-            });
-            return;
-          }
-          if (inviteeEmail.length === 0) {
-            Swal.fire({
-              icon: 'error',
-              title: '이메일',
-              text: '이메일이 틀렸습니다.',
-            });
-            return;
-          }
-
-          console.log('alias:', alias);
-          console.log('inviteeEmail:', inviteeEmail);
-          console.log('childId:', childId);
-          console.log('memberId:', memberId);
-
-          const formData = new FormData();
-          formData.append('childId', childId);
-          formData.append('memberId', memberId);
-          formData.append('alias', alias);
-          formData.append('inviteeEmail', inviteeEmail);
-
-          $('#loadingIndicator').css('display', 'grid');
-          $.ajax({
-            url: '/send-invite-link',
-            method: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (response) {
-              $('#loadingIndicator').css('display', 'none');
-              if (response == true) {
-                Swal.fire({
-                  icon: 'success',
-                  title: '인증 코드가 전송되었습니다.',
-                });
-              } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: '이메일 전송 실패',
-                  text: response.message || '이메일 전송에 실패했습니다.',
-                });
-              }
-            },
-            error: function (xhr, status, error) {
-              $('#loadingIndicator').css('display', 'none');
-              console.error('에러 발생:', error);
+            // 필수 입력값 검증
+            if (alias.length === 0) {
               Swal.fire({
                 icon: 'error',
-                title: '서버 오류',
-                text: '서버와의 통신 중 오류가 발생했습니다.',
+                title: '호칭',
+                text: '호칭을 입력해 주세요.',
               });
-            },
-          });
-        });
-
-        // 초대 취소 버튼 클릭 시
-        $(document).on('click', '.cancelBtn', function (e) {
-          e.stopPropagation();
-          e.preventDefault();
-          const permissionId = $(this).data('id'); // permissionId
-          const childId = $(this).data('childid'); // childId
-          const alias = $(this).data('alias'); // alias
-
-          console.log('permissionId:', permissionId);
-          console.log('childId:', childId);
-          console.log('alias:', alias);
-
-          if (childId === undefined || childId === null) {
-            Swal.fire({
-              icon: 'error',
-              title: '아이 정보 없음',
-              text: '아이 정보가 없습니다.',
-            });
-            return;
-          }
-
-          Swal.fire({
-            title: '초대 취소',
-            text: '초대 취소하시겠습니까?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: '취소',
-            cancelButtonText: '취소하지 않음',
-            reverseButtons: true,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // AJAX 요청 보내기
-              cancelEmailInviteLink(permissionId, childId, alias);
+              return;
             }
-          });
-        });
-
-        // 초대 취소 요청을 처리하는 AJAX 함수
-        function cancelEmailInviteLink(permissionId, childId, alias) {
-          $.ajax({
-            url: `/cancel-invite-link/${permissionId}/${childId}/${alias}`,
-            type: 'DELETE',
-            success: function (response) {
-              if (response == true) {
-                Swal.fire({
-                  icon: 'success',
-                  title: '초대 취소 완료',
-                  text: '초대가 취소되었습니다.',
-                });
-                // 해당 행을 DOM에서 제거
-                $(`button[data-id="${permissionId}"]`).closest('tr').remove();
-                updateCounts();
-              } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: '취소 실패',
-                  text: '초대 취소에 실패했습니다.',
-                });
-              }
-            },
-            error: function (xhr, status, error) {
-              console.error('초대 취소 중 오류 발생:', error);
+            if (inviteeEmail.length === 0) {
               Swal.fire({
                 icon: 'error',
-                title: '서버 오류',
-                text: '서버와의 통신 중 오류가 발생했습니다.',
+                title: '이메일',
+                text: '이메일이 틀렸습니다.',
               });
-            },
-          });
-        }
-
-        // 삭제 버튼 클릭 이벤트 리스너 추가
-        $(document).on('click', '.delete-button', function (e) {
-          e.stopPropagation();
-          e.preventDefault();
-          const permissionId = $(this).data('id'); // 버튼에서 permissionId 가져오기
-          const button = $(this);
-
-          Swal.fire({
-            title: '정말로 권한을 삭제하시겠습니까?',
-            text: '이 항목은 복구할 수 없습니다.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: '삭제',
-            cancelButtonText: '취소',
-            reverseButtons: false,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              deletePermission(permissionId, button);
+              return;
             }
-          });
-        });
 
-        // 삭제 요청을 처리하는 AJAX 함수
-        function deletePermission(permissionId, button) {
-          $.ajax({
-            url: `/auth/permission/delete/${permissionId}`,
-            type: 'DELETE',
-            success: function (response) {
-              if (response == true) {
-                // 삭제된 항목의 행을 DOM에서 제거
-                button.closest('tr').remove();
-                Swal.fire('삭제 완료', '', 'success');
-                updateCounts(); // 카운트 업데이트
-              } else {
+            console.log('alias:', alias);
+            console.log('inviteeEmail:', inviteeEmail);
+            console.log('childId:', childId);
+            console.log('memberId:', memberId);
+
+            const formData = new FormData();
+            formData.append('childId', childId);
+            formData.append('memberId', memberId);
+            formData.append('alias', alias);
+            formData.append('inviteeEmail', inviteeEmail);
+
+            $('#loadingIndicator').css('display', 'grid');
+            $.ajax({
+              url: '/send-invite-link',
+              method: 'POST',
+              data: formData,
+              contentType: false,
+              processData: false,
+              success: function (response) {
+                $('#loadingIndicator').css('display', 'none');
+                if (response.success == true) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: '인증 코드가 전송되었습니다.',
+                  });
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: '이메일 전송 실패',
+                    text: response.message || '이메일 전송에 실패했습니다.',
+                  });
+                }
+              },
+              error: function (xhr, status, error) {
+                $('#loadingIndicator').css('display', 'none');
+                console.error('에러 발생:', error);
                 Swal.fire({
                   icon: 'error',
-                  title: '삭제 실패',
-                  text: '삭제에 실패했습니다.',
+                  title: '서버 오류',
+                  text: '서버와의 통신 중 오류가 발생했습니다.',
                 });
-              }
-            },
-            error: function (xhr, status, error) {
-              console.error('삭제 요청 중 오류 발생:', error);
+              },
+            });
+          });
+
+          // 초대 취소 버튼 클릭 시
+          $(document).on('click', '.cancelBtn', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            const permissionId = $(this).data('id'); // permissionId
+            const childId = $(this).data('childid'); // childId
+            const alias = $(this).data('alias'); // alias
+
+            console.log('permissionId:', permissionId);
+            console.log('childId:', childId);
+            console.log('alias:', alias);
+
+            if (childId === undefined || childId === null) {
               Swal.fire({
                 icon: 'error',
-                title: '서버 오류',
-                text: '서버와의 통신 중 오류가 발생했습니다.',
+                title: '아이 정보 없음',
+                text: '아이 정보가 없습니다.',
               });
-            },
+              return;
+            }
+
+            Swal.fire({
+              title: '초대 취소',
+              text: '초대 취소하시겠습니까?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: '취소',
+              cancelButtonText: '취소하지 않음',
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                // AJAX 요청 보내기
+                cancelEmailInviteLink(permissionId, childId, alias);
+              }
+            });
           });
-        }
 
-        // 승인 요청과 승인 완료 상태 카운트 업데이트
-        function updateCounts() {
-          const requestCount = $('#request-list tbody tr').length;
-          const approvedCount = $('#approved-list tbody tr').length;
+          // 초대 취소 요청을 처리하는 AJAX 함수
+          function cancelEmailInviteLink(permissionId, childId, alias) {
+            $.ajax({
+              url: `/cancel-invite-link/${permissionId}/${childId}/${alias}`,
+              type: 'DELETE',
+              success: function (response) {
+                if (response == true) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: '초대 취소 완료',
+                    text: '초대가 취소되었습니다.',
+                  });
+                  // 해당 행을 DOM에서 제거
+                  $(`button[data-id="${permissionId}"]`).closest('tr').remove();
+                  updateCounts();
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: '취소 실패',
+                    text: '초대 취소에 실패했습니다.',
+                  });
+                }
+              },
+              error: function (xhr, status, error) {
+                console.error('초대 취소 중 오류 발생:', error);
+                Swal.fire({
+                  icon: 'error',
+                  title: '서버 오류',
+                  text: '서버와의 통신 중 오류가 발생했습니다.',
+                });
+              },
+            });
+          }
 
-          $('.status-box p:first-child').text(`승인 요청: ${requestCount}건`);
-          $('.status-box p:last-child').text(`승인 완료: ${approvedCount}건`);
-        }
-      });
+          // 삭제 버튼 클릭 이벤트 리스너 추가
+          $(document).on('click', '.delete-button', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            const permissionId = $(this).data('id'); // 버튼에서 permissionId 가져오기
+            const button = $(this);
+
+            Swal.fire({
+              title: '정말로 권한을 삭제하시겠습니까?',
+              text: '이 항목은 복구할 수 없습니다.',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: '삭제',
+              cancelButtonText: '취소',
+              reverseButtons: false,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                deletePermission(permissionId, button);
+              }
+            });
+          });
+
+          // 삭제 요청을 처리하는 AJAX 함수
+          function deletePermission(permissionId, button) {
+            $.ajax({
+              url: `/auth/permission/delete/${permissionId}`,
+              type: 'DELETE',
+              success: function (response) {
+                if (response == true) {
+                  // 삭제된 항목의 행을 DOM에서 제거
+                  button.closest('tr').remove();
+                  Swal.fire('삭제 완료', '', 'success');
+                  updateCounts(); // 카운트 업데이트
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: '삭제 실패',
+                    text: '삭제에 실패했습니다.',
+                  });
+                }
+              },
+              error: function (xhr, status, error) {
+                console.error('삭제 요청 중 오류 발생:', error);
+                Swal.fire({
+                  icon: 'error',
+                  title: '서버 오류',
+                  text: '서버와의 통신 중 오류가 발생했습니다.',
+                });
+              },
+            });
+          }
+
+          // 승인 요청과 승인 완료 상태 카운트 업데이트
+          function updateCounts() {
+            const requestCount = $('#request-list tbody tr').length;
+            const approvedCount = $('#approved-list tbody tr').length;
+
+            $('.status-box p:first-child').text(`승인 요청: ${requestCount}건`);
+            $('.status-box p:last-child').text(`승인 완료: ${approvedCount}건`);
+          }
+        });
     </script>
-  </head>
-  <body>
-    <nav
-      id="mainNav"
-      class="navbar"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div class="navbar-brand">
+</head>
+<body>
+<nav
+        aria-label="main navigation"
+        class="navbar"
+        id="mainNav"
+        role="navigation"
+>
+    <div class="navbar-brand">
         <a class="navbar-item" href="/dashboard">
-          <img
-            id="logo"
-            src="../../static/images/wilog.png"
-            th:src="@{/images/wilog.png}"
-            alt="iLog 로고"
-          />
+            <img
+                    alt="iLog 로고"
+                    id="logo"
+                    src="../../static/images/wilog.png"
+                    th:src="@{/images/wilog.png}"
+            />
         </a>
-      </div>
-      <div class="navbar-end">
+    </div>
+    <div class="navbar-end">
         <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/guides"><span>이용안내</span></a>
-          </div>
+            <div class="buttons">
+                <a class="button is-light" href="/guides"><span>이용안내</span></a>
+            </div>
         </div>
         <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/claims"><span>고객센터</span></a>
-          </div>
+            <div class="buttons">
+                <a class="button is-light" href="/claims"><span>고객센터</span></a>
+            </div>
         </div>
         <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" href="/auth/logout"
-              ><span>로그아웃</span></a
-            >
-          </div>
+            <div class="buttons">
+                <a class="button is-light" href="/auth/logout"
+                ><span>로그아웃</span></a
+                >
+            </div>
         </div>
         <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-light" th:href="@{/members/myDetails}">
-              <span class="icon"><i class="fas fa-user"></i></span>
-              <span th:text="|${memberName}(${relationType})|"
-                >김미영(부모)</span
-              >
-            </a>
-          </div>
+            <div class="buttons">
+                <a class="button is-light" th:href="@{/members/myDetails}">
+                    <span class="icon"><i class="fas fa-user"></i></span>
+                    <span th:text="|${memberName}(${relationType})|"
+                    >김미영(부모)</span
+                    >
+                </a>
+            </div>
         </div>
-      </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="container">
-      <!-- 로고 + dashboard 바로가기 -->
-      <h1 class="title is-3 has-text-centered mb-6">
+<div class="container">
+    <!-- 로고 + dashboard 바로가기 -->
+    <h1 class="title is-3 has-text-centered mb-6">
         권한 관리 페이지 (보호자)
-      </h1>
+    </h1>
 
-      <!-- 동적 값(childId, memberId)은 서버에서 채워지거나 자바스크립트로 설정 -->
-      <input type="hidden" name="childId" th:value="${childId}" />
-      <input type="hidden" name="memberId" th:value="${memberId}" />
+    <!-- 동적 값(childId, memberId)은 서버에서 채워지거나 자바스크립트로 설정 -->
+    <input name="childId" th:value="${childId}" type="hidden"/>
+    <input name="memberId" th:value="${memberId}" type="hidden"/>
 
-      <div class="table-container">
-        <div id="permissionInputs" class="buttons">
-          <input
-            type="text"
-            class="input column"
-            name="alias"
-            placeholder="호칭을 입력하세요."
-          />
-          <input
-            type="email"
-            class="input column"
-            name="inviteeEmail"
-            placeholder="정보열람 권한을 보낼 선생님 이메일을 입력하세요."
-          />
+    <div class="table-container">
+        <div class="buttons" id="permissionInputs">
+            <input
+                    class="input column"
+                    name="alias"
+                    placeholder="호칭을 입력하세요."
+                    type="text"
+            />
+            <input
+                    class="input column"
+                    name="inviteeEmail"
+                    placeholder="정보열람 권한을 보낼 선생님 이메일을 입력하세요."
+                    type="email"
+            />
         </div>
         <button
-          id="inviteBtn"
-          class="button is-light send-email-button is-fullwidth"
+                class="button is-light send-email-button is-fullwidth"
+                id="inviteBtn"
         >
-          초대링크 보내기
+            초대링크 보내기
         </button>
-      </div>
+    </div>
 
-      <div class="table-container">
+    <div class="table-container">
         <div class="columns">
-          <div class="column is-half has-text-centered">
-            <!-- "송신중" 상태 건수를 출력 -->
-            <p th:text="'송신중: ' + ${pendingCount} + '건'">송신중: 0건</p>
-          </div>
-          <div class="column is-half has-text-centered">
-            <!-- 승인 완료 건수 출력 -->
-            <p th:text="'승인 완료: ' + ${acceptedCount} + '건'">
-              승인 완료: 0건
-            </p>
-          </div>
+            <div class="column is-half has-text-centered">
+                <!-- "송신중" 상태 건수를 출력 -->
+                <p th:text="'송신중: ' + ${pendingCount} + '건'">송신중: 0건</p>
+            </div>
+            <div class="column is-half has-text-centered">
+                <!-- 승인 완료 건수 출력 -->
+                <p th:text="'승인 완료: ' + ${acceptedCount} + '건'">
+                    승인 완료: 0건
+                </p>
+            </div>
         </div>
         <div>
-          <table class="table is-fullwidth has-text-centered">
-            <thead>
-              <tr>
-                <th class="has-text-centered">호칭</th>
-                <th class="has-text-centered">아이 이름</th>
-                <th class="has-text-centered">초대 취소</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- 여기에 동적으로 각 permission의 데이터를 출력 -->
-              <tr
-                th:each="permission : ${list}"
-                th:if="${permission.permissionRequestStatus == T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
-              >
-                <td th:text="${permission.alias}"></td>
-                <td th:text="${permission.childName}"></td>
-                <td>
-                  <button
-                    class="button is-mint cancelBtn"
-                    th:data-id="${permission.id}"
-                    th:data-childid="${permission.childId}"
-                    th:data-alias="${permission.alias}"
-                  >
-                    초대 취소
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            <table class="table is-fullwidth has-text-centered">
+                <thead>
+                <tr>
+                    <th class="has-text-centered">호칭</th>
+                    <th class="has-text-centered">아이 이름</th>
+                    <th class="has-text-centered">초대 취소</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 여기에 동적으로 각 permission의 데이터를 출력 -->
+                <tr
+                        th:each="permission : ${list}"
+                        th:if="${permission.permissionRequestStatus == T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
+                >
+                    <td th:text="${permission.alias}"></td>
+                    <td th:text="${permission.childName}"></td>
+                    <td>
+                        <button
+                                class="button is-mint cancelBtn"
+                                th:data-alias="${permission.alias}"
+                                th:data-childid="${permission.childId}"
+                                th:data-id="${permission.id}"
+                        >
+                            초대 취소
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-      </div>
+    </div>
 
-      <div class="table-container">
+    <div class="table-container">
         <div class="columns">
-          <div class="column is-half has-text-centered">
-            <h2 class="title is-4 mb-4 has-text-centered">승인된 리스트</h2>
-          </div>
+            <div class="column is-half has-text-centered">
+                <h2 class="title is-4 mb-4 has-text-centered">승인된 리스트</h2>
+            </div>
         </div>
         <table class="table is-fullwidth has-text-centered">
-          <thead>
+            <thead>
             <tr>
-              <th class="has-text-centered">보호자 이름</th>
-              <th class="has-text-centered">내 자녀 이름</th>
-              <th class="has-text-centered">승인한 날짜</th>
-              <th class="has-text-centered">자녀와의 관계</th>
-              <th class="has-text-centered">관리</th>
+                <th class="has-text-centered">보호자 이름</th>
+                <th class="has-text-centered">내 자녀 이름</th>
+                <th class="has-text-centered">승인한 날짜</th>
+                <th class="has-text-centered">자녀와의 관계</th>
+                <th class="has-text-centered">관리</th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             <tr
-              th:each="permission : ${list}"
-              th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
-              th:data-id="${permission.id}"
+                    th:data-id="${permission.id}"
+                    th:each="permission : ${list}"
+                    th:if="${permission.permissionRequestStatus != T(com.scit.iLog.domain.permission.PermissionRequestStatus).PENDING}"
             >
-              <td th:text="${permission.alias}"></td>
-              <td th:text="${permission.childName}"></td>
-              <td
-                th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}"
-              ></td>
-              <td th:text="${permission.requesterRelationType.typeNameKr}"></td>
-              <td>
-                <button
-                  class="button is-small is-pink delete-button"
-                  th:data-id="${permission.id}"
-                >
-                  권한 삭제
-                </button>
-              </td>
+                <td th:text="${permission.alias}"></td>
+                <td th:text="${permission.childName}"></td>
+                <td
+                        th:text="${#temporals.format(permission.approvalDate, 'yyyy년 MM월 dd일')}"
+                ></td>
+                <td th:text="${permission.requesterRelationType.typeNameKr}"></td>
+                <td>
+                    <button
+                            class="button is-small is-pink delete-button"
+                            th:data-id="${permission.id}"
+                    >
+                        권한 삭제
+                    </button>
+                </td>
             </tr>
-          </tbody>
+            </tbody>
         </table>
-      </div>
     </div>
-    <div id="loadingIndicator">
-      <span class="loader"></span>
-    </div>
-    <div th:replace="fragments/footer :: ilogFooter"></div>
-  </body>
+</div>
+<div id="loadingIndicator">
+    <span id="mailLoader"></span>
+</div>
+<div th:replace="fragments/footer :: ilogFooter"></div>
+</body>
 </html>

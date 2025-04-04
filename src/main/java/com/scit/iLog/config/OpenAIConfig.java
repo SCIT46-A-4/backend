@@ -25,9 +25,4 @@ public class OpenAIConfig {
                 .builder(chatModel)
                 .build();
     }
-
-    @PostConstruct
-    public void checkKey() {
-        System.out.println(">>> DEBUG: openAiKey = [" + openaiApiKey + "]");
-    }
 }
