@@ -144,7 +144,10 @@ public class ClaimService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Claim 조회 실패: %d", claimId)));
 
         // 2. Entity → DTO 변환 후 반환
-        return ClaimDetailsDTO.builder().claimId(claim.getId()).type(claim.getType()).title(claim.getTitle())
+        return ClaimDetailsDTO.builder()
+                .claimId(claim.getId())
+                .type(claim.getType())
+                .title(claim.getTitle())
                 .createdAt(claim.getCreatedAt()).content(claim.getContent())
                 .claimAnswers(claim.getAnswers().stream()
                         .map(claimAnswer -> ClaimAnswerDTO.builder().answerId(claimAnswer.getId())
@@ -152,7 +155,6 @@ public class ClaimService {
                                 .content(claimAnswer.getContent()).build())
                         .toList())
                 .build();
-
     }
 
     /**

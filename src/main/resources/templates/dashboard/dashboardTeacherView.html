@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html
-        lang="ko"
-        xmlns:th="http://thymeleaf.org"
->
-<head>
-    <meta charset="UTF-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>교사용 대시보드 - iLog</title>
-    <link href="/css/bulma.min.css" rel="stylesheet"/>
+    <link href="/css/bulma.min.css" rel="stylesheet" />
     <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-            rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
     />
 
     <script src="/js/jquery-3.7.1.min.js"></script>
@@ -24,983 +21,955 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
 
     <script>
-        Highcharts.setOptions({
-          lang: {
-            contextButtonTitle: '차트 메뉴',
-            downloadPNG: 'PNG 이미지 다운로드',
-            downloadJPEG: 'JPEG 이미지 다운로드',
-            downloadPDF: 'PDF 다운로드',
-            downloadSVG: 'SVG 다운로드',
-            printChart: '차트 인쇄',
-            viewFullscreen: '전체 화면 보기',
-            exitFullscreen: '전체 화면 닫기',
-            downloadCSV: 'CSV 다운로드',
-            downloadXLS: '엑셀 다운로드',
-            openInCloud: 'Highcharts 클라우드에서 열기',
-          },
-          exporting: {
-            enabled: true,
-            fallbackToExportServer: false, // 서버 없이 내보내기
-            libURL: 'https://code.highcharts.com/modules/', // 필요한 라이브러리 경로 설정
-          },
-        });
+      Highcharts.setOptions({
+        lang: {
+          contextButtonTitle: '차트 메뉴',
+          downloadPNG: 'PNG 이미지 다운로드',
+          downloadJPEG: 'JPEG 이미지 다운로드',
+          downloadPDF: 'PDF 다운로드',
+          downloadSVG: 'SVG 다운로드',
+          printChart: '차트 인쇄',
+          viewFullscreen: '전체 화면 보기',
+          exitFullscreen: '전체 화면 닫기',
+          downloadCSV: 'CSV 다운로드',
+          downloadXLS: '엑셀 다운로드',
+          openInCloud: 'Highcharts 클라우드에서 열기',
+        },
+        exporting: {
+          enabled: true,
+          fallbackToExportServer: false, // 서버 없이 내보내기
+          libURL: 'https://code.highcharts.com/modules/', // 필요한 라이브러리 경로 설정
+        },
+      });
     </script>
     <style>
-        /* 네비게이션 바 스타일 */
-        .navbar {
-          background-color: #fdf5bf;
-        }
+      /* 네비게이션 바 스타일 */
+      .navbar {
+        background-color: #fdf5bf;
+      }
 
-        /* 로고 이미지 스타일 */
-        #logo {
-          max-height: 80px;
-          width: 70px;
-          height: auto;
-        }
+      /* 로고 이미지 스타일 */
+      #logo {
+        max-height: 80px;
+        width: 70px;
+        height: auto;
+      }
 
-        /* 학생 리스트 스타일 */
-        .student-list {
-          height: calc(100vh - 200px);
-          overflow-y: auto;
-        }
+      /* 학생 리스트 스타일 */
+      .student-list {
+        height: calc(100vh - 200px);
+        overflow-y: auto;
+      }
 
-        /* 학생 리스트 아이템 스타일 */
-        .student-item {
-          padding: 10px;
-          margin-bottom: 5px;
-          border-radius: 4px;
-          cursor: pointer;
-        }
+      /* 학생 리스트 아이템 스타일 */
+      .student-item {
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
 
-        .student-item:hover {
-          background-color: #f5f5f5;
-        }
+      .student-item:hover {
+        background-color: #f5f5f5;
+      }
 
-        .student-item.active,
-        .child-item.is-selected {
-          background-color: #fdf5bf !important;
-        }
+      .student-item.active,
+      .child-item.is-selected {
+        background-color: #fdf5bf !important;
+      }
 
-        /* 통계 컨테이너 스타일 */
-        .stats-container {
-          background-color: white;
-          border-radius: 8px;
-          padding: 1rem;
-          margin-bottom: 1rem;
-          height: 300px;
-        }
+      /* 통계 컨테이너 스타일 */
+      .stats-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        height: 300px;
+      }
 
-        /* 프로필 이미지 크기 설정 */
-        .image.is-64x64 {
-          width: 64px;
-          height: 64px;
-          overflow: hidden;
-        }
+      /* 프로필 이미지 크기 설정 */
+      .image.is-64x64 {
+        width: 64px;
+        height: 64px;
+        overflow: hidden;
+      }
 
-        /* 프로필 이미지 맞춤 */
-        .image.is-64x64 img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
+      /* 프로필 이미지 맞춤 */
+      .image.is-64x64 img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-        /* 태그 크기 설정 */
-        .tag.is-medium {
-          font-size: 1rem;
-          height: 2em;
-          padding-left: 0.875em;
-          padding-right: 0.875em;
-        }
+      /* 태그 크기 설정 */
+      .tag.is-medium {
+        font-size: 1rem;
+        height: 2em;
+        padding-left: 0.875em;
+        padding-right: 0.875em;
+      }
 
-        /* 선택된 테이블 행의 배경색 변경 */
-        .table tr.is-selected {
-          background-color: #f5f5f5;
-        }
+      /* 선택된 테이블 행의 배경색 변경 */
+      .table tr.is-selected {
+        background-color: #f5f5f5;
+      }
 
-        /* 리스트에 스크롤 기능 추가 */
-        .table-container {
-          max-height: calc(100vh - 300px);
-          overflow-y: auto;
-          border: 1px solid #dbdbdb;
-          border-radius: 4px;
-        }
+      /* 리스트에 스크롤 기능 추가 */
+      .table-container {
+        max-height: calc(100vh - 300px);
+        overflow-y: auto;
+        border: 1px solid #dbdbdb;
+        border-radius: 4px;
+      }
 
-        /* 테이블 헤더 고정 */
-        .table thead th {
-          position: sticky;
-          top: 0;
-          background-color: white;
-          z-index: 1;
-          border-bottom: 2px solid #dbdbdb;
-        }
+      /* 테이블 헤더 고정 */
+      .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 1;
+        border-bottom: 2px solid #dbdbdb;
+      }
 
-        /* 스크롤바 스타일 */
-        .table-container::-webkit-scrollbar {
-          width: 8px;
-        }
+      /* 스크롤바 스타일 */
+      .table-container::-webkit-scrollbar {
+        width: 8px;
+      }
 
-        .table-container::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 4px;
-        }
+      .table-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
 
-        .table-container::-webkit-scrollbar-thumb {
-          background: #888;
-          border-radius: 4px;
-        }
+      .table-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+      }
 
-        .table-container::-webkit-scrollbar-thumb:hover {
-          background: #555;
-        }
+      .table-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
 
-        /* 리스트 아이템 기본 스타일 */
-        .child-item {
-          cursor: pointer;
-        }
+      /* 리스트 아이템 기본 스타일 */
+      .child-item {
+        cursor: pointer;
+      }
 
-        /* 프로필 섹션 여백 */
-        .profile-section {
-          padding: 20px;
-        }
+      /* 프로필 섹션 여백 */
+      .profile-section {
+        padding: 20px;
+      }
 
-        /* 프로필 이미지 스타일 */
-        .profile-image {
-          width: 150px !important;
-          height: 150px !important;
-          object-fit: cover !important;
-          border-radius: 50%;
-        }
+      /* 프로필 이미지 스타일 */
+      .profile-image {
+        width: 150px !important;
+        height: 150px !important;
+        object-fit: cover !important;
+        border-radius: 50%;
+      }
 
-        /* 테이블 너비 자동 조정 */
-        .table {
-          table-layout: auto;
-          width: 100%;
-        }
+      /* 테이블 너비 자동 조정 */
+      .table {
+        table-layout: auto;
+        width: 100%;
+      }
 
-        /* 테이블 셀 스타일 */
-        .table th,
-        .table td {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          padding: 10px 12px;
-          text-align: center;
-        }
+      /* 테이블 셀 스타일 */
+      .table th,
+      .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 10px 12px;
+        text-align: center;
+      }
 
-        /* 생년월일 칼럼 너비 조정 */
-        .table th:nth-child(2),
-        .table td:nth-child(2) {
-          min-width: 120px;
-          max-width: 150px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
+      /* 생년월일 칼럼 너비 조정 */
+      .table th:nth-child(2),
+      .table td:nth-child(2) {
+        min-width: 120px;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-        /* 최근 게시물 칼럼 중앙 정렬 */
-        .table th:nth-child(3),
-        .table td:nth-child(3) {
-          text-align: center;
-        }
+      /* 최근 게시물 칼럼 중앙 정렬 */
+      .table th:nth-child(3),
+      .table td:nth-child(3) {
+        text-align: center;
+      }
 
-        /* 컬럼(좌측 & 우측) 높이 맞추기 */
+      /* 컬럼(좌측 & 우측) 높이 맞추기 */
+      .columns {
+        display: flex;
+        align-items: stretch;
+      }
+
+      /* 왼쪽 컬럼 스타일 */
+      .left-column {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+      }
+
+      /* 오른쪽 컬럼 스타일 */
+      .right-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      /* 리스트 컨테이너 스타일 */
+      .child-list-container {
+        overflow-y: auto;
+        border: 1px solid #dbdbdb;
+        border-radius: 4px;
+      }
+
+      /* 왼쪽 컬럼 너비 조정 (30%) */
+      .column.is-3.left-column {
+        flex: 0 0 30%;
+      }
+
+      /* 푸터 배경색 변경 */
+      footer {
+        background-color: #fdf5bf; /* 원하는 색상 */
+        padding: 2rem 0;
+      }
+
+      /* 반응형 설정 (화면이 1024px 이하일 때 적용) */
+      @media screen and (max-width: 1024px) {
         .columns {
-          display: flex;
-          align-items: stretch;
-        }
-
-        /* 왼쪽 컬럼 스타일 */
-        .left-column {
-          display: flex;
           flex-direction: column;
-          height: auto;
         }
 
-        /* 오른쪽 컬럼 스타일 */
+        .column {
+          width: 100%;
+        }
+
+        .left-column,
         .right-column {
           flex: 1;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
+          width: 100%;
         }
 
-        /* 리스트 컨테이너 스타일 */
         .child-list-container {
+          max-height: 50vh;
           overflow-y: auto;
-          border: 1px solid #dbdbdb;
-          border-radius: 4px;
+          width: 100%;
         }
 
-        /* 왼쪽 컬럼 너비 조정 (30%) */
-        .column.is-3.left-column {
-          flex: 0 0 30%;
+        /* 테이블 셀 크기 조정 */
+        .table th,
+        .table td {
+          font-size: 0.9rem;
+          padding: 8px 10px;
         }
 
-        /* 푸터 배경색 변경 */
-        footer {
-          background-color: #fdf5bf; /* 원하는 색상 */
-          padding: 2rem 0;
+        /* 생년월일 칼럼 크기 조정 */
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+          font-size: 0.9rem;
+          width: auto;
+          min-width: 150px;
         }
-
-        /* 반응형 설정 (화면이 1024px 이하일 때 적용) */
-        @media screen and (max-width: 1024px) {
-          .columns {
-            flex-direction: column;
-          }
-
-          .column {
-            width: 100%;
-          }
-
-          .left-column,
-          .right-column {
-            flex: 1;
-            width: 100%;
-          }
-
-          .child-list-container {
-            max-height: 50vh;
-            overflow-y: auto;
-            width: 100%;
-          }
-
-          /* 테이블 셀 크기 조정 */
-          .table th,
-          .table td {
-            font-size: 0.9rem;
-            padding: 8px 10px;
-          }
-
-          /* 생년월일 칼럼 크기 조정 */
-          .table th:nth-child(2),
-          .table td:nth-child(2) {
-            font-size: 0.9rem;
-            width: auto;
-            min-width: 150px;
-          }
-        }
+      }
     </style>
 
     <script>
-        // 통합 스크립트: 학생 클릭 시 프로필, 도넛 차트, 그리고 트렌드 차트(설문조사 결과)를 불러옵니다.
-        $(document).ready(function () {
-          // 도넛 차트 기간 선택 버튼 이벤트
-          $('.donut-date-range-buttons button').on('click', function () {
-            const period = $(this).attr('data-period');
-            setDonutDateRange(period);
-          });
-
-          // 학생 클릭 이벤트 처리 (원본의 .student-item 사용)
-          $(document).on('click', '.student-item', function () {
-            const childId = $(this).attr('data-child-id');
-            // 선택 효과
-            $('.student-item').removeClass('active');
-            $(this).addClass('active');
-
-            // 프로필 정보 로드 (fetch API 사용 - 순수 JS 방식 참고)
-            fetch(`/dashboard/${childId}/profile`, {
-              method: 'GET',
-              headers: { Accept: 'application/json' },
-            })
-              .then((response) => response.json())
-              .then((data) => {
-                // 프로필 이미지 업데이트
-                const profileImage = document.querySelector('#profileImage');
-                profileImage.src =
-                  data.profileImgSrcUri || '/images/default-profile.png';
-                profileImage.onerror = () =>
-                  (profileImage.src = '/images/default-profile.png');
-
-                // 생년월일 및 나이 계산
-                const birthDate = new Date(data.birthDate);
-                const age = calculateAge(birthDate);
-                const formattedDate = birthDate.toLocaleDateString('ko-KR', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                });
-
-                // 프로필 정보 업데이트 (원본 HTML의 id에 맞게)
-                $('#studentName').text(data.name);
-                $('#studentBirthDate').text(formattedDate);
-                $('#studentAge').text(`(만 ${age}세)`);
-                $('#studentGender').text(data.gender === 'MAN' ? '남자' : '여자');
-                // 필요시 노트 정보도 업데이트 (노트 출력 요소가 있다면)
-                $('#studentNote').text(data.note || '-');
-
-                // 가정환경 정보를 추가
-                const familyBackgrounds = data.familyBackGrounds;
-                if (
-                  Array.isArray(familyBackgrounds) &&
-                  familyBackgrounds.length > 0
-                ) {
-                  const backgroundsText = familyBackgrounds.join(', ');
-                  $('#studentFamilyBackground').text(backgroundsText);
-                } else {
-                  $('#studentFamilyBackground').text('-');
-                }
-              })
-              .catch((error) => {
-                console.error('Error:', error);
-                $('#profileImage').attr('src', '/images/default-profile.png');
-                $('#studentName').text('-');
-                $('#studentBirthDate').text('-');
-                $('#studentAge').text('-');
-                $('#studentGender').text('-');
-                $('#studentNote').text('-');
-              });
-
-            // 학생 클릭 시 도넛 차트는 기본 주간으로 출력
-            setDonutDateRange('WEEK');
-
-            // 설문조사 결과(Trend 차트) 데이터 출력
-            loadSurveyData(childId);
-          });
-
-          // 감정 분석 데이터 출력 (도넛 차트)
-          function loadStudentEmotionData(childId) {
-            const periodType = 'WEEK';
-
-            $.ajax({
-              url: `/${childId}/dashBoardEmotionStats`,
-              type: 'GET',
-              data: { startDate, endDate, periodType },
-              dataType: 'json',
-              success: function (data) {
-                console.log('📊 감정 데이터:', data);
-                updatePieChart(data.seriesDataList);
-              },
-              error: function () {
-                console.error('🚨 감정 데이터 불러오기 실패');
-              },
-            });
-          }
-
-          // 문서 로드 후 목록의 첫 번째 학생 자동 선택
-          var $firstStudent = $('.student-item').first();
-          if ($firstStudent.length) {
-            $firstStudent.trigger('click');
-          }
+      // 統合スクリプト：学生をクリックするとプロファイル、ドーナツチャート、そしてトレンドチャート（調査結果）が読み込まれます。
+      $(document).ready(function () {
+        // ドーナツチャートの期間選択ボタンイベント
+        $('.donut-date-range-buttons button').on('click', function () {
+          const period = $(this).attr('data-period');
+          setDonutDateRange(period);
         });
 
-        // 전역 함수들 정의 시작
+        // 学生クリックイベント処理（元の .student-item を使用）
+        $(document).on('click', '.student-item', function () {
+          const childId = $(this).attr('data-child-id');
+          // 選択効果
+          $('.student-item').removeClass('active');
+          $(this).addClass('active');
 
-        // 나이 계산 함수 (plain JavaScript)
-        function calculateAge(birthDate) {
-          const today = new Date();
-          let age = today.getFullYear() - birthDate.getFullYear();
-          const m = today.getMonth() - birthDate.getMonth();
-          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-          }
-          return age;
-        }
+          // プロファイル情報のロード（fetch API 使用 - 純粋なJS方式参照）
+          fetch(`/dashboard/${childId}/profile`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // プロファイル画像の更新
+              const profileImage = document.querySelector('#profileImage');
+              profileImage.src =
+                data.profileImgSrcUri || '/images/default-profile.png';
+              profileImage.onerror = () =>
+                (profileImage.src = '/images/default-profile.png');
 
-        // 날짜를 "yyyy-MM-dd" 형식으로 변환하는 함수 (시간 부분 제거) //수정함
-        function formatDate(date) {
-          const year = date.getFullYear();
-          const month = ('0' + (date.getMonth() + 1)).slice(-2);
-          const day = ('0' + date.getDate()).slice(-2);
-          return `${year}-${month}-${day}T00:00:00`;
-        }
+              // 生年月日および年齢の計算
+              const birthDate = new Date(data.birthDate);
+              const age = calculateAge(birthDate);
+              const formattedDate = birthDate.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              });
 
-        // 선택한 기간(주간, 월간, 반년)에 따라 시작일과 종료일을 계산하고 도넛 차트를 업데이트하는 함수 //수정함
-        function setDonutDateRange(period) {
-          const now = new Date();
-          let startDate;
-          switch (period) {
-            case 'WEEK':
-              startDate = new Date(now);
-              startDate.setDate(now.getDate() - 7);
-              break;
-            case 'MONTH':
-              startDate = new Date(now);
-              startDate.setMonth(now.getMonth() - 1);
-              break;
-            default:
-              startDate = new Date(now);
-              startDate.setDate(now.getDate() - 7);
-              break;
-          }
-          const startStr = formatDate(startDate);
-          const endStr = formatDate(now);
-          // periodType 값을 그대로 전달 (예: "WEEK", "MONTH")
-          loadEmotionStatsWithDates(startStr, endStr, period);
-        }
+              // プロファイル情報の更新（元のHTMLのIDに合わせて）
+              $('#studentName').text(data.name);
+              $('#studentBirthDate').text(formattedDate);
+              $('#studentAge').text(`(満 ${age}才)`);
+              $('#studentGender').text(data.gender === 'MAN' ? '男' : '女');
+              // 必要に応じてノート情報も更新（ノート表示要素がある場合）
+              $('#studentNote').text(data.note || '-');
 
-        // 현재 선택된 아이의 ID 반환 함수
-        function getSelectedChildId() {
-          return $('.student-item.active').attr('data-child-id');
-        }
+              // 家庭環境情報の追加
+              const familyBackgrounds = data.familyBackGrounds;
+              if (
+                Array.isArray(familyBackgrounds) &&
+                familyBackgrounds.length > 0
+              ) {
+                const backgroundsText = familyBackgrounds.join(', ');
+                $('#studentFamilyBackground').text(backgroundsText);
+              } else {
+                $('#studentFamilyBackground').text('-');
+              }
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              $('#profileImage').attr('src', '/images/default-profile.png');
+              $('#studentName').text('-');
+              $('#studentBirthDate').text('-');
+              $('#studentAge').text('-');
+              $('#studentGender').text('-');
+              $('#studentNote').text('-');
+            });
 
-        // 도넛 차트 데이터를 서버에서 불러오는 함수 (날짜 범위와 periodType 전달)
-        function loadEmotionStatsWithDates(startDate, endDate, periodType) {
-          const childId = getSelectedChildId();
-          if (!childId) {
-            console.warn('선택된 아동이 없습니다.');
-            return;
-          }
+          // 学生クリック時、ドーナツチャートは基本的に週間表示で出力
+          setDonutDateRange('WEEK');
+
+          // 調査結果（トレンドチャート）のデータ表示
+          loadSurveyData(childId);
+        });
+
+        // 感情分析データ出力（ドーナツチャート）
+        function loadStudentEmotionData(childId) {
+          const periodType = 'WEEK';
+
           $.ajax({
             url: `/${childId}/dashBoardEmotionStats`,
             type: 'GET',
             data: { startDate, endDate, periodType },
             dataType: 'json',
             success: function (data) {
-              console.log('📊 감정 데이터:', data);
+              console.log('📊 感情データ:', data);
               updatePieChart(data.seriesDataList);
             },
             error: function () {
-              console.error('🚨 감정 데이터 불러오기 실패');
+              console.error('🚨 感情データの読み込み失敗');
             },
           });
         }
 
-        // 도넛 차트 업데이트 함수 (감정 분석 결과)
-        function updatePieChart(data) {
-          console.log('📊 감정 차트 데이터:', data);
-          if (!Array.isArray(data) || data.length === 0) {
-            console.warn('⚠ 감정 데이터 없음. 기본 데이터로 초기화');
-            data = [
-              { name: '기쁨', y: 30 },
-              { name: '슬픔', y: 20 },
-              { name: '분노', y: 25 },
-              { name: '놀람', y: 25 },
-            ];
-          } else {
-            const emotionColorMap = {
-              기쁨: '#FFD700', // 골드(따뜻한 느낌)
-              슬픔: '#4169E1', // 로열블루(깊은 슬픔)
-              분노: '#DC143C', // 크림슨(강한 분노)
-              두려움: '#483D8B', // 다크 슬레이트 블루(무거운 느낌)
-              놀람: '#FFEC8B', // 연한 오렌지(경쾌한 놀람)
-              중립: '#A9A9A9', // 다크그레이(중립적인 느낌)
-              혼란: '#FF69B4', // 핫핑크(어지러운 혼란)
-              불안: '#8B0000', // 다크레드(불안감)
-              지루함: '#2F4F4F', // 다크슬레이트그레이(무거운 지루함)
-              흥분: '#FF1493', // 딥핑크(에너지 넘치는 흥분)
-              수줍음: '#FFDAB9', // 연한 살구색(부드러운 수줍음)
-            };
-
-            data = data
-              .filter((item) => item.label && item.resultScore !== null)
-              .map((item) => ({
-                name: item.label,
-                y: item.resultScore,
-                color: emotionColorMap[item.label] || undefined,
-              }));
-          }
-          if ($('#progressChart').length === 0) {
-            console.error('🚨 progressChart 요소가 존재하지 않습니다!');
-            return;
-          }
-          Highcharts.chart('progressChart', {
-            chart: {
-              type: 'pie',
-              custom: {},
-              events: {
-                render() {
-                  const chart = this,
-                    series = chart.series[0];
-
-                  // 가장 큰 감정 비율을 찾기
-                  let maxPoint = series.data.reduce(
-                    (prev, curr) => (curr.y > prev.y ? curr : prev),
-                    series.data[0]
-                  );
-
-                  // 중앙에 표시될 텍스트 설정
-                  let labelText = maxPoint
-                    ? `${maxPoint.name}<br/><strong>${maxPoint.y.toFixed(
-                        0
-                      )}%</strong>`
-                    : '분석할 데이터가<br/><strong>없습니다.</strong>';
-
-                  // 데이터가 없을 때 div에 '데이터가 없습니다' 띄우는 코드
-                  if (!maxPoint) {
-                    Highcharts.charts.forEach((chart) => {
-                      if (chart && chart.renderTo.id === 'progressChart') {
-                        chart.destroy();
-                      }
-                    });
-
-                    chartContainer.innerHTML = `<div id="progressChart" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
-                                    <strong style="font-size: 18px; color: #666;">데이터가 없습니다.</strong>
-                                  </div>`;
-
-                    return;
-                  }
-
-                  // 기존 레이블이 있으면 업데이트, 없으면 새로 생성
-                  let customLabel = chart.options.chart.custom.label;
-                  if (!customLabel) {
-                    customLabel = chart.options.chart.custom.label =
-                      chart.renderer
-                        .label(labelText)
-                        .css({
-                          color: '#000',
-                          textAnchor: 'middle',
-                          fontSize: '1.2em',
-                          fontWeight: 'bold',
-                        })
-                        .attr({
-                          align: 'center', // 중앙 정렬
-                        })
-                        .add();
-                  } else {
-                    customLabel.attr({ text: labelText });
-                  }
-
-                  // 📌 **정확한 중앙 위치 계산**
-                  // 가로 중앙
-                  const x = chart.plotLeft + series.center[0];
-                  // 세로 중앙 조정
-                  const y =
-                    chart.plotTop +
-                    series.center[1] -
-                    customLabel.getBBox().height / 4;
-
-                  // 중앙 라벨 위치 적용
-                  customLabel.attr({ x, y });
-
-                  // 폰트 크기 자동 조정
-                  customLabel.css({
-                    fontSize: `${series.center[2] / 10}px`,
-                  });
-                },
-              },
-            },
-            accessibility: { point: { valueSuffix: '%' } },
-            title: { text: '감정 분석 결과' },
-            tooltip: {
-              pointFormat: '{series.name}: <b>{point.percentage:.0f}%</b>',
-            },
-            legend: { enabled: false },
-            plotOptions: {
-              pie: {
-                innerSize: '75%',
-                allowPointSelect: true,
-                cursor: 'pointer',
-                borderRadius: 8,
-                dataLabels: {
-                  enabled: true,
-                  distance: -15,
-                  format: '{point.name}<br/>{point.percentage:.0f}%',
-                  style: { fontSize: '0.9em' },
-                },
-                showInLegend: true,
-              },
-            },
-            series: [
-              {
-                name: '비율',
-                colorByPoint: false,
-                data: data,
-              },
-            ],
-          });
+        // ドキュメント読み込み後、リストの最初の学生を自動選択
+        var $firstStudent = $('.student-item').first();
+        if ($firstStudent.length) {
+          $firstStudent.trigger('click');
         }
+      });
 
-        // 설문조사 결과(Trend 차트) 데이터 불러오기
-        function loadSurveyData(childId) {
-          let calanderNum = 7; // 주간 7, 월간 30, 반년 180 등
-          $.ajax({
-            url: `/children/${childId}/mentalSurveys/${calanderNum}/GetScores`,
-            type: 'POST',
-            success: function (response) {
-              updateLineChart(response);
-            },
-            error: function (xhr, status, error) {
-              console.error('🚨 설문 데이터 로딩 실패:', error);
-            },
-          });
+      // グローバル関数定義開始
+
+      // 年齢計算関数 (plain JavaScript)
+      function calculateAge(birthDate) {
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
         }
+        return age;
+      }
 
-        // Trend 차트 업데이트 (설문조사 결과)
-        function updateLineChart(data) {
-          if (!data || data.length === 0) {
-            console.warn(
-              '⚠ 설문 데이터가 없습니다. Trend Chart를 생성하지 않습니다.'
-            );
+      // 日付を "yyyy-MM-dd" 形式に変換する関数（時間部分を除く） //修正済み
+      function formatDate(date) {
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}T00:00:00`;
+      }
 
-            const chartContainer = document.getElementById('trendChart');
-
-            chartContainer.innerHTML = `<div id="trendChart" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
-                                    <strong style="font-size: 18px; color: #666;">데이터가 없습니다.</strong>
-                                  </div>`;
-
-            return;
-          }
-          let categories = data.map((item) => item.createdAt);
-          let scores = data.map((item) => item.totalLikertScore);
-          Highcharts.chart('trendChart', {
-            title: { text: '설문조사 결과', align: 'left' },
-            yAxis: { title: { text: 'Score' } },
-            xAxis: { categories: categories, title: { text: 'Date' } },
-            series: [{ name: '심리분석 점수', data: scores }],
-          });
+      // 選択した期間（週間、月間、半年）に応じて開始日と終了日を計算し、ドーナツチャートを更新する関数 //修正済み
+      function setDonutDateRange(period) {
+        const now = new Date();
+        let startDate;
+        switch (period) {
+          case 'WEEK':
+            startDate = new Date(now);
+            startDate.setDate(now.getDate() - 7);
+            break;
+          case 'MONTH':
+            startDate = new Date(now);
+            startDate.setMonth(now.getMonth() - 1);
+            break;
+          default:
+            startDate = new Date(now);
+            startDate.setDate(now.getDate() - 7);
+            break;
         }
+        const startStr = formatDate(startDate);
+        const endStr = formatDate(now);
+        // periodType の値をそのまま渡す（例："WEEK", "MONTH"）
+        loadEmotionStatsWithDates(startStr, endStr, period);
+      }
 
-        // 정렬(select) 변경 시 페이지 이동 함수
-        function changeSort(sortOption) {
-          window.location.href = `/dashboard/teacher?sortOption=${sortOption}`;
+      // 現在選択されている子供のIDを返す関数
+      function getSelectedChildId() {
+        return $('.student-item.active').attr('data-child-id');
+      }
+
+      // ドーナツチャートのデータをサーバーから読み込む関数（日時範囲と periodType を渡す）
+      function loadEmotionStatsWithDates(startDate, endDate, periodType) {
+        const childId = getSelectedChildId();
+        if (!childId) {
+          console.warn('選択された子供がいません。');
+          return;
         }
-
-        // DOMContentLoaded 이벤트를 통해 URL 파라미터로부터 현재 정렬 상태 반영 (필요 시)
-        document.addEventListener('DOMContentLoaded', () => {
-          const urlParams = new URLSearchParams(window.location.search);
-          const currentSort = urlParams.get('sortOption');
-          if (currentSort) {
-            document.getElementById('sortOption').value = currentSort;
-          }
+        $.ajax({
+          url: `/${childId}/dashBoardEmotionStats`,
+          type: 'GET',
+          data: { startDate, endDate, periodType },
+          dataType: 'json',
+          success: function (data) {
+            console.log('📊 感情データ:', data);
+            updatePieChart(data.seriesDataList);
+          },
+          error: function () {
+            console.error('🚨 感情データの読み込み失敗');
+          },
         });
-        // 전역 함수들 정의 끝
+      }
 
-        function adjustListHeight() {
-          const rightColumn = document.querySelector('.right-column');
-          const childListContainer = document.querySelector(
-            '.child-list-container'
+      // ドーナツチャート更新関数（感情分析結果）
+      function updatePieChart(data) {
+        console.log('📊 感情チャートデータ:', data);
+        if (!Array.isArray(data) || data.length === 0) {
+          console.warn(
+            '⚠ 感情データがありません。デフォルトデータで初期化します'
+          );
+          data = [
+            { name: '喜び', y: 30 },
+            { name: '悲しみ', y: 20 },
+            { name: '怒り', y: 25 },
+            { name: '驚き', y: 25 },
+          ];
+        } else {
+          const emotionColorMap = {
+            喜び: '#FFD700', // ゴールド（温かみのある印象）
+            悲しみ: '#4169E1', // ロイヤルブルー（深い悲しみ）
+            怒り: '#DC143C', // クリムゾン（強い怒り）
+            恐れ: '#483D8B', // ダークスレートブルー（重い印象）
+            驚き: '#FFEC8B', // 淡いオレンジ（快活な驚き）
+            中立: '#A9A9A9', // ダークグレー（中立的な印象）
+            混乱: '#FF69B4', // ホットピンク（混乱した印象）
+            不安: '#8B0000', // ダークレッド（不安感）
+            退屈: '#2F4F4F', // ダークスレートグレー（重い退屈感）
+            興奮: '#FF1493', // ディープピンク（エネルギーあふれる興奮）
+            恥ずかしさ: '#FFDAB9', // 淡いピーチ（柔らかな恥ずかしさ）
+          };
+
+          data = data
+            .filter((item) => item.label && item.resultScore !== null)
+            .map((item) => ({
+              name: item.label,
+              y: item.resultScore,
+              color: emotionColorMap[item.label] || undefined,
+            }));
+        }
+        if ($('#progressChart').length === 0) {
+          console.error('🚨 progressChart 要素が存在しません！');
+          return;
+        }
+        Highcharts.chart('progressChart', {
+          chart: {
+            type: 'pie',
+            custom: {},
+            events: {
+              render() {
+                const chart = this,
+                  series = chart.series[0];
+
+                // 📌 **正確な中央位置の計算**
+                // 横中央
+                const x = chart.plotLeft + series.center[0];
+                // 縦中央調整
+                const y =
+                  chart.plotTop +
+                  series.center[1] -
+                  chart.options.chart.custom.label.getBBox().height / 4;
+
+                // 中央ラベルの位置を適用
+                let customLabel = chart.options.chart.custom.label;
+                let labelText = series.data.reduce(
+                  (prev, curr) => (curr.y > prev.y ? curr : prev),
+                  series.data[0]
+                );
+                labelText = customLabel
+                  ? `${labelText.name}<br/><strong>${labelText.y.toFixed(
+                      0
+                    )}%</strong>`
+                  : '分析するデータが<br/><strong>ありません。</strong>';
+                if (!customLabel) {
+                  customLabel = chart.options.chart.custom.label =
+                    chart.renderer
+                      .label(labelText)
+                      .css({
+                        color: '#000',
+                        textAnchor: 'middle',
+                        fontSize: '1.2em',
+                        fontWeight: 'bold',
+                      })
+                      .attr({
+                        align: 'center', // 中央揃え
+                      })
+                      .add();
+                } else {
+                  customLabel.attr({ text: labelText });
+                }
+
+                // 中央のラベル位置を再計算して適用
+                customLabel.attr({ x, y });
+
+                // フォントサイズ自動調整
+                customLabel.css({
+                  fontSize: `${series.center[2] / 10}px`,
+                });
+              },
+            },
+          },
+          accessibility: { point: { valueSuffix: '%' } },
+          title: { text: '感情分析結果' },
+          tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.0f}%</b>',
+          },
+          legend: { enabled: false },
+          plotOptions: {
+            pie: {
+              innerSize: '75%',
+              allowPointSelect: true,
+              cursor: 'pointer',
+              borderRadius: 8,
+              dataLabels: {
+                enabled: true,
+                distance: -15,
+                format: '{point.name}<br/>{point.percentage:.0f}%',
+                style: { fontSize: '0.9em' },
+              },
+              showInLegend: true,
+            },
+          },
+          series: [
+            {
+              name: '割合',
+              colorByPoint: false,
+              data: data,
+            },
+          ],
+        });
+      }
+
+      // 調査結果（トレンドチャート）データの読み込み
+      function loadSurveyData(childId) {
+        let calanderNum = 7; // 週間 7, 月間 30, 半年 180 など
+        $.ajax({
+          url: `/children/${childId}/mentalSurveys/${calanderNum}/GetScores`,
+          type: 'POST',
+          success: function (response) {
+            updateLineChart(response);
+          },
+          error: function (xhr, status, error) {
+            console.error('🚨 調査データのロードに失敗:', error);
+          },
+        });
+      }
+
+      // トレンドチャート更新（調査結果）
+      function updateLineChart(data) {
+        if (!data || data.length === 0) {
+          console.warn(
+            '⚠ 調査データがありません。トレンドチャートを生成しません。'
           );
 
-          if (rightColumn && childListContainer) {
-            const rightColumnHeight = rightColumn.offsetHeight;
-            childListContainer.style.maxHeight = `${rightColumnHeight * 0.76}px`;
-          }
+          const chartContainer = document.getElementById('trendChart');
+
+          chartContainer.innerHTML = `<div id="trendChart" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+                                      <strong style="font-size: 18px; color: #666;">データがありません。</strong>
+                                    </div>`;
+
+          return;
         }
+        let categories = data.map((item) => item.createdAt);
+        let scores = data.map((item) => item.totalLikertScore);
+        Highcharts.chart('trendChart', {
+          title: { text: '調査結果', align: 'left' },
+          yAxis: { title: { text: 'Score' } },
+          xAxis: { categories: categories, title: { text: 'Date' } },
+          series: [{ name: '心理分析スコア', data: scores }],
+        });
+      }
 
-        document.addEventListener('DOMContentLoaded', adjustListHeight);
-        window.addEventListener('resize', adjustListHeight);
+      // 並び替え（select）変更時のページ移動関数
+      function changeSort(sortOption) {
+        window.location.href = `/dashboard/teacher?sortOption=${sortOption}`;
+      }
+
+      // DOMContentLoaded イベントを通じてURLパラメータから現在の並び替え状態を反映（必要に応じて）
+      document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSort = urlParams.get('sortOption');
+        if (currentSort) {
+          document.getElementById('sortOption').value = currentSort;
+        }
+      });
+      // グローバル関数定義終了
+
+      function adjustListHeight() {
+        const rightColumn = document.querySelector('.right-column');
+        const childListContainer = document.querySelector(
+          '.child-list-container'
+        );
+
+        if (rightColumn && childListContainer) {
+          const rightColumnHeight = rightColumn.offsetHeight;
+          childListContainer.style.maxHeight = `${rightColumnHeight * 0.76}px`;
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', adjustListHeight);
+      window.addEventListener('resize', adjustListHeight);
     </script>
-</head>
+  </head>
 
-<body>
-<!-- 네비게이션 바 -->
-<nav class="navbar">
-    <div class="navbar-brand">
+  <body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar">
+      <div class="navbar-brand">
         <a class="navbar-item" th:href="@{/dashboard}">
-            <!-- 로고 이미지 -->
-            <img
-                    alt="iLog 로고"
-                    id="logo"
-                    src="../../static/images/wilog.png"
-                    th:src="@{/images/wilog.png}"
-            />
+          <!-- ロゴ画像 -->
+          <img
+            alt="iLog ロゴ"
+            id="logo"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+          />
         </a>
-    </div>
-
-    <!-- 우측 네비게이션 -->
-    <div class="navbar-end">
+      </div>
+  
+      <!-- 右側ナビゲーション -->
+      <div class="navbar-end">
         <div class="navbar-item">
-            <div class="buttons">
-                <!-- 이용안내 페이지 이동 버튼 -->
-                <a class="button is-light" th:href="@{/guides}">이용안내</a>
-                <!-- 고객센터 페이지 이동 버튼 -->
-                <a class="button is-light" th:href="@{/claims}">고객 센터</a>
-                <!-- 로그아웃 버튼 -->
-                <a class="button is-light" th:href="@{/auth/logout}">로그아웃</a>
-                <!-- 사용자 정보 표시 및 프로필 페이지 이동 버튼 -->
-                <a class="button is-light" th:href="@{/members/myDetails}">
-                    <span class="icon"><i class="fas fa-user"></i></span>
-                    <span
-                            th:text="${userName} + ' (' + (${relationType} ?: '미지정') + ')'"
-                    ></span>
-                </a>
-            </div>
+          <div class="buttons">
+            <!-- 利用案内ページ移動ボタン -->
+            <a class="button is-light" th:href="@{/guides}">利用案内</a>
+            <!-- 顧客センターページ移動ボタン -->
+            <a class="button is-light" th:href="@{/claims}">顧客センター</a>
+            <!-- ログアウトボタン -->
+            <a class="button is-light" th:href="@{/auth/logout}">ログアウト</a>
+            <!-- ユーザー情報表示およびプロファイルページ移動ボタン -->
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="${userName} + ' (' + (${relationType} ?: '未指定') + ')'"></span>
+            </a>
+          </div>
         </div>
-    </div>
-</nav>
-
-<!-- 본문 섹션 -->
-<section class="section">
-    <div class="container is-fluid">
+      </div>
+    </nav>
+  
+    <!-- 本文セクション -->
+    <section class="section">
+      <div class="container is-fluid">
         <div class="columns">
-            <!-- 왼쪽 컬럼 (아동 리스트) -->
-            <div class="column is-3 left-column">
-                <!-- 연도 선택 드롭다운 -->
-                <!--                    <div class="field">-->
-                <!--                        <div class="control">-->
-                <!--                            <select id="yearSelector">-->
-                <!--                                <option value="">연도 선택</option>-->
-                <!--                                <option th:each="year : ${years}" th:text="${year} + '년'" th:value="${year}"></option>-->
-                <!--                            </select>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
-
-                <!-- 정렬 옵션 선택 -->
-                <div class="field has-text-left">
-                    <div class="select is-small">
-                        <select id="sortOption" onchange="changeSort(this.value)">
-                            <option
-                                    th:selected="${currentSort.name() == 'NAME'}"
-                                    value="NAME"
-                            >
-                                이름순
-                            </option>
-                            <option
-                                    th:selected="${currentSort.name() == 'BIRTH_DATE'}"
-                                    value="BIRTH_DATE"
-                            >
-                                생년월일순
-                            </option>
-                            <option
-                                    th:selected="${currentSort.name() == 'REGISTER_DATE'}"
-                                    value="REGISTER_DATE"
-                            >
-                                아동등록순
-                            </option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- 총 아동 수 표시 -->
-                <div style="display: flex; justify-content: flex-end; width: 100%">
-                    <p class="subtitle is-size-6 mb-2">
-                        총 <strong th:text="${#lists.size(childId)}">0</strong>명
-                    </p>
-                </div>
-
-                <!-- 아동 리스트 테이블 -->
-                <div class="child-list-container">
-                    <table class="table is-fullwidth is-striped is-hoverable">
-                        <thead>
-                        <tr>
-                            <th>이름</th>
-                            <th>생년월일</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr
-                                class="student-item"
-                                th:data-child-id="${child.id}"
-                                th:each="child : ${childId}"
-                        >
-                            <td th:text="${child.name}">이름</td>
-                            <td
-                                    th:text="${#temporals.format(child.birthDate, 'yyyy-MM-dd')}"
-                            >
-                                생년월일
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 아이 권한 요청 관리 페이지 이동 버튼 -->
-                <div style="text-align: center; margin-top: 1rem">
-                    <a
-                            class="button is-light"
-                            style="
+          <!-- 左カラム (児童リスト) -->
+          <div class="column is-3 left-column">
+            <!-- 年度選択ドロップダウン -->
+            <!--                    <div class="field">-->
+            <!--                        <div class="control">-->
+            <!--                            <select id="yearSelector">-->
+            <!--                                <option value="">年度選択</option>-->
+            <!--                                <option th:each="year : ${years}" th:text="${year} + '年'" th:value="${year}"></option>-->
+            <!--                            </select>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+  
+            <!-- 並び替えオプション選択 -->
+            <div class="field has-text-left">
+              <div class="select is-small">
+                <select id="sortOption" onchange="changeSort(this.value)">
+                  <option th:selected="${currentSort.name() == 'NAME'}" value="NAME">
+                    名前順
+                  </option>
+                  <option th:selected="${currentSort.name() == 'BIRTH_DATE'}" value="BIRTH_DATE">
+                    生年月日順
+                  </option>
+                  <option th:selected="${currentSort.name() == 'REGISTER_DATE'}" value="REGISTER_DATE">
+                    児童登録順
+                  </option>
+                </select>
+              </div>
+            </div>
+  
+            <!-- 総児童数表示 -->
+            <div style="display: flex; justify-content: flex-end; width: 100%">
+              <p class="subtitle is-size-6 mb-2">
+                合計 <strong th:text="${#lists.size(childId)}">0</strong>名
+              </p>
+            </div>
+  
+            <!-- 児童リストテーブル -->
+            <div class="child-list-container">
+              <table class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                  <tr>
+                    <th>名前</th>
+                    <th>生年月日</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="student-item"
+                    th:data-child-id="${child.id}"
+                    th:each="child : ${childId}"
+                  >
+                    <td th:text="${child.name}">名前</td>
+                    <td
+                      th:text="${#temporals.format(child.birthDate, 'yyyy-MM-dd')}"
+                    >
+                      生年月日
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+  
+            <!-- 子供の権限要求管理ページ移動ボタン -->
+            <div style="text-align: center; margin-top: 1rem">
+              <a
+                class="button is-light"
+                style="
                   background-color: #fdf5bf !important;
                   color: black !important;
                   border-color: #e6d57a !important;
                 "
-                            th:href="@{/auth/permissionTeacher}"
-                    >아이 권한 요청 관리</a
-                    >
-                </div>
+                th:href="@{/auth/permissionTeacher}"
+              >
+                子供の権限要求管理
+              </a>
             </div>
-
-            <!-- 오른쪽 컬럼 (아동 상세 정보) -->
-            <div class="column right-column">
-                <div class="columns">
-                    <!-- 프로필 카드 -->
-                    <div class="column is-4">
-                        <div class="card">
-                            <!-- 아동 프로필 사진 -->
-                            <div class="card-content has-text-centered">
-                                <figure
-                                        class="image is-inline-block mb-2"
-                                        style="width: 160px; height: 160px"
-                                >
-                                    <img
-                                            alt="프로필 이미지"
-                                            class="profile-image is-rounded"
-                                            id="profileImage"
-                                            th:src="@{/images/default-profile.png}"
-                                    />
-                                </figure>
-                            </div>
-
-                            <!-- 아동 기본 정보 -->
-                            <div class="content has-text-centered is-medium">
-                                <p
-                                        class="mb-1"
-                                        style="font-size: 1.25rem; font-weight: bold"
-                                >
-                                    <strong>이름/성별 :</strong>
-                                    <span
-                                            class="profile-name"
-                                            id="studentName"
-                                            style="font-weight: normal"
-                                    >-</span
-                                    >
-                                    /
-                                    <span
-                                            class="profile-gender"
-                                            id="studentGender"
-                                            style="font-weight: normal"
-                                    >-</span
-                                    >
-                                </p>
-                                <p class="mb-3" style="font-size: 1.15rem">
-                                    <strong>생년월일 :</strong>
-                                    <span
-                                            class="profile-birthDate"
-                                            id="studentBirthDate"
-                                            style="font-weight: normal"
-                                    >-</span
-                                    >
-                                    <span id="studentAge" style="font-weight: normal">-</span>
-                                </p>
-                                <!-- 레이아웃 용 추가 여백 -->
-                                <div style="height: 15px"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 가정환경 및 특이사항 카드 -->
-                    <div class="column is-4">
-                        <div
-                                class="card"
-                                style="
+          </div>
+  
+          <!-- 右カラム (児童詳細情報) -->
+          <div class="column right-column">
+            <div class="columns">
+              <!-- プロファイルカード -->
+              <div class="column is-4">
+                <div class="card">
+                  <!-- 児童プロファイル画像 -->
+                  <div class="card-content has-text-centered">
+                    <figure
+                      class="image is-inline-block mb-2"
+                      style="width: 160px; height: 160px"
+                    >
+                      <img
+                        alt="プロフィール画像"
+                        class="profile-image is-rounded"
+                        id="profileImage"
+                        th:src="@{/images/default-profile.png}"
+                      />
+                    </figure>
+                  </div>
+  
+                  <!-- 児童基本情報 -->
+                  <div class="content has-text-centered is-medium">
+                    <p
+                      class="mb-1"
+                      style="font-size: 1.25rem; font-weight: bold"
+                    >
+                      <strong>名前/性別 :</strong>
+                      <span
+                        class="profile-name"
+                        id="studentName"
+                        style="font-weight: normal"
+                        >-</span
+                      >
+                      /
+                      <span
+                        class="profile-gender"
+                        id="studentGender"
+                        style="font-weight: normal"
+                        >-</span
+                      >
+                    </p>
+                    <p class="mb-3" style="font-size: 1.15rem">
+                      <strong>生年月日 :</strong>
+                      <span
+                        class="profile-birthDate"
+                        id="studentBirthDate"
+                        style="font-weight: normal"
+                        >-</span
+                      >
+                      <span id="studentAge" style="font-weight: normal">-</span>
+                    </p>
+                    <!-- レイアウト用追加余白 -->
+                    <div style="height: 15px"></div>
+                  </div>
+                </div>
+              </div>
+  
+              <!-- 家庭環境および特記事項カード -->
+              <div class="column is-4">
+                <div
+                  class="card"
+                  style="
                     height: 310px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                   "
-                        >
-                            <div class="card-content has-text-centered">
-                                <!-- 가정환경 -->
-                                <div class="content has-text-centered is-medium">
-                                    <p
-                                            class="mb-1"
-                                            style="font-size: 1.25rem; font-weight: bold"
-                                    >
-                                        <strong>가정환경</strong>
-                                    </p>
-                                    <p
-                                            class="profile-familyBackGrounds"
-                                            id="studentFamilyBackground"
-                                            style="
+                >
+                  <div class="card-content has-text-centered">
+                    <!-- 家庭環境 -->
+                    <div class="content has-text-centered is-medium">
+                      <p
+                        class="mb-1"
+                        style="font-size: 1.25rem; font-weight: bold"
+                      >
+                        <strong>家庭環境</strong>
+                      </p>
+                      <p
+                        class="profile-familyBackGrounds"
+                        id="studentFamilyBackground"
+                        style="
                           font-weight: normal;
                           font-size: 1.1rem;
                           margin-bottom: 1.5rem;
                         "
-                                    >
-                                        -
-                                    </p>
-                                </div>
-                                <!-- 특이사항 -->
-                                <div class="content has-text-centered is-medium">
-                                    <p
-                                            class="mb-1"
-                                            style="font-size: 1.25rem; font-weight: bold"
-                                    >
-                                        <strong>특이사항</strong>
-                                    </p>
-                                    <p
-                                            class="profile-note"
-                                            id="studentNote"
-                                            style="font-weight: normal; font-size: 1.1rem"
-                                    >
-                                        -
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                      >
+                        -
+                      </p>
                     </div>
-
-                    <!-- 바로가기 버튼들 -->
-                    <div class="column">
-                        <div class="columns is-multiline">
-                            <div class="column is-12">
-                                <button
-                                        class="button is-fullwidth is-info is-light"
-                                        id="surveyButton"
-                                        onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/responses/stats'"
-                                >
-                                    최근 설문 결과 보기
-                                </button>
-                            </div>
-                            <div class="column is-12">
-                                <button
-                                        class="button is-fullwidth is-success is-light"
-                                        onclick="location.href='/children/' + getSelectedChildId() + '/analysis/resultList'"
-                                >
-                                    최근 분석 결과 보기
-                                </button>
-                            </div>
-                            <div class="column is-12">
-                                <button
-                                        class="button is-fullwidth is-warning is-light"
-                                        onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/selects'"
-                                >
-                                    체크리스트 작성하기
-                                </button>
-                            </div>
-                            <div class="column is-12">
-                                <button
-                                        class="button is-fullwidth is-danger is-light"
-                                        onclick="location.href='/children/' + getSelectedChildId() + '/analysis/new'"
-                                >
-                                    감정 분석하기
-                                </button>
-                            </div>
-                        </div>
+                    <!-- 特記事項 -->
+                    <div class="content has-text-centered is-medium">
+                      <p
+                        class="mb-1"
+                        style="font-size: 1.25rem; font-weight: bold"
+                      >
+                        <strong>特記事項</strong>
+                      </p>
+                      <p
+                        class="profile-note"
+                        id="studentNote"
+                        style="font-weight: normal; font-size: 1.1rem"
+                      >
+                        -
+                      </p>
                     </div>
+                  </div>
                 </div>
-
-                <div class="columns">
-                    <!-- 설문조사 점수 통계 그래프 -->
-                    <div class="column is-8">
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="stats-container" id="trendChart"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 설문조사 결과 감정 그래프 -->
-                    <div class="column is-4">
-                        <div class="card">
-                            <div
-                                    class="card-content"
-                                    style="
+              </div>
+  
+              <!-- ショートカットボタン -->
+              <div class="column">
+                <div class="columns is-multiline">
+                  <div class="column is-12">
+                    <button
+                      class="button is-fullwidth is-info is-light"
+                      id="surveyButton"
+                      onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/responses/stats'"
+                    >
+                      最近のアンケート結果を見る
+                    </button>
+                  </div>
+                  <div class="column is-12">
+                    <button
+                      class="button is-fullwidth is-success is-light"
+                      onclick="location.href='/children/' + getSelectedChildId() + '/analysis/resultList'"
+                    >
+                      最近の分析結果を見る
+                    </button>
+                  </div>
+                  <div class="column is-12">
+                    <button
+                      class="button is-fullwidth is-warning is-light"
+                      onclick="location.href='/children/' + getSelectedChildId() + '/mentalSurveys/selects'"
+                    >
+                      チェックリストを作成する
+                    </button>
+                  </div>
+                  <div class="column is-12">
+                    <button
+                      class="button is-fullwidth is-danger is-light"
+                      onclick="location.href='/children/' + getSelectedChildId() + '/analysis/new'"
+                    >
+                      感情分析を行う
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="columns">
+              <!-- アンケート得点統計グラフ -->
+              <div class="column is-8">
+                <div class="card">
+                  <div class="card-content">
+                    <div class="stats-container" id="trendChart"></div>
+                  </div>
+                </div>
+              </div>
+  
+              <!-- アンケート結果感情グラフ -->
+              <div class="column is-4">
+                <div class="card">
+                  <div
+                    class="card-content"
+                    style="
                       display: flex;
                       flex-direction: column;
                       justify-content: space-between;
                       height: 100%;
                     "
-                            >
-                                <div class="donut-date-range-buttons has-text-centered">
-                                    <button
-                                            class="button is-link"
-                                            data-period="WEEK"
-                                            onclick="setDonutDateRange('WEEK')"
-                                    >
-                                        주간
-                                    </button>
-                                    <button
-                                            class="button is-link"
-                                            data-period="MONTH"
-                                            onclick="setDonutDateRange('MONTH')"
-                                    >
-                                        월간
-                                    </button>
-                                </div>
-                                <div
-                                        class="stats-container"
-                                        id="progressChart"
-                                        style="height: 270px; width: 100%"
-                                ></div>
-                            </div>
-                        </div>
+                  >
+                    <div class="donut-date-range-buttons has-text-centered">
+                      <button
+                        class="button is-link"
+                        data-period="WEEK"
+                        onclick="setDonutDateRange('WEEK')"
+                      >
+                        週間
+                      </button>
+                      <button
+                        class="button is-link"
+                        data-period="MONTH"
+                        onclick="setDonutDateRange('MONTH')"
+                      >
+                        月間
+                      </button>
                     </div>
+                    <div
+                      class="stats-container"
+                      id="progressChart"
+                      style="height: 270px; width: 100%"
+                    ></div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</section>
-<!-- 공통 footer -->
-<div th:replace="fragments/footer :: ilogFooter"></div>
-</body>
+      </section>
+      <!-- 共通フッター -->
+      <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>

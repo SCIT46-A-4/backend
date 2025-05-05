@@ -147,338 +147,333 @@
         }
     </style>
 
-    <script>
-        $(document).ready(function () {
-          // FilePond 플러그인 등록
-          FilePond.registerPlugin(
-            FilePondPluginFileEncode,
-            FilePondPluginImagePreview,
-            FilePondPluginFileValidateType,
-            FilePondPluginImageExifOrientation,
-            FilePondPluginImageResize,
-            FilePondPluginImageTransform
-          );
+<script>
+  $(document).ready(function () {
+    // FilePond プラグイン登録
+    FilePond.registerPlugin(
+      FilePondPluginFileEncode,
+      FilePondPluginImagePreview,
+      FilePondPluginFileValidateType,
+      FilePondPluginImageExifOrientation,
+      FilePondPluginImageResize,
+      FilePondPluginImageTransform
+    );
 
-          // FilePond 초기화
-          const inputElement = document.querySelector('input[type="file"].filepond');
-          const pond = FilePond.create(inputElement, {
-            labelIdle: '파일을 끌어다 놓거나 찾아보기',
-            imagePreviewHeight: 170,
-            imageCropAspectRatio: '1:1',
-            imageResizeTargetWidth: 800,
-            imageResizeTargetHeight: 800,
-            imageResizeMode: 'contain',
-            imageResizeUpscale: false,
-            maxFileSize: '5MB',
-            imageTransformOutputQuality: 70,
-            imageTransformOutputMimeType: 'image/jpeg',
-            stylePanelLayout: 'compact circle',
-            styleLoadIndicatorPosition: 'center bottom',
-            styleProgressIndicatorPosition: 'right bottom',
-            styleButtonRemoveItemPosition: 'left bottom',
-            styleButtonProcessItemPosition: 'right bottom',
-            acceptedFileTypes: ['image/*'],
-            allowRevert: true,
-            instantUpload: false,
-            allowMultiple: false,
-            allowImagePreview: true,
-            imagePreviewMinHeight: 170,
-            imagePreviewMaxHeight: 170,
-            server: {
-              load: async (source, load, error, progress, abort, headers) => {
-                try {
-                  const response = await fetch(source, {
-                    credentials: 'same-origin'
-                  });
-                  if (!response.ok) throw new Error('이미지 로드 실패');
-                  const blob = await response.blob();
-                  load(blob);
-                } catch (e) {
-                  error('이미지 로드 실패');
-                  console.error('이미지 로드 에러:', e);
-                }
-              },
-              process: (fieldName, file, metadata, load, error, progress, abort) => {
-                // 파일 처리 시뮬레이션
-                const reader = new FileReader();
-                reader.onload = () => {
-                  load(reader.result);
-                };
-                reader.onerror = () => {
-                  error('파일 처리 실패');
-                };
-                reader.readAsDataURL(file);
-              }
-            }
+    // FilePond 初期化
+    const inputElement = document.querySelector('input[type="file"].filepond');
+    const pond = FilePond.create(inputElement, {
+      labelIdle: 'ファイルをドラッグまたは参照してください',
+      imagePreviewHeight: 170,
+      imageCropAspectRatio: '1:1',
+      imageResizeTargetWidth: 800,
+      imageResizeTargetHeight: 800,
+      imageResizeMode: 'contain',
+      imageResizeUpscale: false,
+      maxFileSize: '5MB',
+      imageTransformOutputQuality: 70,
+      imageTransformOutputMimeType: 'image/jpeg',
+      stylePanelLayout: 'compact circle',
+      styleLoadIndicatorPosition: 'center bottom',
+      styleProgressIndicatorPosition: 'right bottom',
+      styleButtonRemoveItemPosition: 'left bottom',
+      styleButtonProcessItemPosition: 'right bottom',
+      acceptedFileTypes: ['image/*'],
+      allowRevert: true,
+      instantUpload: false,
+      allowMultiple: false,
+      allowImagePreview: true,
+      imagePreviewMinHeight: 170,
+      imagePreviewMaxHeight: 170,
+      server: {
+        load: async (source, load, error, progress, abort, headers) => {
+          try {
+            const response = await fetch(source, {
+              credentials: 'same-origin'
+            });
+            if (!response.ok) throw new Error('画像の読み込みに失敗しました。');
+            const blob = await response.blob();
+            load(blob);
+          } catch (e) {
+            error('画像の読み込みに失敗しました。');
+            console.error('画像読み込みエラー:', e);
+          }
+        },
+        process: (fieldName, file, metadata, load, error, progress, abort) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            load(reader.result);
+          };
+          reader.onerror = () => {
+            error('ファイル処理に失敗しました。');
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    });
+
+    // 既存画像の読み込み
+    const profileImgUrl = "[[${childBasicInfo.profileImgSrcUri}]]";
+    let hasInitialImage = false;
+    let originalFileName = '';
+
+    if (profileImgUrl && !profileImgUrl.endsWith('default-profile.png')) {
+      hasInitialImage = true;
+      const absoluteUrl = profileImgUrl.startsWith('http') ?
+        profileImgUrl :
+        window.location.origin + profileImgUrl;
+
+      originalFileName = profileImgUrl.split('/').pop();
+
+      fetch(absoluteUrl)
+        .then(response => response.blob())
+        .then(blob => {
+          const file = new File([blob], originalFileName, { type: 'image/jpeg' });
+          pond.addFile(file);
+        })
+        .catch(error => {
+          console.error('既存画像の読み込みに失敗しました:', error);
+        });
+    }
+
+    pond.on('addfile', (error, file) => {
+      if (error) {
+        console.error('ファイル追加エラー:', error);
+        return;
+      }
+    });
+
+    pond.on('removefile', (error, file) => {
+    });
+
+    // フォームバリデーションと送信処理
+    const validation = new JustValidate('#registration-form', {
+      errorLabelStyle: {
+        color: '#f14668',
+      }
+    });
+
+    validation
+      .addField('#full-name', [{
+        rule: 'required',
+        errorMessage: '名前を入力してください。'
+      }])
+      .addField('#birth-date', [{
+        rule: 'required',
+        errorMessage: '生年月日を入力してください。'
+      }])
+      .addRequiredGroup(
+        '#gender',
+        '性別を選択してください。'
+      )
+      .addRequiredGroup(
+        '#family-environment',
+        '家庭環境を少なくとも1つ選択してください。'
+      )
+      .addField('#relationship', [{
+        rule: 'required',
+        errorMessage: 'お子様との関係を入力してください。'
+      }])
+      .onSuccess((event) => {
+        event.preventDefault();
+        const form = document.getElementById('registration-form');
+        const formData = new FormData();
+
+        try {
+          formData.append('name', document.getElementById('full-name').value);
+          formData.append('gender', document.querySelector('input[name="gender"]:checked').value);
+          formData.append('callName', document.getElementById('relationship').value);
+          formData.append('birthLocation', document.getElementById('location').value || '');
+          formData.append('note', document.getElementById('special-notes').value || '');
+
+          const selectedFamilyBackgrounds = Array.from(document.querySelectorAll('input[name="familyBackGrounds"]:checked'))
+            .map(checkbox => checkbox.value);
+          selectedFamilyBackgrounds.forEach(value => {
+            formData.append('familyBackGrounds', value);
           });
 
-          // 기존 이미지 로드
-          const profileImgUrl = "[[${childBasicInfo.profileImgSrcUri}]]";
-          let hasInitialImage = false;
-          let originalFileName = '';
-
-          if (profileImgUrl && !profileImgUrl.endsWith('default-profile.png')) {
-            hasInitialImage = true;
-            const absoluteUrl = profileImgUrl.startsWith('http') ?
-              profileImgUrl :
-              window.location.origin + profileImgUrl;
-
-            // 원본 파일 이름 추출
-            originalFileName = profileImgUrl.split('/').pop();
-
-            // 이미지를 Blob으로 변환하여 FilePond에 추가
-            fetch(absoluteUrl)
-              .then(response => response.blob())
-              .then(blob => {
-                const file = new File([blob], originalFileName, { type: 'image/jpeg' });
-                pond.addFile(file);
-              })
-              .catch(error => {
-                console.error('기존 이미지 로드 실패:', error);
-              });
+          const birthDateInput = document.getElementById('birth-date').value;
+          if (birthDateInput) {
+            formData.append('birthDate', birthDateInput);
           }
 
-          // 이미지 로드 상태 모니터링
-          pond.on('addfile', (error, file) => {
-            if (error) {
-              console.error('파일 추가 에러:', error);
-              return;
+          const pondFiles = pond.getFiles();
+          if (pondFiles.length > 0) {
+            const file = pondFiles[0].file;
+            if (file instanceof File) {
+              formData.append('profileImg', file);
+            }
+          } else if (hasInitialImage && pond.status === FilePond.Status.EMPTY) {
+            const emptyFile = new File([], 'empty.txt', { type: 'text/plain' });
+            formData.append('profileImg', emptyFile);
+          }
+
+          $.ajax({
+            url: form.action,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+              if (res) window.location.href = form.action.replace('/edit', '');
+              console.log('成功:', res);
+            },
+            error: function (xhr, status, error) {
+              Swal.fire('エラー:', error);
             }
           });
+        } catch (error) {
+          console.error('詳細エラー情報:', error);
+          let errorMessage = '修正中にエラーが発生しました。';
 
-          pond.on('removefile', (error, file) => {
-          });
+          try {
+            const errorResponse = JSON.parse(error.responseText);
+            errorMessage = errorResponse.message || errorMessage;
+          } catch (e) {
+            console.error('エラーメッセージの解析に失敗しました:', e);
+          }
 
-          // 폼 제출 처리
-          const validation = new JustValidate('#registration-form', {
-            errorLabelStyle: {
-              color: '#f14668',
-            }
-          });
-
-          validation
-            .addField('#full-name', [{
-              rule: 'required',
-              errorMessage: '이름을 입력해주세요.'
-            }])
-            .addField('#birth-date', [{
-              rule: 'required',
-              errorMessage: '생년월일을 입력해주세요.'
-            }])
-            .addRequiredGroup(
-              '#gender',
-              '성별을 선택해주세요.'
-            )
-            .addRequiredGroup(
-              '#family-environment',
-              '가정환경을 최소 한 개 이상 선택해주세요.'
-            )
-            .addField('#relationship', [{
-              rule: 'required',
-              errorMessage: '아동과의 관계를 입력해주세요.'
-            }])
-            .onSuccess((event) => {
-              event.preventDefault();
-              const form = document.getElementById('registration-form');
-              const formData = new FormData();
-
-              try {
-                // 기본 정보 추가
-                formData.append('name', document.getElementById('full-name').value);
-                formData.append('gender', document.querySelector('input[name="gender"]:checked').value);
-                formData.append('callName', document.getElementById('relationship').value);
-                formData.append('birthLocation', document.getElementById('location').value || '');
-                formData.append('note', document.getElementById('special-notes').value || '');
-
-                // 가정환경 정보 추가
-                const selectedFamilyBackgrounds = Array.from(document.querySelectorAll('input[name="familyBackGrounds"]:checked'))
-                  .map(checkbox => checkbox.value);
-                selectedFamilyBackgrounds.forEach(value => {
-                  formData.append('familyBackGrounds', value);
-                });
-
-                // 날짜 처리
-                const birthDateInput = document.getElementById('birth-date').value;
-                if (birthDateInput) {
-                  formData.append('birthDate', birthDateInput);
-                }
-
-                // FilePond 파일 처리
-                const pondFiles = pond.getFiles();
-                if (pondFiles.length > 0) {
-                  const file = pondFiles[0].file;
-                  if (file instanceof File) {
-                    formData.append('profileImg', file);
-                  }
-                } else if (hasInitialImage && pond.status === FilePond.Status.EMPTY) {
-                  // 이미지가 삭제된 경우에만 빈 파일 추가
-                  const emptyFile = new File([], 'empty.txt', { type: 'text/plain' });
-                  formData.append('profileImg', emptyFile);
-                }
-
-                // AJAX로 폼 제출
-                $.ajax({
-                  url: form.action,
-                  type: 'POST',
-                  data: formData,
-                  processData: false,
-                  contentType: false,
-                  success: function (res) {
-                    if (res) window.location.href = form.action.replace('/edit', '');
-                    console.log('성공:', res);
-                  },
-                  error: function (xhr, status, error) {
-                    Swal.fire('에러:', error);
-                  }
-                });
-              } catch (error) {
-                console.error('에러 상세 정보:', error);
-                let errorMessage = '수정 중 오류가 발생했습니다.';
-
-                try {
-                  const errorResponse = JSON.parse(error.responseText);
-                  errorMessage = errorResponse.message || errorMessage;
-                } catch (e) {
-                  console.error('에러 메시지 파싱 실패:', e);
-                }
-
-                Swal.fire(errorMessage);
-              }
-            });
-        });
-    </script>
+          Swal.fire(errorMessage);
+        }
+      });
+  });
+</script>
 </head>
 
 <!-- 2025-02-28 / 김은진 / 아동 정보 수정 페이지 수정 -->
 
 <body>
-<section class="section">
-
-    <!-- 로고 + dashboard 바로가기 -->
+  <section class="section">
+  
+    <!-- ロゴ + ダッシュボード -->
     <div class="logo">
-        <a th:href="@{/dashboard}">
-            <img alt="로고" class="image" src="../../static/images/wilog.png" style="width: 100px; height: auto;"
-                 th:src="@{/images/wilog.png}">
-        </a>
+      <a th:href="@{/dashboard}">
+        <img alt="ロゴ" class="image" src="../../static/images/wilog.png" style="width: 100px; height: auto;"
+             th:src="@{/images/wilog.png}">
+      </a>
     </div>
-    <!-- 페이지 이름 / 아동 정보 수정 페이지 -->
-    <h2 class="title has-text-centered mb-4">아동 정보 수정 페이지</h2>
-
-    <!-- 수정폼 -->
+  
+    <!-- ページタイトル -->
+    <h2 class="title has-text-centered mb-4">お子様情報の修正ページ</h2>
+  
+    <!-- 修正フォーム -->
     <div class="container regist-container">
-        <div class="columns is-variable is-5 is-fullheight mt-4">
-            <!-- 왼쪽 이미지 폼 -->
-            <div class="column is-half left-half">
-                <figure>
-                    <img alt="랜덤 이미지" id="randomImage" src="../../static/images/basicInfo1.png"
-                         th:src="@{/images/basicInfo1.png}">
-                </figure>
-            </div>
-
-            <!-- 오른쪽 수정 폼 -->
-            <div class="column is-half right-half">
-                <form enctype="multipart/form-data" id="registration-form"
-                      method="post"
-                      th:action="@{|/children/${childBasicInfo.id}/basicInfo/edit|}">
-                    <input id="child-id" th:value="${childBasicInfo.id}" type="hidden">
-
-                    <!-- 아이 사진 수정창 -->
-                    <div class="field">
-                        <label class="label">아이 사진 수정</label>
-                        <div class="file is-large has-name is-boxed">
-                            <label class="file-label" id="file-label">
-                                <input accept="image/*" class="filepond" id="filepond" name="profileImg" type="file">
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- 이름(실명) 입력창 -->
-                    <div class="field">
-                        <label class="label">이름</label>
-                        <input class="input" id="full-name" name="name" th:value="${childBasicInfo.name}" type="text">
-                    </div>
-
-                    <!-- 성별 입력창 -->
-                    <div class="field">
-                        <label class="label">성별</label>
-                        <div class="control" id="gender">
-                            <label class="checkbox">
-                                <input name="gender" th:checked="${childBasicInfo.gender == T(com.scit.iLog.domain.child.Gender).WOMAN}" type="radio"
-                                       value="WOMAN">
-                                여자
-                            </label>
-                            <label class="checkbox">
-                                <input name="gender" th:checked="${childBasicInfo.gender == T(com.scit.iLog.domain.child.Gender).MAN}" type="radio"
-                                       value="MAN">
-                                남자
-                            </label>
-                        </div>
-                        <p class="help is-danger" id="gender-error" style="display: none;">성별을 선택해주세요.</p>
-                    </div>
-
-                    <!-- 생년월일 입력창 -->
-                    <div class="field">
-                        <label class="label">생년월일</label>
-                        <input class="input" id="birth-date" name="birthDate" th:value="${childBasicInfo.birthDate != null ? #temporals.format(childBasicInfo.birthDate.toLocalDate(), 'yyyy-MM-dd') : ''}"
-                               type="date">
-                    </div>
-
-                    <!-- 출생지 입력창 -->
-                    <div class="field mb-4">
-                        <label class="label">출생지</label>
-                        <input class="input" id="location" name="birthLocation" th:value="${childBasicInfo.birthLocation}"
-                               type="text">
-                    </div>
-
-                    <!-- 가정환경 선택창 -->
-                    <label class="label">가정환경(다중 선택)</label>
-                    <span style="color:gray; font-size:12px;">
-              자녀의 심리 상태를 더 면밀하게 살펴볼 수 있어요.
-            </span>
-                    <p class="help is-danger" id="family-error" style="display: none;">가정환경을 최소 한 개 이상 선택해주세요.</p>
-                    <div class="buttons are-small" id="family-environment" name="familyBackGrounds">
-                        <th:block th:each="familyType : ${T(com.scit.iLog.domain.child.FamilyBackGround).values()}">
-                            <label class="checkbox">
-                                <input name="familyBackGrounds" th:checked="${childBasicInfo.familyBackGrounds != null &&
-                                #lists.contains(childBasicInfo.familyBackGrounds, familyType)}" th:value="${familyType.name()}"
-                                       type="checkbox">
-                                <span th:text="${familyType.description}"></span>
-                            </label>
-                        </th:block>
-                    </div>
-
-                    <br>
-                    <!-- 특이사항 입력창 -->
-                    <div class="field">
-                        <label class="label">특이사항
-                            <span style="color:gray; font-size:12px;">
-                  자녀의 유전 및 환경 정보를 미리 입력해주시면 분석 결과에 도움이 됩니다.
-                </span>
-                        </label>
-                        <input class="input" id="special-notes" name="note" th:value="${childBasicInfo.note}"
-                               type="text">
-                    </div>
-
-                    <!-- 아동과의 관계 입력창 -->
-                    <div class="field">
-                        <label class="label">아동과의 관계(호칭입력)</label>
-                        <input class="input" id="relationship" name="callName" th:value="${childBasicInfo.callName}"
-                               type="text">
-                    </div>
-
-                    <!-- 수정하기/취소하기 버튼 -->
-                    <div class="field button-container buttons is-centered">
-                        <button class="button is-primary" id="submitBtn" type="submit">수정하기</button>
-                        <button class="button is-light" th:onclick="|window.location.href='/children/${childBasicInfo.id}/basicInfo'|"
-                                type="button">취소하기
-                        </button>
-                    </div>
-
-                </form>
-            </div>
+      <div class="columns is-variable is-5 is-fullheight mt-4">
+        <!-- 左側画像 -->
+        <div class="column is-half left-half">
+          <figure>
+            <img alt="ランダム画像" id="randomImage" src="../../static/images/basicInfo1.png"
+                 th:src="@{/images/basicInfo1.png}">
+          </figure>
         </div>
+  
+        <!-- 右側フォーム -->
+        <div class="column is-half right-half">
+          <form enctype="multipart/form-data" id="registration-form"
+                method="post"
+                th:action="@{|/children/${childBasicInfo.id}/basicInfo/edit|}">
+            <input id="child-id" th:value="${childBasicInfo.id}" type="hidden">
+  
+            <!-- 写真修正 -->
+            <div class="field">
+              <label class="label">お子様の写真を修正</label>
+              <div class="file is-large has-name is-boxed">
+                <label class="file-label" id="file-label">
+                  <input accept="image/*" class="filepond" id="filepond" name="profileImg" type="file">
+                </label>
+              </div>
+            </div>
+  
+            <!-- 名前 -->
+            <div class="field">
+              <label class="label">名前</label>
+              <input class="input" id="full-name" name="name" th:value="${childBasicInfo.name}" type="text">
+            </div>
+  
+            <!-- 性別 -->
+            <div class="field">
+              <label class="label">性別</label>
+              <div class="control" id="gender">
+                <label class="checkbox">
+                  <input name="gender" th:checked="${childBasicInfo.gender == T(com.scit.iLog.domain.child.Gender).WOMAN}" type="radio"
+                         value="WOMAN">
+                  女の子
+                </label>
+                <label class="checkbox">
+                  <input name="gender" th:checked="${childBasicInfo.gender == T(com.scit.iLog.domain.child.Gender).MAN}" type="radio"
+                         value="MAN">
+                  男の子
+                </label>
+              </div>
+              <p class="help is-danger" id="gender-error" style="display: none;">性別を選択してください。</p>
+            </div>
+  
+            <!-- 生年月日 -->
+            <div class="field">
+              <label class="label">生年月日</label>
+              <input class="input" id="birth-date" name="birthDate"
+                     th:value="${childBasicInfo.birthDate != null ? #temporals.format(childBasicInfo.birthDate.toLocalDate(), 'yyyy-MM-dd') : ''}"
+                     type="date">
+            </div>
+  
+            <!-- 出生地 -->
+            <div class="field mb-4">
+              <label class="label">出生地</label>
+              <input class="input" id="location" name="birthLocation" th:value="${childBasicInfo.birthLocation}"
+                     type="text">
+            </div>
+  
+            <!-- 家庭環境 -->
+            <label class="label">家庭環境（複数選択可）</label>
+            <span style="color:gray; font-size:12px;">
+              お子様の心理状態をより詳しく把握できます。
+            </span>
+            <p class="help is-danger" id="family-error" style="display: none;">少なくとも1つの家庭環境を選択してください。</p>
+            <div class="buttons are-small" id="family-environment" name="familyBackGrounds">
+              <th:block th:each="familyType : ${T(com.scit.iLog.domain.child.FamilyBackGround).values()}">
+                <label class="checkbox">
+                  <input name="familyBackGrounds"
+                         th:checked="${childBasicInfo.familyBackGrounds != null &&
+                         #lists.contains(childBasicInfo.familyBackGrounds, familyType)}"
+                         th:value="${familyType.name()}"
+                         type="checkbox">
+                  <span th:text="${familyType.description}"></span>
+                </label>
+              </th:block>
+            </div>
+  
+            <br>
+            <!-- 特記事項 -->
+            <div class="field">
+              <label class="label">特記事項
+                <span style="color:gray; font-size:12px;">
+                  遺伝や環境の情報を事前に入力していただくと、分析結果に役立ちます。
+                </span>
+              </label>
+              <input class="input" id="special-notes" name="note" th:value="${childBasicInfo.note}"
+                     type="text">
+            </div>
+  
+            <!-- 呼称（関係） -->
+            <div class="field">
+              <label class="label">お子様との関係（呼称を入力）</label>
+              <input class="input" id="relationship" name="callName" th:value="${childBasicInfo.callName}"
+                     type="text">
+            </div>
+  
+            <!-- ボタン -->
+            <div class="field button-container buttons is-centered">
+              <button class="button is-primary" id="submitBtn" type="submit">修正する</button>
+              <button class="button is-light"
+                      th:onclick="|window.location.href='/children/${childBasicInfo.id}/basicInfo'|"
+                      type="button">キャンセル
+              </button>
+            </div>
+  
+          </form>
+        </div>
+      </div>
     </div>
-</section>
-<div th:replace="fragments/footer :: ilogFooter"></div>
-</body>
+  </section>
+  <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>

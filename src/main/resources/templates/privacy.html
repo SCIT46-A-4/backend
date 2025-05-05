@@ -1,479 +1,415 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>개인정보처리방침 - iLog</title>
     <link
-            href="../../static/css/bulma.min.css"
-            rel="stylesheet"
-            th:href="@{/css/bulma.min.css}"
+      href="../../static/css/bulma.min.css"
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
     />
     <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-            rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
     />
     <style>
-        :root {
-          --primary-color: #fdf5bf;
-          --secondary-color: #bee6d9;
-          --footer-bg: #f5f5f5;
-          --footer-text: #4a4a4a;
-        }
-        body {
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-        }
-        .navbar {
-          background-color: var(--primary-color);
-        }
-        .content-container {
-          flex-grow: 1;
-          padding: 2rem 1.5rem;
-        }
+      :root {
+        --primary-color: #fdf5bf;
+        --secondary-color: #bee6d9;
+        --footer-bg: #f5f5f5;
+        --footer-text: #4a4a4a;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .navbar {
+        background-color: var(--primary-color);
+      }
+      .content-container {
+        flex-grow: 1;
+        padding: 2rem 1.5rem;
+      }
+      .policy-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .policy-title {
+        color: #333;
+        border-bottom: 2px solid var(--secondary-color);
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+      }
+      .policy-section {
+        margin-bottom: 2rem;
+      }
+      .policy-section h2 {
+        color: #333;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--secondary-color);
+        padding-left: 1rem;
+      }
+      .policy-section h3 {
+        color: #444;
+        font-size: 1.2rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .policy-section p,
+      .policy-section ul {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+      }
+      .policy-section ul {
+        padding-left: 1.5rem;
+      }
+      .policy-section ul li {
+        margin-bottom: 0.5rem;
+      }
+      .policy-section table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+      }
+      .policy-section table th,
+      .policy-section table td {
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+        text-align: left;
+      }
+      .policy-section table th {
+        background-color: #f5f5f5;
+      }
+      .policy-date {
+        text-align: right;
+        margin-top: 2rem;
+        font-style: italic;
+        color: #666;
+      }
+      /* 푸터 스타일 */
+      footer {
+        background-color: var(--footer-bg);
+        color: var(--footer-text);
+        padding: 2rem 1.5rem;
+        border-top: 5px solid var(--secondary-color);
+      }
+      footer .logo-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      footer .footer-logo {
+        height: 40px;
+        margin-right: 1rem;
+      }
+      footer .footer-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #333;
+      }
+      footer .footer-links a {
+        color: var(--footer-text);
+        margin-right: 1.5rem;
+        transition: color 0.3s;
+      }
+      footer .footer-links a:hover {
+        color: #3273dc;
+      }
+      footer .social-icons {
+        font-size: 1.5rem;
+        margin-top: 1rem;
+      }
+      footer .social-icons a {
+        color: var(--footer-text);
+        margin-right: 1rem;
+        transition: color 0.3s;
+      }
+      footer .social-icons a:hover {
+        color: #3273dc;
+      }
+      footer .footer-bottom {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #ddd;
+        font-size: 0.9rem;
+      }
+      footer .contact-info {
+        margin-top: 1rem;
+      }
+      footer .contact-info p {
+        margin-bottom: 0.5rem;
+      }
+      @media screen and (max-width: 768px) {
         .policy-container {
-          max-width: 900px;
-          margin: 0 auto;
-          background-color: white;
-          padding: 2rem;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          padding: 1.5rem;
         }
-        .policy-title {
-          color: #333;
-          border-bottom: 2px solid var(--secondary-color);
-          padding-bottom: 1rem;
-          margin-bottom: 2rem;
+        footer .columns {
+          display: block;
         }
-        .policy-section {
-          margin-bottom: 2rem;
-        }
-        .policy-section h2 {
-          color: #333;
-          font-size: 1.5rem;
-          margin-bottom: 1rem;
-          border-left: 4px solid var(--secondary-color);
-          padding-left: 1rem;
-        }
-        .policy-section h3 {
-          color: #444;
-          font-size: 1.2rem;
-          margin-top: 1.5rem;
-          margin-bottom: 0.75rem;
-        }
-        .policy-section p,
-        .policy-section ul {
-          margin-bottom: 1rem;
-          line-height: 1.6;
-        }
-        .policy-section ul {
-          padding-left: 1.5rem;
-        }
-        .policy-section ul li {
-          margin-bottom: 0.5rem;
-        }
-        .policy-section table {
+        footer .column {
           width: 100%;
-          border-collapse: collapse;
           margin-bottom: 1.5rem;
         }
-        .policy-section table th,
-        .policy-section table td {
-          border: 1px solid #ddd;
-          padding: 0.75rem;
-          text-align: left;
-        }
-        .policy-section table th {
-          background-color: #f5f5f5;
-        }
-        .policy-date {
-          text-align: right;
-          margin-top: 2rem;
-          font-style: italic;
-          color: #666;
-        }
-        /* 푸터 스타일 */
-        footer {
-          background-color: var(--footer-bg);
-          color: var(--footer-text);
-          padding: 2rem 1.5rem;
-          border-top: 5px solid var(--secondary-color);
-        }
-        footer .logo-container {
-          display: flex;
-          align-items: center;
-          margin-bottom: 1rem;
-        }
-        footer .footer-logo {
-          height: 40px;
-          margin-right: 1rem;
-        }
-        footer .footer-title {
-          font-size: 1.2rem;
-          font-weight: bold;
-          color: #333;
-        }
-        footer .footer-links a {
-          color: var(--footer-text);
-          margin-right: 1.5rem;
-          transition: color 0.3s;
-        }
-        footer .footer-links a:hover {
-          color: #3273dc;
-        }
-        footer .social-icons {
-          font-size: 1.5rem;
-          margin-top: 1rem;
-        }
-        footer .social-icons a {
-          color: var(--footer-text);
-          margin-right: 1rem;
-          transition: color 0.3s;
-        }
-        footer .social-icons a:hover {
-          color: #3273dc;
-        }
-        footer .footer-bottom {
-          margin-top: 2rem;
-          padding-top: 1rem;
-          border-top: 1px solid #ddd;
-          font-size: 0.9rem;
-        }
-        footer .contact-info {
-          margin-top: 1rem;
-        }
-        footer .contact-info p {
-          margin-bottom: 0.5rem;
-        }
-        @media screen and (max-width: 768px) {
-          .policy-container {
-            padding: 1.5rem;
-          }
-          footer .columns {
-            display: block;
-          }
-          footer .column {
-            width: 100%;
-            margin-bottom: 1.5rem;
-          }
-        }
+      }
     </style>
-</head>
-<body>
-<!-- 네비게이션 바 -->
-<nav aria-label="main navigation" class="navbar" role="navigation">
-    <div class="navbar-brand">
+  </head>
+  <body>
+    <!-- ナビゲーションバー -->
+    <nav aria-label="main navigation" class="navbar" role="navigation">
+      <div class="navbar-brand">
         <a class="navbar-item" href="/">
-            <img
-                    alt="iLog 로고"
-                    id="logo"
-                    src="../../static/images/wilog.png"
-                    style="max-height: 60px"
-                    th:src="@{/images/wilog.png}"
-            />
+          <img
+            alt="iLog ロゴ"
+            id="logo"
+            src="../../static/images/wilog.png"
+            style="max-height: 60px"
+            th:src="@{/images/wilog.png}"
+          />
         </a>
-    </div>
-    <div class="navbar-end">
+      </div>
+      <div class="navbar-end">
         <div class="navbar-item">
-            <div class="buttons">
-                <a class="button is-light" href="/guides"><span>이용안내</span></a>
-                <a class="button is-light" href="/claims"><span>고객센터</span></a>
-                <a class="button is-light" href="/auth/logout"
-                ><span>로그아웃</span></a
-                >
-                <a class="button is-light" th:href="@{/members/myDetails}">
-                    <span class="icon"><i class="fas fa-user"></i></span>
-                    <span th:text="|${memberName}(${relationType})|"
-                    >김미영(부모)</span
-                    >
-                </a>
-            </div>
+          <div class="buttons">
+            <a class="button is-light" href="/guides"
+              ><span>ご利用案内</span></a
+            >
+            <a class="button is-light" href="/claims"
+              ><span>カスタマーセンター</span></a
+            >
+            <a class="button is-light" href="/auth/logout"
+              ><span>ログアウト</span></a
+            >
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(保護者)</span
+              >
+            </a>
+          </div>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<!-- 메인 콘텐츠 -->
-<div class="content-container">
-    <div class="policy-container">
-        <h1 class="policy-title title is-2">개인정보처리방침</h1>
+    <!-- メインコンテンツ -->
+    <div class="content-container">
+      <div class="policy-container">
+        <h1 class="policy-title title is-2">個人情報取扱方針</h1>
 
         <div class="policy-section">
-            <p>
-                주식회사 iLog(이하 '회사'라 함)는 개인정보보호법, 정보통신망
-                이용촉진 및 정보보호 등에 관한 법률, 통신비밀보호법, 전기통신사업법
-                등 정보통신서비스제공자가 준수하여야 할 관련 법령상의 개인정보보호
-                규정을 준수하며, 관련 법령에 의거한 개인정보처리방침을 정하여 이용자
-                권익 보호에 최선을 다하고 있습니다.
-            </p>
-            <p>회사의 개인정보처리방침은 다음과 같은 내용을 담고 있습니다.</p>
-        </div>
-
-        <div class="policy-section">
-            <h2>1. 수집하는 개인정보의 항목 및 수집방법</h2>
-            <h3>가. 수집하는 개인정보의 항목</h3>
-            <p>
-                회사는 회원가입, 서비스 이용 등을 위해 아래와 같은 개인정보를
-                수집하고 있습니다.
-            </p>
-            <ul>
-                <li>회원가입 시: 이메일 주소, 비밀번호, 이름, 휴대폰 번호</li>
-                <li>아동 정보 등록 시: 아동 이름, 생년월일, 성별, 사진(선택)</li>
-                <li>
-                    서비스 이용 과정에서 생성되는 정보: 아동 발달 정보, 감정 분석
-                    데이터, 심리 설문 응답
-                </li>
-                <li>
-                    자동 수집 항목: IP 주소, 쿠키, 방문 일시, 서비스 이용 기록,
-                    기기정보
-                </li>
-            </ul>
-
-            <h3>나. 개인정보 수집방법</h3>
-            <p>회사는 다음과 같은 방법으로 개인정보를 수집합니다.</p>
-            <ul>
-                <li>
-                    홈페이지, 모바일 앱, 서면양식, 팩스, 전화, 고객센터 문의, 이벤트
-                    응모
-                </li>
-                <li>생성정보 수집 툴을 통한 자동 수집</li>
-            </ul>
+          <p>
+            株式会社
+            iLog（以下「当社」といいます）は、「個人情報保護法」、「情報通信網利用促進及び情報保護等に関する法律」、「通信の秘密保護法」、「電気通信事業法」などの関連法令を遵守し、個人情報の取扱いに関する方針を以下の通り定め、利用者の権益保護に努めています。
+          </p>
+          <p>当社の個人情報取扱方針は、以下の内容を含みます。</p>
         </div>
 
         <div class="policy-section">
-            <h2>2. 개인정보의 수집 및 이용목적</h2>
-            <p>회사는 수집한 개인정보를 다음의 목적을 위해 활용합니다.</p>
-            <ul>
-                <li>서비스 제공에 관한 계약 이행 및 서비스 제공에 따른 요금정산</li>
-                <li>
-                    회원 관리: 회원제 서비스 이용에 따른 본인확인, 개인식별,
-                    불량회원의 부정 이용 방지와 비인가 사용 방지, 가입 의사 확인,
-                    연령확인, 불만처리 등 민원처리, 고지사항 전달
-                </li>
-                <li>아동 발달 및 감정 분석 서비스 제공</li>
-                <li>
-                    마케팅 및 광고에 활용: 신규 서비스 개발 및 특화, 이벤트 등 광고성
-                    정보 전달, 접속 빈도 파악 또는 회원의 서비스 이용에 대한 통계
-                </li>
-            </ul>
+          <h2>1. 収集する個人情報の項目および収集方法</h2>
+          <h3>① 収集する情報の項目</h3>
+          <p>
+            当社は、会員登録やサービスの提供に際して以下の情報を収集します。
+          </p>
+          <ul>
+            <li>会員登録時：メールアドレス、パスワード、氏名、携帯番号</li>
+            <li>子ども情報登録時：氏名、生年月日、性別、写真（任意）</li>
+            <li>
+              サービス利用中に生成される情報：発達・感情分析データ、心理アンケート回答
+            </li>
+            <li>
+              自動収集情報：IPアドレス、Cookie、アクセス日時、利用履歴、端末情報
+            </li>
+          </ul>
+
+          <h3>② 収集方法</h3>
+          <p>当社は、以下の方法で個人情報を収集します。</p>
+          <ul>
+            <li>
+              Webサイト、モバイルアプリ、書面、FAX、電話、問い合わせ、イベント応募
+            </li>
+            <li>生成情報収集ツールを通じた自動収集</li>
+          </ul>
         </div>
 
         <div class="policy-section">
-            <h2>3. 개인정보의 보유 및 이용기간</h2>
-            <p>
-                회사는 원칙적으로 개인정보 수집 및 이용목적이 달성된 후에는 해당
-                정보를 지체 없이 파기합니다. 단, 관계법령의 규정에 의하여 보존할
-                필요가 있는 경우 회사는 아래와 같이 관계법령에서 정한 일정한 기간
-                동안 회원정보를 보관합니다.
-            </p>
-            <table>
-                <thead>
-                <tr>
-                    <th>보존 항목</th>
-                    <th>보존 근거</th>
-                    <th>보존 기간</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>계약 또는 청약철회 등에 관한 기록</td>
-                    <td>전자상거래 등에서의 소비자보호에 관한 법률</td>
-                    <td>5년</td>
-                </tr>
-                <tr>
-                    <td>대금결제 및 재화 등의 공급에 관한 기록</td>
-                    <td>전자상거래 등에서의 소비자보호에 관한 법률</td>
-                    <td>5년</td>
-                </tr>
-                <tr>
-                    <td>소비자의 불만 또는 분쟁처리에 관한 기록</td>
-                    <td>전자상거래 등에서의 소비자보호에 관한 법률</td>
-                    <td>3년</td>
-                </tr>
-                <tr>
-                    <td>로그인 기록</td>
-                    <td>통신비밀보호법</td>
-                    <td>3개월</td>
-                </tr>
-                </tbody>
-            </table>
+          <h2>2. 個人情報の収集および利用目的</h2>
+          <p>収集した個人情報は、以下の目的で利用されます。</p>
+          <ul>
+            <li>サービス提供および料金精算</li>
+            <li>会員管理：本人確認、不正利用防止、苦情対応、通知など</li>
+            <li>子どもの発達・感情分析サービスの提供</li>
+            <li>マーケティング：新サービス開発、イベント情報提供、統計分析</li>
+          </ul>
         </div>
 
         <div class="policy-section">
-            <h2>4. 개인정보의 파기절차 및 방법</h2>
-            <p>
-                회사는 원칙적으로 개인정보 수집 및 이용목적이 달성된 후에는 해당
-                정보를 지체 없이 파기합니다. 파기절차 및 방법은 다음과 같습니다.
-            </p>
-            <h3>가. 파기절차</h3>
-            <p>
-                회원이 회원가입 등을 위해 입력한 정보는 목적이 달성된 후 별도의 DB로
-                옮겨져(종이의 경우 별도의 서류함) 내부 방침 및 기타 관련 법령에 의한
-                정보보호 사유에 따라(보유 및 이용기간 참조) 일정 기간 저장된 후
-                파기됩니다. 별도 DB로 옮겨진 개인정보는 법률에 의한 경우가
-                아니고서는 보유되는 이외의 다른 목적으로 이용되지 않습니다.
-            </p>
-            <h3>나. 파기방법</h3>
-            <p>
-                전자적 파일 형태로 저장된 개인정보는 기록을 재생할 수 없는 기술적
-                방법을 사용하여 삭제합니다. 종이에 출력된 개인정보는 분쇄기로
-                분쇄하거나 소각을 통하여 파기합니다.
-            </p>
+          <h2>3. 個人情報の保有および利用期間</h2>
+          <p>
+            当社は、収集目的が達成された後は、速やかに当該情報を破棄します。ただし、法令により一定期間保存が必要な場合は、以下の通り保管します。
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>保存項目</th>
+                <th>保存根拠</th>
+                <th>保存期間</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>契約や申込撤回等に関する記録</td>
+                <td>電子商取引等における消費者保護に関する法律</td>
+                <td>5年間</td>
+              </tr>
+              <tr>
+                <td>決済および財貨等の供給に関する記録</td>
+                <td>電子商取引等における消費者保護に関する法律</td>
+                <td>5年間</td>
+              </tr>
+              <tr>
+                <td>苦情または紛争処理に関する記録</td>
+                <td>電子商取引等における消費者保護に関する法律</td>
+                <td>3年間</td>
+              </tr>
+              <tr>
+                <td>ログイン記録</td>
+                <td>通信の秘密保護法</td>
+                <td>3ヶ月</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <div class="policy-section">
-            <h2>5. 개인정보 제공</h2>
-            <p>
-                회사는 이용자의 개인정보를 원칙적으로 외부에 제공하지 않습니다.
-                다만, 아래의 경우에는 예외로 합니다.
-            </p>
-            <ul>
-                <li>이용자들이 사전에 동의한 경우</li>
-                <li>
-                    법령의 규정에 의거하거나, 수사 목적으로 법령에 정해진 절차와
-                    방법에 따라 수사기관의 요구가 있는 경우
-                </li>
-            </ul>
+          <h2>4. 個人情報の破棄手続きおよび方法</h2>
+          <p>
+            目的達成後、収集した個人情報は速やかに破棄します。
+            <br /><strong>① 破棄手続き：</strong
+            >別のDBに移し、保存期間経過後に削除。 <br /><strong
+              >② 破棄方法：</strong
+            >電子ファイルは復元不可能な方法で削除、紙は裁断または焼却。
+          </p>
         </div>
 
         <div class="policy-section">
-            <h2>6. 이용자 및 법정대리인의 권리와 그 행사방법</h2>
-            <p>
-                이용자 및 법정 대리인은 언제든지 등록되어 있는 자신 혹은 당해 만
-                14세 미만 아동의 개인정보를 조회하거나 수정할 수 있으며, 회사의
-                개인정보 처리에 동의하지 않는 경우 동의를 거부하거나
-                가입해지(회원탈퇴)를 요청하실 수 있습니다. 다만, 그러한 경우
-                서비스의 일부 또는 전부 이용이 어려울 수 있습니다.
-            </p>
-            <p>
-                이용자 혹은 만 14세 미만 아동의 개인정보 조회, 수정을 위해서는
-                '개인정보변경'(또는 '회원정보수정' 등)을, 가입해지(동의철회)를
-                위해서는 '회원탈퇴'를 클릭하여 본인 확인 절차를 거치신 후 직접 열람,
-                정정 또는 탈퇴가 가능합니다.
-            </p>
+          <h2>5. 個人情報の第三者提供</h2>
+          <p>
+            原則として、利用者の同意なく第三者へ提供しません。ただし、以下の場合を除きます。
+          </p>
+          <ul>
+            <li>利用者の同意がある場合</li>
+            <li>法令に基づく場合または捜査機関の要請がある場合</li>
+          </ul>
         </div>
 
         <div class="policy-section">
-            <h2>7. 개인정보 자동 수집 장치의 설치/운영 및 거부에 관한 사항</h2>
-            <p>
-                회사는 이용자에게 개별적인 맞춤서비스를 제공하기 위해 이용정보를
-                저장하고 수시로 불러오는 '쿠키(cookie)'를 사용합니다.
-            </p>
-            <h3>가. 쿠키의 사용 목적</h3>
-            <p>
-                회원과 비회원의 접속 빈도나 방문 시간 등을 분석, 이용자의 취향과
-                관심분야를 파악 및 자취 추적, 방문 회수 파악 등을 통한 개인 맞춤
-                서비스 제공
-            </p>
-            <h3>나. 쿠키 설정 거부 방법</h3>
-            <p>
-                이용자는 쿠키 설치에 대한 선택권을 가지고 있습니다. 따라서
-                웹브라우저에서 옵션을 설정함으로써 모든 쿠키를 허용하거나, 쿠키가
-                저장될 때마다 확인을 거치거나, 아니면 모든 쿠키의 저장을 거부할 수도
-                있습니다.
-            </p>
+          <h2>6. 利用者および法定代理人の権利と行使方法</h2>
+          <p>
+            利用者および法定代理人は、本人または14歳未満の児童の個人情報の確認、修正、削除をいつでも行うことができます。会員脱退を通じた同意撤回も可能です。
+          </p>
         </div>
 
         <div class="policy-section">
-            <h2>8. 개인정보의 안전성 확보조치</h2>
-            <p>
-                회사는 개인정보의 안전성 확보를 위해 다음과 같은 조치를 취하고
-                있습니다.
-            </p>
-            <ul>
-                <li>관리적 조치: 내부관리계획 수립·시행, 정기적 직원 교육 등</li>
-                <li>
-                    기술적 조치: 개인정보처리시스템 등의 접근권한 관리, 접근통제시스템
-                    설치, 고유식별정보 등의 암호화, 보안프로그램 설치
-                </li>
-                <li>물리적 조치: 전산실, 자료보관실 등의 접근통제</li>
-            </ul>
+          <h2>7. クッキーの利用と拒否に関する事項</h2>
+          <p>
+            利用者の利便性向上のため、カスタマイズされたサービスを提供する目的でクッキーを使用します。利用者はブラウザ設定を通じて保存を制限することができます。
+          </p>
         </div>
 
         <div class="policy-section">
-            <h2>9. 개인정보 보호책임자</h2>
-            <p>
-                회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보
-                처리와 관련한 정보주체의 불만처리 및 피해구제 등을 위하여 아래와
-                같이 개인정보 보호책임자를 지정하고 있습니다.
-            </p>
-            <ul>
-                <li>개인정보 보호책임자: 홍길동</li>
-                <li>직책: 개인정보보호팀장</li>
-                <li>연락처: privacy@ilog.co.kr, 02-123-4567</li>
-            </ul>
+          <h2>8. 個人情報の安全性確保措置</h2>
+          <ul>
+            <li>管理的措置：内部管理計画策定、定期的な職員教育</li>
+            <li>
+              技術的措置：アクセス権限管理、暗号化、セキュリティソフト導入
+            </li>
+            <li>物理的措置：資料保管室、システム室へのアクセス制限</li>
+          </ul>
+        </div>
+
+        <div class="policy-section">
+          <h2>9. 個人情報保護責任者</h2>
+          <p>下記の者を個人情報保護責任者として指定しています。</p>
+          <ul>
+            <li>氏名：홍길동</li>
+            <li>役職：個人情報保護チーム長</li>
+            <li>連絡先：privacy@ilog.co.kr, 02-123-4567</li>
+          </ul>
         </div>
 
         <div class="policy-date">
-            <p>시행일자: 2025년 1월 1일</p>
+          <p>施行日：2025年1月1日</p>
         </div>
+      </div>
     </div>
-</div>
 
-<!-- 푸터 -->
-<footer>
-    <div class="container">
+    <!-- フッター -->
+    <footer>
+      <div class="container">
         <div class="columns">
-            <div class="column is-4">
-                <div class="logo-container">
-                    <img
-                            alt="iLog 로고"
-                            class="footer-logo"
-                            src="../../static/images/wilog.png"
-                            th:src="@{/images/wilog.png}"
-                    />
-                    <span class="footer-title">iLog</span>
-                </div>
-                <p>
-                    아이의 감정과 발달을 체계적으로 기록하고 분석하여 건강한 성장을
-                    돕는 서비스입니다.
-                </p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                </div>
+          <div class="column is-4">
+            <div class="logo-container">
+              <img
+                alt="iLog ロゴ"
+                class="footer-logo"
+                src="../../static/images/wilog.png"
+                th:src="@{/images/wilog.png}"
+              />
+              <span class="footer-title">iLog</span>
             </div>
-            <div class="column is-4">
-                <h3 class="title is-5">바로가기</h3>
-                <div class="footer-links">
-                    <p><a href="/about">서비스 소개</a></p>
-                    <p><a href="/guides">이용 안내</a></p>
-                    <p><a href="/faq">자주 묻는 질문</a></p>
-                    <p><a href="/claims">고객센터</a></p>
-                </div>
+            <p>
+              お子様の感情と発達を体系的に記録・分析し、健やかな成長をサポートするサービスです。
+            </p>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
             </div>
-            <div class="column is-4">
-                <h3 class="title is-5">연락처</h3>
-                <div class="contact-info">
-                    <p>
-                        <i class="fas fa-map-marker-alt"></i> 서울특별시 강남구 테헤란로
-                        123
-                    </p>
-                    <p><i class="fas fa-phone"></i> 02-123-4567</p>
-                    <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
-                    <p>
-                        <i class="fas fa-clock"></i> 평일 09:00 - 18:00 (공휴일 제외)
-                    </p>
-                </div>
+          </div>
+          <div class="column is-4">
+            <h3 class="title is-5">クイックリンク</h3>
+            <div class="footer-links">
+              <p><a href="/about">サービス紹介</a></p>
+              <p><a href="/guides">ご利用案内</a></p>
+              <p><a href="/faq">よくある質問</a></p>
+              <p><a href="/claims">カスタマーセンター</a></p>
             </div>
+          </div>
+          <div class="column is-4">
+            <h3 class="title is-5">お問い合わせ</h3>
+            <div class="contact-info">
+              <p>
+                <i class="fas fa-map-marker-alt"></i> ソウル特別市 江南区
+                テヘラン路123
+              </p>
+              <p><i class="fas fa-phone"></i> 02-123-4567</p>
+              <p><i class="fas fa-envelope"></i> support@ilog.co.kr</p>
+              <p><i class="fas fa-clock"></i> 平日 09:00 - 18:00（祝日除く）</p>
+            </div>
+          </div>
         </div>
         <div class="footer-bottom">
-            <div class="columns">
-                <div class="column is-8">
-                    <p>
-                        <a href="/terms">이용약관</a> |
-                        <a href="/privacy"><strong>개인정보처리방침</strong></a> |
-                        <a href="/youth-policy">청소년보호정책</a>
-                    </p>
-                </div>
-                <div class="column is-4 has-text-right">
-                    <p>&copy; 2025 iLog. All rights reserved.</p>
-                </div>
+          <div class="columns">
+            <div class="column is-8">
+              <p>
+                <a href="/terms">利用規約</a> |
+                <a href="/privacy"><strong>個人情報取扱方針</strong></a> |
+                <a href="/youth-policy">青少年保護方針</a>
+              </p>
             </div>
+            <div class="column is-4 has-text-right">
+              <p>&copy; 2025 iLog. All rights reserved.</p>
+            </div>
+          </div>
         </div>
-    </div>
-</footer>
-</body>
+      </div>
+    </footer>
+  </body>
 </html>

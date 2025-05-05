@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum AnalysisType {
-    WRITING("글"),
-    DRAWING("그림"),
-    PHOTO("사진");
+    WRITING("文"),
+    DRAWING("絵"),
+    PHOTO("写真");
 
     private final String krName;
 }

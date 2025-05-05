@@ -6,16 +6,16 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum FamilyBackGround {
-    DUAL_INCOME("맞벌이 가정"),
-    SINGLE_INCOME_DAD("부 외벌이 가정"),
-    SINGLE_INCOME_MOM("모 외벌이 가정"),
-    SINGLE_PARENT("한부모 가정"),
-    GRANDPARENTING("조손 가정"),
-    MULTICULTURAL("다문화 가정"),
-    SIBLINGS("형제자매"),
-    ONLY_CHILD("외동"),
-    SPECIAL_NEEDS("특수 아동"),
-    COUNSELING_EXPERIENCE("상담센터 경험");
+    DUAL_INCOME("共働き家庭"),
+    SINGLE_INCOME_DAD("父のみ働く家庭"),
+    SINGLE_INCOME_MOM("母のみ働く家庭"),
+    SINGLE_PARENT("ひとり親家庭"),
+    GRANDPARENTING("祖父母による育児家庭"),
+    MULTICULTURAL("多文化家庭"),
+    SIBLINGS("兄弟姉妹"),
+    ONLY_CHILD("一人っ子"),
+    SPECIAL_NEEDS("特別支援児"),
+    COUNSELING_EXPERIENCE("カウンセリング経験");
 
     private final String description;
 }

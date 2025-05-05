@@ -63,9 +63,9 @@ public class OpenAIService {
                 
                         4. The emotionType must be one of the enum values listed above.
                 
-                        5. In analysisResult, freely write a detailed description (in at least 5 lines of Korean) about the child’s emotional state, including additional information about the child.
+                        5. In analysisResult, freely write a detailed description (in at least 5 lines of Japanese) about the child’s emotional state, including additional information about the child.
                 
-                        6. In suggestedSolution, provide detailed advice (in at least 10 lines of Korean) for parents or teachers, specifying at least three methods of how to respond verbally. Include further response methods as well, ensuring you first consider the child’s additional information.
+                        6. In suggestedSolution, provide detailed advice (in at least 10 lines of Japanese) for parents or teachers, specifying at least three methods of how to respond verbally. Include further response methods as well, ensuring you first consider the child’s additional information.
                 
                         7. In extractedText, include any text extracted from the image as a string.\s
                            (If no text is found, use an empty string "")

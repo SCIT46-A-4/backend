@@ -2,7 +2,7 @@ server:
   port: 9900
 spring:
   profiles:
-    active: local
+    active: dev
   application:
     name: iLog
   jpa:
@@ -14,8 +14,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: bldolphin96@gmail.com
-    password:
+    username: 
+    password: ""
     properties:
       mail:
         smtp:
@@ -29,8 +29,7 @@ spring:
       enabled: true             # 2025-02-28 / 김은진 / 파일 업로드 기능 활성화
   ai:
     openai:
-      api-key:
-
+      api-key: 
   thymeleaf:
     cache: false  # 캐시 비활성화
     mode: LEGACYHTML5  # (선택) HTML5 호환 모드
@@ -46,7 +45,7 @@ childHealthCheckImgMacPath: /Users/hojooneum/Downloads/scit/team-project/images/
 childAnalysisFileImgWindowsPath: C:/ilog/childAnalysisFiles
 childAnalysisFileMacPath: /Users/hojooneum/Downloads/scit/team-project/images/childAnalysisFiles
 
-openWeatherApiKey:
+openWeatherApiKey: 
 openAIUrl: https://api.openai.com/v1
 openAIApiModel: gpt-4-vision-preview
 openAIApiMaxTokens: 300

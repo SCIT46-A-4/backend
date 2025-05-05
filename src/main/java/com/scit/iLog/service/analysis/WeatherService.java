@@ -31,7 +31,7 @@ public class WeatherService {
     public WeatherResponse getWeatherRecordOf(double lat, double lon, LocalDateTime dt) {
         long unixTimestamp = dt.toEpochSecond(ZoneOffset.UTC);
         log.info(Long.toString(unixTimestamp));
-        WeatherResponse weatherResponse = openWeatherClient.getTimeMachineWeather(lat, lon, unixTimestamp, openWeatherApiKey, "metric", "kr");
+        WeatherResponse weatherResponse = openWeatherClient.getTimeMachineWeather(lat, lon, unixTimestamp, openWeatherApiKey, "metric", "ja");
         log.info(weatherResponse.toString());
         return weatherResponse;
     }

@@ -1,382 +1,383 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <title>설문 응답 작성</title>
     <!-- Bulma CSS -->
     <link
-            href="../../../static/css/bulma.min.css"
-            rel="stylesheet"
-            th:href="@{/css/bulma.min.css}"
+      href="../../../static/css/bulma.min.css"
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
     />
     <style>
-        /* 2025-03-13 / 김은진 / 수정 */
+      /* 2025-03-13 / 김은진 / 수정 */
 
-        .primary-color {
-          color: #fdf5bf;
-        }
+      .primary-color {
+        color: #fdf5bf;
+      }
 
-        body {
-          background-color: #fdf5bf;
-        }
+      body {
+        background-color: #fdf5bf;
+      }
 
-        .title {
-          text-align: center;
-        }
+      .title {
+        text-align: center;
+      }
 
-        .secondary-bg {
-          background-color: #bee6d9;
-        }
+      .secondary-bg {
+        background-color: #bee6d9;
+      }
 
-        .question-box {
-          border: 1px solid #ccc;
-          padding: 1rem;
-          margin-bottom: 1rem;
-          justify-content: center;
-        }
+      .question-box {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        justify-content: center;
+      }
 
-        .question-example,
-        .subtitle {
-          text-align: center;
-          justify-content: center;
-        }
+      .question-example,
+      .subtitle {
+        text-align: center;
+        justify-content: center;
+      }
 
-        .control {
-          margin-top: 20px;
-          display: flex;
-          justify-content: center;
-        }
+      .control {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+      }
 
-        .field.is-grouped {
-          display: flex;
-          gap: 15px;
-          justify-content: center;
-        }
+      .field.is-grouped {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+      }
 
-        /* 라디오 버튼 컨테이너 수정 */
-        .score-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin: 15px 0;
-        }
+      /* 라디오 버튼 컨테이너 수정 */
+      .score-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 15px 0;
+      }
 
-        .radio-group {
-          display: flex;
-          justify-content: center;
-          gap: 40px;
-          /* 라디오 버튼 사이 간격 */
-          margin-top: 10px;
-          width: 100%;
-        }
+      .radio-group {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        /* 라디오 버튼 사이 간격 */
+        margin-top: 10px;
+        width: 100%;
+      }
 
-        .radio-item {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          /* 라디오 버튼과 텍스트 사이 간격 */
-        }
+      .radio-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        /* 라디오 버튼과 텍스트 사이 간격 */
+      }
 
-        .radio-item label {
-          white-space: nowrap;
-          /* 텍스트 줄바꿈 방지 */
-          font-size: 1rem;
-        }
+      .radio-item label {
+        white-space: nowrap;
+        /* 텍스트 줄바꿈 방지 */
+        font-size: 1rem;
+      }
 
-        .margin-bottom-10 {
-          margin-bottom: 10px;
-        }
+      .margin-bottom-10 {
+        margin-bottom: 10px;
+      }
     </style>
     <script
-            src="../../../static/js/jquery-3.7.1.min.js"
-            th:src="@{/js/jquery-3.7.1.min.js}"
+      src="../../../static/js/jquery-3.7.1.min.js"
+      th:src="@{/js/jquery-3.7.1.min.js}"
     ></script>
     <script
-            src="../../../static/js/sweetalert2.js"
-            th:src="@{/js/sweetalert2.js}"
+      src="../../../static/js/sweetalert2.js"
+      th:src="@{/js/sweetalert2.js}"
     ></script>
 
     <script>
-        $(document).ready(function () {
-          $('#mentalSurveyForm').submit(function (event) {
-            event.preventDefault(); // 기본 폼 제출 방지
+      $(document).ready(function () {
+        $('#mentalSurveyForm').submit(function (event) {
+          event.preventDefault(); // デフォルトのフォーム送信を防止
 
-            // JSON 객체 구성 (DTO 형식에 맞춤)
-            let data = {
-              surveyId: $("input[name='surveyId']").val(),
-              surveyTitle: $("input[name='surveyTitle']").val(),
-              childId: $("input[name='childId']").val(),
-              respondentId: $("input[name='respondentId']").val(),
-              createdAt: new Date().toISOString(),
-              sectionResponses: [],
-            };
+          // JSON オブジェクト構築（DTO形式に合わせる）
+          let data = {
+            surveyId: $("input[name='surveyId']").val(),
+            surveyTitle: $("input[name='surveyTitle']").val(),
+            childId: $("input[name='childId']").val(),
+            respondentId: $("input[name='respondentId']").val(),
+            createdAt: new Date().toISOString(),
+            sectionResponses: [],
+          };
 
-            // 각 섹션 처리
-            $('.section-box').each(function (secIndex, secElement) {
-              let sectionTitle = $(secElement)
-                .find("input[name^='sectionResponses'][name$='.sectionTitle']")
-                .val();
-              let questionResponses = [];
+          // 各セクションの処理
+          $('.section-box').each(function (secIndex, secElement) {
+            let sectionTitle = $(secElement)
+              .find("input[name^='sectionResponses'][name$='.sectionTitle']")
+              .val();
+            let questionResponses = [];
 
-              // 각 질문 처리
-              $(secElement)
-                .find('.question-box')
-                .each(function (qIndex, qElement) {
-                  let questionItem = $(qElement)
-                    .find(
-                      "input[name^='sectionResponses'][name$='.questionResponses[__" +
-                        qIndex +
-                        "__].questionItem']"
-                    )
-                    .val();
-                  let scoreVal = $(qElement)
-                    .find("input[type='radio']:checked")
-                    .val();
-                  if (scoreVal === undefined) {
-                    scoreVal = 0; // 선택되지 않은 경우 기본값 (또는 유효성 검증 후 오류 처리 가능)
-                  } else {
-                    scoreVal = parseInt(scoreVal);
-                  }
-                  questionResponses.push({
-                    questionItem: questionItem,
-                    example: '', // 텍스트 입력은 제거됨
-                    score: scoreVal,
-                  });
+            // 各質問の処理
+            $(secElement)
+              .find('.question-box')
+              .each(function (qIndex, qElement) {
+                let questionItem = $(qElement)
+                  .find(
+                    "input[name^='sectionResponses'][name$='.questionResponses[__" +
+                      qIndex +
+                      "__].questionItem']"
+                  )
+                  .val();
+                let scoreVal = $(qElement)
+                  .find("input[type='radio']:checked")
+                  .val();
+                if (scoreVal === undefined) {
+                  scoreVal = 0; // 未選択の場合のデフォルト値（バリデーション後にエラー表示も可能）
+                } else {
+                  scoreVal = parseInt(scoreVal);
+                }
+                questionResponses.push({
+                  questionItem: questionItem,
+                  example: '', // テキスト入力は削除
+                  score: scoreVal,
                 });
-
-              data.sectionResponses.push({
-                sectionTitle: sectionTitle,
-                questionResponses: questionResponses,
               });
-            });
 
-            // JSON 데이터 전송
-            $.ajax({
-              url: $('#mentalSurveyForm').attr('action'),
-              type: 'POST',
-              data: JSON.stringify(data),
-              contentType: 'application/json; charset=utf-8',
-              success: function (response) {
-                Swal.fire('설문 응답이 제출되었습니다.');
-                window.location.href =
-                  '/children/' +
-                  getChildIdFromURL() +
-                  '/mentalSurveys/responses/stats';
-              },
-              error: function (xhr, status, error) {
-                Swal.fire('설문 제출에 실패하였습니다.');
-              },
+            data.sectionResponses.push({
+              sectionTitle: sectionTitle,
+              questionResponses: questionResponses,
             });
           });
+
+          // JSON データを送信
+          $.ajax({
+            url: $('#mentalSurveyForm').attr('action'),
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+              Swal.fire('アンケートの回答が送信されました。');
+              window.location.href =
+                '/children/' +
+                getChildIdFromURL() +
+                '/mentalSurveys/responses/stats';
+            },
+            error: function (xhr, status, error) {
+              Swal.fire('アンケートの送信に失敗しました。');
+            },
+          });
         });
-        function getChildIdFromURL() {
-          // 예: URL 형식 - /children/{childId}/mentalsurveys/surveyStats
-          const pathParts = window.location.pathname.split('/');
-          // pathParts 예시: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
-          if (pathParts.length > 2 && pathParts[1] === 'children') {
-            return pathParts[2]; // 인덱스 2가 childId입니다.
-          }
-          return null;
+      });
+
+      // URL から childId を取得
+      function getChildIdFromURL() {
+        // 例: /children/{childId}/mentalsurveys/surveyStats
+        const pathParts = window.location.pathname.split('/');
+        // pathParts 例: ["", "children", "{childId}", "mentalsurveys", "surveyStats"]
+        if (pathParts.length > 2 && pathParts[1] === 'children') {
+          return pathParts[2]; // インデックス2がchildIdです
         }
+        return null;
+      }
     </script>
-</head>
+  </head>
 
-<body>
-<nav aria-label="main navigation" class="navbar" role="navigation">
-    <!-- 로고 + dashboard 바로가기 -->
-    <div class="logo">
+  <body>
+    <nav aria-label="main navigation" class="navbar" role="navigation">
+      <!-- ロゴ + ダッシュボードへのリンク -->
+      <div class="logo">
         <a th:href="@{/dashboard}">
-            <img
-                    alt="로고"
-                    class="image"
-                    src="../../static/images/wilog.png"
-                    style="width: 100px; height: auto"
-                    th:src="@{/images/wilog.png}"
-            />
+          <img
+            alt="ロゴ"
+            class="image"
+            src="../../static/images/wilog.png"
+            style="width: 100px; height: auto"
+            th:src="@{/images/wilog.png}"
+          />
         </a>
-    </div>
-</nav>
-<section class="section">
-    <div class="container">
-        <!-- 설문 제목과 설명 -->
-        <h1 class="title">[[ ${childName} ]]의</h1>
-        <h1 class="title" th:text="${mentalSurvey.title}">설문 제목</h1>
-        <p th:text="${mentalSurvey.description}">설문 설명</p>
-        <!-- 2025-03-13 / 김은진 / 수정 -->
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container">
+        <!-- アンケートタイトルと説明 -->
+        <h1 class="title">[[ ${childName} ]]の</h1>
+        <h1 class="title" th:text="${mentalSurvey.title}">
+          アンケートタイトル
+        </h1>
+        <p th:text="${mentalSurvey.description}">アンケートの説明</p>
 
-        <!-- 설문 제목과 설명 아래에 추가 -->
+        <!-- アンケートの案内文 -->
         <div class="content">
-            <!-- 보호자용 설문 안내 문구 -->
-            <pre
-                    class="notification"
-                    th:if="${mentalSurvey.type?.name() == 'GUARDIAN'}"
-            >
-        📝 아동 심리 설문 체크리스트는 아이의 감정 표현, 스트레스 반응, 또래 관계 및 생활 습관을 종합적으로 평가하는 도구입니다.
+          <!-- 保護者向けの説明 -->
+          <pre
+            class="notification"
+            th:if="${mentalSurvey.type?.name() == 'GUARDIAN'}"
+          >
+  📝 子どもの心理アンケートチェックリストは、感情表現、ストレス反応、友人関係、生活習慣を総合的に評価するツールです。
+  
+  このチェックリストは、家庭での子どもの感情や行動の変化を記録・分析し、基本的な状態を把握するための参考資料として活用されます。
+  AI分析（絵・写真・文章のアップロード）を行うことで、より精密な評価が可能になります。
+  
+  ✔ チェック方法:
+  各項目を読み、家庭で見られる子どもの行動や感情の状態に最も近い選択肢を選んでください。
+  （全くそうではない／そうではない／普通／そうだ／非常にそうだ）
+  
+  📌 このチェックリストは感情変化を事前に評価するためのものであり、ソリューションの提供機能は含まれていません。
+  AI分析を実施した場合、個別のソリューションが提供されます。
+          </pre>
 
-        이 체크리스트는 아이의 감정 및 행동 변화를 기록하고 분석하여 기본적인 상태를 파악하는 참고 자료로 활용됩니다.
-        AI 분석(그림·사진·글 업로드) 진행 시, 체크리스트 결과를 기반으로 보다 정밀한 평가가 가능합니다.
-
-        ✔ 체크 방법:
-        각 문항을 읽고 아이가 가정에서 보이는 행동과 감정 상태를 가장 잘 반영하는 응답을 선택해주세요.
-        (전혀 그렇지 않다 / 그렇지 않다 / 보통이다 / 그렇다 / 매우 그렇다)
-
-        📌 이 체크리스트는 감정 변화를 사전에 평가하는 도구이며, 솔루션 제공 기능은 포함되지 않습니다.
-        AI 분석(그림, 사진, 글 업로드) 진행 시 맞춤 솔루션이 제공됩니다.
-            </pre
-            >
-
-            <!-- 교사용 설문 안내 문구 -->
-            <pre
-                    class="notification"
-                    th:if="${mentalSurvey.type?.name() == 'TEACHER'}"
-            >
-        📝 아동 심리 설문 체크리스트는 아이의 감정 표현, 스트레스 반응, 또래 관계 및 생활 습관을 종합적으로 평가하는 도구입니다.
-
-        이 체크리스트는 유치원·학교 등 기관에서 아이가 보이는 감정과 행동을 객관적으로 기록하고, 기본 상태를 파악하는 참고 자료로 활용됩니다.
-        AI 분석(그림·사진·글 업로드) 진행 시, 체크리스트 결과를 기반으로 보다 정밀한 평가가 가능합니다.
-
-        ✔ 체크 방법:
-        각 문항을 읽고 아이가 가정에서 보이는 행동과 감정 상태를 가장 잘 반영하는 응답을 선택해주세요.
-        (전혀 그렇지 않다 / 그렇지 않다 / 보통이다 / 그렇다 / 매우 그렇다)
-
-        📌 이 체크리스트는 감정 변화를 사전에 평가하는 도구이며, 솔루션 제공 기능은 포함되지 않습니다.
-        AI 분석(그림, 사진, 글 업로드) 진행 시 맞춤 솔루션이 제공됩니다.
-            </pre
-            >
+          <!-- 教師向けの説明 -->
+          <pre
+            class="notification"
+            th:if="${mentalSurvey.type?.name() == 'TEACHER'}"
+          >
+  📝 子どもの心理アンケートチェックリストは、感情表現、ストレス反応、友人関係、生活習慣を総合的に評価するツールです。
+  
+  このチェックリストは、幼稚園や学校などの施設での子どもの感情や行動を客観的に記録し、基本状態を把握するための参考資料として活用されます。
+  AI分析（絵・写真・文章のアップロード）を行うことで、より精密な評価が可能になります。
+  
+  ✔ チェック方法:
+  各項目を読み、施設で見られる子どもの行動や感情の状態に最も近い選択肢を選んでください。
+  （全くそうではない／そうではない／普通／そうだ／非常にそうだ）
+  
+  📌 このチェックリストは感情変化を事前に評価するためのものであり、ソリューションの提供機能は含まれていません。
+  AI分析を実施した場合、個別のソリューションが提供されます。
+          </pre>
         </div>
 
-        <!-- 설문 응답 폼 (JSON 전송) -->
+        <!-- アンケート回答フォーム（JSON送信） -->
         <form
-                id="mentalSurveyForm"
-                method="post"
-                th:action="@{'/children/' + ${childId} + '/mentalSurveys/' + ${mentalSurvey.id} + '/responses/new'}"
+          id="mentalSurveyForm"
+          method="post"
+          th:action="@{'/children/' + ${childId} + '/mentalSurveys/' + ${mentalSurvey.id} + '/responses/new'}"
         >
-            <!-- 설문 관련 메타 정보 -->
-            <input name="surveyId" th:value="${mentalSurvey.id}" type="hidden"/>
-            <input
-                    name="surveyTitle"
-                    th:value="${mentalSurvey.title}"
-                    type="hidden"
-            />
-            <input name="childId" th:value="${childId}" type="hidden"/>
-            <input name="respondentId" th:value="${respondentId}" type="hidden"/>
+          <!-- アンケートに関するメタ情報 -->
+          <input name="surveyId" th:value="${mentalSurvey.id}" type="hidden" />
+          <input
+            name="surveyTitle"
+            th:value="${mentalSurvey.title}"
+            type="hidden"
+          />
+          <input name="childId" th:value="${childId}" type="hidden" />
+          <input name="respondentId" th:value="${respondentId}" type="hidden" />
 
-            <!-- 각 섹션별 폼 출력 -->
-            <div
-                    class="section-box margin-bottom-10"
-                    th:each="section, secStat : ${mentalSurvey.sections}"
-            >
-                <div class="box">
-                    <h2 class="subtitle" th:text="${section.sectionTitle}">
-                        섹션 제목
-                    </h2>
-                    <!-- 섹션 내 질문 반복 -->
-                    <div
-                            class="question-box"
-                            th:each="question, qStat : ${section.questions}"
-                    >
-                        <p>
-                            <strong th:text="${question.item}">질문 항목</strong>
-                        </p>
-                        <br/>
-                        <p class="question-example" th:text="${question.example}">
-                            예시 내용
-                        </p>
-                        <br/>
-                        <!-- 점수 선택: 1-5 라디오 버튼 -->
-                        <div class="field">
-                            <div class="score-container">
-                                <!-- <label class="label">점수 (1-5)</label> -->
-                                <div class="radio-group">
-                                    <div class="radio-item">
-                                        <label class="radio">
-                                            <input
-                                                    th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
-                                                    type="radio"
-                                                    value="1"
-                                            />
-                                            전혀 그렇지 않다
-                                        </label>
-                                    </div>
-                                    <div class="radio-item">
-                                        <label class="radio">
-                                            <input
-                                                    th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
-                                                    type="radio"
-                                                    value="2"
-                                            />
-                                            그렇지 않다
-                                        </label>
-                                    </div>
-                                    <div class="radio-item">
-                                        <label class="radio">
-                                            <input
-                                                    th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
-                                                    type="radio"
-                                                    value="3"
-                                            />
-                                            보통이다
-                                        </label>
-                                    </div>
-                                    <div class="radio-item">
-                                        <label class="radio">
-                                            <input
-                                                    th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
-                                                    type="radio"
-                                                    value="4"
-                                            />
-                                            그렇다
-                                        </label>
-                                    </div>
-                                    <div class="radio-item">
-                                        <label class="radio">
-                                            <input
-                                                    th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
-                                                    type="radio"
-                                                    value="5"
-                                            />
-                                            매우 그렇다
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 질문 항목 hidden 필드 -->
-                        <input
-                                th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].questionItem|"
-                                th:value="${question.item}"
-                                type="hidden"
-                        />
+          <!-- 各セクションの表示 -->
+          <div
+            class="section-box margin-bottom-10"
+            th:each="section, secStat : ${mentalSurvey.sections}"
+          >
+            <div class="box">
+              <h2 class="subtitle" th:text="${section.sectionTitle}">
+                セクションタイトル
+              </h2>
+
+              <!-- 各質問の表示 -->
+              <div
+                class="question-box"
+                th:each="question, qStat : ${section.questions}"
+              >
+                <p><strong th:text="${question.item}">質問項目</strong></p>
+                <br />
+                <p class="question-example" th:text="${question.example}">
+                  例文
+                </p>
+                <br />
+
+                <!-- スコア選択ラジオボタン -->
+                <div class="field">
+                  <div class="score-container">
+                    <div class="radio-group">
+                      <div class="radio-item">
+                        <label class="radio">
+                          <input
+                            th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
+                            type="radio"
+                            value="1"
+                          />
+                          全くそうではない
+                        </label>
+                      </div>
+                      <div class="radio-item">
+                        <label class="radio">
+                          <input
+                            th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
+                            type="radio"
+                            value="2"
+                          />
+                          そうではない
+                        </label>
+                      </div>
+                      <div class="radio-item">
+                        <label class="radio">
+                          <input
+                            th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
+                            type="radio"
+                            value="3"
+                          />
+                          普通
+                        </label>
+                      </div>
+                      <div class="radio-item">
+                        <label class="radio">
+                          <input
+                            th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
+                            type="radio"
+                            value="4"
+                          />
+                          そうだ
+                        </label>
+                      </div>
+                      <div class="radio-item">
+                        <label class="radio">
+                          <input
+                            th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].score|"
+                            type="radio"
+                            value="5"
+                          />
+                          非常にそうだ
+                        </label>
+                      </div>
                     </div>
-                    <!-- 섹션 제목 hidden 필드 -->
-                    <input
-                            th:name="|sectionResponses[__${secStat.index}__].sectionTitle|"
-                            th:value="${section.sectionTitle}"
-                            type="hidden"
-                    />
+                  </div>
                 </div>
-            </div>
 
-            <div class="field is-grouped">
-                <!-- is-grouped 클래스로 버튼들을 나란히 배치 -->
-                <div class="control">
-                    <button class="button secondary-bg" type="submit">
-                        제출하기
-                    </button>
-                </div>
-                <div class="control">
-                    <!-- 뒤로가기 버튼 추가 2025-03-13 / 김은진 -->
-                    <a
-                            class="button is-light"
-                            th:href="@{'/children/' + ${childId} + '/mentalSurveys/selects'}"
-                    >
-                        뒤로가기
-                    </a>
-                </div>
+                <!-- 質問項目のhiddenフィールド -->
+                <input
+                  th:name="|sectionResponses[${secStat.index}].questionResponses[${qStat.index}].questionItem|"
+                  th:value="${question.item}"
+                  type="hidden"
+                />
+              </div>
+
+              <!-- セクションタイトルのhiddenフィールド -->
+              <input
+                th:name="|sectionResponses[__${secStat.index}__].sectionTitle|"
+                th:value="${section.sectionTitle}"
+                type="hidden"
+              />
             </div>
+          </div>
+
+          <!-- ボタン -->
+          <div class="field is-grouped">
+            <div class="control">
+              <button class="button secondary-bg" type="submit">
+                送信する
+              </button>
+            </div>
+            <div class="control">
+              <a
+                class="button is-light"
+                th:href="@{'/children/' + ${childId} + '/mentalSurveys/selects'}"
+              >
+                戻る
+              </a>
+            </div>
+          </div>
         </form>
-    </div>
-</section>
-<div th:replace="fragments/footer :: ilogFooter"></div>
-</body>
+      </div>
+    </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>

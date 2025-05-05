@@ -1,230 +1,228 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>내 문의 조회하기</title>
 
-    <link href="/css/bulma.min.css" rel="stylesheet"/>
+    <link href="/css/bulma.min.css" rel="stylesheet" />
 
     <!-- customColors.css 추가 -->
-    <link rel="stylesheet" th:href="@{/css/customColors.css}"/>
+    <link rel="stylesheet" th:href="@{/css/customColors.css}" />
 
     <!-- SweetAlert (알림창) 추가 -->
     <script src="/js/sweetalert2.js"></script>
 
     <style>
-        /* ✅ 디테일뷰 배경색 적용 */
-        body {
-          background-color: var(--primary);
-          /* #FDF5BF */
-        }
+      /* ✅ 디테일뷰 배경색 적용 */
+      body {
+        background-color: var(--primary);
+        /* #FDF5BF */
+      }
     </style>
-</head>
+  </head>
 
-<body>
-<section class="section">
-    <div class="container">
-        <h2 class="title is-4 has-text-centered">내 문의 조회하기</h2>
+  <body>
+    <section class="section">
+      <div class="container">
+        <h2 class="title is-4 has-text-centered">お問い合わせ内容の確認</h2>
 
         <div class="columns is-centered">
-            <div class="column is-two-thirds">
-                <p class="notification is-light has-text-centered">
-                    ※ iLog 고객센터는 산업안전보건법을 준수하여 고객응대근로자를
-                    보호하고 있습니다. <br/>
-                    성희롱, 욕설 등의 폭언을 하지 말아주세요. 폭언 시 상담이 제한되고
-                    법령에 따라 조치될 수 있습니다.
-                </p>
+          <div class="column is-two-thirds">
+            <p class="notification is-light has-text-centered">
+              ※ iLog カスタマーセンターは、産業安全保健法に基づき<br />
+              顧客対応スタッフを保護しています。<br />
+              セクハラや暴言などの不適切な言動はご遠慮ください。<br />
+              暴言があった場合、対応が制限され、法令に基づき対応されることがあります。
+            </p>
 
-                <div class="box">
-                    <!-- 📌 제목 추가 -->
-                    <div class="field">
-                        <label class="label">문의 제목</label>
-                        <div class="control">
-                            <input
-                                    class="input"
-                                    readonly
-                                    th:value="${claimDetails.title}"
-                                    type="text"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- 📌 문의 유형 추가 -->
-                    <div class="field">
-                        <label class="label">문의 유형</label>
-                        <div class="control">
-                            <input
-                                    class="input"
-                                    readonly
-                                    th:value="${claimDetails.type}"
-                                    type="text"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- 📌 등록 날짜 추가 -->
-                    <div class="field">
-                        <label class="label">등록 날짜</label>
-                        <div class="control">
-                  <span
-                          th:text="${#temporals.format(claimDetails.createdAt, 'yyyy-MM-dd HH:mm')}"
-                  ></span>
-                        </div>
-                    </div>
-
-                    <!-- 📌 문의 내용 -->
-                    <div class="field">
-                        <label class="label">문의 내용</label>
-                        <div class="control">
-                  <textarea
-                          class="textarea"
-                          readonly
-                          th:text="${claimDetails.content}"
-                  ></textarea>
-                        </div>
-                    </div>
-
-                    <!-- 📌 답변 목록 -->
-                    <div class="field">
-                        <label class="label">답변</label>
-                        <div class="control">
-                            <div th:if="${claimDetails.claimAnswers.size() > 0}">
-                                <div
-                                        class="box"
-                                        th:each="answer : ${claimDetails.claimAnswers}"
-                                >
-                                    <p>
-                                        <strong>내용:</strong>
-                                        <span th:text="${answer.content}"></span>
-                                    </p>
-                                    <p>
-                                        <strong>작성자:</strong>
-                                        <span th:text="${answer.authorName}"></span>
-                                    </p>
-                                    <p>
-                                        <strong>작성일:</strong>
-                                        <span
-                                                th:text="${#temporals.format(answer.createdAt, 'yyyy-MM-dd HH:mm')}"
-                                        ></span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div th:if="${claimDetails.claimAnswers.size() == 0}">
-                                <p class="has-text-grey">아직 등록된 답변이 없습니다.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 📌 관리자만 답변 작성 가능 -->
-                    <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
-                        <!-- <h2 class="title is-5">답변 작성</h2> -->
-                        <form
-                                method="post"
-                                th:action="@{/claims/{claimId}/answer(claimId=${claimDetails.claimId})}"
-                        >
-                            <div class="field">
-                                <label class="label">답변 내용</label>
-                                <div class="control">
-                      <textarea
-                              class="textarea"
-                              name="content"
-                              required
-                      ></textarea>
-                                </div>
-                            </div>
-                            <button class="button is-primary" type="submit">
-                                답변 등록
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- 📌 버튼 그룹 -->
-                    <div class="has-text-centered mt-4">
-                        <a class="button is-light" th:href="@{/claims/claimsList}"
-                        >목록으로</a
-                        >
-                        <button
-                                class="button is-danger"
-                                onclick="confirmDelete(this)"
-                                th:data-claim-id="${claimDetails.claimId}"
-                        >
-                            삭제하기
-                        </button>
-                    </div>
+            <div class="box">
+              <!-- 件名 -->
+              <div class="field">
+                <label class="label">件名</label>
+                <div class="control">
+                  <input
+                    class="input"
+                    readonly
+                    th:value="${claimDetails.title}"
+                    type="text"
+                  />
                 </div>
+              </div>
+
+              <!-- お問い合わせ種別 -->
+              <div class="field">
+                <label class="label">お問い合わせの種類</label>
+                <div class="control">
+                  <input
+                    class="input"
+                    readonly
+                    th:value="${claimDetails.type.typeNameKr}"
+                    type="text"
+                  />
+                </div>
+              </div>
+
+              <!-- 登録日時 -->
+              <div class="field">
+                <label class="label">登録日時</label>
+                <div class="control">
+                  <span
+                    th:text="${#temporals.format(claimDetails.createdAt, 'yyyy-MM-dd HH:mm')}"
+                  ></span>
+                </div>
+              </div>
+
+              <!-- 内容 -->
+              <div class="field">
+                <label class="label">お問い合わせ内容</label>
+                <div class="control">
+                  <textarea
+                    class="textarea"
+                    readonly
+                    th:text="${claimDetails.content}"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- 回答一覧 -->
+              <div class="field">
+                <label class="label">回答</label>
+                <div class="control">
+                  <div th:if="${claimDetails.claimAnswers.size() > 0}">
+                    <div
+                      class="box"
+                      th:each="answer : ${claimDetails.claimAnswers}"
+                    >
+                      <p>
+                        <strong>内容：</strong>
+                        <span th:text="${answer.content}"></span>
+                      </p>
+                      <p>
+                        <strong>回答者：</strong>
+                        <span th:text="${answer.authorName}"></span>
+                      </p>
+                      <p>
+                        <strong>作成日：</strong>
+                        <span
+                          th:text="${#temporals.format(answer.createdAt, 'yyyy-MM-dd HH:mm')}"
+                        ></span>
+                      </p>
+                    </div>
+                  </div>
+                  <div th:if="${claimDetails.claimAnswers.size() == 0}">
+                    <p class="has-text-grey">まだ回答が登録されていません。</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 管理者のみ回答可能 -->
+              <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                <form
+                  method="post"
+                  th:action="@{/claims/{claimId}/answer(claimId=${claimDetails.claimId})}"
+                >
+                  <div class="field">
+                    <label class="label">回答内容</label>
+                    <div class="control">
+                      <textarea
+                        class="textarea"
+                        name="content"
+                        required
+                      ></textarea>
+                    </div>
+                  </div>
+                  <button class="button is-primary" type="submit">
+                    回答を登録する
+                  </button>
+                </form>
+              </div>
+
+              <!-- ボタン -->
+              <div class="has-text-centered mt-4">
+                <a class="button is-light" th:href="@{/claims/claimsList}">
+                  一覧へ戻る
+                </a>
+                <button
+                  class="button is-danger"
+                  onclick="confirmDelete(this)"
+                  th:data-claim-id="${claimDetails.claimId}"
+                >
+                  削除する
+                </button>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</section>
-<div th:replace="fragments/footer :: ilogFooter"></div>
-<!-- 📌 삭제 확인 알림창 (SweetAlert) -->
-<script>
-    function confirmDelete(buttonElement) {
-      let claimId = buttonElement.getAttribute('data-claim-id');
-      console.log('📌 삭제 요청 claimId:', claimId); // ✅ claimId 확인 로그
+      </div>
+    </section>
 
-      if (!claimId || isNaN(Number(claimId))) {
-        console.error(
-          '❌ 삭제 요청 실패: claimId가 올바르지 않습니다.',
-          claimId
-        );
-        Swal.fire(
-          '오류',
-          '삭제 요청에 문제가 발생했습니다. 다시 시도해주세요.',
-          'error'
-        );
-        return;
-      }
+    <div th:replace="fragments/footer :: ilogFooter"></div>
 
-      Swal.fire({
-        title: '정말 삭제하시겠습니까?',
-        text: '삭제 후 복구할 수 없습니다.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: '삭제하기',
-        cancelButtonText: '취소',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          let deleteUrl = `/claims/${Number(claimId)}`; // ✅ URL이 올바르게 생성되는지 확인
-          console.log('📌 DELETE 요청 URL:', deleteUrl);
+    <!-- 削除確認ダイアログ -->
+    <script>
+      function confirmDelete(buttonElement) {
+        let claimId = buttonElement.getAttribute('data-claim-id');
+        console.log('📌 削除対象 claimId:', claimId);
 
-          fetch(deleteUrl, {
-            method: 'DELETE',
-            headers: {
-              'X-CSRF-TOKEN':
-                document
-                  .querySelector("meta[name='_csrf']")
-                  ?.getAttribute('content') || '',
-              'Content-Type': 'application/json',
-            },
-          })
-            .then((response) => {
-              console.log('삭제 요청 응답 상태 코드:', response.status); // ✅ 응답 코드 확인
-              return response.text().then((text) => {
-                console.log('📌 응답 본문:', text); // ✅ 응답 내용을 확인하기 위해 추가
-                if (response.ok) {
-                  Swal.fire(
-                    '삭제 완료!',
-                    '문의가 삭제되었습니다.',
-                    'success'
-                  ).then(() => {
-                    window.location.href = '/claims/claimsList';
-                  });
-                } else {
-                  Swal.fire('삭제 실패', '삭제에 실패했습니다.', 'error');
-                }
-              });
-            })
-            .catch((error) => {
-              console.error('삭제 요청 중 오류 발생:', error);
-              Swal.fire('오류', '삭제 요청 중 문제가 발생했습니다.', 'error');
-            });
+        if (!claimId || isNaN(Number(claimId))) {
+          console.error('❌ claimId が不正です:', claimId);
+          Swal.fire(
+            'エラー',
+            '削除に失敗しました。もう一度お試しください。',
+            'error'
+          );
+          return;
         }
-      });
-    }
-</script>
-</body>
+
+        Swal.fire({
+          title: '本当に削除しますか？',
+          text: '削除後は復元できません。',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: '削除する',
+          cancelButtonText: 'キャンセル',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            let deleteUrl = `/claims/${Number(claimId)}`;
+            console.log('📌 削除URL:', deleteUrl);
+
+            fetch(deleteUrl, {
+              method: 'DELETE',
+              headers: {
+                'X-CSRF-TOKEN':
+                  document
+                    .querySelector("meta[name='_csrf']")
+                    ?.getAttribute('content') || '',
+                'Content-Type': 'application/json',
+              },
+            })
+              .then((response) => {
+                console.log('削除レスポンスコード:', response.status);
+                return response.text().then((text) => {
+                  console.log('📌 レスポンステキスト:', text);
+                  if (response.ok) {
+                    Swal.fire(
+                      '削除完了',
+                      'お問い合わせが削除されました。',
+                      'success'
+                    ).then(() => {
+                      window.location.href = '/claims/claimsList';
+                    });
+                  } else {
+                    Swal.fire('削除失敗', '削除に失敗しました。', 'error');
+                  }
+                });
+              })
+              .catch((error) => {
+                console.error('削除エラー:', error);
+                Swal.fire('エラー', '削除中に問題が発生しました。', 'error');
+              });
+          }
+        });
+      }
+    </script>
+  </body>
 </html>

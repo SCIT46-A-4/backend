@@ -1,30 +1,29 @@
 $(document).ready(function () {
-  console.log('✅ Document loaded');
+  console.log('✅ ドキュメント読み込み完了');
 
-  // Initialize variables to track the original form values
+  // 元のフォームデータと画像パスを保存するための変数
   let originalFormData = {};
   let originalImagePath = '';
 
-  // Register FilePond plugins
+  // FilePond プラグイン登録
   FilePond.registerPlugin(
     FilePondPluginImagePreview,
     FilePondPluginFileValidateType,
     FilePondPluginFileValidateSize
   );
 
-  // Get the existing image path
+  // 既存の画像パスを取得
   const checkPathElem = document.getElementById('myHealthCheckImageSrc');
   const checkPath = checkPathElem ? checkPathElem.value : '';
-  /*  const checkPath = document.getElementById('myHealthCheckImageSrc').value;*/
   const existingImagePath = checkPath
     ? 'http://localhost:9900' + checkPath
     : null;
   originalImagePath = existingImagePath;
-  console.log('📌 Existing image path:', existingImagePath);
+  console.log('📌 既存の画像パス:', existingImagePath);
 
-  // Initialize FilePond
+  // FilePond 初期化
   const pond = FilePond.create(document.querySelector('.filepond'), {
-    labelIdle: `드래그 앤 드롭 또는 <span class="filepond--label-action">파일 선택</span>`,
+    labelIdle: `ドラッグ＆ドロップ または <span class="filepond--label-action">ファイル選択</span>`,
     allowMultiple: false,
     maxFileSize: '50MB',
     acceptedFileTypes: ['image/*'],
@@ -36,24 +35,20 @@ $(document).ready(function () {
     styleLoadIndicatorPosition: 'center bottom',
     styleButtonRemoveItemPosition: 'center bottom',
     instantUpload: false,
-    allowReplace: true, // Allow image replacement
+    allowReplace: true,
   });
 
-  // Add existing image to FilePond if it exists
+  // 既存の画像があれば FilePond に追加
   if (existingImagePath) {
     pond.addFiles(existingImagePath, {
-      // type: 'remote',
       source: checkPath,
-      options: {
-        type: 'remote',
-      },
+      options: { type: 'remote' },
     });
   }
 
-  // Store original form values after initialization
+  // 初期フォームデータを保存
   storeOriginalFormValues();
 
-  // Function to store original form values
   function storeOriginalFormValues() {
     originalFormData = {
       height: $("input[name='height']").val(),
@@ -62,12 +57,10 @@ $(document).ready(function () {
       rightEye: $("input[name='rightEye']").val(),
       note: $("textarea[name='note']").val(),
     };
-    console.log('📌 Original form values stored:', originalFormData);
+    console.log('📌 元のフォーム値を保存:', originalFormData);
   }
 
-  // Function to check if form data has changed
   function hasFormDataChanged() {
-    // Check text inputs and textarea
     if (
       originalFormData.height !== $("input[name='height']").val() ||
       originalFormData.weight !== $("input[name='weight']").val() ||
@@ -78,73 +71,57 @@ $(document).ready(function () {
       return true;
     }
 
-    // Check if image has changed
     const files = pond.getFiles();
-
-    // 원래 이미지가 있었는데, 지금은 파일이 없으면 삭제된 것으로 판단
     if (originalImagePath && files.length === 0) {
       return true;
     }
-    //지금 새로운 파일이 업로드 된 상태인지 아닌지를 확인하는 것
     if (files.length > 0 && files[0].source instanceof File) {
       return true;
     }
-    // If we reach here, nothing has changed
     return false;
   }
 
-  // Form submission handler
+  // フォーム送信時
   $('#childRecordForm').on('submit', function (event) {
     event.preventDefault();
-    console.log('📌 Form submission event triggered');
+    console.log('📌 フォーム送信イベント');
 
-    // Check if any data has changed
     if (!hasFormDataChanged()) {
       Swal.fire({
-        title: '변경된 내용이 없습니다.',
+        title: '変更された内容がありません。',
         icon: 'info',
-        confirmButtonText: '확인',
+        confirmButtonText: '確認',
       });
       return;
     }
 
-    // Get form identifiers
     const childId = $(this).attr('data-child-id');
     const recordId = $(this).attr('data-record-id');
-    console.log('📌 Child ID:', childId, 'Record ID:', recordId);
+    console.log('📌 子どもID:', childId, '記録ID:', recordId);
 
-    // Create and populate FormData
     const formData = createFormData();
-
-    // Send AJAX request with the form data
     submitFormData(childId, recordId, formData);
   });
 
-  // Function to create and populate FormData
   function createFormData() {
     const formData = new FormData();
-
-    // Add form field values
     formData.append('height', $("input[name='height']").val());
     formData.append('weight', $("input[name='weight']").val());
     formData.append('leftEye', $("input[name='leftEye']").val());
     formData.append('rightEye', $("input[name='rightEye']").val());
     formData.append('note', $("textarea[name='note']").val());
 
-    // Check if a new file was added
     const files = pond.getFiles();
     if (files.length > 0 && files[0].source instanceof File) {
       formData.append('healthCheckImg', files[0].file);
-      // formData.append('fileName', files[0].file.name);
-      console.log('📌 New file added:', files[0].file.name);
+      console.log('📌 新しいファイルが追加されました:', files[0].file.name);
     } else {
-      console.log('📌 Keeping existing image (no file transfer)');
+      console.log('📌 既存の画像を保持（ファイル送信なし）');
     }
 
     return formData;
   }
 
-  // Function to submit the form data via AJAX
   function submitFormData(childId, recordId, formData) {
     $.ajax({
       url: `/children/${childId}/records/${recordId}/edit`,
@@ -153,21 +130,18 @@ $(document).ready(function () {
       contentType: false,
       processData: false,
       success: function (response) {
-        console.log('✅ Server response:', response);
+        console.log('✅ サーバー応答:', response);
         if (response.success) {
-          console.log(
-            '✅ Update successful! Redirecting to:',
-            response.redirectUrl
-          );
+          console.log('✅ 更新成功！ リダイレクト先:', response.redirectUrl);
           window.location.href = response.redirectUrl;
         } else {
-          console.error('❌ Update failed');
-          Swal.fire('수정에 실패했습니다. 다시 시도해 주세요.');
+          console.error('❌ 更新失敗');
+          Swal.fire('修正に失敗しました。もう一度お試しください。');
         }
       },
       error: function (xhr) {
-        console.error('❌ AJAX error:', xhr.responseText);
-        Swal.fire('수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        console.error('❌ AJAX エラー:', xhr.responseText);
+        Swal.fire('修正中にエラーが発生しました。もう一度お試しください。');
       },
     });
   }

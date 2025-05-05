@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum Gender {
-    MAN("남"),
-    WOMAN("여"),
-    NONE("선택안함");
+    MAN("男"),
+    WOMAN("女"),
+    NONE("なし");
 
     private final String typeNameKr;
 

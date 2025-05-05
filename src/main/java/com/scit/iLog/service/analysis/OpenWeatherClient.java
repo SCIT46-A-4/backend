@@ -16,6 +16,6 @@ public interface OpenWeatherClient {
             @RequestParam("dt") long dt,
             @RequestParam("appid") String appid,
             @RequestParam(value = "units", defaultValue = "metric") String units,
-            @RequestParam(value = "lang", defaultValue = "kr") String lang
+            @RequestParam(value = "lang", defaultValue = "ja") String lang
     );
 }

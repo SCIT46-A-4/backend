@@ -1,152 +1,152 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <title>설문 목록</title>
     <!-- Bulma CSS -->
     <link
-            href="../../../static/css/bulma.min.css"
-            rel="stylesheet"
-            th:href="@{/css/bulma.min.css}"
+      href="../../../static/css/bulma.min.css"
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
     />
     <link
-            href="../../../static/css/customColors.css"
-            rel="stylesheet"
-            th:href="@{/css/customColors.css}"
+      href="../../../static/css/customColors.css"
+      rel="stylesheet"
+      th:href="@{/css/customColors.css}"
     />
     <link
-            href="../../../static/css/footer.css"
-            rel="stylesheet"
-            th:href="@{/css/footer.css}"
+      href="../../../static/css/footer.css"
+      rel="stylesheet"
+      th:href="@{/css/footer.css}"
     />
 
     <style>
-        .primary-color {
-          color: #fdf5bf;
-        }
+      .primary-color {
+        color: #fdf5bf;
+      }
 
-        html {
-          background-color: #fdf5bf;
-        }
+      html {
+        background-color: #fdf5bf;
+      }
 
-        h1 {
-          text-align: center;
-        }
+      h1 {
+        text-align: center;
+      }
 
-        .secondary-bg {
-          background-color: #bee6d9;
-        }
+      .secondary-bg {
+        background-color: #bee6d9;
+      }
 
-        .media-content {
-          margin-top: 10px;
-          margin-bottom: 10px;
-        }
+      .media-content {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
 
-        /* 설문 목록 간격 조정을 위한 스타일 추가 */
-        .survey-list {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          /* 설문 항목 사이 간격 */
-        }
+      /* 설문 목록 간격 조정을 위한 스타일 추가 */
+      .survey-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        /* 설문 항목 사이 간격 */
+      }
 
-        .survey-item {
-          margin: 0;
-          /* 기존 마진 제거 */
-        }
+      .survey-item {
+        margin: 0;
+        /* 기존 마진 제거 */
+      }
 
-        .survey-box {
-          padding: 1.5rem;
-          /* 박스 내부 여백 */
-          transition: transform 0.2s ease;
-          /* 호버 효과를 위한 트랜지션 */
-        }
+      .survey-box {
+        padding: 1.5rem;
+        /* 박스 내부 여백 */
+        transition: transform 0.2s ease;
+        /* 호버 효과를 위한 트랜지션 */
+      }
 
-        .survey-box:hover {
-          transform: translateY(-3px);
-          /* 호버 시 살짝 위로 떠오르는 효과 */
-        }
+      .survey-box:hover {
+        transform: translateY(-3px);
+        /* 호버 시 살짝 위로 떠오르는 효과 */
+      }
     </style>
-</head>
-<!-- 2025-03-13 / 김은진 / 수정 -->
+  </head>
+  <!-- 2025-03-13 / 김은진 / 수정 -->
 
-<body>
-<!-- 네비게이션 바 -->
-<nav aria-label="main navigation" class="navbar" role="navigation">
-    <div class="navbar-brand">
+  <body>
+    <!-- ナビゲーションバー -->
+    <nav aria-label="main navigation" class="navbar" role="navigation">
+      <div class="navbar-brand">
         <a class="navbar-item" href="/dashboard">
-            <img
-                    alt="iLog 로고"
-                    src="../../static/images/wilog.png"
-                    style="max-height: 60px"
-                    th:src="@{/images/wilog.png}"
-            />
+          <img
+            alt="iLog ロゴ"
+            src="../../static/images/wilog.png"
+            style="max-height: 60px"
+            th:src="@{/images/wilog.png}"
+          />
         </a>
-    </div>
-    <div class="navbar-end">
+      </div>
+      <div class="navbar-end">
         <div class="navbar-item">
-            <div class="buttons">
-                <a class="button is-light" href="/dashboard">
-                    <span class="icon"><i class="fas fa-home"></i></span>
-                    <span>대시보드</span>
-                </a>
-                <a class="button is-light" href="/guides">
-                    <span class="icon"><i class="fas fa-info-circle"></i></span>
-                    <span>이용안내</span>
-                </a>
-                <a class="button is-light" href="/claims">
-                    <span class="icon"><i class="fas fa-headset"></i></span>
-                    <span>고객센터</span>
-                </a>
-            </div>
+          <div class="buttons">
+            <a class="button is-light" href="/dashboard">
+              <span class="icon"><i class="fas fa-home"></i></span>
+              <span>ダッシュボード</span>
+            </a>
+            <a class="button is-light" href="/guides">
+              <span class="icon"><i class="fas fa-info-circle"></i></span>
+              <span>ご利用案内</span>
+            </a>
+            <a class="button is-light" href="/claims">
+              <span class="icon"><i class="fas fa-headset"></i></span>
+              <span>お問い合わせ</span>
+            </a>
+          </div>
         </div>
         <div class="navbar-item">
-            <div class="buttons">
-                <a class="button is-light" th:href="@{/members/myDetails}">
-                    <span class="icon"><i class="fas fa-user"></i></span>
-                    <span th:text="|${memberName}(${relationType})|"
-                    >김미영(부모)</span
-                    >
-                </a>
-            </div>
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|">
+                김미영(保護者)
+              </span>
+            </a>
+          </div>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<section class="section">
-    <div class="container">
-        <h1 class="title primary-color">설문 목록</h1>
+    <section class="section">
+      <div class="container">
+        <h1 class="title primary-color">アンケート一覧</h1>
         <ul class="survey-list">
-            <li
-                    class="survey-item"
-                    th:each="survey : ${mentalSurveys}"
-                    th:if="${survey.type == userType}"
-            >
-                <div class="box survey-box">
-                    <article class="media">
-                        <div class="media-content">
-                            <div class="content">
-                                <p>
-                                    <strong
-                                            class="survey-title"
-                                            th:text="${survey.title}"
-                                    ></strong>
-                                    <br/>
-                                    <!-- <span th:text="${survey.description}"></span> -->
-                                </p>
-                            </div>
-                        </div>
-                        <div class="media-right">
-                            <a class="button secondary-bg" th:href="@{${survey.link}}"
-                            >바로가기</a
-                            >
-                        </div>
-                    </article>
+          <li
+            class="survey-item"
+            th:each="survey : ${mentalSurveys}"
+            th:if="${survey.type == userType}"
+          >
+            <div class="box survey-box">
+              <article class="media">
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong
+                        class="survey-title"
+                        th:text="${survey.title}"
+                      ></strong>
+                      <br />
+                      <!-- <span th:text="${survey.description}"></span> -->
+                    </p>
+                  </div>
                 </div>
-            </li>
+                <div class="media-right">
+                  <a class="button secondary-bg" th:href="@{${survey.link}}"
+                    >すぐに進む</a
+                  >
+                </div>
+              </article>
+            </div>
+          </li>
         </ul>
-    </div>
-</section>
-<div th:replace="fragments/footer :: ilogFooter"></div>
-</body>
+      </div>
+    </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>

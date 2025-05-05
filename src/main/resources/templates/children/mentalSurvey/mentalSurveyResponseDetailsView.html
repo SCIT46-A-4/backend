@@ -1,262 +1,253 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <title>설문 결과 조회</title>
     <!-- Bulma CSS -->
     <link
-            href="../../../static/css/bulma.min.css"
-            rel="stylesheet"
-            th:href="@{/css/bulma.min.css}"
+      href="../../../static/css/bulma.min.css"
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
     />
     <style>
-        .primary-color {
-          color: #fdf5bf;
-        }
-        .secondary-bg {
-          background-color: #bee6d9;
-        }
-        #resultContainer {
-          min-height: 80vh;
-          display: grid;
-          flex-direction: column;
-          align-items: stretch;
-          grid-template-rows: 100px 1fr auto;
-        }
-        .diagnosis {
-          text-decoration: underline;
-        }
-        .diagnosis.red {
-          color: red;
-        }
-        .diagnosis.orange {
-          color: orange;
-        }
-        .diagnosis.green {
-          color: green;
-        }
-        .diagnosis.blue {
-          color: blue;
-        }
-        #surveyTitle {
-          color: #333;
-        }
+      .primary-color {
+        color: #fdf5bf;
+      }
+      .secondary-bg {
+        background-color: #bee6d9;
+      }
+      #resultContainer {
+        min-height: 80vh;
+        display: grid;
+        flex-direction: column;
+        align-items: stretch;
+        grid-template-rows: 100px 1fr auto;
+      }
+      .diagnosis {
+        text-decoration: underline;
+      }
+      .diagnosis.red {
+        color: red;
+      }
+      .diagnosis.orange {
+        color: orange;
+      }
+      .diagnosis.green {
+        color: green;
+      }
+      .diagnosis.blue {
+        color: blue;
+      }
+      #surveyTitle {
+        color: #333;
+      }
     </style>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
     <!-- 외부 스크립트 파일 불러오기 -->
     <script>
-        $(document).ready(function () {
-          $('#deleteButton').click(function () {
-            var childId = $('#child-id').val();
-            var responseId = $('#response-id').val();
-            var url =
-              '/children/' + childId + '/mentalSurveys/responses/' + responseId;
-            var mentalSurveyStatsUrl =
-              '/children/' + childId + '/mentalSurveys/responses/stats';
-            Swal.fire({
-              title: '정말 삭제하시겠습니까?',
-              text: '삭제 후 다른 설문 결과 보기 페이지로 이동합니다.',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: '네, 삭제합니다.',
-              cancelButtonText: '아니요',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                $.ajax({
-                  url: url,
-                  type: 'DELETE',
-                  success: function (result) {
-                    Swal.fire('삭제되었습니다.');
-                    // 삭제 후 다른 설문 결과 보기 페이지로 이동
-                    setTimeout(() => {
-                      window.location.href = mentalSurveyStatsUrl;
-                    }, 1000);
-                  },
-                  error: function (xhr, status, error) {
-                    Swal.fire('삭제에 실패하였습니다: ' + error);
-                  },
-                });
-              }
-            });
-            // if (confirm('정말 삭제하시겠습니까?')) {
-            //   var childId = $(this).data('childId');
-            //   var responseId = $(this).data('responseId');
-            //   var url =
-            //     '/children/' +
-            //     childId +
-            //     '/mentalSurveys/responses/' +
-            //     responseId +
-            //     '/delete';
+      $(document).ready(function () {
+        $('#deleteButton').click(function () {
+          var childId = $('#child-id').val();
+          var responseId = $('#response-id').val();
+          var url =
+            '/children/' + childId + '/mentalSurveys/responses/' + responseId;
+          var mentalSurveyStatsUrl =
+            '/children/' + childId + '/mentalSurveys/responses/stats';
 
-            //   $.ajax({
-            //     url: url,
-            //     type: 'DELETE',
-            //     success: function (result) {
-            //       Swal.fire('삭제되었습니다.');
-            //       // 삭제 후 다른 설문 결과 보기 페이지로 이동
-            //       window.location.href =
-            //         '/children/' + childId + '/mentalSurveys/responses/stats';
-            //     },
-            //     error: function (xhr, status, error) {
-            //       Swal.fire('삭제에 실패하였습니다: ' + error);
-            //     },
-            //   });
-            // }
+          Swal.fire({
+            title: '本当に削除しますか？',
+            text: '削除後、別のアンケート結果ページに移動します。',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'はい、削除します',
+            cancelButtonText: 'いいえ',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $.ajax({
+                url: url,
+                type: 'DELETE',
+                success: function (result) {
+                  Swal.fire('削除が完了しました。');
+                  // 削除後に他のアンケート結果ページへ遷移
+                  setTimeout(() => {
+                    window.location.href = mentalSurveyStatsUrl;
+                  }, 1000);
+                },
+                error: function (xhr, status, error) {
+                  Swal.fire('削除に失敗しました: ' + error);
+                },
+              });
+            }
           });
+
+          // 古いバージョンのコード（必要に応じて使用可）
+          // if (confirm('本当に削除しますか？')) {
+          //   var childId = $(this).data('childId');
+          //   var responseId = $(this).data('responseId');
+          //   var url =
+          //     '/children/' +
+          //     childId +
+          //     '/mentalSurveys/responses/' +
+          //     responseId +
+          //     '/delete';
+
+          //   $.ajax({
+          //     url: url,
+          //     type: 'DELETE',
+          //     success: function (result) {
+          //       Swal.fire('削除が完了しました。');
+          //       window.location.href =
+          //         '/children/' + childId + '/mentalSurveys/responses/stats';
+          //     },
+          //     error: function (xhr, status, error) {
+          //       Swal.fire('削除に失敗しました: ' + error);
+          //     },
+          //   });
+          // }
         });
+      });
     </script>
-</head>
-<body>
-<nav aria-label="main navigation" class="navbar" role="navigation">
-    <!-- 로고 + dashboard 바로가기 -->
-    <div class="logo">
+  </head>
+  <body>
+    <nav aria-label="main navigation" class="navbar" role="navigation">
+      <!-- ロゴ + ダッシュボードへのリンク -->
+      <div class="logo">
         <a th:href="@{/dashboard}">
-            <img
-                    alt="로고"
-                    class="image"
-                    src="../../static/images/wilog.png"
-                    style="width: 100px; height: auto"
-                    th:src="@{/images/wilog.png}"
-            />
+          <img
+            alt="ロゴ"
+            class="image"
+            src="../../static/images/wilog.png"
+            style="width: 100px; height: auto"
+            th:src="@{/images/wilog.png}"
+          />
         </a>
-    </div>
-</nav>
-<section class="section">
-    <div class="container" id="resultContainer">
-        <!-- 설문 제목 -->
+      </div>
+    </nav>
+
+    <section class="section">
+      <div class="container" id="resultContainer">
+        <!-- アンケートタイトル -->
         <h1
-                class="title primary-color"
-                id="surveyTitle"
-                th:text="${responseDetails.surveyTitle}"
+          class="title primary-color"
+          id="surveyTitle"
+          th:text="${responseDetails.surveyTitle}"
         >
-            설문 제목
+          アンケートタイトル
         </h1>
+
         <div class="box">
-            <!-- 총 점수 -->
-            <p>
-                <strong>총 점수:</strong>
-                <span th:text="${responseDetails.totalLikertScore}">0</span>
-            </p>
-            <!-- 코멘트 -->
-            <p>
-                <strong>코멘트:</strong>
-                <span th:text="${responseDetails.comment}">없음</span>
-            </p>
-            <!-- 설문 제출 일시 -->
-            <p>
-                <strong>설문일시:</strong>
-                <span
-                        th:text="${#temporals.format(responseDetails.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
-                >2025-02-17 00:00:00</span
-                >
-            </p>
-            <hr/>
-
-            <th:block th:if="${responseDetails.totalLikertScore < 15}">
-                <h3>
-                    <strong>현재 진단 결과: </strong
-                    ><span class="diagnosis red">위험</span>
-                </h3>
-                <p>
-                    현재 심리 상태는 즉각적인 주의가 필요한 단계로 보입니다.<br/>
-                    일상생활에서 불안정성이 크게 느껴지거나, 심리·정서적 어려움이
-                    급격하게 나타날 가능성이 있습니다.<br/>
-                    가능한 한 빠른 시일 내에 전문가 상담 및 적절한 조치를 통해 심층
-                    평가와 지원이 필요합니다.
-                </p>
-            </th:block>
-
-            <th:block
-                    th:if="${responseDetails.totalLikertScore >= 15 and responseDetails.totalLikertScore < 30}"
+          <!-- 総スコア -->
+          <p>
+            <strong>総スコア：</strong>
+            <span th:text="${responseDetails.totalLikertScore}">0</span>
+          </p>
+          <!-- コメント -->
+          <p>
+            <strong>コメント：</strong>
+            <span th:text="${responseDetails.comment}">なし</span>
+          </p>
+          <!-- アンケート実施日時 -->
+          <p>
+            <strong>アンケート日時：</strong>
+            <span
+              th:text="${#temporals.format(responseDetails.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
+              >2025-02-17 00:00:00</span
             >
-                <h3>
-                    <strong>현재 진단 결과: </strong
-                    ><span class="diagnosis orange">주의 필요</span>
-                </h3>
-                <p>
-                    눈에 띄는 불안 요인이나 스트레스가 감지되므로, 가까운 시일 내에
-                    자세한 관찰이 요구됩니다.<br/> 큰 위기는 아니어도, 환경적·심리적
-                    요인을 조기에 파악하여 문제를 완화하거나 예방하는 노력이
-                    중요합니다.<br/>
-                    스스로 혹은 주변인과 함께 심리적 지원 체계를 마련하고, 일상 속에서
-                    스트레스 조절 방안을 찾아 실천해보는 것이 좋습니다.
-                </p>
-            </th:block>
+          </p>
+          <hr />
 
-            <th:block
-                    th:if="${responseDetails.totalLikertScore >= 30 and responseDetails.totalLikertScore < 45}"
-            >
-                <h3>
-                    <strong>현재 진단 결과: </strong
-                    ><span class="diagnosis green">정상</span>
-                </h3>
-                <p>
-                    전반적으로 안정적이며, 큰 심리적 부담이나 스트레스 징후가
-                    두드러지지 않은 상태로 보입니다.<br/> 다만, 언제든 일상 속 변화나
-                    외부 요인으로 인해 스트레스가 발생할 수 있으므로, 꾸준한 자기
-                    돌봄이 중요합니다.<br/>
-                    주기적인 자기 점검과 생활 습관 관리, 가족·친구 등 사회적 지지망을
-                    유지하며 필요하면 전문가와 상담할 수 있도록 대비하면 좋습니다.
-                </p>
-            </th:block>
-
-            <th:block th:if="${responseDetails.totalLikertScore >= 45}">
-                <h3>
-                    <strong>현재 진단 결과: </strong
-                    ><span class="diagnosis blue">양호</span>
-                </h3>
-                <p>
-                    현재 심리 상태가 매우 양호하여, 스트레스 대처 능력도 비교적
-                    건전하고 안정적인 편으로 판단됩니다.<br/> 긍정적인 자기 인식과
-                    대인관계, 감정 조절 능력을 바탕으로 일상생활 전반에서 건강한 심리
-                    상태를 유지하고 있을 가능성이 높습니다.<br/>
-                    향후에도 규칙적인 운동·취미 활동·사회적 교류 등을 통해 이 상태를
-                    꾸준히 이어나가고, 정기적으로 점검하며 균형을 잃지 않도록 주의하는
-                    것이 좋습니다.
-                </p>
-            </th:block>
-            <hr/>
-            <p id="information">
-                본 설문은 아이의 감정 상태를 이해하는 데 도움을 주기 위한 참고
-                자료입니다. 점수는 아이의 감정 상태를 반영하는 하나의 지표이며,
-                아이의 행동이나 생활 패턴과 함께 고려하는 것이 중요합니다.
-                정기적으로 설문을 진행하여 아이의 감정 변화를 체크해 보세요. 아이가
-                보이는 감정이나 행동을 주의 깊게 살펴보시고, 아이와의 대화를 통해
-                감정을 자연스럽게 표현할 수 있도록 도와주세요. 필요하다면 전문가의
-                상담을 고려해볼 수도 있습니다. 아이가 건강한 감정을 키워갈 수 있도록
-                항상 노력하는 보호자의 노고에 감사드립니다. 작은 변화도 소중히
-                여기며, 아이와 함께 성장하는 따뜻한 시간이 되길 바랍니다. 😊
+          <th:block th:if="${responseDetails.totalLikertScore < 15}">
+            <h3>
+              <strong>現在の診断結果：</strong>
+              <span class="diagnosis red">危険</span>
+            </h3>
+            <p>
+              現在の心理状態は即時の注意が必要な段階です。<br />
+              日常生活での不安定さが大きく感じられ、心理的・情緒的な困難が急激に現れる可能性があります。<br />
+              できるだけ早く専門家の相談や適切な対応を通じて、深い評価と支援が必要です。
             </p>
+          </th:block>
+
+          <th:block
+            th:if="${responseDetails.totalLikertScore >= 15 and responseDetails.totalLikertScore < 30}"
+          >
+            <h3>
+              <strong>現在の診断結果：</strong>
+              <span class="diagnosis orange">注意が必要</span>
+            </h3>
+            <p>
+              顕著な不安要素やストレスが感じられ、近いうちに詳細な観察が必要です。<br />
+              大きな危機ではないとしても、環境的・心理的要因を早期に把握して問題を緩和・予防する努力が重要です。<br />
+              自身または周囲の人と心理的サポート体制を整え、日常生活の中でストレスを管理できる方法を実践することが望まれます。
+            </p>
+          </th:block>
+
+          <th:block
+            th:if="${responseDetails.totalLikertScore >= 30 and responseDetails.totalLikertScore < 45}"
+          >
+            <h3>
+              <strong>現在の診断結果：</strong>
+              <span class="diagnosis green">正常</span>
+            </h3>
+            <p>
+              全体的に安定しており、心理的な負担やストレスの兆候は目立たない状態です。<br />
+              ただし、日常の変化や外部要因によってストレスが発生する可能性があるため、継続的なセルフケアが重要です。<br />
+              定期的な自己チェックと生活習慣の管理、家族・友人との関係維持、必要時には専門家への相談体制を備えておきましょう。
+            </p>
+          </th:block>
+
+          <th:block th:if="${responseDetails.totalLikertScore >= 45}">
+            <h3>
+              <strong>現在の診断結果：</strong>
+              <span class="diagnosis blue">良好</span>
+            </h3>
+            <p>
+              現在の心理状態は非常に良好で、ストレス対処能力も比較的健全で安定していると判断されます。<br />
+              ポジティブな自己認識と対人関係、感情コントロール能力を基盤に、日常生活全般で健康な心理状態を保っている可能性が高いです。<br />
+              今後も定期的な運動・趣味活動・社会的交流を通じてこの状態を維持し、バランスを崩さないよう注意しましょう。
+            </p>
+          </th:block>
+
+          <hr />
+          <p id="information">
+            本アンケートはお子様の感情状態を理解するための参考資料として提供されます。スコアは感情の一指標であり、行動や生活パターンと合わせて考慮することが重要です。<br />
+            定期的にアンケートを実施して感情の変化をチェックし、お子様の行動や表情を注意深く観察してください。<br />
+            また、お子様が自然に感情を表現できるよう、日々の対話の中で支援してあげてください。<br />
+            必要であれば専門家の相談もご検討ください。お子様が健やかな感情を育めるよう、日々努力されている保護者の皆様に心より感謝申し上げます。<br />
+            小さな変化にも気づきながら、お子様とともに成長する温かい時間となることを願っています。😊
+          </p>
         </div>
-        <!-- 버튼 영역 -->
+
+        <!-- ボタンエリア -->
         <div class="buttons">
-            <!-- 다른 설문 결과 보기 링크 -->
-            <a
-                    class="button secondary-bg"
-                    th:href="@{'/children/' + ${responseDetails.childId} + '/mentalSurveys/responses/stats'}"
-            >
-                다른 설문 보기
-            </a>
-            <!-- 삭제 버튼: data 속성으로 childId와 responseId 전달 -->
-            <input
-                    id="child-id"
-                    th:value="${responseDetails.childId}"
-                    type="hidden"
-            />
-            <input
-                    id="response-id"
-                    th:value="${responseDetails.responseId}"
-                    type="hidden"
-            />
-            <button class="button is-danger" id="deleteButton" type="button">
-                삭제
-            </button>
+          <!-- 他のアンケート結果へ -->
+          <a
+            class="button secondary-bg"
+            th:href="@{'/children/' + ${responseDetails.childId} + '/mentalSurveys/responses/stats'}"
+          >
+            他のアンケートを見る
+          </a>
+
+          <!-- 削除ボタン -->
+          <input
+            id="child-id"
+            th:value="${responseDetails.childId}"
+            type="hidden"
+          />
+          <input
+            id="response-id"
+            th:value="${responseDetails.responseId}"
+            type="hidden"
+          />
+          <button class="button is-danger" id="deleteButton" type="button">
+            削除
+          </button>
         </div>
-    </div>
-</section>
-<div th:replace="fragments/footer :: ilogFooter"></div>
-</body>
+      </div>
+    </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>

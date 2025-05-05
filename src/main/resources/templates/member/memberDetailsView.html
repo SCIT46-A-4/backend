@@ -1,204 +1,206 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <title>회원 상세 정보 - iLog</title>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/sweetalert2.js"></script>
     <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-            rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
     />
     <script>
-        $(document).ready(function () {
-          var deleteAllChildren;
-          $('#btn-quit').click(function () {
-            Swal.fire({
-              title: '정말 탈퇴하시겠습니까?',
-              text: '탈퇴하시면 등록하신 아동 정보가 모두 삭제됩니다.',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: '네, 탈퇴하겠습니다.',
-              cancelButtonText: '아니요',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                $.ajax({
-                  url: '/members/quit/v2',
-                  data: {
-                    deleteAllChildren: deleteAllChildren,
-                  },
-                  type: 'POST',
-                  success: function (res) {
-                    if (res) {
-                      Swal.fire({
-                        title: '서비스 이용이 종료 되었습니다.',
-                        text: '이용해 주셔서 감사합니다.',
-                        icon: 'success',
-                      });
-                      setTimeout(() => {
-                        location.href = '/';
-                      }, 3000);
-                    } else {
-                      Swal.fire({
-                        title: '회원 탈퇴에 실패했습니다.',
-                        text: '운영팀에 문의해주세요',
-                        icon: 'info',
-                        footer: '<a href="/claims">문의하기</a>',
-                      });
-                    }
-                  },
-                  error: function () {
-                    Swal.fire({
-                      title: '회원 탈퇴에 실패했습니다.',
-                      text: '운영팀에 문의해주세요',
-                      icon: 'info',
-                      footer: '<a href="/claims">문의하기</a>',
-                    });
-                  },
-                });
-              }
-            });
-          });
+      $(document).ready(function () {
+        var deleteAllChildren;
 
-          $('#deleteChildrenCheckBox').on('change', function (e) {
-            //체크되었으면 true, 체크 해제되었으면 false
-            deleteAllChildren = e.target.checked;
+        $('#btn-quit').click(function () {
+          Swal.fire({
+            title: '本当に退会しますか？',
+            text: '退会すると、登録されたお子様の情報はすべて削除されます。',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'はい、退会します。',
+            cancelButtonText: 'いいえ',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $.ajax({
+                url: '/members/quit/v2',
+                data: {
+                  deleteAllChildren: deleteAllChildren,
+                },
+                type: 'POST',
+                success: function (res) {
+                  if (res) {
+                    Swal.fire({
+                      title: 'サービスの利用を終了しました。',
+                      text: 'ご利用いただきありがとうございました。',
+                      icon: 'success',
+                    });
+                    setTimeout(() => {
+                      location.href = '/';
+                    }, 3000);
+                  } else {
+                    Swal.fire({
+                      title: '退会に失敗しました。',
+                      text: '運営チームまでお問い合わせください。',
+                      icon: 'info',
+                      footer: '<a href="/claims">お問い合わせ</a>',
+                    });
+                  }
+                },
+                error: function () {
+                  Swal.fire({
+                    title: '退会に失敗しました。',
+                    text: '運営チームまでお問い合わせください。',
+                    icon: 'info',
+                    footer: '<a href="/claims">お問い合わせ</a>',
+                  });
+                },
+              });
+            }
           });
         });
+
+        $('#deleteChildrenCheckBox').on('change', function (e) {
+          // チェックされていれば true、外されていれば false
+          deleteAllChildren = e.target.checked;
+        });
+      });
     </script>
     <link
-            href="../../static/css/bulma.min.css"
-            rel="stylesheet"
-            th:href="@{/css/bulma.min.css}"
+      href="../../static/css/bulma.min.css"
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
     />
     <style>
-        .hero.is-primary {
-          background-color: #fdf5bf;
-        }
-        .hero.is-primary .title {
-          color: white;
-        }
-        body {
-          display: grid;
-          height: 100vh;
-          grid-template-rows: auto 1fr;
-        }
-        #section-main {
-          display: grid;
-          place-items: center;
-          grid-template-rows: 100px auto;
-        }
+      .hero.is-primary {
+        background-color: #fdf5bf;
+      }
+      .hero.is-primary .title {
+        color: white;
+      }
+      body {
+        display: grid;
+        height: 100vh;
+        grid-template-rows: auto 1fr;
+      }
+      #section-main {
+        display: grid;
+        place-items: center;
+        grid-template-rows: 100px auto;
+      }
 
-        /* 2025-03-11 / 김은진 */
-        .title {
-          text-align: center;
-          color: black;
-        }
-        .button-group {
-          display: flex;
-          width: 100%;
-          flex-direction: row;
-          justify-content: center;
-          gap: 10px;
-          margin-top: 20px;
-        }
-        .box {
-          display: inline-block;
-        }
-        .columns.is-centered {
-          flex-direction: column;
-        }
-        .column.is-half {
-          display: flex;
-          justify-content: center;
-          width: 100%;
-        }
+      /* 2025-03-11 / 김은진 */
+      .title {
+        text-align: center;
+        color: black;
+      }
+      .button-group {
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .box {
+        display: inline-block;
+      }
+      .columns.is-centered {
+        flex-direction: column;
+      }
+      .column.is-half {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
     </style>
-</head>
-<body>
-<section class="hero is-primary">
-    <!-- 로고 + dashboard 바로가기 -->
-    <div class="logo">
+  </head>
+  <body>
+    <section class="hero is-primary">
+      <!-- ロゴ + ダッシュボードへのリンク -->
+      <div class="logo">
         <a th:href="@{/dashboard}">
-            <img
-                    alt="로고"
-                    class="image"
-                    src="../../static/images/wilog.png"
-                    style="width: 100px; height: auto"
-                    th:src="@{/images/wilog.png}"
-            />
+          <img
+            alt="ロゴ"
+            class="image"
+            src="../../static/images/wilog.png"
+            style="width: 100px; height: auto"
+            th:src="@{/images/wilog.png}"
+          />
         </a>
-    </div>
-</section>
+      </div>
+    </section>
 
-<section class="section" id="section-main">
-    <div class="hero-body">
+    <section class="section" id="section-main">
+      <div class="hero-body">
         <div class="container">
-            <h1 class="title">회원 상세 정보</h1>
+          <h1 class="title">会員詳細情報</h1>
         </div>
-    </div>
-    <div class="container">
+      </div>
+
+      <div class="container">
         <div class="columns is-centered">
-            <div class="column is-half">
-                <div class="box">
-                    <table class="table is-fullwidth">
-                        <tbody>
-                        <tr>
-                            <th>아이디</th>
-                            <td th:text="${memberDetails.signInId}">user123</td>
-                        </tr>
-                        <tr>
-                            <th>이름</th>
-                            <td th:text="${memberDetails.name}">홍길동</td>
-                        </tr>
-                        <tr>
-                            <th>이메일</th>
-                            <td th:text="${memberDetails.email}">hong@example.com</td>
-                        </tr>
-                        <tr>
-                            <th>관계 유형</th>
-                            <td th:text="${memberDetails.relationType}">보호자</td>
-                        </tr>
-                        <tr>
-                            <th>개인정보 수집 및 이용 동의</th>
-                            <td>
+          <div class="column is-half">
+            <div class="box">
+              <table class="table is-fullwidth">
+                <tbody>
+                  <tr>
+                    <th>ユーザーID</th>
+                    <td th:text="${memberDetails.signInId}">user123</td>
+                  </tr>
+                  <tr>
+                    <th>氏名</th>
+                    <td th:text="${memberDetails.name}">홍길동</td>
+                  </tr>
+                  <tr>
+                    <th>メールアドレス</th>
+                    <td th:text="${memberDetails.email}">hong@example.com</td>
+                  </tr>
+                  <tr>
+                    <th>関係タイプ</th>
+                    <td th:text="${memberDetails.relationType}">保護者</td>
+                  </tr>
+                  <tr>
+                    <th>個人情報の収集および利用への同意</th>
+                    <td>
                       <span
-                              class="tag is-success"
-                              th:if="${memberDetails.personalInformationCollectionAndUsageAgreement}"
-                      >동의함</span
+                        class="tag is-success"
+                        th:if="${memberDetails.personalInformationCollectionAndUsageAgreement}"
+                        >同意する</span
                       >
-                                <span
-                                        class="tag is-danger"
-                                        th:unless="${memberDetails.personalInformationCollectionAndUsageAgreement}"
-                                >동의하지 않음</span
-                                >
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                      <span
+                        class="tag is-danger"
+                        th:unless="${memberDetails.personalInformationCollectionAndUsageAgreement}"
+                        >同意しない</span
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <!--            <div class="field is-grouped is-grouped-centered">-->
-            <div class="button-container">
-                <div class="button-group">
-                    <p class="control">
-                        <a class="button is-primary" th:href="@{/members/edit}">
-                            정보 수정
-                        </a>
-                    </p>
-                    <p class="control">
-                        <a class="button is-light" href="/auth/logout"> 로그아웃 </a>
-                    </p>
-                    <p class="control">
-                        <button class="button is-light" id="btn-quit">탈퇴하기</button>
-                    </p>
-                </div>
+          </div>
+
+          <div class="button-container">
+            <div class="button-group">
+              <p class="control">
+                <a class="button is-primary" th:href="@{/members/edit}">
+                  情報を修正
+                </a>
+              </p>
+              <p class="control">
+                <a class="button is-light" href="/auth/logout"> ログアウト </a>
+              </p>
+              <p class="control">
+                <button class="button is-light" id="btn-quit">退会する</button>
+              </p>
             </div>
+          </div>
         </div>
-    </div>
-</section>
-<div th:replace="fragments/footer :: ilogFooter"></div>
-</body>
+      </div>
+    </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>

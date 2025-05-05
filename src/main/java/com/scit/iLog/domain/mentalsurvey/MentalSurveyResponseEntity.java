@@ -26,8 +26,8 @@ public class MentalSurveyResponseEntity {
     private List<SectionResponse> sectionResponses;
     private int totalLikertScore;
     private String comment;
-    @CreatedDate
+//    @CreatedDate
     private LocalDateTime createdAt;
-    @LastModifiedDate
+//    @LastModifiedDate
     private LocalDateTime lastModifiedAt;
 }

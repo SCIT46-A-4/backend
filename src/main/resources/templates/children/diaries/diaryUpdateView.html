@@ -1,183 +1,189 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <title>우리 아이 일기장 수정 페이지</title>
     <!-- Bulma CSS -->
     <!-- <link rel="stylesheet" th:href="@{/css/bulma.min.css}" /> -->
     <link
-            href="../../../static/css/bulma.min.css"
-            rel="stylesheet"
-            th:href="@{/css/bulma.min.css}"
+      href="../../../static/css/bulma.min.css"
+      rel="stylesheet"
+      th:href="@{/css/bulma.min.css}"
     />
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/just-validate.production.min.js"></script>
 
     <style>
-        .primary-color {
-          color: #fdf5bf;
-        }
+      .primary-color {
+        color: #fdf5bf;
+      }
 
-        body {
-          background-color: #fdf5bf;
-        }
+      body {
+        background-color: #fdf5bf;
+      }
 
-        .secondary-bg {
-          background-color: #bee6d9;
-        }
+      .secondary-bg {
+        background-color: #bee6d9;
+      }
 
-        /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
-        .logo-image {
-          width: 100px;
-          height: auto;
-        }
+      /* 새로 추가한 CSS 클래스 (인라인 스타일 대체) */
+      .logo-image {
+        width: 100px;
+        height: auto;
+      }
 
-        /* 로고 설정 */
-        .logo a {
-          display: inline-block;
-        }
+      /* 로고 설정 */
+      .logo a {
+        display: inline-block;
+      }
 
-        .logo img {
-          cursor: pointer;
-        }
+      .logo img {
+        cursor: pointer;
+      }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-          const validation = new JustValidate('#diaryEditForm');
-          validation
-            .addField('#title', [
-              {
-                rule: 'required',
-                errorMessage: '제목을 입력해주세요.',
-              },
-              {
-                rule: 'minLength',
-                value: 3,
-                errorMessage: '제목은 최소 3글자 이상이어야 합니다.',
-              },
-            ])
-            .addField('#content', [
-              {
-                rule: 'required',
-                errorMessage: '내용을 입력해주세요.',
-              },
-              {
-                rule: 'minLength',
-                value: 5,
-                errorMessage: '내용은 최소 5글자 이상이어야 합니다.',
-              },
-            ])
-            .onSuccess(function () {
-              // 폼이 유효성 검사를 통과하면 폼을 제출합니다.
-              document.getElementById('diaryEditForm').submit();
-            });
-        });
+      document.addEventListener('DOMContentLoaded', function () {
+        const validation = new JustValidate('#diaryEditForm');
+        validation
+          .addField('#title', [
+            {
+              rule: 'required',
+              errorMessage: 'タイトルを入力してください。',
+            },
+            {
+              rule: 'minLength',
+              value: 3,
+              errorMessage: 'タイトルは3文字以上で入力してください。',
+            },
+          ])
+          .addField('#content', [
+            {
+              rule: 'required',
+              errorMessage: '内容を入力してください。',
+            },
+            {
+              rule: 'minLength',
+              value: 5,
+              errorMessage: '内容は5文字以上で入力してください。',
+            },
+          ])
+          .onSuccess(function () {
+            // フォームがバリデーションを通過した場合、送信します。
+            document.getElementById('diaryEditForm').submit();
+          });
+      });
     </script>
-</head>
+  </head>
 
-<body>
-<!-- 네비게이션 바 -->
-<nav aria-label="main navigation" class="navbar" role="navigation">
-    <div class="navbar-brand">
+  <body>
+    <!-- ナビゲーションバー -->
+    <nav aria-label="main navigation" class="navbar" role="navigation">
+      <div class="navbar-brand">
         <a class="navbar-item" href="/dashboard">
-            <img
-                    alt="iLog 로고"
-                    id="logo"
-                    src="../../static/images/wilog.png"
-                    th:src="@{/images/wilog.png}"
-            />
+          <img
+            alt="iLog ロゴ"
+            id="logo"
+            src="../../static/images/wilog.png"
+            th:src="@{/images/wilog.png}"
+          />
         </a>
-    </div>
-    <div class="navbar-end">
+      </div>
+      <div class="navbar-end">
         <div class="navbar-item">
-            <div class="buttons">
-                <a class="button is-light" href="/guides"><span>이용안내</span></a>
-            </div>
-        </div>
-        <div class="navbar-item">
-            <div class="buttons">
-                <a class="button is-light" href="/claims"><span>고객센터</span></a>
-            </div>
-        </div>
-        <div class="navbar-item">
-            <div class="buttons">
-                <a class="button is-light" href="/auth/logout"
-                ><span>로그아웃</span></a
-                >
-            </div>
-        </div>
-        <div class="navbar-item">
-            <div class="buttons">
-                <a class="button is-light" th:href="@{/members/myDetails}">
-                    <span class="icon"><i class="fas fa-user"></i></span>
-                    <span th:text="|${memberName}(${relationType})|"
-                    >김미영(부모)</span
-                    >
-                </a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<section class="section">
-    <div class="container">
-        <h1 class="title has-text-centered">우리 아이 일기장 수정 페이지</h1>
-        <div class="box">
-            <form
-                    id="diaryEditForm"
-                    method="post"
-                    th:action="@{|/children/${childId}/diaries/diaryList/${diary.id}/edit|}"
+          <div class="buttons">
+            <a class="button is-light" href="/guides"
+              ><span>ご利用案内</span></a
             >
-                <!-- Hidden 필드: id와 createdAt (수정 불가 값) -->
-                <input name="id" th:value="${diary.id}" type="hidden"/>
-                <input
-                        disabled
-                        th:value="${#temporals.format(diary.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
-                        type="hidden"
-                />
-
-                <!-- 제목 입력 필드 -->
-                <div class="field">
-                    <label class="label" for="title">제목</label>
-                    <div class="control">
-                        <input
-                                class="input"
-                                id="title"
-                                name="title"
-                                placeholder="일기 제목을 입력해주세요."
-                                required
-                                th:value="${diary.title}"
-                                type="text"
-                        />
-                    </div>
-                </div>
-                <!-- 내용 입력 필드 -->
-                <div class="field">
-                    <label class="label" for="content">내용</label>
-                    <div class="control">
-                <textarea
-                        class="textarea"
-                        id="content"
-                        name="content"
-                        placeholder="수정할 일기 내용을 입력해주세요."
-                        required
-                        rows="10"
-                        th:text="${diary.content}"
-                ></textarea>
-                    </div>
-                </div>
-                <!-- 제출 버튼 -->
-                <div class="field is-grouped is-grouped-centered">
-                    <div class="control">
-                        <button class="button secondary-bg" type="submit">
-                            수정 완료
-                        </button>
-                    </div>
-                </div>
-            </form>
+          </div>
         </div>
-    </div>
-</section>
-<div th:replace="fragments/footer :: ilogFooter"></div>
-</body>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/claims"
+              ><span>お問い合わせ</span></a
+            >
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" href="/auth/logout"
+              ><span>ログアウト</span></a
+            >
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" th:href="@{/members/myDetails}">
+              <span class="icon"><i class="fas fa-user"></i></span>
+              <span th:text="|${memberName}(${relationType})|"
+                >김미영(保護者)</span
+              >
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <section class="section">
+      <div class="container">
+        <h1 class="title has-text-centered">お子さまの日記を編集する</h1>
+        <div class="box">
+          <form
+            id="diaryEditForm"
+            method="post"
+            th:action="@{|/children/${childId}/diaries/diaryList/${diary.id}/edit|}"
+          >
+            <!-- 非表示フィールド: idと作成日時 -->
+            <input name="id" th:value="${diary.id}" type="hidden" />
+            <input
+              disabled
+              th:value="${#temporals.format(diary.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
+              type="hidden"
+            />
+
+            <!-- タイトル入力 -->
+            <div class="field">
+              <label class="label" for="title">タイトル</label>
+              <div class="control">
+                <input
+                  class="input"
+                  id="title"
+                  name="title"
+                  placeholder="日記のタイトルを入力してください。"
+                  required
+                  th:value="${diary.title}"
+                  type="text"
+                />
+              </div>
+            </div>
+
+            <!-- 内容入力 -->
+            <div class="field">
+              <label class="label" for="content">内容</label>
+              <div class="control">
+                <textarea
+                  class="textarea"
+                  id="content"
+                  name="content"
+                  placeholder="修正する日記の内容を入力してください。"
+                  required
+                  rows="10"
+                  th:text="${diary.content}"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- 送信ボタン -->
+            <div class="field is-grouped is-grouped-centered">
+              <div class="control">
+                <button class="button secondary-bg" type="submit">
+                  編集を完了する
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+    <div th:replace="fragments/footer :: ilogFooter"></div>
+  </body>
 </html>
